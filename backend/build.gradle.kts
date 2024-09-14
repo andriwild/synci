@@ -34,6 +34,8 @@ dependencies {
     implementation("com.zaxxer:HikariCP:$hikariCPVersion")
     implementation("org.springframework.boot:spring-boot-starter-jdbc")
 	implementation("org.springframework.boot:spring-boot-starter-webflux")
+	implementation("org.springframework.boot:spring-boot-starter-quartz")
+	implementation("org.mnode.ical4j:ical4j:4.0.4")
 	implementation("com.google.code.gson:gson")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-devtools")
