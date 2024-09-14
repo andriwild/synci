@@ -34,9 +34,9 @@ class CalendarService {
         // Start Date is on: April 1, 2008, 9:00 am
         val startDate: java.util.Calendar = GregorianCalendar()
         startDate.timeZone = timezone
-        startDate[java.util.Calendar.MONTH] = java.util.Calendar.APRIL
+        startDate[java.util.Calendar.MONTH] = java.util.Calendar.OCTOBER
         startDate[java.util.Calendar.DAY_OF_MONTH] = 1
-        startDate[java.util.Calendar.YEAR] = 2008
+        startDate[java.util.Calendar.YEAR] = 2024
         startDate[java.util.Calendar.HOUR_OF_DAY] = 9
         startDate[java.util.Calendar.MINUTE] = 0
         startDate[java.util.Calendar.SECOND] = 0
@@ -44,9 +44,9 @@ class CalendarService {
         // End Date is on: April 1, 2008, 13:00
         val endDate: java.util.Calendar = GregorianCalendar()
         endDate.timeZone = timezone
-        endDate[java.util.Calendar.MONTH] = java.util.Calendar.APRIL
+        endDate[java.util.Calendar.MONTH] = java.util.Calendar.OCTOBER
         endDate[java.util.Calendar.DAY_OF_MONTH] = 1
-        endDate[java.util.Calendar.YEAR] = 2008
+        endDate[java.util.Calendar.YEAR] = 2024
         endDate[java.util.Calendar.HOUR_OF_DAY] = 13
         endDate[java.util.Calendar.MINUTE] = 0
         endDate[java.util.Calendar.SECOND] = 0
@@ -77,8 +77,7 @@ class CalendarService {
         icsCalendar.add<PropertyContainer>(ImmutableCalScale.GREGORIAN)
 
         icsCalendar.add<ComponentContainer<CalendarComponent>>(meeting)
-        println(icsCalendar)
 
-        return "test"
+        return icsCalendar.toString()
     }
 }
