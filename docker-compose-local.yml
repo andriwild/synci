@@ -1,0 +1,58 @@
+services:
+  # client:
+  #   image: node:20-alpine
+  #   command: ['npm', 'run', 'dev']
+  #   working_dir: /app
+  #   environment:
+  #     - NODE_ENV=development
+  #   ports:
+  #     - '3000:3000'
+  #     - '3035:3035'
+  #   volumes:
+  #     - ./frontend:/app
+  #     - client.node_modules:/app/node_modules
+    # depends_on:
+    #   - server
+
+  # server:
+  #   image: gradle:8.10.1-jdk21
+
+  #   command: ['sh', 'dev.sh']
+  #   working_dir: /app
+  #   restart: always
+  #   ports:
+  #     - '3001:8888'
+  #     - '5005:5005'
+  #   environment:
+  #     - AP_SERVER_URLS=https://dev.rvgs.ch/api-dev
+  #     - TZ=Europe/Zurich
+  #     - SERVER_ID=https://app.rvgs.ch/api
+  #     - SPRING_ENV=development
+  #   volumes:
+  #     - ./server:/app
+  #     - server.cache:/home/gradle/.gradle
+  #     - /etc/localtime:/etc/localtime:ro
+    # depends_on:
+    #   - db
+
+  db:
+    image: postgres:15.2-alpine
+    environment:
+      - "POSTGRES_USER=postgres"
+      - "POSTGRES_PASSWORD=postgres"
+      - "POSTGRES_DB=synci-db"
+    ports:
+      - "5432:5432"
+    volumes:
+      - db.data:/var/lib/postgresql/data
+
+  # adminer:
+  #   image: adminer
+  #   restart: always
+  #   ports:
+  #     - "3003:8080"
+
+volumes:
+  # client.node_modules:
+  # server.cache:
+  db.data:
