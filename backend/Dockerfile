@@ -1,4 +1,4 @@
-FROM gradle:8.10.1-jdk22-alpine as builder
+FROM gradle:8.10.1-jdk21-alpine as builder
 
 WORKDIR /app
 
@@ -6,10 +6,9 @@ COPY . .
 
 RUN gradle build -x test --no-daemon --continue
 
-FROM amazoncorretto:22-alpine3.20-jdk
+FROM amazoncorretto:21-alpine3.20-jdk
 
 ENV ENV_SERVER_PORT=8080
-
 
 WORKDIR /app
 
