@@ -1,4 +1,14 @@
 package ch.boosters.backend
 
-class MainController {
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
+
+@RestController
+class ArticleController() {
+
+  @GetMapping("/")
+  fun greeting(@RequestParam name: String): String  {
+    return "hello $name"
+  }
 }
