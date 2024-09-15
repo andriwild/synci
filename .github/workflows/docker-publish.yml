@@ -38,8 +38,8 @@ jobs:
         run: |
           sudo -u postgres createdb --owner=postgres synci-db 
           PGPASSWORD=postgres psql --username=postgres --host=localhost --list synci-db
-        -name: Create tables
-        -run: |
+      - name: Create tables
+        run: |
           sudo -u postgres PGPASSWORD=postgres psql -w -h localhost -U postgres -d postgres -f ./database/synci-schema.sql
 
 
