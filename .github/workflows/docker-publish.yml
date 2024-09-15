@@ -40,7 +40,7 @@ jobs:
           sudo -u postgres psql --command='CREATE DATABASE "synci-db" OWNER postgres;'
       - name: Create PostgreSQL DB table
         run: |
-          pwd
+          ls -la
           sudo chmod 777 -R /home/runner/work/synci/synci/database
           sudo -u postgres psql -U postgres -d synci-db -a -f /home/runner/work/synci/synci/database/synci-schema.sql
      
