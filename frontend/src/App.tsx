@@ -1,16 +1,15 @@
-import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
-import {UserConfigForm} from './pages/UserConfigForm.tsx';
-import './App.css';
-import {Home} from "./pages/Home.tsx";
-import {Header} from "./components/Header.tsx";
+import './App.css'
+import {Route, Router, Routes} from "react-router-dom";
 import {ConfigProvider, Layout, theme} from "antd";
-import {Footer} from "./components/Footer.tsx";
-import {Content} from "antd/es/layout/layout";
+import {Content, Header} from "antd/es/layout/layout";
+import {Home} from "./pages/Home.tsx";
 import {UserConfig} from "./pages/UserConfigs.tsx";
+import {UserConfigForm} from "./pages/UserConfigForm.tsx";
+import {Footer} from "antd/es/modal/shared";
 
 function App() {
 
-    const handleLoginSuccess = (response) => {
+    const handleLoginSuccess = (response: any) => {
         console.log("Loginsucess",response);
         // save the token to local storage
 
@@ -27,7 +26,7 @@ function App() {
             });
     };
 
-    const handleLoginFailure = (error) => {
+    const handleLoginFailure = (error: any) => {
         console.error('Login failed', error);
     };
 

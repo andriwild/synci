@@ -18,8 +18,7 @@ on:
 env:
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
-  IMAGE_BACKEND_NAME: '${{ github.repository }}-backend'
-  IMAGE_FRONTEND_NAME: '${{ github.repository }}-frontend'
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
 
@@ -27,50 +26,61 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Start PostgreSQL
+      - name: Start PostgreSQL service
         run: |
           sudo systemctl start postgresql.service
           pg_isready
-      - name: Create PostgreSQL User
+
+      - name: Update db user
         run: |
           sudo -u postgres psql --command="ALTER USER postgres WITH PASSWORD 'postgres'"
-    #      sudo -u postgres createuser -s -d -r synci
-      - name: Create PostgreSQL DB
+
+      - name: Create synci database
         run: |
           sudo -u postgres psql --command='CREATE DATABASE "synci-db" OWNER postgres;'
 
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Log into registry ${{ env.REGISTRY }}
+      - name: Create db tables
+        run: |
+          PGPASSWORD=postgres psql -U postgres -d synci-db -h localhost -p 5432 -a -f ./database/create_schema.sql
+
+      - name: Log into registry
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.TOKEN }}
-
-      - name: Create PostgreSQL DB table
-        run: |
-          sudo -u postgres psql -U postgres -d synci-db -a -f ./database/synci-schema.sql
      
-      # - name: Frontend Docker Build 
-      #   run: |
-      #     docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_FRONTEND_NAME }}:${{ github.ref_name }} ./frontend
-
-      # - name: Frontend Docker Push
-      #   run: |
-      #     docker push ${{ env.REGISTRY }}/${{ env.IMAGE_FRONTEND_NAME }}:${{ github.ref_name }}
-      #     docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_FRONTEND_NAME }}:${{ github.ref_name }} ${{ env.REGISTRY }}/${{ env.IMAGE_FRONTEND_NAME }}:latest
-      #     docker push ${{ env.REGISTRY }}/${{ env.IMAGE_FRONTEND_NAME }}:latest
-
-      - name: Backend Docker Build 
+      - name: Build frontend image
         run: |
-          docker build --network="host" -t ${{ env.REGISTRY }}/${{ env.IMAGE_BACKEND_NAME }}:${{ github.ref_name }} ./backend
+          docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/synci-frontend:${{ github.ref_name }} ./frontend
 
-      - name: Backend Docker Push
+      - name: Push frontend image
         run: |
-          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_BACKEND_NAME }}:${{ github.ref_name }}
-          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_BACKEND_NAME }}:${{ github.ref_name }} ${{ env.REGISTRY }}/${{ env.IMAGE_BACKEND_NAME }}:latest
-          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_BACKEND_NAME }}:latest
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}/synci-frontend:${{ github.ref_name }}
+          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/synci-frontend:${{ github.ref_name }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/synci-frontend:latest
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/synci-frontend:latest
+          
+      - name: Build backend image 
+        run: |
+          docker build --network="host" -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}/synci-backend:${{ github.ref_name }} ./backend
 
+      - name: Push backend image
+        run: |
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}/synci-backend:${{ github.ref_name }}
+          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/synci-backend:${{ github.ref_name }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}/synci-backend:latest
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}/synci-backend:latest
 
+    #  - name: install ssh keys
+        # check this thread to understand why its needed:
+        # https://stackoverflow.com/a/70447517
+    #    run: |
+    #     install -m 600 -D /dev/null ~/.ssh/id_rsa
+    #    echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+    #     ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
+    #  - name: connect and pull
+    #  run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && git checkout ${{ secrets.MAIN_BRANCH }} && git pull && exit"
+    #  - name: cleanup
+    #   run: rm -rf ~/.ssh

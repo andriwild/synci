@@ -5,6 +5,9 @@ import org.jooq.meta.jaxb.Property
 val javaVersion = 21
 val jooqVersion = "3.19.11"
 val postgresVersion = "42.7.4"
+val postgresJdbcUrl = "jdbc:postgresql://localhost:5432/synci-db"
+val postgresUser = "postgres"
+val postgresPassword = "postgres"
 val hikariCPVersion = "5.1.0"
 val kotlinJvmVersion = "1.9.25"
 
@@ -14,7 +17,12 @@ plugins {
 	kotlin("plugin.spring") version "2.0.20"
 	id("org.springframework.boot") version "3.3.3"
 	id("io.spring.dependency-management") version "1.1.6"
+    id("org.flywaydb.flyway") version "9.7.0"
     id("nu.studer.jooq") version "9.0"
+}
+
+configurations {
+    create("flywayMigration")
 }
 
 group = "ch.boosters"
@@ -47,16 +55,22 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json")
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
     implementation("org.postgresql:postgresql:$postgresVersion")
-    jooqGenerator("org.postgresql:postgresql:$postgresVersion")
 	implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
-//    implementation("io.jsonwebtoken:jjwt:0.9.1")
-    jooqGenerator("org.postgresql:postgresql:42.7.2")
+    "flywayMigration"("org.postgresql:postgresql:$postgresVersion")
+    jooqGenerator("org.postgresql:postgresql:$postgresVersion")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("io.projectreactor:reactor-test")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+
+flyway {
+    configurations = arrayOf("flywayMigration")
+    url = postgresJdbcUrl
+    user = postgresUser
+    password = postgresPassword
 }
 
 jooq {
@@ -71,32 +85,15 @@ jooq {
                 logging = Logging.WARN
                 jdbc.apply {
                     driver = "org.postgresql.Driver"
-                    url = "jdbc:postgresql://localhost:5432/synci-db"
+                    url = postgresJdbcUrl
                     user = "postgres"
                     password = "postgres"
-//                    properties.add(Property().apply {
-//                        key = "ssl"
-//                        value = "true"
-//                    })
                 }
                 generator.apply {
                     name = "org.jooq.codegen.DefaultGenerator"
                     database.apply {
                         name = "org.jooq.meta.postgres.PostgresDatabase"
                         inputSchema = "public"
-//                        TODO: see if we use this
-//                        forcedTypes.addAll(listOf(
-//                            ForcedType().apply {
-//                                name = "varchar"
-//                                includeExpression = ".*"
-//                                includeTypes = "JSONB?"
-//                            },
-//                            ForcedType().apply {
-//                                name = "varchar"
-//                                includeExpression = ".*"
-//                                includeTypes = "INET"
-//                            }
-//                        ))
                     }
                     generate.apply {
                         isDeprecated = false
@@ -123,9 +120,14 @@ kotlin {
 
 tasks.named<nu.studer.gradle.jooq.JooqGenerate>("generateJooq") {
     // generateJooq can be configured to use a different/specific toolchain
+    // dependsOn(tasks.named("flywayMigrate"))
+    // inputs.files(fileTree("src/main/resources/db/migration"))
+    //     .withPropertyName("migrations")
+    //     .withPathSensitivity(PathSensitivity.RELATIVE)
     (launcher::set)(javaToolchains.launcherFor {
         languageVersion.set(JavaLanguageVersion.of(javaVersion))
     })
+    allInputsDeclared.set(true)
 }
 
 tasks.withType<Test> {
