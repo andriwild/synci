@@ -27,6 +27,7 @@ export const UserConfigForm = () => {
     };
 
     return (
+        <Flex vertical style={{height: '100%', width: '100%', padding: 24, justifyContent: "center", alignItems: 'center'}}>
         <Card style={{ width: 600, textAlign: 'left' }}>
             <h2 style={{ marginBottom: '20px' }}>Benutzerkonfigurationen</h2>
             <p>Füge eine Konfiguration hinzu. Wähle dabei aus, für welches Team, welchen Sportler, welchen Ort oder
@@ -58,5 +59,6 @@ export const UserConfigForm = () => {
                 </Flex>
             </Form>
         </Card>
+        </Flex>
     );
 };
