@@ -27,52 +27,49 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Start PostgreSQL
+      - name: Start PostgreSQL service
         run: |
           sudo systemctl start postgresql.service
           pg_isready
-      - name: Create PostgreSQL User
+
+      - name: Update db user
         run: |
           sudo -u postgres psql --command="ALTER USER postgres WITH PASSWORD 'postgres'"
-    #      sudo -u postgres createuser -s -d -r synci
-      - name: Create PostgreSQL DB
+
+      - name: Create synci database
         run: |
           sudo -u postgres psql --command='CREATE DATABASE "synci-db" OWNER postgres;'
-          sudo systemctl restart postgresql.service
-          pg_isready
 
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Create PostgreSQL DB table
+      - name: Create db tables
         working-directory: ./database
         run: |
-          pwd
-          sudo chmod 777 -R .
           PGPASSWORD=postgres psql -U postgres -d synci-db -h localhost -p 5432 -a -f synci-schema.sql
      
-      # - name: Frontend Docker Build 
-      #   run: |
-      #     docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_FRONTEND_NAME }}:${{ github.ref_name }} ./frontend
+      - name: Build frontend image
+        run: |
+          docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_FRONTEND_NAME }}:${{ github.ref_name }} ./frontend
 
-      # - name: Frontend Docker Push
-      #   run: |
-      #     docker push ${{ env.REGISTRY }}/${{ env.IMAGE_FRONTEND_NAME }}:${{ github.ref_name }}
-      #     docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_FRONTEND_NAME }}:${{ github.ref_name }} ${{ env.REGISTRY }}/${{ env.IMAGE_FRONTEND_NAME }}:latest
-      #     docker push ${{ env.REGISTRY }}/${{ env.IMAGE_FRONTEND_NAME }}:latest
+      - name: Push frontend image
+        run: |
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_FRONTEND_NAME }}:${{ github.ref_name }}
+          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_FRONTEND_NAME }}:${{ github.ref_name }} ${{ env.REGISTRY }}/${{ env.IMAGE_FRONTEND_NAME }}:latest
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_FRONTEND_NAME }}:latest
 
-      - name: Log into registry ${{ env.REGISTRY }}
+      - name: Log into registry
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.TOKEN }}
           
-      - name: Backend Docker Build 
+      - name: Build backend image 
         run: |
           docker build --network="host" -t ${{ env.REGISTRY }}/${{ env.IMAGE_BACKEND_NAME }}:${{ github.ref_name }} ./backend
 
-      - name: Backend Docker Push
+      - name: Push backend image
         run: |
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_BACKEND_NAME }}:${{ github.ref_name }}
           docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_BACKEND_NAME }}:${{ github.ref_name }} ${{ env.REGISTRY }}/${{ env.IMAGE_BACKEND_NAME }}:latest
