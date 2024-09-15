@@ -120,10 +120,10 @@ kotlin {
 
 tasks.named<nu.studer.gradle.jooq.JooqGenerate>("generateJooq") {
     // generateJooq can be configured to use a different/specific toolchain
-    dependsOn(tasks.named("flywayMigrate"))
-    inputs.files(fileTree("src/main/resources/db/migration"))
-        .withPropertyName("migrations")
-        .withPathSensitivity(PathSensitivity.RELATIVE)
+    // dependsOn(tasks.named("flywayMigrate"))
+    // inputs.files(fileTree("src/main/resources/db/migration"))
+    //     .withPropertyName("migrations")
+    //     .withPathSensitivity(PathSensitivity.RELATIVE)
     (launcher::set)(javaToolchains.launcherFor {
         languageVersion.set(JavaLanguageVersion.of(javaVersion))
     })
