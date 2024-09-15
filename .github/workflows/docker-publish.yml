@@ -49,7 +49,7 @@ jobs:
         run: |
           pwd
           sudo chmod 777 -R .
-          psql -U postgres -d synci-db -a -f synci-schema.sql
+          psql -U postgres -d synci-db -h localhost -p 5432 -a -f synci-schema.sql
      
       # - name: Frontend Docker Build 
       #   run: |
