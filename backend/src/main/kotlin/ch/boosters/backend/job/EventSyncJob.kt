@@ -1,4 +1,4 @@
-import ch.boosters.backend.fotmob.FotMobService
+import ch.boosters.backend.sources.fotmob.FotMobService
 import org.quartz.Job
 import org.quartz.JobExecutionContext
 import org.springframework.beans.factory.annotation.Autowired

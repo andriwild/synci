@@ -1,4 +1,4 @@
-package ch.boosters.backend.fotmob
+package ch.boosters.backend.sources.fotmob
 
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.ExchangeStrategies
