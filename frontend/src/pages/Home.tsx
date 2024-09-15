@@ -1,12 +1,13 @@
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import {Button, Flex} from "antd";
 
 export const Home = () => {
     const navigate = useNavigate();
 
     return (
-        <div>
-            <div>Hello Home</div>
-            <button onClick={() => navigate('/config')}>Config erstellen</button>
-        </div>
-    )
-}
+        <Flex style={{height: '100%', width: '100%'}}>
+            Hello Home
+            <Button onClick={() => navigate('/config')}>Config erstellen</Button>
+        </Flex>
+    );
+};
