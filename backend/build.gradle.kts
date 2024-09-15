@@ -2,16 +2,20 @@ import org.jooq.meta.jaxb.ForcedType
 import org.jooq.meta.jaxb.Logging
 import org.jooq.meta.jaxb.Property
 
+val javaVersion = 21
+val jooqVersion = "3.19.11"
+val postgresVersion = "42.7.4"
+val hikariCPVersion = "5.1.0"
+val kotlinJvmVersion = "1.9.25"
+
 plugins {
-	kotlin("jvm") version "1.9.25"
-	kotlin("plugin.spring") version "1.9.25"
+	kotlin("jvm") version "2.0.20"
+    kotlin("plugin.serialization") version "2.0.20"
+	kotlin("plugin.spring") version "2.0.20"
 	id("org.springframework.boot") version "3.3.3"
 	id("io.spring.dependency-management") version "1.1.6"
     id("nu.studer.jooq") version "9.0"
 }
-
-val javaVersion = 21
-val jooqVersion = "3.19.11"
 
 group = "ch.boosters"
 version = "0.0.1-SNAPSHOT"
@@ -27,8 +31,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.zaxxer:HikariCP:5.1.0")
-    implementation("org.postgresql:postgresql:42.7.4")
+    implementation("com.zaxxer:HikariCP:$hikariCPVersion")
     implementation("org.springframework.boot:spring-boot-starter-jdbc")
 	implementation("org.springframework.boot:spring-boot-starter-webflux")
 	implementation("org.springframework.boot:spring-boot-starter-quartz")
@@ -36,7 +39,9 @@ dependencies {
 	implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
-    jooqGenerator("org.postgresql:postgresql:42.7.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json")
+    implementation("org.postgresql:postgresql:$postgresVersion")
+    jooqGenerator("org.postgresql:postgresql:$postgresVersion")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("io.projectreactor:reactor-test")
