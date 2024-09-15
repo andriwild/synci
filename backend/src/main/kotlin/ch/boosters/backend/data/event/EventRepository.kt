@@ -1,7 +1,7 @@
 package ch.boosters.backend.data.event
 
 import ch.boosters.backend.data.event.model.Event
-import ch.boosters.data.Tables.EVENT
+import ch.boosters.data.Tables.EVENTS_TABLE
 import org.jooq.DSLContext
 import org.springframework.stereotype.Repository
 
@@ -9,10 +9,10 @@ import org.springframework.stereotype.Repository
 class EventRepository(private val dslContext: DSLContext) {
 
     fun allEvents(): List<Event> {
-        val result = dslContext.select().from(EVENT).fetch()
+        val result = dslContext.select().from(EVENTS_TABLE).fetch()
 
         return result.map {
-            Event(it.getValue(EVENT.NAME), it.getValue(EVENT.ID), it.getValue(EVENT.STARTS_ON), it.getValue(EVENT.ENDS_ON))
+            Event(it.getValue(EVENTS_TABLE.NAME), it.getValue(EVENTS_TABLE.ID), it.getValue(EVENTS_TABLE.STARTS_ON), it.getValue(EVENTS_TABLE.ENDS_ON))
         }
     }
 }

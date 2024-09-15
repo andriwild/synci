@@ -24,11 +24,13 @@ services:
     image: postgres:15.2-alpine
     restart: always
     environment:
-      - "POSTGRES_USER=synci"
-      - "POSTGRES_PASSWORD=synci-pw"
+      - "POSTGRES_USER=postges"
+      - "POSTGRES_PASSWORD=postgres"
       - "POSTGRES_DB=synci-db"
     volumes:
       - db.data:/var/lib/postgresql/data
+      - ./database/synci-schema.sql:/docker-entrypoint-initdb.d/init.sql
+
     networks:
       - database
 

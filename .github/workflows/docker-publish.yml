@@ -33,11 +33,11 @@ jobs:
           pg_isready
       - name: Create PostgreSQL User
         run: |
-          sudo -u postgres createuser -s -d -r synci
-          sudo -u postgres psql --command="ALTER USER synci WITH PASSWORD 'synci-pw'"
-      - name: Add PostgreSQL DB
+          sudo -u postgres psql --command="ALTER USER postgres WITH PASSWORD 'postgres'"
+    #      sudo -u postgres createuser -s -d -r synci
+      - name: Create PostgreSQL DB table
         run: |
-          sudo -u postgres psql --command='CREATE DATABASE "synci-db" OWNER synci;'
+          sudo -u postgres psql --command='CREATE DATABASE "synci-db" OWNER postgres;'
 
       - name: Checkout repository
         uses: actions/checkout@v4
