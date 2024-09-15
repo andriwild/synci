@@ -12,7 +12,7 @@ export const Header = () => {
         },
         {
             key: '2',
-            label: 'Konfigurationen',
+            label: 'Meine Abos',
             path: '/config',
         }
     ];

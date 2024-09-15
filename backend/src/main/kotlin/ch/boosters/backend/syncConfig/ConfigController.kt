@@ -1,18 +1,15 @@
 package ch.boosters.backend.syncConfig
 
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class ConfigController(private val configService: ConfigService) {
+@RequestMapping("/syncconfig")
+class ConfigController(private val syncConfigService: SyncConfigService) {
 
-    @GetMapping("/config")
-    fun createConfig(): String {
-        return configService.createConfig()
-    }
-
-    @GetMapping("/config/id")
-    fun editConfig(): String {
-        return configService.editConfig()
-    }
+        @GetMapping("/list")
+        fun listConfig(): List<SyncConfig> {
+            return syncConfigService
+        }
 }

@@ -70,7 +70,7 @@ export const UserConfigForm = () => {
     return (
         <Flex vertical style={{height: '100%', width: '100%', padding: 24}}>
         <Card style={{ width: 600, textAlign: 'left' }}>
-            <h2 style={{ marginBottom: '20px' }}>Benutzerkonfigurationen</h2>
+            <h2 style={{ marginBottom: '20px' }}>Abonement {id}</h2>
             <p>Füge eine Konfiguration hinzu. Wähle dabei aus, für welches Team, welchen Sportler, welchen Ort oder
                 welche Sportart du dich interessierst</p>
             <Form<UserConfigValues> form={form} onFinish={handleSubmit} layout={'vertical'} style={{marginTop: 36}}>
@@ -99,32 +99,7 @@ export const UserConfigForm = () => {
                     </Button>
                 </Flex>
             </Form>
-            <Button onClick={() => navigate('/config')} style={{width: 40, height: 40, marginTop: 48, backgroundColor: '#1677ff', color: 'white'}} icon={<Plus size={'1rem'} />} />
-            <List
-                style={{marginTop: 6}}
-                grid={{ gutter: 16}}
-                dataSource={dataSource}
-                renderItem={(item) => (
-                    <List.Item>
-                        <Card title={item.label} style={{width: 400, cursor: 'pointer'}} onClick={() => navigate(`config/${item.id}`)}>
-                            <Flex gap={12} vertical>
-
-                                <Flex vertical>
-                                    <Typography.Text strong>Mannschaften</Typography.Text>
-                                    {item.teams.map((team) => {
-                                        return <Typography.Text key={team}>{team}</Typography.Text>
-                                    })}
-                                </Flex>
-                                <Flex vertical>
-                                    <Typography.Text strong>Url</Typography.Text>
-                                    <Typography.Paragraph>{item.url}</Typography.Paragraph>
-                                </Flex>
-                            </Flex>
-                        </Card>
-                    </List.Item>
-                )}
-            />
-        </Card>
+             </Card>
         </Flex>
     );
 };

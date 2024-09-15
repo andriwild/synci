@@ -1,18 +1,18 @@
-import {Button, Card, Flex, Form, List, Select, Typography} from "antd";
-import {useNavigate, useParams} from "react-router-dom";
+import {Button, Card, Flex, List} from "antd";
+import {useNavigate} from "react-router-dom";
 import {Copy, Plus} from "@phosphor-icons/react";
+import {useState} from "react";
 
 interface Team {
     id: string;
     name: string;
 }
+
 export type UserConfigValues = Team;
 
 export const UserConfig = () => {
-    const [form] = Form.useForm<UserConfigValues>();
     const navigate = useNavigate();
-    const {id} = useParams();
-
+    const [syncing, setSyncing] = useState(false);
     const dataSource = [
         {
             id: '1',
@@ -53,35 +53,24 @@ export const UserConfig = () => {
     ];
 
     return (
-        <Flex vertical style={{height: '100%', width: '100%', padding: 24}}>
-                <Button onClick={() => navigate('/config')} style={{width: 40, height: 40, marginTop: 48, backgroundColor: '#1677ff', color: 'white'}} icon={<Plus size={'1rem'} />} />
-                <List
-                    style={{marginTop: 12}}
-                    grid={{ gutter: 16}}
-                    dataSource={dataSource}
-                    renderItem={(item) => (
-                        <List.Item>
-                            <Card title={item.label} style={{width: 400, cursor: 'pointer'}} onClick={() => navigate(`config/${item.id}`)}>
-                                <Flex gap={12} vertical>
+        <Flex direction="column" gap={24} style={{padding: 24}} wrap={"wrap"}>
+            {dataSource.map((item) => {
+                return (
+                    <Card key={item.id} title={item.label} extra={<Button icon={<Copy size={'1rem'} />} />} style={{minWidth: '400px', marginBottom: 24}}>
+                        <List
+                            size="small"
+                            header={<div>Teams</div>}
+                            bordered
+                            dataSource={item.teams}
+                            renderItem={(team) => <List.Item>{team}</List.Item>}
+                        />
+                    </Card>
+                );
+            })}
+            <Card onClick={() => navigate('/config/new')} style={{minWidth: '400px', display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: "pointer"}}>
+           <Plus size={'2rem'} />
+             </Card>
 
-                                    <Flex vertical>
-                                        <Typography.Text strong>Mannschaften</Typography.Text>
-                                        {item.teams.map((team) => {
-                                            return <Typography.Text key={team}>{team}</Typography.Text>
-                                        })}
-                                    </Flex>
-                                    <Flex vertical>
-                                        <Typography.Text strong>Url</Typography.Text>
-                                        <Typography.Paragraph copyable={{ icon: <Copy style={{ fontSize: '1.4rem' }} /> }}>
-                                            {item.url}
-                                        </Typography.Paragraph>
-
-                                    </Flex>
-                                </Flex>
-                            </Card>
-                        </List.Item>
-                    )}
-                />
         </Flex>
     );
 };
