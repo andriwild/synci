@@ -1,4 +1,4 @@
-package ch.boosters.backend
+package ch.boosters.backend.data.model
 
 data class User(
     val uid: String,

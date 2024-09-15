@@ -1,5 +1,6 @@
-package ch.boosters.backend
+package ch.boosters.backend.data
 
+import ch.boosters.backend.data.model.User
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.stereotype.Service

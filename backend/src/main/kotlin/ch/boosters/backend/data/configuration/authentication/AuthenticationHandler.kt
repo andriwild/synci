@@ -1,8 +1,9 @@
-package ch.boosters.backend
+package ch.boosters.backend.data.configuration
 
+import ch.boosters.backend.data.UserService
+import ch.boosters.backend.data.model.User
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.authentication.AuthenticationServiceException
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.oauth2.jwt.Jwt
