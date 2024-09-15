@@ -34,15 +34,16 @@ jobs:
 
       - name: Create synci user
         run: |
-          sudo -u postgres psql --command="CREATE USER synci PASSWORD 'synci-pw';"
+          psql --command="CREATE USER synci PASSWORD 'synci-pw';"
 
       - name: Create synci database
         run: |
-          sudo -u postgres createdb --owner=synci synci-db 
+          createdb --owner=synci synci-db 
           PGPASSWORD=synci-pw psql --username=synci --host=localhost --list synci-db
       - name: Create tables
         run: |
-          sudo -u postgres PGPASSWORD=synci-pw psql -w -h localhost -U synci -d synci-db -f ./database/synci-schema.sql
+          ls -la
+          PGPASSWORD=synci-pw psql -w -h localhost -U synci -d synci-db -f ./database/synci-schema.sql
 
 
       - name: Checkout repository
