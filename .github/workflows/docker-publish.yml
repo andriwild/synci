@@ -20,7 +20,28 @@ env:
   # github.repository as <account>/<repo>
   IMAGE_BACKEND_NAME: '${{ github.repository }}-backend'
   IMAGE_FRONTEND_NAME: '${{ github.repository }}-frontend'
-
+  
+ 
+ # Service containers to run with `container-job`
+services:
+  # Label used to access the service container
+  postgres:
+    # Docker Hub image
+    image: postgres
+    # Provide the password for postgres
+    env:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: synci-db
+    # Set health checks to wait until postgres has started
+    options: >-
+      --health-cmd pg_isready
+      --health-interval 10s
+      --health-timeout 5s
+      --health-retries 5
+    ports:
+      # Maps tcp port 5432 on service container to the host
+      - 5432:5432
 
 jobs:
   build:
@@ -28,6 +49,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          until docker exec postgres pg_isready -U user; do
+            echo "Waiting for postgres..."
+            sleep 5
+          done
+
+      # Run script to create database tables
+      - name: Run database migration script
+        run: |
+          chmod +x ./create_tables.sh
+          ./create_tables.sh
+
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
