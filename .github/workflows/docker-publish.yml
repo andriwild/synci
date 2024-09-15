@@ -34,7 +34,7 @@ jobs:
       - name: Create PostgreSQL User
         run: |
           sudo -u postgres createuser -s -d -r synci
-          sudo -u postgres psql --command="CREATE USER synci PASSWORD 'synci-pw'"
+          sudo -u postgres psql --command="ALTER USER synci WITH PASSWORD 'synci-pw'"
       - name: Add PostgreSQL DB
         run: |
           sudo -u PGPASSWORD=synci-pw postgres createdb synci-db
