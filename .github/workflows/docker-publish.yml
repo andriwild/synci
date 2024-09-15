@@ -36,12 +36,7 @@ jobs:
           sudo -u postgres createuser -s -d -r -w synci
       - name: Add PostgreSQL DB
         run: |
-          sudo -u postgres createdb synci-db
-      - name: Add Tables
-        working-directory: ./database
-        run: |
-          ls
-          psql -U synci -d synci-db -a -f synci-schema.sql
+          sudo -u postgres createdb -w synci-db
 
       - name: Checkout repository
         uses: actions/checkout@v4
