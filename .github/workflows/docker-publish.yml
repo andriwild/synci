@@ -38,6 +38,7 @@ jobs:
       - name: Create PostgreSQL DB
         run: |
           sudo -u postgres psql --command='CREATE DATABASE "synci-db" OWNER postgres;'
+          sudo systemctl restart postgres
 
       - name: Checkout repository
         uses: actions/checkout@v4
