@@ -1,4 +1,4 @@
-import {Button, Card, Flex, List} from "antd";
+import {Button, Card, Flex} from "antd";
 import {useNavigate} from "react-router-dom";
 import {Copy, Plus} from "@phosphor-icons/react";
 import {useEffect, useState} from "react";

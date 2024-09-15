@@ -1,4 +1,4 @@
-package ch.boosters.backend.syncConfig
+package ch.boosters.backend.data.syncConfig
 
 import org.springframework.stereotype.Service
 

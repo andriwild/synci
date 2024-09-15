@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository
 
 @Repository
 class EventRepository(private val dslContext: DSLContext) {
-
     fun allEvents(): List<Event> {
         val result = dslContext.select().from(EVENTS_TABLE).fetch()
 

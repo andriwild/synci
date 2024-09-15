@@ -1,4 +1,4 @@
-package ch.boosters.backend.syncConfig
+package ch.boosters.backend.data.syncConfig
 
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
