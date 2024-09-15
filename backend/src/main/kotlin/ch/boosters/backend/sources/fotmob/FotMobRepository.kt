@@ -1,6 +1,6 @@
 package ch.boosters.backend.sources.fotmob
 
-import ch.boosters.backend.sources.fotmob.model.Event
+import ch.boosters.backend.sources.fotmob.model.FotMobEvent
 import ch.boosters.backend.sources.fotmob.model.Team
 import ch.boosters.data.Tables.*
 import org.jooq.DSLContext
@@ -21,7 +21,7 @@ class FotMobRepository(private val dsl: DSLContext) {
         return dsl.batch(queries).execute()
     }
 
-    fun storeEvents(events: List<Event>): MutableList<String> {
+    fun storeEvents(events: List<FotMobEvent>): MutableList<String> {
         dsl.truncate(EVENT).cascade().execute()
         dsl.truncate(EVENT_TEAM).cascade().execute()
         dsl.transaction { config ->

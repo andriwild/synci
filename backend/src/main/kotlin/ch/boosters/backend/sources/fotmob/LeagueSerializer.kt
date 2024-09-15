@@ -1,7 +1,7 @@
 package ch.boosters.backend.sources.fotmob
 
 import ch.boosters.backend.sources.common.JsonSerializerConfig
-import ch.boosters.backend.sources.fotmob.model.Event
+import ch.boosters.backend.sources.fotmob.model.FotMobEvent
 import ch.boosters.backend.sources.fotmob.model.Team
 import kotlinx.serialization.json.*
 import org.springframework.stereotype.Service
@@ -12,10 +12,10 @@ class LeagueSerializer(
     private val json: Json
 ) {
 
-    internal fun parseResponse(leaguesJsonString: String): Pair<List<Event>, List<Team>> {
+    internal fun parseResponse(leaguesJsonString: String): Pair<List<FotMobEvent>, List<Team>> {
         val leaguesJson = json.parseToJsonElement(leaguesJsonString)
         val teams = json.decodeFromJsonElement<List<Team>>(getTeams(leaguesJson))
-        val events = json.decodeFromJsonElement<List<Event>>(getEvents(leaguesJson))
+        val events = json.decodeFromJsonElement<List<FotMobEvent>>(getEvents(leaguesJson))
         return Pair(events, teams)
     }
 

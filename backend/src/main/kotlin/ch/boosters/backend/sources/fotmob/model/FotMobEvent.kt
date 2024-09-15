@@ -12,10 +12,10 @@ import kotlinx.serialization.json.jsonPrimitive
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-@Serializable(with = EventSerializer::class)
-data class Event(val name: String, val id: Int, @Contextual val startsOn: LocalDateTime, @Contextual val endsOn: LocalDateTime, val homeId: String, val awayId: String)
+@Serializable(with = FotMobEventSerializer::class)
+data class FotMobEvent(val name: String, val id: Int, @Contextual val startsOn: LocalDateTime, @Contextual val endsOn: LocalDateTime, val homeId: String, val awayId: String)
 
-object EventSerializer : KSerializer<Event> {
+object FotMobEventSerializer : KSerializer<FotMobEvent> {
     override val descriptor: SerialDescriptor = buildClassSerialDescriptor("Event") {
         element<String>("name")
         element<Int>("id")
@@ -23,7 +23,7 @@ object EventSerializer : KSerializer<Event> {
         element<String>("endsOn")
     }
 
-    override fun deserialize(decoder: Decoder): Event {
+    override fun deserialize(decoder: Decoder): FotMobEvent {
         val jsonInput = decoder as? JsonDecoder ?: throw SerializationException("This serializer can be used only with JSON")
         val jsonObject = jsonInput.decodeJsonElement().jsonObject
 
@@ -42,10 +42,10 @@ object EventSerializer : KSerializer<Event> {
         val startsOn = LocalDateTime.parse(utcTime, formatter)
         val endsOn = startsOn.plusHours(2)
 
-        return Event(name, id, startsOn, endsOn, homeId, awayId)
+        return FotMobEvent(name, id, startsOn, endsOn, homeId, awayId)
     }
 
-    override fun serialize(encoder: Encoder, value: Event) {
+    override fun serialize(encoder: Encoder, value: FotMobEvent) {
         // Implement if needed
         throw NotImplementedError("Serialization is not implemented")
     }

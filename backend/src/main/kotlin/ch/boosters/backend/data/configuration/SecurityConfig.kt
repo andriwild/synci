@@ -20,7 +20,7 @@ class SecurityConfig {
             .authorizeHttpRequests { requests ->
                 requests
                     .requestMatchers("/api/auth/google").permitAll()
-                    .anyRequest().authenticated()
+                    .anyRequest().permitAll()
             }
             .oauth2ResourceServer { oauth2ResourceServer ->
                 oauth2ResourceServer.jwt(Customizer.withDefaults())

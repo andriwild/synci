@@ -11,9 +11,6 @@ import reactor.core.publisher.Mono
 @RequestMapping("/fotmob")
 class FotMobController (val fotMobService: FotMobService) {
 
-    //Todo: add scheduled task to fetch the data
-    // Get all leagues form DB
-
     @GetMapping("/{leagueId}")
     fun getSuperLeagueEvents(@PathVariable leagueId: String): Mono<IntArray> {
         val leagueOverview = fotMobService.fetchLeagueOverview(leagueId)
