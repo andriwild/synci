@@ -1,4 +1,4 @@
-package ch.boosters.backend
+package ch.boosters.backend.data.configuration
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Configuration

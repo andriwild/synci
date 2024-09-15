@@ -1,4 +1,4 @@
-package ch.boosters.backend
+package ch.boosters.backend.data.configuration
 
 import com.zaxxer.hikari.HikariDataSource
 import org.jooq.DSLContext
