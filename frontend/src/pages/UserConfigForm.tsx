@@ -1,11 +1,17 @@
 import { Button, Card, Flex, Form, Select } from "antd";
+import {useNavigate} from "react-router-dom";
 
-export type UserConfigValues = never; //TODO: Typen spezifizieren für teams, personen etc
+interface Team {
+    id: string;
+    name: string;
+}
+export type UserConfigValues = Team;
 
 export const UserConfigForm = () => {
     const [form] = Form.useForm<UserConfigValues>();
+    const navigate = useNavigate();
 
-    const teams = [
+    const teams: Team[] = [
         { id: 'teamA', name: 'Team A' },
         { id: 'teamB', name: 'Team B' },
         { id: 'teamC', name: 'Team C' },
@@ -17,7 +23,7 @@ export const UserConfigForm = () => {
 
     const handleBack = () => {
         console.log('Zurück-Button geklickt');
-        // Zurück-routen
+        navigate('/');
     };
 
     return (
