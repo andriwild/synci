@@ -1,16 +1,24 @@
+import org.jooq.meta.jaxb.ForcedType
+import org.jooq.meta.jaxb.Logging
+import org.jooq.meta.jaxb.Property
+
 plugins {
 	kotlin("jvm") version "1.9.25"
 	kotlin("plugin.spring") version "1.9.25"
 	id("org.springframework.boot") version "3.3.3"
 	id("io.spring.dependency-management") version "1.1.6"
+    id("nu.studer.jooq") version "9.0"
 }
+
+val javaVersion = 21
+val jooqVersion = "3.19.11"
 
 group = "ch.boosters"
 version = "0.0.1-SNAPSHOT"
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(21)
+		languageVersion = JavaLanguageVersion.of(javaVersion)
 	}
 }
 
@@ -19,11 +27,16 @@ repositories {
 }
 
 dependencies {
+    implementation("com.zaxxer:HikariCP:5.1.0")
+    implementation("org.postgresql:postgresql:42.7.4")
+    implementation("org.springframework.boot:spring-boot-starter-jdbc")
 	implementation("org.springframework.boot:spring-boot-starter-webflux")
+	implementation("org.springframework.boot:spring-boot-starter-quartz")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+    jooqGenerator("org.postgresql:postgresql:42.7.2")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("io.projectreactor:reactor-test")
@@ -31,10 +44,73 @@ dependencies {
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
+jooq {
+    version.set(jooqVersion)
+    edition.set(nu.studer.gradle.jooq.JooqEdition.OSS)  // default (can be omitted)
+
+    configurations {
+        create("main") {  // name of the jOOQ configuration
+            generateSchemaSourceOnCompilation.set(true)  // default (can be omitted)
+
+            jooqConfiguration.apply {
+                logging = Logging.WARN
+                jdbc.apply {
+                    driver = "org.postgresql.Driver"
+                    url = "jdbc:postgresql://localhost:5432/synci-db"
+                    user = "postgres"
+                    password = "postgres"
+//                    properties.add(Property().apply {
+//                        key = "ssl"
+//                        value = "true"
+//                    })
+                }
+                generator.apply {
+                    name = "org.jooq.codegen.DefaultGenerator"
+                    database.apply {
+                        name = "org.jooq.meta.postgres.PostgresDatabase"
+                        inputSchema = "public"
+//                        TODO: see if we use this
+//                        forcedTypes.addAll(listOf(
+//                            ForcedType().apply {
+//                                name = "varchar"
+//                                includeExpression = ".*"
+//                                includeTypes = "JSONB?"
+//                            },
+//                            ForcedType().apply {
+//                                name = "varchar"
+//                                includeExpression = ".*"
+//                                includeTypes = "INET"
+//                            }
+//                        ))
+                    }
+                    generate.apply {
+                        isDeprecated = false
+                        isRecords = true
+                        isImmutablePojos = true
+                        isFluentSetters = true
+                    }
+                    target.apply {
+                        packageName = "ch.boosters.data"
+                        directory = "build/generated-src/jooq/main"  // default (can be omitted)
+                    }
+                    strategy.name = "org.jooq.codegen.DefaultGeneratorStrategy"
+                }
+            }
+        }
+    }
+}
+
 kotlin {
 	compilerOptions {
 		freeCompilerArgs.addAll("-Xjsr305=strict")
 	}
+}
+
+tasks.named<nu.studer.gradle.jooq.JooqGenerate>("generateJooq") {
+    // generateJooq can be configured to use a different/specific toolchain
+    (launcher::set)(javaToolchains.launcherFor {
+        languageVersion.set(JavaLanguageVersion.of(javaVersion))
+    })
 }
 
 tasks.withType<Test> {
