@@ -37,7 +37,7 @@ jobs:
           sudo -u postgres psql --command="ALTER USER synci WITH PASSWORD 'synci-pw'"
       - name: Add PostgreSQL DB
         run: |
-          sudo -u postgres psql --command="CREATE DATABASE 'synci-db' OWNER synci;"
+          sudo -u postgres psql --command='CREATE DATABASE "synci-db" OWNER synci;'
 
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -61,7 +61,7 @@ jobs:
 
       - name: Backend Docker Build 
         run: |
-          docker build --network="host" -t ${{ env.REGISTRY }}/${{ env.IMAGE_BACKEND_NAME }}:${{ github.ref_name }} ./backend
+          docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_BACKEND_NAME }}:${{ github.ref_name }} ./backend
 
       - name: Backend Docker Push
         run: |
