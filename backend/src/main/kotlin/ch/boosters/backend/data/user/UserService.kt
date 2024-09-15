@@ -1,36 +1,23 @@
-package ch.boosters.backend.data
+package ch.boosters.backend.data.user
 
-import ch.boosters.backend.data.model.User
-import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.stereotype.Service
-import org.springframework.util.Assert
-import java.util.*
 
 @Service
-class UserService {
-    val authenticatedUser: Optional<User>
-        //    private final UserRepository userRepository;
-        get() {
-            val authentication = SecurityContextHolder.getContext().authentication
-                ?: return Optional.empty()
-            Assert.isInstanceOf(
-                JwtAuthenticationToken::class.java,
-                authentication,
-                "Only JwtAuthenticationToken is supported"
-            )
+class UserService (private val userRepository: UserRepository) {
 
-            return getByUidInitialized(authentication.name)
+    fun authenticateWithGoogle(username: String, email: String): String {
+        createOrUpdateUser(username, email)
+        return "Authenticated with Google: Username: $username, Email: $email"
+    }
+
+    private fun createOrUpdateUser(username: String, email: String) {
+        val user = userRepository.findUserByEmail(email)
+        if (user == null) {
+            userRepository.createUser(username, email)
+        } else {
+            userRepository.updateUser(user.copy(name = username))
         }
-
-    fun getByUidInitialized(uid: String?): Optional<User> {
-//        return userRepository.findUserByUid(uid);
-        return Optional.empty()
     }
 
-    fun createNewUser(uid: String?, name: String?): User {
-        val user = User(uid!!, name!!)
-        //        return userRepository.save(user);
-        return user
-    }
+
 }

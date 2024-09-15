@@ -1,6 +1,6 @@
-package ch.boosters.backend.data.model
+package ch.boosters.backend.data.user.model
 
 data class User(
-    val uid: String,
+    val email: String,
     val name: String
 )

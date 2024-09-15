@@ -1,4 +1,4 @@
-package ch.boosters.backend.data.repository
+package ch.boosters.backend.data.event
 
 import ch.boosters.data.Tables.EVENT
 import org.jooq.DSLContext
