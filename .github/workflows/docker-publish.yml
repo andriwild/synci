@@ -38,12 +38,7 @@ jobs:
       - name: Create PostgreSQL DB
         run: |
           sudo -u postgres psql --command='CREATE DATABASE "synci-db" OWNER postgres;'
-      - name: Create PostgreSQL DB table
-        run: |
-          ls -la
-          sudo chmod 777 -R /home/runner/work/synci/synci/database
-          sudo -u postgres psql -U postgres -d synci-db -a -f /home/runner/work/synci/synci/database/synci-schema.sql
-     
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -54,6 +49,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.TOKEN }}
 
+      - name: Create PostgreSQL DB table
+        run: |
+          ls -la
+          sudo chmod 777 -R /home/runner/work/synci/synci/database
+          sudo -u postgres psql -U postgres -d synci-db -a -f /home/runner/work/synci/synci/database/synci-schema.sql
+     
       # - name: Frontend Docker Build 
       #   run: |
       #     docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_FRONTEND_NAME }}:${{ github.ref_name }} ./frontend
