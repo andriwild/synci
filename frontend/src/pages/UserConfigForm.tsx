@@ -16,16 +16,25 @@ export const UserConfigForm = () => {
     const {id} = useParams();
     const createmode = id === 'create';
 
+    const [teams, setTeams] = useState<Team[]>([]);
+
     const [syncConfig, setSyncConfig] = useState(false);
 
     useEffect(() => {
-        fetch('https://localhost:8080/api/syncconfig/' + id)
+        fetch('https://localhost:8080/api/syncconfig/' + id, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(teams),
+        })
             .then(response => response.json())
             .then(data => {
                     console.log(data);
                     setSyncConfig(data);
                 }
-            );
+            )
+            .catch(error => console.error('Error:', error));
     }, []);
 
     const handleSubmit = (values: UserConfigValues) => {

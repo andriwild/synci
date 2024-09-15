@@ -31,6 +31,7 @@ export const UserConfig = () => {
                     <Card key={item.id} title={item.name} extra={<Button icon={<Copy size={'1rem'} />} />} style={{minWidth: '400px', marginBottom: 24}}>
                         <h2>{item.name}</h2>
                         <p>Erstellt am: 01.01.2021</p>
+                        <p>https://localhost:8080/api/create-calendar?syncConfigId={item.id}</p>
                         <Button onClick={() => navigate('/config/' + item.id)}>Bearbeiten</Button>
                     </Card>
                 );
