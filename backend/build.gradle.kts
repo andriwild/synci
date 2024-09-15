@@ -72,8 +72,8 @@ jooq {
                 jdbc.apply {
                     driver = "org.postgresql.Driver"
                     url = "jdbc:postgresql://localhost:5432/synci-db"
-                    user = "postgres"
-                    password = "postgres"
+                    user = "synci"
+                    password = "synci-pw"
 //                    properties.add(Property().apply {
 //                        key = "ssl"
 //                        value = "true"
