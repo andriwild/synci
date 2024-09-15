@@ -43,11 +43,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Create PostgreSQL DB table
+        working-directory: ./database
         run: |
           pwd
           sudo chmod 777 -R .
-          ls -l ./database
-          sudo psql -U postgres -d synci-db -a -f /home/runner/work/synci/synci/database/synci-schema.sql
+          sudo -u postgres psql -U postgres -d synci-db -a -f synci-schema.sql
      
       # - name: Frontend Docker Build 
       #   run: |
