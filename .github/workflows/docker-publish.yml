@@ -31,9 +31,9 @@ jobs:
         run: |
           sudo systemctl start postgresql.service
           pg_isready
-      - name: Create scheduler user
-        run: |
-          sudo -u postgres psql --command="CREATE USER postgres PASSWORD 'postgres'"
+      #- name: Create scheduler user
+       # run: |
+        #  sudo -u postgres psql --command="CREATE USER postgres PASSWORD 'postgres'"
       - name: Create synci database
         run: |
           sudo -u postgres createdb --owner=postgres synci-db 
