@@ -28,7 +28,7 @@ CREATE SCHEMA public;
 -- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: pg_database_owner
 --
 
-COMMENT ON SCHEMA public IS 'standard public schema';
+-- COMMENT ON SCHEMA public IS 'standard public schema';
 
 
 SET default_tablespace = '';
@@ -196,6 +196,7 @@ ALTER TABLE public.SYNC_CONFIGS_SPORTS_TABLE OWNER TO postgres;
 --
 
 CREATE TABLE public.SYNC_CONFIGS_TEAMS_TABLE(
+    id uuid NOT NULL,
     sync_config_id uuid NOT NULL,
     team_id varchar(255) NOT NULL,
     source_team_id integer NOT NULL
@@ -341,7 +342,7 @@ ALTER TABLE ONLY public.SYNC_CONFIGS_TABLE
 --
 
 ALTER TABLE ONLY public.SYNC_CONFIGS_TEAMS_TABLE
-    ADD CONSTRAINT sync_config_team_pkey PRIMARY KEY (sync_config_id, team_id);
+    ADD CONSTRAINT sync_config_team_pkey PRIMARY KEY (id);
 
 
 --
@@ -405,14 +406,6 @@ ALTER TABLE ONLY public.SYNC_CONFIGS_PERSONS_TABLE
     ADD CONSTRAINT fk_person FOREIGN KEY (person_id, source_person_id) REFERENCES public.PERSONS_TABLE (id, source_id) ON DELETE CASCADE;
 
 --
--- Name: sync_config_team fk_sync_config; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.SYNC_CONFIGS_TEAMS_TABLE
-    ADD CONSTRAINT fk_sync_config FOREIGN KEY (sync_config_id) REFERENCES public.SYNC_CONFIGS_TABLE (id) ON DELETE CASCADE;
-
-
---
 -- Name: sync_config_person fk_sync_config; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -464,7 +457,6 @@ ALTER TABLE ONLY public.SPORTS_TABLE
 --
 
 INSERT INTO SOURCES_TABLE (name) values ('FOT_MOB');
-
 
 --
 -- Name: sync_config_user; Type: TABLE; Schema: public; Owner: postgres
@@ -530,3 +522,10 @@ ALTER TABLE ONLY public.SYNC_CONFIGS_USERS_TABLE
 --
 -- PostgreSQL database dump complete
 --
+ALTER TABLE public.EVENTS_TEAMS_TABLE
+ADD CONSTRAINT pk_events_teams
+PRIMARY KEY (id);
+
+ALTER TABLE public.SYNC_CONFIGS_TEAMS_TABLE
+ADD CONSTRAINT fk_sync_config FOREIGN KEY  (sync_config_id) REFERENCES  public.SYNC_CONFIGS_TABLE ON DELETE CASCADE
+
