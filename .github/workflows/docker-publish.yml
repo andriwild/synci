@@ -70,7 +70,7 @@ jobs:
       - name: Push backend image
         run: |
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}/synci-backend:${{ github.ref_name }}
-          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/synci-backend:${{ github.ref_name }} ${{ env.REGISTRY }}/synci/${{ env.IMAGE_NAME}}/synci-backend:latest
+          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/synci-backend:${{ github.ref_name }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}/synci-backend:latest
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}/synci-backend:latest
 
 
