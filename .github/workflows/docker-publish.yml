@@ -26,39 +26,21 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    services:
-      # Label used to access the service container
-        postgres:
-          # Docker Hub image
-          image: postgres
-            # Provide the password for postgres
-          env:
-            POSTGRES_PASSWORD: postgres
-            POSTGRES_USER: postgres
-            POSTGRES_DB: synci-db
-          # Set health checks to wait until postgres has started
-          options: >-
-            --health-cmd pg_isready
-            --health-interval 10s
-            --health-timeout 5s
-            --health-retries 5
-          ports:
-            # Maps tcp port 5432 on service container to the host
-            - 5432:5432
-
     steps:
-      - name: Wait for PostgreSQL to be ready
+      - name: Start PostgreSQL on Ubuntu
         run: |
-          until docker exec postgres pg_isready -U user; do
-            echo "Waiting for postgres..."
-            sleep 5
-          done
-
-      # Run script to create database tables
-      - name: Run database migration script
+          sudo systemctl start postgresql.service
+          pg_isready
+      - name: Create scheduler user
         run: |
-          chmod +x ./create_tables.sh
-          ./create_tables.sh
+          sudo -u postgres psql --command="CREATE USER postgres PASSWORD 'postgres'"
+      - name: Create synci database
+        run: |
+          sudo -u postgres createdb --owner=postgres synci-db 
+          PGPASSWORD=postgres psql --username=postgres --host=localhost --list synci-db
+        -name: Create tables
+        -run: |
+          sudo -u postgres PGPASSWORD=postgres psql -w -h localhost -U postgres -d postgres -f ./database/synci-schema.sql
 
 
       - name: Checkout repository
