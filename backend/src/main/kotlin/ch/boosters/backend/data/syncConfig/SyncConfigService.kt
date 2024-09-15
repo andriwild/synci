@@ -12,4 +12,7 @@ class SyncConfigService(private val syncConfigRepository: SyncConfigRepository) 
     fun getSyncConfigById(id: UUID): SyncConfig {
         return syncConfigRepository.getSyncConfigById(id)
     }
+    fun updateSyncConfig(id: UUID, syncConfig: SyncConfig): SyncConfig {
+        return syncConfigRepository.updateSyncConfig(id, syncConfig)
+    }
 }

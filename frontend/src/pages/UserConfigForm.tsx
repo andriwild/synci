@@ -14,7 +14,7 @@ export const UserConfigForm = () => {
 
     const [syncConfig, setSyncConfig] = useState<SyncConfig>({
         id: '',
-        name: '',
+        url: '',
     });
 
     useEffect(() => {
