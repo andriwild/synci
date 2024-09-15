@@ -43,6 +43,7 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
     implementation("org.postgresql:postgresql:$postgresVersion")
     jooqGenerator("org.postgresql:postgresql:$postgresVersion")
 	implementation("org.springframework.boot:spring-boot-starter-security")
