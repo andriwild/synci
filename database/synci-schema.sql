@@ -22,8 +22,7 @@ SET row_security = off;
 
 CREATE SCHEMA public;
 
-
-ALTER SCHEMA public OWNER TO pg_database_owner;
+-- Grant necessary permissions to the user
 
 --
 -- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: pg_database_owner
@@ -40,7 +39,8 @@ SET default_table_access_method = heap;
 -- Name: source; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE IF NOT EXISTS public.source (
+CREATE TABLE IF NOT EXISTS public.SOURCES_TABLE
+(
     id serial PRIMARY KEY,
     name varchar(100)
 );
@@ -49,7 +49,8 @@ CREATE TABLE IF NOT EXISTS public.source (
 -- Name: event; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.event (
+CREATE TABLE public.EVENTS_TABLE
+(
     id varchar(255) NOT NULL,
     source_id integer NOT NULL,
     name character varying(100),
@@ -59,20 +60,21 @@ CREATE TABLE public.event (
     location_id uuid,
     CONSTRAINT pk_event PRIMARY KEY (id, source_id),
     CONSTRAINT fk_event_source FOREIGN KEY (source_id)
-        REFERENCES public.source (id)
+        REFERENCES public.SOURCES_TABLE (id)
         ON UPDATE CASCADE
         ON DELETE RESTRICT
 
 );
 
 
-ALTER TABLE public.event OWNER TO postgres;
+ALTER TABLE public.EVENTS_TABLE OWNER TO postgres;
 
 --
 -- Name: event_person; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.event_person (
+CREATE TABLE public.EVENTS_PERSONS_TABLE
+(
     event_id varchar(255) NOT NULL,
     source_event_id int NOT NULL,
     person_id varchar(255) NOT NULL,
@@ -80,13 +82,13 @@ CREATE TABLE public.event_person (
 );
 
 
-ALTER TABLE public.event_person OWNER TO postgres;
+ALTER TABLE public.EVENTS_PERSONS_TABLE OWNER TO postgres;
 
 --
 -- Name: event_team; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.event_team (
+CREATE TABLE public.EVENTS_TEAMS_TABLE (
     id uuid NOT NULL,
     event_id varchar(255) NOT NULL,
     source_event_id integer NOT NULL,
@@ -95,131 +97,131 @@ CREATE TABLE public.event_team (
 );
 
 
-ALTER TABLE public.event_team OWNER TO postgres;
+ALTER TABLE public.EVENTS_TABLE OWNER TO postgres;
 
 --
 -- Name: location; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.location (
+CREATE TABLE public.LOCATIONS_TABLE(
     id uuid NOT NULL,
     name character varying(100)
 );
 
 
-ALTER TABLE public.location OWNER TO postgres;
+ALTER TABLE public.LOCATIONS_TABLE OWNER TO postgres;
 
 --
 -- Name: person; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.person (
+CREATE TABLE public.PERSONS_TABLE(
     id varchar(255) NOT NULL,
     source_id integer NOT NULL,
     name character varying(100),
     CONSTRAINT pk_person PRIMARY KEY (id, source_id),
     CONSTRAINT fk_person_source FOREIGN KEY (source_id)
-        REFERENCES public.source (id)
+        REFERENCES public.SOURCES_TABLE (id)
         ON UPDATE CASCADE
         ON DELETE RESTRICT
 );
 
 
-ALTER TABLE public.person OWNER TO postgres;
+ALTER TABLE public.PERSONS_TABLE OWNER TO postgres;
 
 --
 -- Name: sport; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.sport (
+CREATE TABLE public.SPORTS_TABLE(
     id uuid NOT NULL,
     name character varying(100),
     parent_id uuid
 );
 
 
-ALTER TABLE public.sport OWNER TO postgres;
+ALTER TABLE public.SPORTS_TABLE OWNER TO postgres;
 
 --
 -- Name: sync_config; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.sync_config (
+CREATE TABLE public.SYNC_CONFIGS_TABLE(
     id uuid NOT NULL,
     ical_url character varying(255)
 );
 
 
-ALTER TABLE public.sync_config OWNER TO postgres;
+ALTER TABLE public.SYNC_CONFIGS_TABLE OWNER TO postgres;
 
 --
 -- Name: sync_config_location; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.sync_config_location (
+CREATE TABLE public.SYNC_CONFIGS_LOCATIONS_TABLE(
     sync_config_id uuid NOT NULL,
     location_id uuid NOT NULL
 );
 
 
-ALTER TABLE public.sync_config_location OWNER TO postgres;
+ALTER TABLE public.SYNC_CONFIGS_LOCATIONS_TABLE OWNER TO postgres;
 
 --
 -- Name: sync_config_person; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.sync_config_person (
+CREATE TABLE public.SYNC_CONFIGS_PERSONS_TABLE(
     sync_config_id uuid NOT NULL,
     person_id varchar(255) NOT NULL,
     source_person_id int NOT NULL
 );
 
 
-ALTER TABLE public.sync_config_person OWNER TO postgres;
+ALTER TABLE public.SYNC_CONFIGS_PERSONS_TABLE OWNER TO postgres;
 
 --
 -- Name: sync_config_sport; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.sync_config_sport (
+CREATE TABLE public.SYNC_CONFIGS_SPORTS_TABLE(
     sync_config_id uuid NOT NULL,
     sport_id uuid NOT NULL
 );
 
 
-ALTER TABLE public.sync_config_sport OWNER TO postgres;
+ALTER TABLE public.SYNC_CONFIGS_SPORTS_TABLE OWNER TO postgres;
 
 --
 -- Name: sync_config_team; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.sync_config_team (
+CREATE TABLE public.SYNC_CONFIGS_TEAMS_TABLE(
     sync_config_id uuid NOT NULL,
     team_id varchar(255) NOT NULL,
     source_team_id integer NOT NULL
 );
 
 
-ALTER TABLE public.sync_config_team OWNER TO postgres;
+ALTER TABLE public.SYNC_CONFIGS_TEAMS_TABLE OWNER TO postgres;
 
 
 --
 -- Name: team; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.team (
+CREATE TABLE public.TEAMS_TABLE(
     id varchar(255) NOT NULL,
     source_id integer NOT NULL,
     name character varying(100),
     CONSTRAINT pk_team PRIMARY KEY (id, source_id),
     CONSTRAINT fk_team_source FOREIGN KEY (source_id)
-        REFERENCES public.source (id)
+        REFERENCES public.SOURCES_TABLE (id)
         ON UPDATE CASCADE
         ON DELETE RESTRICT
 );
 
 
-ALTER TABLE public.team OWNER TO postgres;
+ALTER TABLE public.TEAMS_TABLE OWNER TO postgres;
 
 --
 -- Data for Name: event; Type: TABLE DATA; Schema: public; Owner: postgres
@@ -299,30 +301,22 @@ ALTER TABLE public.team OWNER TO postgres;
 -- Name: event_person event_person_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.event_person
+ALTER TABLE ONLY public.EVENTS_PERSONS_TABLE
     ADD CONSTRAINT event_person_pkey PRIMARY KEY (event_id, person_id);
-
-
---
--- Name: event_team event_team_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.event_team
-    ADD CONSTRAINT event_team_pkey PRIMARY KEY (id);
 
 
 --
 -- Name: location location_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.location
+ALTER TABLE ONLY public.LOCATIONS_TABLE
     ADD CONSTRAINT location_pkey PRIMARY KEY (id);
 
 --
 -- Name: sync_config_location sync_config_location_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.sync_config_location
+ALTER TABLE ONLY public.SYNC_CONFIGS_LOCATIONS_TABLE
     ADD CONSTRAINT sync_config_location_pkey PRIMARY KEY (sync_config_id, location_id);
 
 
@@ -330,7 +324,7 @@ ALTER TABLE ONLY public.sync_config_location
 -- Name: sync_config_person sync_config_person_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.sync_config_person
+ALTER TABLE ONLY public.SYNC_CONFIGS_PERSONS_TABLE
     ADD CONSTRAINT sync_config_person_pkey PRIMARY KEY (sync_config_id, person_id);
 
 
@@ -338,7 +332,7 @@ ALTER TABLE ONLY public.sync_config_person
 -- Name: sync_config sync_config_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.sync_config
+ALTER TABLE ONLY public.SYNC_CONFIGS_TABLE
     ADD CONSTRAINT sync_config_pkey PRIMARY KEY (id);
 
 
@@ -346,7 +340,7 @@ ALTER TABLE ONLY public.sync_config
 -- Name: sync_config_team sync_config_team_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.sync_config_team
+ALTER TABLE ONLY public.SYNC_CONFIGS_TEAMS_TABLE
     ADD CONSTRAINT sync_config_team_pkey PRIMARY KEY (sync_config_id, team_id);
 
 
@@ -354,165 +348,147 @@ ALTER TABLE ONLY public.sync_config_team
 -- Name: sync_config_sport sync_config_type_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.sync_config_sport
+ALTER TABLE ONLY public.SYNC_CONFIGS_SPORTS_TABLE
     ADD CONSTRAINT sync_config_type_pkey PRIMARY KEY (sync_config_id, sport_id);
 
 --
 -- Name: sport type_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.sport
+ALTER TABLE ONLY public.SPORTS_TABLE
     ADD CONSTRAINT type_pkey PRIMARY KEY (id);
-
-
---
--- Name: event_team fk_event; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.event_team
-    ADD CONSTRAINT fk_event FOREIGN KEY (event_id, source_event_id) REFERENCES public.event(id, source_id) ON DELETE CASCADE;
-
 
 --
 -- Name: event_person fk_event; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.event_person
-    ADD CONSTRAINT fk_event FOREIGN KEY (event_id, source_event_id) REFERENCES public.event(id, source_id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.EVENTS_PERSONS_TABLE
+    ADD CONSTRAINT fk_event FOREIGN KEY (event_id, source_event_id) REFERENCES public.EVENTS_TABLE(id, source_id) ON DELETE CASCADE;
 
 
 --
 -- Name: event fk_event_location; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.event
-    ADD CONSTRAINT fk_event_location FOREIGN KEY (location_id) REFERENCES public.location(id) ON DELETE SET NULL;
+ALTER TABLE ONLY public.EVENTS_TABLE
+    ADD CONSTRAINT fk_event_location FOREIGN KEY (location_id) REFERENCES public.LOCATIONS_TABLE (id) ON DELETE SET NULL;
 
 
 --
 -- Name: event fk_event_sport; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.event
-    ADD CONSTRAINT fk_event_sport FOREIGN KEY (sport_id) REFERENCES public.sport(id) ON DELETE SET NULL;
+ALTER TABLE ONLY public.EVENTS_TABLE
+    ADD CONSTRAINT fk_event_sport FOREIGN KEY (sport_id) REFERENCES public.SPORTS_TABLE (id) ON DELETE SET NULL;
 
 
 --
 -- Name: sync_config_location fk_location; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.sync_config_location
-    ADD CONSTRAINT fk_location FOREIGN KEY (location_id) REFERENCES public.location(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.SYNC_CONFIGS_LOCATIONS_TABLE
+    ADD CONSTRAINT fk_location FOREIGN KEY (location_id) REFERENCES public.LOCATIONS_TABLE (id) ON DELETE CASCADE;
 
 
 --
 -- Name: event_person fk_person; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.event_person
-    ADD CONSTRAINT fk_person FOREIGN KEY (person_id, source_person_id) REFERENCES public.person(id, source_id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.EVENTS_PERSONS_TABLE
+    ADD CONSTRAINT fk_person FOREIGN KEY (person_id, source_person_id) REFERENCES public.PERSONS_TABLE (id, source_id) ON DELETE CASCADE;
 
 --
 -- Name: sync_config_person fk_person; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.sync_config_person
-    ADD CONSTRAINT fk_person FOREIGN KEY (person_id, source_person_id) REFERENCES public.person(id, source_id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.SYNC_CONFIGS_PERSONS_TABLE
+    ADD CONSTRAINT fk_person FOREIGN KEY (person_id, source_person_id) REFERENCES public.PERSONS_TABLE (id, source_id) ON DELETE CASCADE;
 
 --
 -- Name: sync_config_team fk_sync_config; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.sync_config_team
-    ADD CONSTRAINT fk_sync_config FOREIGN KEY (sync_config_id) REFERENCES public.sync_config(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.SYNC_CONFIGS_TEAMS_TABLE
+    ADD CONSTRAINT fk_sync_config FOREIGN KEY (sync_config_id) REFERENCES public.SYNC_CONFIGS_TABLE (id) ON DELETE CASCADE;
 
 
 --
 -- Name: sync_config_person fk_sync_config; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.sync_config_person
-    ADD CONSTRAINT fk_sync_config FOREIGN KEY (sync_config_id) REFERENCES public.sync_config(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.SYNC_CONFIGS_PERSONS_TABLE
+    ADD CONSTRAINT fk_sync_config FOREIGN KEY (sync_config_id) REFERENCES public.SYNC_CONFIGS_TABLE (id) ON DELETE CASCADE;
 
 
 --
 -- Name: sync_config_location fk_sync_config; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.sync_config_location
-    ADD CONSTRAINT fk_sync_config FOREIGN KEY (sync_config_id) REFERENCES public.sync_config(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.SYNC_CONFIGS_LOCATIONS_TABLE
+    ADD CONSTRAINT fk_sync_config FOREIGN KEY (sync_config_id) REFERENCES public.SYNC_CONFIGS_TABLE(id) ON DELETE CASCADE;
 
 
 --
 -- Name: sync_config_sport fk_sync_config; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.sync_config_sport
-    ADD CONSTRAINT fk_sync_config FOREIGN KEY (sync_config_id) REFERENCES public.sync_config(id) ON DELETE CASCADE;
-
-
---
--- Name: event_team fk_team; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.event_team
-    ADD CONSTRAINT fk_team FOREIGN KEY (team_id, source_team_id) REFERENCES public.team(id, source_id) ON DELETE CASCADE;
-
+ALTER TABLE ONLY public.SYNC_CONFIGS_SPORTS_TABLE
+    ADD CONSTRAINT fk_sync_config FOREIGN KEY (sync_config_id) REFERENCES public.SYNC_CONFIGS_TABLE (id) ON DELETE CASCADE;
 
 --
 -- Name: sync_config_team fk_team; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 --
-ALTER TABLE ONLY public.sync_config_team
-    ADD CONSTRAINT fk_team FOREIGN KEY (team_id, source_team_id) REFERENCES public.team(id, source_id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.SYNC_CONFIGS_TEAMS_TABLE
+    ADD CONSTRAINT fk_team FOREIGN KEY (team_id, source_team_id) REFERENCES public.TEAMS_TABLE (id, source_id) ON DELETE CASCADE;
 
 
 --
 -- Name: sync_config_sport fk_type; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.sync_config_sport
-    ADD CONSTRAINT fk_type FOREIGN KEY (sport_id) REFERENCES public.sport(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.SYNC_CONFIGS_SPORTS_TABLE
+    ADD CONSTRAINT fk_type FOREIGN KEY (sport_id) REFERENCES public.SPORTS_TABLE (id) ON DELETE CASCADE;
 
 
 --
 -- Name: sport fk_type_parent; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.sport
-    ADD CONSTRAINT fk_type_parent FOREIGN KEY (parent_id) REFERENCES public.sport(id);
+ALTER TABLE ONLY public.SPORTS_TABLE
+    ADD CONSTRAINT fk_type_parent FOREIGN KEY (parent_id) REFERENCES public.SPORTS_TABLE (id);
 
 
 --
 -- PostgreSQL database dump complete
 --
 
-INSERT INTO source (name) values ('FOT_MOB');
+INSERT INTO SOURCES_TABLE (name) values ('FOT_MOB');
 
 
 --
 -- Name: sync_config_user; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.sync_config_user (
+CREATE TABLE public.SYNC_CONFIGS_USERS_TABLE(
     sync_config_id uuid NOT NULL,
     e_mail character varying(100) NOT NULL
 );
 
 
-ALTER TABLE public.sync_config_user OWNER TO postgres;
+ALTER TABLE public.SYNC_CONFIGS_USERS_TABLE OWNER TO postgres;
 
 --
 -- Name: user; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public."user" (
+CREATE TABLE public.USERS_TABLE (
     name character varying(100),
     e_mail character varying(100) NOT NULL
 );
 
 
-ALTER TABLE public."user" OWNER TO postgres;
+ALTER TABLE public.USERS_TABLE OWNER TO postgres;
 
 --
 -- Data for Name: sync_config_user; Type: TABLE DATA; Schema: public; Owner: postgres
@@ -523,7 +499,7 @@ ALTER TABLE public."user" OWNER TO postgres;
 -- Name: sync_config_user sync_config_user_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.sync_config_user
+ALTER TABLE ONLY public.SYNC_CONFIGS_USERS_TABLE
     ADD CONSTRAINT sync_config_user_pkey PRIMARY KEY (sync_config_id, e_mail);
 
 
@@ -531,7 +507,7 @@ ALTER TABLE ONLY public.sync_config_user
 -- Name: user user_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public."user"
+ALTER TABLE ONLY public.USERS_TABLE
     ADD CONSTRAINT user_pkey PRIMARY KEY (e_mail);
 
 
@@ -539,16 +515,16 @@ ALTER TABLE ONLY public."user"
 -- Name: sync_config_user fk_sync_config; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.sync_config_user
-    ADD CONSTRAINT fk_sync_config FOREIGN KEY (sync_config_id) REFERENCES public.sync_config(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.SYNC_CONFIGS_USERS_TABLE
+    ADD CONSTRAINT fk_sync_config FOREIGN KEY (sync_config_id) REFERENCES public.SYNC_CONFIGS_TABLE (id) ON DELETE CASCADE;
 
 
 --
 -- Name: sync_config_user fk_user; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.sync_config_user
-    ADD CONSTRAINT fk_user FOREIGN KEY (e_mail) REFERENCES public."user"(e_mail) ON DELETE CASCADE;
+ALTER TABLE ONLY public.SYNC_CONFIGS_USERS_TABLE
+    ADD CONSTRAINT fk_user FOREIGN KEY (e_mail) REFERENCES public.USERS_TABLE(e_mail) ON DELETE CASCADE;
 
 
 --
