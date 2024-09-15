@@ -37,7 +37,7 @@ jobs:
           sudo -u postgres psql --command="ALTER USER synci WITH PASSWORD 'synci-pw'"
       - name: Add PostgreSQL DB
         run: |
-          sudo -u PGPASSWORD=synci-pw postgres createdb synci-db
+          sudo -u postgres psql --command="CREATE DATABASE synci-db OWNER synci;"
 
       - name: Checkout repository
         uses: actions/checkout@v4
