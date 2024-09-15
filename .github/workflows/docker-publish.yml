@@ -61,7 +61,7 @@ jobs:
 
       - name: Backend Docker Build 
         run: |
-          docker build -t --network='host' ${{ env.REGISTRY }}/${{ env.IMAGE_BACKEND_NAME }}:${{ github.ref_name }} ./backend
+          docker build --network="host" -t ${{ env.REGISTRY }}/${{ env.IMAGE_BACKEND_NAME }}:${{ github.ref_name }} ./backend
 
       - name: Backend Docker Push
         run: |
