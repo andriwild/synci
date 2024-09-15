@@ -1,7 +1,7 @@
 import {Button, Card, Flex, List} from "antd";
 import {useNavigate} from "react-router-dom";
 import {Copy, Plus} from "@phosphor-icons/react";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
 interface Team {
     id: string;
@@ -12,7 +12,18 @@ export type UserConfigValues = Team;
 
 export const UserConfig = () => {
     const navigate = useNavigate();
-    const [syncing, setSyncing] = useState(false);
+    const [syncConfigs, setSyncConfigs] = useState(false);
+
+    useEffect(() => {
+        fetch('https://localhost:8080/api/syncconfig/list')
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                setSyncConfigs(data);
+            }
+        );
+    }, []);
+
     const dataSource = [
         {
             id: '1',
@@ -53,7 +64,7 @@ export const UserConfig = () => {
     ];
 
     return (
-        <Flex direction="column" gap={24} style={{padding: 24}} wrap={"wrap"}>
+        <Flex gap={24} style={{padding: 24}} wrap={"wrap"}>
             {dataSource.map((item) => {
                 return (
                     <Card key={item.id} title={item.label} extra={<Button icon={<Copy size={'1rem'} />} />} style={{minWidth: '400px', marginBottom: 24}}>
@@ -67,8 +78,8 @@ export const UserConfig = () => {
                     </Card>
                 );
             })}
-            <Card onClick={() => navigate('/config/new')} style={{minWidth: '400px', display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: "pointer"}}>
-           <Plus size={'2rem'} />
+            <Card onClick={() => navigate('/config/new')} style={{minWidth: '400px', display: 'flex', justifyContent: 'center', backgroundColor: "white", alignItems: 'center', cursor: "pointer"}}>
+           <Plus size={'2rem'} color={"black"}/>
              </Card>
 
         </Flex>

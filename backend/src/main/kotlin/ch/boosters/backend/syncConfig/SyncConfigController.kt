@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/syncconfig")
-class ConfigController(private val syncConfigService: SyncConfigService) {
+class SyncConfigController(private val syncConfigService: SyncConfigService) {
 
         @GetMapping("/list")
         fun listConfig(): List<SyncConfig> {
-            return syncConfigService
+            return syncConfigService.getAllSyncConfigs()
         }
 }

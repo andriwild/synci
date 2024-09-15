@@ -1,5 +1,6 @@
-import { Menu, Layout } from "antd";
+import {Menu, Layout, Calendar, Space, Divider} from "antd";
 import { useNavigate } from "react-router-dom";
+import {CalendarCheck, IconBase, PlusMinus} from "@phosphor-icons/react";
 
 export const Header = () => {
     const navigate = useNavigate();
@@ -25,10 +26,9 @@ export const Header = () => {
     };
 
     return (
-        <Layout.Header>
-            <div className="demo-logo" />
+        <Layout.Header style={{ display: 'flex', alignItems: 'center', padding: '0  24px', backgroundColor:"white" }}>
+            <CalendarCheck size={32} style={{color: "black", marginRight: 16}}/>
             <Menu
-                theme="dark"
                 mode="horizontal"
                 defaultSelectedKeys={['1']}
                 items={items}
