@@ -32,7 +32,7 @@ export const UserConfigForm = () => {
             <h2 style={{ marginBottom: '20px' }}>Benutzerkonfigurationen</h2>
             <p>Füge eine Konfiguration hinzu. Wähle dabei aus, für welches Team, welchen Sportler, welchen Ort oder
                 welche Sportart du dich interessierst</p>
-            <Form<UserConfigValues> form={form} onFinish={handleSubmit} layout={'vertical'}>
+            <Form<UserConfigValues> form={form} onFinish={handleSubmit} layout={'vertical'} style={{marginTop: 36}}>
                 <Form.Item name={'teams'} label={'Teams'}>
                     <Select
                         options={teams.map((team) => ({
@@ -49,7 +49,7 @@ export const UserConfigForm = () => {
                         placeholder="Wähle ein Team aus"
                     />
                 </Form.Item>
-                <Flex gap={'middle'} justify={'end'} style={{ marginBottom: 12 }}>
+                <Flex gap={'middle'} justify={'end'} style={{marginTop: 48, marginBottom: 12 }}>
                     <Button onClick={handleBack}>
                         Zurück
                     </Button>
