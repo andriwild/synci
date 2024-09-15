@@ -51,6 +51,7 @@ jobs:
 
       - name: Create PostgreSQL DB table
         run: |
+          sudo chmod 777 -R ./database/
           sudo -u postgres psql -U postgres -d synci-db -a -f ./database/synci-schema.sql
      
       # - name: Frontend Docker Build 
