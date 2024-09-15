@@ -47,7 +47,7 @@ jobs:
           pwd
           sudo chmod 777 -R .
           ls -l ./database
-          psql -U postgres -d synci-db -a -f /home/runner/work/synci/synci/database/synci-schema.sql
+          PGPASSWORD=postgres psql -U postgres -d synci-db -a -f /home/runner/work/synci/synci/database/synci-schema.sql
      
       # - name: Frontend Docker Build 
       #   run: |
