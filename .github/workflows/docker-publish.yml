@@ -45,6 +45,13 @@ jobs:
       - name: Create db tables
         run: |
           PGPASSWORD=postgres psql -U postgres -d synci-db -h localhost -p 5432 -a -f ./database/synci-schema.sql
+
+      - name: Log into registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.TOKEN }}
      
       - name: Build frontend image
         run: |
@@ -55,13 +62,6 @@ jobs:
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}/synci-frontend:${{ github.ref_name }}
           docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/synci-frontend:${{ github.ref_name }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/synci-frontend:latest
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/synci-frontend:latest
-
-      - name: Log into registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.TOKEN }}
           
       - name: Build backend image 
         run: |
