@@ -1,6 +1,5 @@
 package ch.boosters.backend.sources.fotmob
 
-import ch.boosters.backend.sources.fotmob.model.Team
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
@@ -16,7 +15,7 @@ class FotMobController (val fotMobService: FotMobService) {
     // Get all leagues form DB
 
     @GetMapping("/{leagueId}")
-    fun getSuperLeagueEvents(@PathVariable leagueId: String): Mono<List<Team>> {
+    fun getSuperLeagueEvents(@PathVariable leagueId: String): Mono<IntArray> {
         val leagueOverview = fotMobService.fetchLeagueOverview(leagueId)
         println(leagueOverview)
         return leagueOverview
