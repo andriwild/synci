@@ -34,6 +34,7 @@ dependencies {
 	implementation("com.google.code.gson:gson")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-devtools")
+    implementation("org.springframework.boot:spring-boot-starter-quartz")
 
 
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -41,8 +42,12 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
 	implementation("org.springframework.boot:spring-boot-starter-security")
-	implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
-	implementation("io.jsonwebtoken:jjwt:0.9.1")
+    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+    implementation("io.jsonwebtoken:jjwt:0.9.1")
+
+
+
+
     jooqGenerator("org.postgresql:postgresql:42.7.2")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -63,7 +68,7 @@ jooq {
                 logging = Logging.WARN
                 jdbc.apply {
                     driver = "org.postgresql.Driver"
-                    url = "jdbc:postgresql://localhost:5432/synci-db"
+                    url = "jdbc:postgresql://localhost:5439/synci-db"
                     user = "postgres"
                     password = "postgres"
 //                    properties.add(Property().apply {
