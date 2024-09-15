@@ -1,32 +1,42 @@
-import {Button, Card, Flex, Form, List, Select, Typography} from "antd";
+import {Button, Card, Flex, Form} from "antd";
 import {useNavigate, useParams} from "react-router-dom";
-import {Copy, Plus} from "@phosphor-icons/react";
 import {useEffect, useState} from "react";
 import {TeamSelect} from "../components/TeamSelect.tsx";
+import {SyncConfig} from "../model/SyncConfig.ts";
+import {useForm} from "antd/es/form/Form";
 
-interface Team {
-    id: string;
-    name: string;
-}
-export type UserConfigValues = Team;
 
 export const UserConfigForm = () => {
-    const [form] = Form.useForm<UserConfigValues>();
+    const [form] = useForm();
     const navigate = useNavigate();
     const {id} = useParams();
     const createmode = id === 'create';
 
-    const [teams, setTeams] = useState<Team[]>([]);
-
-    const [syncConfig, setSyncConfig] = useState(false);
+    const [syncConfig, setSyncConfig] = useState<SyncConfig>({
+        id: '',
+        name: '',
+    });
 
     useEffect(() => {
-        fetch('https://localhost:8080/api/syncconfig/' + id, {
+        fetch('http://localhost:8080/api/syncconfig/' + id)
+            .then(response => response.json())
+            .then(data => {
+                    setSyncConfig(data);
+                }
+            );
+    }, []);
+
+
+    const handleSubmit = (values: any) => {
+        console.log('Form submitted:', values);
+        console.log('Form on sub:', form.getFieldValue('teams'));
+        if (createmode) {
+        fetch('http://localhost:8080/api/syncconfig/' + id, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(teams),
+            body: JSON.stringify(form.getFieldsValue()),
         })
             .then(response => response.json())
             .then(data => {
@@ -35,10 +45,22 @@ export const UserConfigForm = () => {
                 }
             )
             .catch(error => console.error('Error:', error));
-    }, []);
-
-    const handleSubmit = (values: UserConfigValues) => {
-        console.log('Form submitted:', values);
+        } else {
+            fetch('http://localhost:8080/api/syncconfig/' + id, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(form.getFieldsValue()),
+            })
+                .then(response => response.json())
+                .then(data => {
+                        console.log(data);
+                        setSyncConfig(data);
+                    }
+                )
+                .catch(error => console.error('Error:', error));
+        }
     };
 
     const handleBack = () => {
@@ -46,15 +68,17 @@ export const UserConfigForm = () => {
         navigate('/');
     };
 
+    console.log("Form", form.getFieldValue('teams'));
+
     return (
         <Flex vertical style={{height: '100%', width: '100%', padding: 24}}>
         <Card style={{ width: 600, textAlign: 'left' }}>
-            <h2 style={{ marginBottom: '20px' }}>Abonement {id}</h2>
+            <h2 style={{ marginBottom: '20px' }}>Abonement {syncConfig.name}</h2>
             <p>Füge eine Konfiguration hinzu. Wähle dabei aus, für welches Team, welchen Sportler, welchen Ort oder
                 welche Sportart du dich interessierst</p>
-            <Form<UserConfigValues> form={form} onFinish={handleSubmit} layout={'vertical'} style={{marginTop: 36}}>
+            <Form form={form} onFinish={handleSubmit} layout={'vertical'} style={{marginTop: 36}}>
                 <Form.Item name={'teams'} label={'Teams'}>
-                    <TeamSelect/>
+                    <TeamSelect  onChange={(value) => form.setFieldsValue({teams: value})}/>
                 </Form.Item>
                 <Flex gap={'middle'} justify={'end'} style={{marginTop: 48, marginBottom: 12 }}>
                     <Button onClick={handleBack}>

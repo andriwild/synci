@@ -2,11 +2,7 @@ import {Button, Card, Flex} from "antd";
 import {useNavigate} from "react-router-dom";
 import {Copy, Plus} from "@phosphor-icons/react";
 import {useEffect, useState} from "react";
-
-interface SyncConfig {
-    id: string;
-    name: string;
-}
+import {SyncConfig} from "../model/SyncConfig.ts";
 
 
 export const UserConfig = () => {
@@ -14,7 +10,7 @@ export const UserConfig = () => {
     const [syncConfigs, setSyncConfigs] = useState([] as SyncConfig[]);
 
     useEffect(() => {
-        fetch('https://localhost:8080/api/syncconfig/list')
+        fetch('http://localhost:8080/api/syncconfig/list')
             .then(response => response.json())
             .then(data => {
                 console.log(data);
