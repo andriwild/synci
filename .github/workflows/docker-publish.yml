@@ -44,10 +44,10 @@ jobs:
 
       - name: Create PostgreSQL DB table
         run: |
-          ls -l
+          ls -l ./database
           pwd
           sudo chmod 777 -R ./database/
-          sudo -u postgres psql -U postgres -d synci-db -a -f ./database/synci-schema.sql
+          sudo -u postgres psql -U postgres -d synci-db -a -f /home/runner/work/synci/synci/database/synci-schema.sql
      
       # - name: Frontend Docker Build 
       #   run: |
