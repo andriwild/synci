@@ -35,10 +35,13 @@ jobs:
         run: |
           sudo -u postgres psql --command="ALTER USER postgres WITH PASSWORD 'postgres'"
     #      sudo -u postgres createuser -s -d -r synci
-      - name: Create PostgreSQL DB table
+      - name: Create PostgreSQL DB
         run: |
           sudo -u postgres psql --command='CREATE DATABASE "synci-db" OWNER postgres;'
-
+      - name: Create PostgreSQL DB table
+        run: |
+          sudo -u postgres psql -U postgres -d synci-db -a -f ./database/synci-schema.sql'
+     
       - name: Checkout repository
         uses: actions/checkout@v4
 
