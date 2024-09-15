@@ -27,24 +27,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Start PostgreSQL on Ubuntu
+      - name: Start PostgreSQL
         run: |
           sudo systemctl start postgresql.service
           pg_isready
-
-      - name: Create synci user
-        run: |
-          psql --command="CREATE USER synci PASSWORD 'synci-pw';"
-
-      - name: Create synci database
-        run: |
-          createdb --owner=synci synci-db 
-          PGPASSWORD=synci-pw psql --username=synci --host=localhost --list synci-db
-      - name: Create tables
-        run: |
-          ls -la
-          PGPASSWORD=synci-pw psql -w -h localhost -U synci -d synci-db -f ./database/synci-schema.sql
-
+          sudo -u postgres createuser -s -d -r -w synci
+          sudo -u postgres createdb synci-db
+          psql -U synci -d synci-db a- -f ./database/synci-schema.sql
 
       - name: Checkout repository
         uses: actions/checkout@v4
