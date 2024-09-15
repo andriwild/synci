@@ -18,8 +18,8 @@ on:
 env:
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
-  IMAGE_BACKEND_NAME: ${{ format('{0}-backend', github.repository) }}
-  IMAGE_FRONTEND_NAME: ${{ format('{0}-frontend', github.repository) }}
+  IMAGE_BACKEND_NAME: '${{ github.repository) }}-backend'
+  IMAGE_FRONTEND_NAME: '${{ github.repository) }}-frontend'
 
 
 jobs:
