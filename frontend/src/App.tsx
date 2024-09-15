@@ -4,7 +4,7 @@ import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 
 function App() {
 
-    const handleLoginSuccess = (response) => {
+    const handleLoginSuccess = (response: any) => {
         console.log("Loginsucess",response);
         // save the token to local storage
 
@@ -21,7 +21,7 @@ function App() {
             });
     };
 
-    const handleLoginFailure = (error) => {
+    const handleLoginFailure = (error: any) => {
         console.error('Login failed', error);
     };
   return (
@@ -31,7 +31,7 @@ function App() {
                 <h1>Login with Google</h1>
                 <GoogleLogin
                     onSuccess={handleLoginSuccess}
-                    onError={handleLoginFailure}
+                    onError={() => handleLoginFailure('error')}
                 />
             </div>
         </GoogleOAuthProvider>
