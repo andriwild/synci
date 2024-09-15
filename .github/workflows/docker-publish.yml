@@ -26,40 +26,18 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    services:
-      # Label used to access the service container
-        postgres:
-          # Docker Hub image
-          image: postgres
-            # Provide the password for postgres
-          env:
-            POSTGRES_PASSWORD: postgres
-            POSTGRES_USER: postgres
-            POSTGRES_DB: synci-db
-          # Set health checks to wait until postgres has started
-          options: >-
-            --health-cmd pg_isready
-            --health-interval 10s
-            --health-timeout 5s
-            --health-retries 5
-          ports:
-            # Maps tcp port 5432 on service container to the host
-            - 5432:5432
-
     steps:
-      - name: Wait for PostgreSQL to be ready
+      - name: Start PostgreSQL
         run: |
-          until docker exec postgres pg_isready -U user; do
-            echo "Waiting for postgres..."
-            sleep 5
-          done
-
-      # Run script to create database tables
-      - name: Run database migration script
+          sudo systemctl start postgresql.service
+          pg_isready
+      - name: Create PostgreSQL User
         run: |
-          chmod +x ./create_tables.sh
-          ./create_tables.sh
-
+          sudo -u postgres createuser -s -d -r synci
+          sudo -u postgres psql --command="ALTER USER synci WITH PASSWORD 'synci-pw'"
+      - name: Add PostgreSQL DB
+        run: |
+          sudo -u postgres psql --command='CREATE DATABASE "synci-db" OWNER synci;'
 
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -71,19 +49,19 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.TOKEN }}
 
-      - name: Frontend Docker Build 
-        run: |
-          docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_FRONTEND_NAME }}:${{ github.ref_name }} ./frontend
+      # - name: Frontend Docker Build 
+      #   run: |
+      #     docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_FRONTEND_NAME }}:${{ github.ref_name }} ./frontend
 
-      - name: Frontend Docker Push
-        run: |
-          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_FRONTEND_NAME }}:${{ github.ref_name }}
-          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_FRONTEND_NAME }}:${{ github.ref_name }} ${{ env.REGISTRY }}/${{ env.IMAGE_FRONTEND_NAME }}:latest
-          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_FRONTEND_NAME }}:latest
+      # - name: Frontend Docker Push
+      #   run: |
+      #     docker push ${{ env.REGISTRY }}/${{ env.IMAGE_FRONTEND_NAME }}:${{ github.ref_name }}
+      #     docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_FRONTEND_NAME }}:${{ github.ref_name }} ${{ env.REGISTRY }}/${{ env.IMAGE_FRONTEND_NAME }}:latest
+      #     docker push ${{ env.REGISTRY }}/${{ env.IMAGE_FRONTEND_NAME }}:latest
 
       - name: Backend Docker Build 
         run: |
-          docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_BACKEND_NAME }}:${{ github.ref_name }} ./backend
+          docker build --network="host" -t ${{ env.REGISTRY }}/${{ env.IMAGE_BACKEND_NAME }}:${{ github.ref_name }} ./backend
 
       - name: Backend Docker Push
         run: |
