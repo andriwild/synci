@@ -41,7 +41,7 @@ jobs:
       - name: Create PostgreSQL DB table
         run: |
           pwd
-          sudo chmod 777 /home/runner/work/synci/synci/database/synci-schema.sql
+          sudo chmod 777 -R /home/runner/work/synci/synci/database
           sudo -u postgres psql -U postgres -d synci-db -a -f /home/runner/work/synci/synci/database/synci-schema.sql
      
       - name: Checkout repository
