@@ -6,13 +6,37 @@ export const Home = () => {
 
     const dataSource = [
         {
-            key: '1',
+            id: '1',
             label: 'SuperLeague Spiele',
-            teams: ['YoungBoys, Basel'],
+            teams: ['YoungBoys, Basel, Zürich, Lausanne'],
             url: 'https://google.ch',
         },
         {
-            key: '2',
+            id: '2',
+            label: 'Manchester Konfig',
+            teams: ['Manchester United'],
+            url: 'https://google.ch',
+        },
+        {
+            id: '3',
+            label: 'Manchester Konfig',
+            teams: ['Manchester United'],
+            url: 'https://google.ch',
+        },
+        {
+            id: '4',
+            label: 'Manchester Konfig',
+            teams: ['Manchester United'],
+            url: 'https://google.ch',
+        },
+        {
+            id: '5',
+            label: 'Manchester Konfig',
+            teams: ['Manchester United'],
+            url: 'https://google.ch',
+        },
+        {
+            id: '6',
             label: 'Manchester Konfig',
             teams: ['Manchester United'],
             url: 'https://google.ch',
@@ -25,11 +49,11 @@ export const Home = () => {
             <Typography.Text>Willkommen bei Synci...</Typography.Text>
             <List
                 style={{marginTop: 48}}
-                grid={{ gutter: 16, column: 4 }}
+                grid={{ gutter: 16}}
                 dataSource={dataSource}
                 renderItem={(item) => (
                     <List.Item>
-                        <Card title={item.label}>
+                        <Card title={item.label} style={{width: 400}} onClick={() => navigate(`edit/${item.id}`)}>
                             <Flex gap={12} vertical>
 
                             <Flex vertical>
