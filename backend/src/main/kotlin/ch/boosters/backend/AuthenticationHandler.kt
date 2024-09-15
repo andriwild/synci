@@ -2,6 +2,7 @@ package ch.boosters.backend
 
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.authentication.AuthenticationServiceException
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.oauth2.jwt.Jwt
@@ -40,6 +41,14 @@ class AuthenticationHandler(userService: UserService) {
         return Pair(user, jwt)
     }
 
+    private fun createTokenForUser(jwt: Jwt, user: User): JwtAuthenticationToken {
+        val authorities = ArrayList<GrantedAuthority>()
+        val token = JwtAuthenticationToken(jwt, authorities, user.toString())
+        token.isAuthenticated = true
+        return token
+    }
+
+
 //    private fun getProfileDetailsGoogle(accessToken: String) {
 //        val restTemplate = RestTemplate()
 //        val httpHeaders = HttpHeaders()
@@ -55,11 +64,4 @@ class AuthenticationHandler(userService: UserService) {
 //        val jsonObject: JsonObject = Gson().fromJson(response.body, JsonObject::class.java)
 //        println(jsonObject)
 //    }
-
-    private fun createTokenForUser(jwt: Jwt, user: User): JwtAuthenticationToken {
-        val authorities = ArrayList<GrantedAuthority>()
-        val token = JwtAuthenticationToken(jwt, authorities, user.toString())
-        token.isAuthenticated = true
-        return token
-    }
 }
