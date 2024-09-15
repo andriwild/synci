@@ -3,16 +3,15 @@ import {useNavigate} from "react-router-dom";
 import {Copy, Plus} from "@phosphor-icons/react";
 import {useEffect, useState} from "react";
 
-interface Team {
+interface SyncConfig {
     id: string;
     name: string;
 }
 
-export type UserConfigValues = Team;
 
 export const UserConfig = () => {
     const navigate = useNavigate();
-    const [syncConfigs, setSyncConfigs] = useState(false);
+    const [syncConfigs, setSyncConfigs] = useState([] as SyncConfig[]);
 
     useEffect(() => {
         fetch('https://localhost:8080/api/syncconfig/list')
@@ -24,57 +23,15 @@ export const UserConfig = () => {
         );
     }, []);
 
-    const dataSource = [
-        {
-            id: '1',
-            label: 'SuperLeague Spiele',
-            teams: ['YoungBoys, Basel, Zürich, Lausanne'],
-            url: 'https://google.ch',
-        },
-        {
-            id: '2',
-            label: 'Manchester Konfig',
-            teams: ['Manchester United'],
-            url: 'https://google.ch',
-        },
-        {
-            id: '3',
-            label: 'Manchester Konfig',
-            teams: ['Manchester United'],
-            url: 'https://google.ch',
-        },
-        {
-            id: '4',
-            label: 'Manchester Konfig',
-            teams: ['Manchester United'],
-            url: 'https://google.ch',
-        },
-        {
-            id: '5',
-            label: 'Manchester Konfig',
-            teams: ['Manchester United'],
-            url: 'https://google.ch',
-        },
-        {
-            id: '6',
-            label: 'Manchester Konfig',
-            teams: ['Manchester United'],
-            url: 'https://google.ch',
-        },
-    ];
 
     return (
         <Flex gap={24} style={{padding: 24}} wrap={"wrap"}>
-            {dataSource.map((item) => {
+            {syncConfigs.map((item) => {
                 return (
-                    <Card key={item.id} title={item.label} extra={<Button icon={<Copy size={'1rem'} />} />} style={{minWidth: '400px', marginBottom: 24}}>
-                        <List
-                            size="small"
-                            header={<div>Teams</div>}
-                            bordered
-                            dataSource={item.teams}
-                            renderItem={(team) => <List.Item>{team}</List.Item>}
-                        />
+                    <Card key={item.id} title={item.name} extra={<Button icon={<Copy size={'1rem'} />} />} style={{minWidth: '400px', marginBottom: 24}}>
+                        <h2>{item.name}</h2>
+                        <p>Erstellt am: 01.01.2021</p>
+                        <Button onClick={() => navigate('/config/' + item.id)}>Bearbeiten</Button>
                     </Card>
                 );
             })}

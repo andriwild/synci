@@ -1,10 +1,10 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { UserConfigForm } from './components/UserConfigForm.tsx';
+import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
+import {UserConfigForm} from './pages/UserConfigForm.tsx';
 import './App.css';
-import { Home } from "./pages/Home.tsx";
-import { Header } from "./components/Header.tsx";
-import { Layout } from "antd";
-import { Footer } from "./components/Footer.tsx";
+import {Home} from "./pages/Home.tsx";
+import {Header} from "./components/Header.tsx";
+import {ConfigProvider, Layout, theme} from "antd";
+import {Footer} from "./components/Footer.tsx";
 import {Content} from "antd/es/layout/layout";
 import {UserConfig} from "./pages/UserConfigs.tsx";
 
@@ -33,6 +33,18 @@ function App() {
 
     return (
         <Router>
+            <ConfigProvider
+                theme={{
+                    algorithm: theme.defaultAlgorithm,
+                    token: {
+                        // Seed Token
+                        colorPrimary: '#545454',
+                        borderRadius: 20,
+                        // Alias Token
+                        colorBgContainer: '#eaeaea',
+                    },
+                }}
+            >
             <Layout style={{ minHeight: '100vh', minWidth: '100vw' }}>
                 <Header />
                 <Content>
@@ -44,6 +56,7 @@ function App() {
                 </Content>
                 <Footer />
             </Layout>
+            </ConfigProvider>
         </Router>
     );
 }
