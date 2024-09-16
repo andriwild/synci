@@ -1,8 +1,8 @@
 services:
   frontend:
-    container_name: synci/synci-frontend
+    container_name: synci-frontend
     platform: linux/amd64
-    image: synci-frontend:latest
+    image: ghcr.io/andriwild/synci/synci-frontend:latest
     ports:
       - "5173:5173"
     networks:
@@ -11,7 +11,7 @@ services:
   backend:
     container_name: synci-backend
     platform: linux/amd64 # adding a plattform causes gradle build to timeout with no error
-    image: sincy/synci-backend:latest
+    image: ghcr.io/andriwild/synci/synci-backend:latest
     ports:
       - "8080:8080"
     depends_on:
