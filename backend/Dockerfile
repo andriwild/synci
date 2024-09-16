@@ -15,4 +15,4 @@ WORKDIR /app
 COPY --from=builder /app/build/libs/*SNAPSHOT.jar /app/server.jar
 EXPOSE ${ENV_SERVER_PORT}
 
-CMD ["java", "-jar", "/app/server.jar", "--server.port=${ENV_SERVER_PORT}"]
+CMD ["java", "-jar", "/app/server.jar", "--server.port=${ENV_SERVER_PORT}", "--debug"]

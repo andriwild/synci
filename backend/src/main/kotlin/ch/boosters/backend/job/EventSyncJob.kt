@@ -19,5 +19,6 @@ class EventSyncJob : Job {
         println("Fetching all leagues from FotMob at $currentDateTime")
 
         fotMobService.fetchLeagueOverview("69")
+        println("Done!")
     }
 }
