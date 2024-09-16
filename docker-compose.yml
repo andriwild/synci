@@ -1,6 +1,6 @@
 services:
   frontend:
-    container_name: synci-frontend
+    container_name: synci/synci-frontend
     platform: linux/amd64
     image: synci-frontend:latest
     ports:
@@ -11,7 +11,7 @@ services:
   backend:
     container_name: synci-backend
     platform: linux/amd64 # adding a plattform causes gradle build to timeout with no error
-    image: synci-backend:latest
+    image: sincy/synci-backend:latest
     ports:
       - "8080:8080"
     depends_on:
@@ -29,7 +29,7 @@ services:
       - "POSTGRES_DB=synci-db"
     volumes:
       - db.data:/var/lib/postgresql/data
-      - ./database/synci-schema.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./database/create_schema.sql:/docker-entrypoint-initdb.d/init.sql
 
     networks:
       - database
