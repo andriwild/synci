@@ -5,7 +5,7 @@ import org.jooq.meta.jaxb.Property
 val javaVersion = 21
 val jooqVersion = "3.19.11"
 val postgresVersion = "42.7.4"
-val postgresJdbcUrl = "jdbc:postgresql://localhost:5432/synci-db"
+val postgresJdbcUrl = "jdbc:postgresql://database-net-db:5432/synci-db"
 val postgresUser = "postgres"
 val postgresPassword = "postgres"
 val hikariCPVersion = "5.1.0"
