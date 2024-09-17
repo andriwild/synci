@@ -2,10 +2,12 @@ import org.jooq.meta.jaxb.ForcedType
 import org.jooq.meta.jaxb.Logging
 import org.jooq.meta.jaxb.Property
 
+val DB_HOST = System.getenv("DB_HOST")
+
 val javaVersion = 21
 val jooqVersion = "3.19.11"
 val postgresVersion = "42.7.4"
-val postgresJdbcUrl = "jdbc:postgresql://database-net-db:5432/synci-db"
+val postgresJdbcUrl = "jdbc:postgresql://${DB_HOST}:5432/synci-db"
 val postgresUser = "postgres"
 val postgresPassword = "postgres"
 val hikariCPVersion = "5.1.0"
@@ -17,13 +19,13 @@ plugins {
 	kotlin("plugin.spring") version "2.0.20"
 	id("org.springframework.boot") version "3.3.3"
 	id("io.spring.dependency-management") version "1.1.6"
-    id("org.flywaydb.flyway") version "9.7.0"
+//    id("org.flywaydb.flyway") version "9.7.0"
     id("nu.studer.jooq") version "9.0"
 }
 
-configurations {
-    create("flywayMigration")
-}
+//configurations {
+//    create("flywayMigration")
+//}
 
 group = "ch.boosters"
 version = "0.0.1-SNAPSHOT"
@@ -57,7 +59,7 @@ dependencies {
     implementation("org.postgresql:postgresql:$postgresVersion")
 	implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
-    "flywayMigration"("org.postgresql:postgresql:$postgresVersion")
+//    "flywayMigration"("org.postgresql:postgresql:$postgresVersion")
     jooqGenerator("org.postgresql:postgresql:$postgresVersion")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -66,12 +68,12 @@ dependencies {
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
-flyway {
-    configurations = arrayOf("flywayMigration")
-    url = postgresJdbcUrl
-    user = postgresUser
-    password = postgresPassword
-}
+//flyway {
+//    configurations = arrayOf("flywayMigration")
+//    url = postgresJdbcUrl
+//    user = postgresUser
+//    password = postgresPassword
+//}
 
 jooq {
     version.set(jooqVersion)
@@ -133,3 +135,4 @@ tasks.named<nu.studer.gradle.jooq.JooqGenerate>("generateJooq") {
 tasks.withType<Test> {
 	useJUnitPlatform()
 }
+
