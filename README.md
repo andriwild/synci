@@ -28,11 +28,35 @@ cd frontend && npm run dev
 - Gradle 8.10.1
 - Spring Boot 3.3.3
 
+### Prerequisites
+
+First you need to start the database:
+
+- run `docker compose -f docker-compose-local.yml up -d` to start the database
+
 ### Run the application
 
 ```bash
-./gradlew bootRun
+cd backend
+./gradlew bootRun --args='--spring.profiles.active=local'
 ```
+
+You can also start the app using IntelliJ.
+
+## Managing the database
+
+This application uses jOOQ for the database access and Flyway for database migrations.
+
+If you ever mess up something with flyway just run:
+
+```bash
+./gradlew flywayClean
+./gradlew generateJooq
+```
+
+This cleans up the flyway state and executes all migrations from scratch. You can find the migrations
+under `backend/src/main/resources/db/migration`. If you have any db changes, just add a new file in this folder. (You
+must adhere to the following file naming pattern: `VX_x__my_description` where `X` is a major version and `x` a minor.)
 
 ## Contributors
 
