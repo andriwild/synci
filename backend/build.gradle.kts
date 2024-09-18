@@ -12,6 +12,7 @@ val postgresUser = "postgres"
 val postgresPassword = "postgres"
 val hikariCPVersion = "5.1.0"
 val kotlinJvmVersion = "1.9.25"
+val flywayVersion = "10.17.3"
 
 plugins {
 	kotlin("jvm") version "2.0.20"
@@ -68,6 +69,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
     implementation("org.postgresql:postgresql:$postgresVersion")
 	implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.flywaydb:flyway-database-postgresql:$flywayVersion")
+    implementation("org.flywaydb:flyway-core:$flywayVersion")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
     "flywayMigration"("org.postgresql:postgresql:$postgresVersion")
     jooqGenerator("org.postgresql:postgresql:$postgresVersion")
@@ -141,6 +144,10 @@ tasks.named<nu.studer.gradle.jooq.JooqGenerate>("generateJooq") {
     (launcher::set)(javaToolchains.launcherFor {
         languageVersion.set(JavaLanguageVersion.of(javaVersion))
     })
+
+    outputs.cacheIf{ true }
+    // forces to regenerate jooq sources on each build. this is not a nice solution but works for now
+    outputs.upToDateWhen { false }
 
     allInputsDeclared.set(true)
 }
