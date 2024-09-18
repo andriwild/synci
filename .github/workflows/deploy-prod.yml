@@ -1,8 +1,8 @@
-name: Prod Deployment
+name: prod deployment
 
 on:
   workflow_run:
-    workflows: ["Prod Docker build and push"]
+    workflows: ["prod build and push"]
     types: [completed]
 
   workflow_dispatch:

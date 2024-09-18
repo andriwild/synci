@@ -1,4 +1,4 @@
-name: Prod Docker build and push
+name: prod build and push
 
 on:
   workflow_dispatch:

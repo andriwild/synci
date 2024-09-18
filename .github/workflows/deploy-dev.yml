@@ -1,8 +1,8 @@
-name: Dev Deployment
+name: dev deployment
 
 on:
   workflow_run:
-    workflows: ["Dev Docker build and push"]
+    workflows: ["dev build and push"]
     types: [completed]
 
   workflow_dispatch:

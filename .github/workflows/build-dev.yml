@@ -1,4 +1,4 @@
-name: Dev Docker build and push
+name: dev build and push
 
 on:
   workflow_dispatch:
@@ -12,7 +12,6 @@ on:
         - info
         - warning
         - debug
-  push:
   push:
     branches:
       - main
