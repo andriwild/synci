@@ -69,14 +69,3 @@ jobs:
           docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/synci-backend:${{ github.ref_name }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}/synci-backend:latest
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}/synci-backend:latest
 
-    #  - name: install ssh keys
-        # check this thread to understand why its needed:
-        # https://stackoverflow.com/a/70447517
-    #    run: |
-    #     install -m 600 -D /dev/null ~/.ssh/id_rsa
-    #    echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-    #     ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
-    #  - name: connect and pull
-    #  run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && git checkout ${{ secrets.MAIN_BRANCH }} && git pull && exit"
-    #  - name: cleanup
-    #   run: rm -rf ~/.ssh

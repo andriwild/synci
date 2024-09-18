@@ -27,6 +27,7 @@ services:
             - database-net-backend
 
   db:
+    container_name: synci-db
     image: postgres:15.2-alpine
     restart: always
     environment:
@@ -35,7 +36,6 @@ services:
       - "POSTGRES_DB=synci-db"
     volumes:
       - db.data:/var/lib/postgresql/data
-      - ./database/create_schema.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5432:5432"
     networks:
