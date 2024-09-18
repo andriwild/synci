@@ -42,10 +42,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Create db tables
-        run: |
-          PGPASSWORD=postgres psql -U postgres -d synci-db -h localhost -p 5432 -a -f ./database/create_schema.sql
-
       - name: Log into registry
         uses: docker/login-action@v3
         with:
@@ -65,7 +61,7 @@ jobs:
           
       - name: Build backend image 
         run: |
-          docker build --network="host" --build-arg DB_HOST=localhost -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}/synci-backend:${{ github.ref_name }} ./backend
+          docker build --network="host" -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}/synci-backend:${{ github.ref_name }} ./backend
 
       - name: Push backend image
         run: |
