@@ -1,7 +1,3 @@
---
--- PostgreSQL database dump
---
-
 -- Dumped from database version 15.2
 -- Dumped by pg_dump version 16.3 (Homebrew)
 
@@ -20,7 +16,7 @@ SET row_security = off;
 -- Name: public; Type: SCHEMA; Schema: -; Owner: pg_database_owner
 --
 
-CREATE SCHEMA public;
+CREATE SCHEMA IF NOT EXISTS public;
 
 -- Grant necessary permissions to the user
 
@@ -89,11 +85,11 @@ ALTER TABLE public.EVENTS_PERSONS_TABLE OWNER TO postgres;
 --
 
 CREATE TABLE public.EVENTS_TEAMS_TABLE (
-    id uuid NOT NULL,
-    event_id varchar(255) NOT NULL,
-    source_event_id integer NOT NULL,
-    team_id varchar(255) NOT NULL,
-    source_team_id integer NOT NULL
+                                           id uuid NOT NULL,
+                                           event_id varchar(255) NOT NULL,
+                                           source_event_id integer NOT NULL,
+                                           team_id varchar(255) NOT NULL,
+                                           source_team_id integer NOT NULL
 );
 
 
@@ -104,8 +100,8 @@ ALTER TABLE public.EVENTS_TABLE OWNER TO postgres;
 --
 
 CREATE TABLE public.LOCATIONS_TABLE(
-    id uuid NOT NULL,
-    name character varying(100)
+                                       id uuid NOT NULL,
+                                       name character varying(100)
 );
 
 
@@ -116,14 +112,14 @@ ALTER TABLE public.LOCATIONS_TABLE OWNER TO postgres;
 --
 
 CREATE TABLE public.PERSONS_TABLE(
-    id varchar(255) NOT NULL,
-    source_id integer NOT NULL,
-    name character varying(100),
-    CONSTRAINT pk_person PRIMARY KEY (id, source_id),
-    CONSTRAINT fk_person_source FOREIGN KEY (source_id)
-        REFERENCES public.SOURCES_TABLE (id)
-        ON UPDATE CASCADE
-        ON DELETE RESTRICT
+                                     id varchar(255) NOT NULL,
+                                     source_id integer NOT NULL,
+                                     name character varying(100),
+                                     CONSTRAINT pk_person PRIMARY KEY (id, source_id),
+                                     CONSTRAINT fk_person_source FOREIGN KEY (source_id)
+                                         REFERENCES public.SOURCES_TABLE (id)
+                                         ON UPDATE CASCADE
+                                         ON DELETE RESTRICT
 );
 
 
@@ -134,9 +130,9 @@ ALTER TABLE public.PERSONS_TABLE OWNER TO postgres;
 --
 
 CREATE TABLE public.SPORTS_TABLE(
-    id uuid NOT NULL,
-    name character varying(100),
-    parent_id uuid
+                                    id uuid NOT NULL,
+                                    name character varying(100),
+                                    parent_id uuid
 );
 
 
@@ -147,8 +143,8 @@ ALTER TABLE public.SPORTS_TABLE OWNER TO postgres;
 --
 
 CREATE TABLE public.SYNC_CONFIGS_TABLE(
-    id uuid NOT NULL,
-    ical_url character varying(255)
+                                          id uuid NOT NULL,
+                                          ical_url character varying(255)
 );
 
 
@@ -159,8 +155,8 @@ ALTER TABLE public.SYNC_CONFIGS_TABLE OWNER TO postgres;
 --
 
 CREATE TABLE public.SYNC_CONFIGS_LOCATIONS_TABLE(
-    sync_config_id uuid NOT NULL,
-    location_id uuid NOT NULL
+                                                    sync_config_id uuid NOT NULL,
+                                                    location_id uuid NOT NULL
 );
 
 
@@ -171,11 +167,10 @@ ALTER TABLE public.SYNC_CONFIGS_LOCATIONS_TABLE OWNER TO postgres;
 --
 
 CREATE TABLE public.SYNC_CONFIGS_PERSONS_TABLE(
-    sync_config_id uuid NOT NULL,
-    person_id varchar(255) NOT NULL,
-    source_person_id int NOT NULL
+                                                  sync_config_id uuid NOT NULL,
+                                                  person_id varchar(255) NOT NULL,
+                                                  source_person_id int NOT NULL
 );
-
 
 ALTER TABLE public.SYNC_CONFIGS_PERSONS_TABLE OWNER TO postgres;
 
@@ -184,8 +179,8 @@ ALTER TABLE public.SYNC_CONFIGS_PERSONS_TABLE OWNER TO postgres;
 --
 
 CREATE TABLE public.SYNC_CONFIGS_SPORTS_TABLE(
-    sync_config_id uuid NOT NULL,
-    sport_id uuid NOT NULL
+                                                 sync_config_id uuid NOT NULL,
+                                                 sport_id uuid NOT NULL
 );
 
 
@@ -196,10 +191,10 @@ ALTER TABLE public.SYNC_CONFIGS_SPORTS_TABLE OWNER TO postgres;
 --
 
 CREATE TABLE public.SYNC_CONFIGS_TEAMS_TABLE(
-    id uuid NOT NULL,
-    sync_config_id uuid NOT NULL,
-    team_id varchar(255) NOT NULL,
-    source_team_id integer NOT NULL
+                                                id uuid NOT NULL,
+                                                sync_config_id uuid NOT NULL,
+                                                team_id varchar(255) NOT NULL,
+                                                source_team_id integer NOT NULL
 );
 
 
@@ -211,14 +206,14 @@ ALTER TABLE public.SYNC_CONFIGS_TEAMS_TABLE OWNER TO postgres;
 --
 
 CREATE TABLE public.TEAMS_TABLE(
-    id varchar(255) NOT NULL,
-    source_id integer NOT NULL,
-    name character varying(100),
-    CONSTRAINT pk_team PRIMARY KEY (id, source_id),
-    CONSTRAINT fk_team_source FOREIGN KEY (source_id)
-        REFERENCES public.SOURCES_TABLE (id)
-        ON UPDATE CASCADE
-        ON DELETE RESTRICT
+                                   id varchar(255) NOT NULL,
+                                   source_id integer NOT NULL,
+                                   name character varying(100),
+                                   CONSTRAINT pk_team PRIMARY KEY (id, source_id),
+                                   CONSTRAINT fk_team_source FOREIGN KEY (source_id)
+                                       REFERENCES public.SOURCES_TABLE (id)
+                                       ON UPDATE CASCADE
+                                       ON DELETE RESTRICT
 );
 
 
@@ -453,18 +448,12 @@ ALTER TABLE ONLY public.SPORTS_TABLE
 
 
 --
--- PostgreSQL database dump complete
---
-
-INSERT INTO SOURCES_TABLE (name) values ('FOT_MOB');
-
---
 -- Name: sync_config_user; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.SYNC_CONFIGS_USERS_TABLE(
-    sync_config_id uuid NOT NULL,
-    e_mail character varying(100) NOT NULL
+                                                sync_config_id uuid NOT NULL,
+                                                e_mail character varying(100) NOT NULL
 );
 
 
@@ -475,8 +464,8 @@ ALTER TABLE public.SYNC_CONFIGS_USERS_TABLE OWNER TO postgres;
 --
 
 CREATE TABLE public.USERS_TABLE (
-    name character varying(100),
-    e_mail character varying(100) NOT NULL
+                                    name character varying(100),
+                                    e_mail character varying(100) NOT NULL
 );
 
 
@@ -523,9 +512,9 @@ ALTER TABLE ONLY public.SYNC_CONFIGS_USERS_TABLE
 -- PostgreSQL database dump complete
 --
 ALTER TABLE public.EVENTS_TEAMS_TABLE
-ADD CONSTRAINT pk_events_teams
-PRIMARY KEY (id);
+    ADD CONSTRAINT pk_events_teams
+        PRIMARY KEY (id);
 
 ALTER TABLE public.SYNC_CONFIGS_TEAMS_TABLE
-ADD CONSTRAINT fk_sync_config FOREIGN KEY  (sync_config_id) REFERENCES  public.SYNC_CONFIGS_TABLE ON DELETE CASCADE
+    ADD CONSTRAINT fk_sync_config FOREIGN KEY  (sync_config_id) REFERENCES  public.SYNC_CONFIGS_TABLE ON DELETE CASCADE
 

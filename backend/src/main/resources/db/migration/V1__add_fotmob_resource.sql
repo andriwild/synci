@@ -1,0 +1,1 @@
+INSERT INTO SOURCES_TABLE (name) values ('FOT_MOB');

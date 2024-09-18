@@ -1,8 +1,8 @@
-import org.jooq.meta.jaxb.ForcedType
+//import org.jooq.meta.jaxb.ForcedType
 import org.jooq.meta.jaxb.Logging
-import org.jooq.meta.jaxb.Property
+//import org.jooq.meta.jaxb.Property
 
-val DB_HOST = System.getenv("DB_HOST")
+val DB_HOST = System.getenv("DB_HOST") ?: "localhost"
 
 val javaVersion = 21
 val jooqVersion = "3.19.11"
@@ -19,13 +19,12 @@ plugins {
 	kotlin("plugin.spring") version "2.0.20"
 	id("org.springframework.boot") version "3.3.3"
 	id("io.spring.dependency-management") version "1.1.6"
-//    id("org.flywaydb.flyway") version "9.7.0"
     id("nu.studer.jooq") version "9.0"
 }
 
-//configurations {
-//    create("flywayMigration")
-//}
+configurations {
+    create("flywayMigration")
+}
 
 group = "ch.boosters"
 version = "0.0.1-SNAPSHOT"
@@ -38,6 +37,17 @@ java {
 
 repositories {
 	mavenCentral()
+}
+
+buildscript {
+    val flywayVersion = "10.17.3"
+    dependencies {
+        // flyway needs the postgresql extension on the classpath
+        classpath("org.flywaydb:flyway-database-postgresql:$flywayVersion")
+    }
+    plugins {
+        id("org.flywaydb.flyway") version "10.17.3"
+    }
 }
 
 dependencies {
@@ -59,7 +69,7 @@ dependencies {
     implementation("org.postgresql:postgresql:$postgresVersion")
 	implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
-//    "flywayMigration"("org.postgresql:postgresql:$postgresVersion")
+    "flywayMigration"("org.postgresql:postgresql:$postgresVersion")
     jooqGenerator("org.postgresql:postgresql:$postgresVersion")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -68,12 +78,12 @@ dependencies {
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
-//flyway {
-//    configurations = arrayOf("flywayMigration")
-//    url = postgresJdbcUrl
-//    user = postgresUser
-//    password = postgresPassword
-//}
+flyway {
+    url = postgresJdbcUrl
+    user = postgresUser
+    password = postgresPassword
+    cleanDisabled = false
+}
 
 jooq {
     version.set(jooqVersion)
@@ -122,13 +132,16 @@ kotlin {
 
 tasks.named<nu.studer.gradle.jooq.JooqGenerate>("generateJooq") {
     // generateJooq can be configured to use a different/specific toolchain
-    // dependsOn(tasks.named("flywayMigrate"))
-    // inputs.files(fileTree("src/main/resources/db/migration"))
-    //     .withPropertyName("migrations")
-    //     .withPathSensitivity(PathSensitivity.RELATIVE)
+     dependsOn(tasks.named("flywayMigrate"))
+
+     inputs.files(fileTree("src/main/resources/db/migration"))
+         .withPropertyName("migrations")
+         .withPathSensitivity(PathSensitivity.RELATIVE)
+
     (launcher::set)(javaToolchains.launcherFor {
         languageVersion.set(JavaLanguageVersion.of(javaVersion))
     })
+
     allInputsDeclared.set(true)
 }
 
