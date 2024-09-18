@@ -1,9 +1,9 @@
-name: Continuous Deployment
+name: Prod Deployment
 
 on:
-  # workflow_run:
-  #   workflows: ["Docker build and push"]
-  #   types: [completed]
+  workflow_run:
+    workflows: ["Prod Docker build and push"]
+    types: [completed]
 
   workflow_dispatch:
     inputs:
@@ -43,5 +43,5 @@ jobs:
 
     - name: Deploy to remote server
       run: |
-          docker --context remote compose -f ./docker-compose.yml up -d
+          docker --context remote compose -f ./docker-compose-prod.yml up -d
 

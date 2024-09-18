@@ -1,4 +1,4 @@
-name: Docker build and push
+name: Prod Docker build and push
 
 on:
   workflow_dispatch:
@@ -12,19 +12,19 @@ on:
         - info
         - warning
         - debug
-  # push:
-  #   tags: [ 'v*.*.*' ]
+  push:
+    tags: [ 'v*.*.*' ]
 
 env:
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
-  if: startsWith(github.ref, 'refs/tags/v')
 
 jobs:
 
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Start PostgreSQL service
         run: |
