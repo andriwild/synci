@@ -51,21 +51,21 @@ jobs:
      
       - name: Build frontend image
         run: |
-          docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/synci-frontend:${{ github.ref_name }} ./frontend
+          docker build -t ${{ env.REGISTRY }}/synci-frontend:${{ github.ref_name }} ./frontend
 
       - name: Push frontend image
         run: |
-          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}/synci-frontend:${{ github.ref_name }}
-          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/synci-frontend:${{ github.ref_name }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/synci-frontend:latest
-          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/synci-frontend:latest
+          docker push ${{ env.REGISTRY }}/synci-frontend:${{ github.ref_name }}
+          docker  tag ${{ env.REGISTRY }}/synci-frontend:${{ github.ref_name }} ${{ env.REGISTRY }}/synci-frontend:latest
+          docker push ${{ env.REGISTRY }}/synci-frontend:latest
           
       - name: Build backend image 
         run: |
-          docker build --network="host" --build-arg DB_HOST=localhost -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}/synci-backend:${{ github.ref_name }} ./backend
+          docker build --network="host" --build-arg DB_HOST=localhost -t ${{ env.REGISTRY }}/synci-backend:${{ github.ref_name }} ./backend
 
       - name: Push backend image
         run: |
-          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}/synci-backend:${{ github.ref_name }}
-          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/synci-backend:${{ github.ref_name }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}/synci-backend:latest
-          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}/synci-backend:latest
+          docker push ${{ env.REGISTRY }}/synci-backend:${{ github.ref_name }}
+          docker  tag ${{ env.REGISTRY }}/synci-backend:${{ github.ref_name }} ${{ env.REGISTRY }}/synci-backend:latest
+          docker push ${{ env.REGISTRY }}/synci-backend:latest
 
