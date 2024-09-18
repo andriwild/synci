@@ -13,6 +13,9 @@ on:
         - warning
         - debug
 
+env:
+  REGISTRY: ghcr.io
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -24,6 +27,10 @@ jobs:
       with:
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
         
-    - name: Check connection
+    - name: Deploy to remote server
       run: |
-        ssh -o StrictHostKeyChecking=no ${{secrets.SSH_USER}}@${{secrets.SSH_HOST}}
+          docker create remote --docker "host=ssh://${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}"
+          docker context use remote
+          docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_TOKEN }} ${{ env.REGISTRY }}
+          docker --context remote compose up -d
+
