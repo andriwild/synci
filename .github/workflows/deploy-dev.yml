@@ -1,9 +1,9 @@
 name: dev deployment
 
 on:
-  workflow_run:
-    workflows: ["dev build and push"]
-    types: [completed]
+  # workflow_run:
+  #   workflows: ["dev build and push"]
+  #   types: [completed]
 
   workflow_dispatch:
     inputs:

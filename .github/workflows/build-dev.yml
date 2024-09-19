@@ -23,7 +23,7 @@ env:
 
 jobs:
 
-  build:
+  build backend:
     runs-on: ubuntu-latest
     steps:
       - name: Start PostgreSQL service
@@ -48,7 +48,28 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.TOKEN }}
+
+      - name: Build backend image 
+        run: |
+          docker build --network="host" --build-arg DB_HOST=localhost -t ${{ env.REGISTRY }}/${{ github.repository }}/backend-dev:latest ./backend
+
+      - name: Push backend image
+        run: |
+          docker push ${{ env.REGISTRY }}/${{ github.repository }}/backend-dev:latest
      
+  build frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log into registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.TOKEN }}
+
       - name: Build frontend image
         run: |
           docker build -t ${{ env.REGISTRY }}/${{ github.repository }}/frontend-dev:latest ./frontend
@@ -57,11 +78,27 @@ jobs:
         run: |
           docker push ${{ env.REGISTRY }}/${{ github.repository }}/frontend-dev:latest
           
-      - name: Build backend image 
-        run: |
-          docker build --network="host" --build-arg DB_HOST=localhost -t ${{ env.REGISTRY }}/${{ github.repository }}/backend-dev:latest ./backend
+  deploy:
+    need: [build backend, build frontend]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
 
-      - name: Push backend image
-        run: |
-          docker push ${{ env.REGISTRY }}/${{ github.repository }}/backend-dev:latest
+    - name: Setup SSH
+      run: |
+          install -m 600 -D /dev/null ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
 
+    - name: Create docker context
+      run: |
+          docker context create remote --docker "host=ssh://${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}"
+          docker context use remote
+
+    - name: Log into registry
+      run: |
+          docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_TOKEN }} ${{ env.REGISTRY }}
+
+    - name: Deploy to remote server
+      run: |
+          docker --context remote compose -f ./docker-compose-dev.yml up -d
