@@ -4,8 +4,7 @@ WORKDIR /app
 
 COPY . .
 
-ARG DB_HOST=database-net-db
-ENV DB_HOST=${DB_HOST}
+ENV DB_HOST=localhost
 
 RUN gradle build -x test --no-daemon --continue
 

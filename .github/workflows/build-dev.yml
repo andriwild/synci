@@ -20,10 +20,14 @@ env:
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
+  STAGE: dev
+  FRONTEND_PORT: 5174
+  BACKEND_PORT: 8081
 
 jobs:
 
-  build backend:
+  build_backend:
+    name: Build backend
     runs-on: ubuntu-latest
     steps:
       - name: Start PostgreSQL service
@@ -51,13 +55,15 @@ jobs:
 
       - name: Build backend image 
         run: |
-          docker build --network="host" --build-arg DB_HOST=localhost -t ${{ env.REGISTRY }}/${{ github.repository }}/backend-dev:latest ./backend
+          docker build --network="host" -t ${{ env.REGISTRY }}/${{ github.repository }}/backend-${{ env.STAGE }}:latest ./backend
 
       - name: Push backend image
         run: |
-          docker push ${{ env.REGISTRY }}/${{ github.repository }}/backend-dev:latest
+          docker push ${{ env.REGISTRY }}/${{ github.repository }}/backend-${{ env.STAGE }}:latest
      
-  build frontend:
+
+  build_frontend:
+    name: Build frontend
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -72,14 +78,16 @@ jobs:
 
       - name: Build frontend image
         run: |
-          docker build -t ${{ env.REGISTRY }}/${{ github.repository }}/frontend-dev:latest ./frontend
+          docker build -t ${{ env.REGISTRY }}/${{ github.repository }}/frontend-${{ env.STAGE }}:latest ./frontend
 
       - name: Push frontend image
         run: |
-          docker push ${{ env.REGISTRY }}/${{ github.repository }}/frontend-dev:latest
+          docker push ${{ env.REGISTRY }}/${{ github.repository }}/frontend-${{ env.STAGE }}:latest
           
+
   deploy:
-    need: [build backend, build frontend]
+    name: Deploy frontend and backend
+    needs: [build_backend, build_frontend]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -101,4 +109,6 @@ jobs:
 
     - name: Deploy to remote server
       run: |
-          docker --context remote compose -f ./docker-compose-dev.yml up -d
+          docker --context remote compose -f ./docker-compose.yml -p dev up -d
+
+

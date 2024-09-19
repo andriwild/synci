@@ -1,0 +1,61 @@
+name: "synci_instance_${STAGE:-local}"
+
+services:
+  frontend:
+    container_name: "synci-frontend-${STAGE:-local}"
+    platform: linux/amd64
+    image: ghcr.io/andriwild/synci/frontend-${STAGE:-dev}:latest
+    ports:
+      - "${FRONTEND_PORT:-5173}:5173"
+    networks:
+        synci-net:
+          aliases:
+            - synci-net-frontend-${STAGE:-local}
+
+  backend:
+    container_name: "synci-backend-${STAGE:-local}"
+    platform: linux/amd64 # adding a plattform causes gradle build to timeout with no error
+    image: ghcr.io/andriwild/synci/backend-${STAGE:-dev}:latest
+    ports:
+      - "${BACKEND_PORT:-8080}:8080"
+    environment:
+      - DB_HOST=database-net-db-${STAGE:-local}
+      - SPRING_PROFILES_ACTIVE=${STAGE:-local}
+    depends_on:
+      - db
+    networks:
+        synci-net:
+          aliases:
+            - synci-net-backend-${STAGE:-local}
+        database:
+          aliases:
+            - database-net-backend-${STAGE:-local}
+
+  db:
+    container_name: "synci-db-${STAGE:-local}"
+    image: postgres:15.2-alpine
+    restart: always
+    environment:
+      - "POSTGRES_USER=postgres"
+      - "POSTGRES_PASSWORD=postgres"
+      - "POSTGRES_DB=synci-db"
+    volumes:
+      - db.data:/var/lib/postgresql/data
+    networks:
+        synci-net:
+          aliases:
+            - synci-net-db-${STAGE:-local}
+        database:
+          aliases:
+            - database-net-db-${STAGE:-local}
+
+
+volumes:
+  db.data:
+
+networks:
+  database:
+    name: 'database-${STAGE:-local}'
+
+  synci-net:
+    name: 'synci-net-${STAGE:-local}'

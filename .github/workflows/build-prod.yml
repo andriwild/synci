@@ -19,12 +19,13 @@ env:
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
+  STAGE: prod
 
 jobs:
 
-  build:
+  build_backend:
+    name: Build backend
     runs-on: ubuntu-latest
-
     steps:
       - name: Start PostgreSQL service
         run: |
@@ -49,6 +50,31 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.TOKEN }}
      
+      - name: Build backend image 
+        run: |
+          docker build --network="host" -t ${{ env.REGISTRY }}/${{ github.repository }}/backend-prod:${{ github.ref_name }} ./backend
+
+      - name: Push backend image
+        run: |
+          docker push ${{ env.REGISTRY }}/${{ github.repository }}/backend-prod:${{ github.ref_name }}
+          docker  tag ${{ env.REGISTRY }}/${{ github.repository }}/backend-prod:${{ github.ref_name }} ${{ env.REGISTRY }}/${{ github.repository }}/backend-prod:latest
+          docker push ${{ env.REGISTRY }}/${{ github.repository }}/backend-prod:latest
+
+
+  build_frontend:
+    name: Build frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log into registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.TOKEN }}
+
       - name: Build frontend image
         run: |
           docker build -t ${{ env.REGISTRY }}/${{ github.repository }}/frontend-prod:${{ github.ref_name }} ./frontend
@@ -58,14 +84,32 @@ jobs:
           docker push ${{ env.REGISTRY }}/${{ github.repository }}/frontend-prod:${{ github.ref_name }}
           docker  tag ${{ env.REGISTRY }}/${{ github.repository }}/frontend-prod:${{ github.ref_name }} ${{ env.REGISTRY }}/${{ github.repository }}/frontend-prod:latest
           docker push ${{ env.REGISTRY }}/${{ github.repository }}/frontend-prod:latest
-          
-      - name: Build backend image 
-        run: |
-          docker build --network="host" --build-arg DB_HOST=localhost -t ${{ env.REGISTRY }}/${{ github.repository }}/backend-prod:${{ github.ref_name }} ./backend
 
-      - name: Push backend image
-        run: |
-          docker push ${{ env.REGISTRY }}/${{ github.repository }}/backend:${{ github.ref_name }}
-          docker  tag ${{ env.REGISTRY }}/${{ github.repository }}/backend:${{ github.ref_name }} ${{ env.REGISTRY }}/${{ github.repository }}/backend-prod:latest
-          docker push ${{ env.REGISTRY }}/${{ github.repository }}/backend:latest
+
+  deploy:
+    name: Deploy frontend and backend
+    needs: [build_backend, build_frontend]
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup SSH
+      run: |
+          install -m 600 -D /dev/null ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
+
+    - name: Create docker context
+      run: |
+          docker context create remote --docker "host=ssh://${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}"
+          docker context use remote
+
+    - name: Log into registry
+      run: |
+          docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_TOKEN }} ${{ env.REGISTRY }}
+
+    - name: Deploy to remote server
+      run: |
+          docker --context remote compose -f ./docker-compose.yml -p prod up -d
 
