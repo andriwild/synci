@@ -1,15 +1,15 @@
-//import org.jooq.meta.jaxb.ForcedType
 import org.jooq.meta.jaxb.Logging
-//import org.jooq.meta.jaxb.Property
 
-val DB_HOST = System.getenv("DB_HOST") ?: "localhost"
+
+val postgresHost = System.getenv("DB_HOST") ?: "localhost"
+val postgresDbName= System.getenv("DB_NAME") ?: "synci-db"
+val postgresUser = System.getenv("DB_USER") ?: "postgres"
+val postgresPassword = System.getenv("DB_PASSWORD") ?: "postgres"
 
 val javaVersion = 21
 val jooqVersion = "3.19.11"
 val postgresVersion = "42.7.4"
-val postgresJdbcUrl = "jdbc:postgresql://${DB_HOST}:5432/synci-db"
-val postgresUser = "postgres"
-val postgresPassword = "postgres"
+val postgresJdbcUrl = "jdbc:postgresql://${postgresHost}:5432/${postgresDbName}"
 val hikariCPVersion = "5.1.0"
 val kotlinJvmVersion = "1.9.25"
 val flywayVersion = "10.17.3"
@@ -21,6 +21,7 @@ plugins {
 	id("org.springframework.boot") version "3.3.3"
 	id("io.spring.dependency-management") version "1.1.6"
     id("nu.studer.jooq") version "9.0"
+    id("org.flywaydb.flyway") version "10.17.3"
 }
 
 configurations {
@@ -41,15 +42,14 @@ repositories {
 }
 
 buildscript {
+    // TODO: try to remove version duplications
     val flywayVersion = "10.17.3"
     dependencies {
         // flyway needs the postgresql extension on the classpath
         classpath("org.flywaydb:flyway-database-postgresql:$flywayVersion")
     }
-    plugins {
-        id("org.flywaydb.flyway") version "10.17.3"
-    }
 }
+
 
 dependencies {
     implementation("com.zaxxer:HikariCP:$hikariCPVersion")
@@ -70,7 +70,6 @@ dependencies {
     implementation("org.postgresql:postgresql:$postgresVersion")
 	implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.flywaydb:flyway-database-postgresql:$flywayVersion")
-    implementation("org.flywaydb:flyway-core:$flywayVersion")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
     "flywayMigration"("org.postgresql:postgresql:$postgresVersion")
     jooqGenerator("org.postgresql:postgresql:$postgresVersion")
@@ -101,8 +100,8 @@ jooq {
                 jdbc.apply {
                     driver = "org.postgresql.Driver"
                     url = postgresJdbcUrl
-                    user = "postgres"
-                    password = "postgres"
+                    user = postgresUser
+                    password = postgresPassword
                 }
                 generator.apply {
                     name = "org.jooq.codegen.DefaultGenerator"
@@ -155,4 +154,3 @@ tasks.named<nu.studer.gradle.jooq.JooqGenerate>("generateJooq") {
 tasks.withType<Test> {
 	useJUnitPlatform()
 }
-
