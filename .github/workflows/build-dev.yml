@@ -20,7 +20,13 @@ env:
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
+
+  POSTGRES_DB_NAME: ${{ secrets.POSTGRES_DB_NAME }}
+  POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+  POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+
   STAGE: dev
+
   FRONTEND_PORT: 5174
   BACKEND_PORT: 8081
 
@@ -109,6 +115,6 @@ jobs:
 
     - name: Deploy to remote server
       run: |
-          docker --context remote compose -f ./docker-compose.yml -p dev up -d
+          docker --context remote compose -f ./docker-compose-remote.yml -p dev up -d
 
 
