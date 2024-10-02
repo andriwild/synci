@@ -9,3 +9,13 @@ sources:
         name: Premier League
       - id: 42
         name: Champions League
+      - id: 87
+        name: LaLiga
+      - id: 54
+        name: Bundesliga
+      - id: 55
+        name: Serie A
+      - id: 73
+        name: Europa League
+      - id: 53
+        name: Ligue 1
