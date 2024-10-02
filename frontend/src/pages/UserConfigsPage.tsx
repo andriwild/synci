@@ -1,11 +1,11 @@
 import {Button, Card, Flex} from "antd";
 import {useNavigate} from "react-router-dom";
-import {Copy, Pen, Pencil, Plus} from "@phosphor-icons/react";
+import {Copy, Pencil, Plus} from "@phosphor-icons/react";
 import {useEffect, useState} from "react";
 import {SyncConfig} from "../model/SyncConfig.ts";
 
 
-export const UserConfig = () => {
+export const UserConfigsPage = () => {
     const navigate = useNavigate();
     const [syncConfigs, setSyncConfigs] = useState([] as SyncConfig[]);
 

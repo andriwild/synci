@@ -15,7 +15,9 @@ export const UserConfigForm = () => {
     const [syncConfig, setSyncConfig] = useState<SyncConfig>({
         id: '',
         url: '',
+        teams: []
     });
+    console.log('SyncConfig:', syncConfig);
 
     useEffect(() => {
         fetch('http://localhost:8080/api/syncconfig/' + id)
@@ -73,7 +75,7 @@ export const UserConfigForm = () => {
     return (
         <Flex vertical style={{height: '100%', width: '100%', padding: 24}}>
         <Card style={{ width: 600, textAlign: 'left' }}>
-            <h2 style={{ marginBottom: '20px' }}>Abonement {syncConfig.name}</h2>
+            {/*<h2 style={{ marginBottom: '20px' }}>Abonement {syncConfig.}</h2>*/}
             <p>Füge eine Konfiguration hinzu. Wähle dabei aus, für welches Team, welchen Sportler, welchen Ort oder
                 welche Sportart du dich interessierst</p>
             <Form form={form} onFinish={handleSubmit} layout={'vertical'} style={{marginTop: 36}}>

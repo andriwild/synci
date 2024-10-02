@@ -12,10 +12,6 @@ class SyncConfigController(private val syncConfigService: SyncConfigService) {
         return syncConfigService.getAllSyncConfigs()
     }
 
-    @GetMapping("/{id}")
-    fun getConfigById(@PathVariable id: UUID): SyncConfig {
-        return syncConfigService.getSyncConfigById(id)
-    }
 
     @PostMapping("/{id}")
     fun updateConfig(@PathVariable id: UUID, @RequestBody syncConfig: SyncConfig): SyncConfig {

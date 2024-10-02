@@ -16,9 +16,10 @@ import java.util.UUID
 @Service
 class CalendarService(private val eventRepository: EventRepository, private val syncConfigRepository: SyncConfigRepository) {
     fun createCalendar(id: UUID): String {
-        val currentConfig = syncConfigRepository.getSyncConfigById(id)
+        //val currentConfig = syncConfigRepository.getSyncConfigById(id)
 
         //TODO: search for events by currentConfig -> Teams
+
 
         val icsCalendar = Calendar()
         icsCalendar.add<PropertyContainer>(ProdId("-//Events Calendar//iCal4j 1.0//EN"))

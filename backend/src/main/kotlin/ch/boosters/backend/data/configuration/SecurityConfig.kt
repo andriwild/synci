@@ -19,20 +19,15 @@ class SecurityConfig {
             .cors { it.configurationSource(corsConfigurationSource()) }
             .authorizeHttpRequests { requests ->
                 requests
-                    .requestMatchers("/api/auth/google").permitAll()
-                    .anyRequest().permitAll()
+                    .requestMatchers("**").permitAll()
             }
-            .oauth2ResourceServer { oauth2ResourceServer ->
-                oauth2ResourceServer.jwt(Customizer.withDefaults())
-            }
-
         return http.build()
     }
 
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
         val configuration = CorsConfiguration()
-        configuration.allowedOrigins = listOf("http://localhost:5173")
+        configuration.allowedOrigins = listOf("http://127.0.0.1:5173")
         configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
         configuration.allowedHeaders = listOf("*")
         configuration.allowCredentials = true
