@@ -14,17 +14,8 @@ class FotMobRepository(
     private val sourceConfig: SourceConfig,
 ) {
 
-    var sourceId: Int? = null
-
-    fun getSourceId(): Int {
-        if (sourceId != null) return sourceId as Int
-
-       val id = dsl.select()
-           .from(SOURCES_TABLE)
-           .where(SOURCES_TABLE.NAME.eq(sourceConfig.fotmob.name))
-           .fetchOne(SOURCES_TABLE.ID)
-        sourceId = id as Int
-        return id
+    val sourceId :Int by lazy {
+       initSourceId()
     }
 
     fun clearTables() {
@@ -35,10 +26,10 @@ class FotMobRepository(
 
     fun storeTeams(teams: List<Team>): IntArray {
         val queries = teams.map { team ->
-            dsl.insertInto(TEAMS_TABLE).columns().values(team.id.toString(), getSourceId(), team.name)
+            dsl.insertInto(TEAMS_TABLE).columns().values(team.id.toString(), sourceId, team.name)
             dsl.insertInto(TEAMS_TABLE)
                 .columns(TEAMS_TABLE.ID, TEAMS_TABLE.SOURCE_ID, TEAMS_TABLE.NAME)
-                .values(team.id.toString(), getSourceId(), team.name)
+                .values(team.id.toString(), sourceId, team.name)
                 .onConflict()
                 .doNothing()
         }
@@ -50,7 +41,7 @@ class FotMobRepository(
             events.forEach {
                 val eventRecord = dsl.newRecord(EVENTS_TABLE)
                 eventRecord.setId(it.id.toString())
-                eventRecord.setSourceId(getSourceId())
+                eventRecord.setSourceId(sourceId)
                 eventRecord.setName(it.name)
                 eventRecord.setStartsOn(it.startsOn)
                 eventRecord.setEndsOn(it.endsOn)
@@ -59,19 +50,27 @@ class FotMobRepository(
                 val eventTeamRecord = dsl.newRecord(EVENTS_TEAMS_TABLE)
                 eventTeamRecord.setId(UUID.randomUUID())
                 eventTeamRecord.setEventId(it.id.toString())
-                eventTeamRecord.setSourceEventId(getSourceId())
+                eventTeamRecord.setSourceEventId(sourceId)
                 eventTeamRecord.setTeamId(it.homeId)
-                eventTeamRecord.setSourceTeamId(getSourceId())
+                eventTeamRecord.setSourceTeamId(sourceId)
                 eventTeamRecord.store()
 
                 val eventTeamRecord2 = dsl.newRecord(EVENTS_TEAMS_TABLE)
                 eventTeamRecord2.setId(UUID.randomUUID())
                 eventTeamRecord2.setEventId(it.id.toString())
-                eventTeamRecord2.setSourceEventId(getSourceId())
+                eventTeamRecord2.setSourceEventId(sourceId)
                 eventTeamRecord2.setTeamId(it.awayId)
-                eventTeamRecord2.setSourceTeamId(getSourceId())
+                eventTeamRecord2.setSourceTeamId(sourceId)
                 eventTeamRecord2.store()
         }
         return dsl.select(EVENTS_TABLE.ID).from(EVENTS_TABLE).fetchInto(String::class.java)
+    }
+
+    private fun initSourceId(): Int {
+        val id = dsl.select()
+            .from(SOURCES_TABLE)
+            .where(SOURCES_TABLE.NAME.eq(sourceConfig.fotmob.name))
+            .fetchOne(SOURCES_TABLE.ID)
+        return id!!
     }
 }

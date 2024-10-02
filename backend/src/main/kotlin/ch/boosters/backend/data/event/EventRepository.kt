@@ -28,7 +28,6 @@ class EventRepository(private val dsl: DSLContext) {
                 it.getValue(EVENTS_TABLE.ENDS_ON)
             )
         }
-
     }
 
     fun allEvents(): List<Event> {
