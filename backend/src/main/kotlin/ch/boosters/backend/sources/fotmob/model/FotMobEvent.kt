@@ -13,7 +13,14 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Serializable(with = FotMobEventSerializer::class)
-data class FotMobEvent(val name: String, val id: Int, @Contextual val startsOn: LocalDateTime, @Contextual val endsOn: LocalDateTime, val homeId: String, val awayId: String)
+data class FotMobEvent(
+    val name: String,
+    val id: Int,
+    @Contextual val startsOn: LocalDateTime,
+    @Contextual val endsOn: LocalDateTime,
+    val homeId: String,
+    val awayId: String
+)
 
 object FotMobEventSerializer : KSerializer<FotMobEvent> {
     override val descriptor: SerialDescriptor = buildClassSerialDescriptor("Event") {
@@ -28,7 +35,7 @@ object FotMobEventSerializer : KSerializer<FotMobEvent> {
         val jsonObject = jsonInput.decodeJsonElement().jsonObject
 
         val home = jsonObject["home"]?.jsonObject?.get("name")?.jsonPrimitive?.content ?: ""
-        val homeId = jsonObject["away"]?.jsonObject?.get("id")?.jsonPrimitive?.content ?: ""
+        val homeId = jsonObject["home"]?.jsonObject?.get("id")?.jsonPrimitive?.content ?: ""
         val away = jsonObject["away"]?.jsonObject?.get("name")?.jsonPrimitive?.content ?: ""
         val awayId = jsonObject["away"]?.jsonObject?.get("id")?.jsonPrimitive?.content ?: ""
         val name = "$home - $away"

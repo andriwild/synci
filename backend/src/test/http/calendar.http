@@ -1,0 +1,10 @@
+### Create Team Calendar
+http://localhost:8080/api/calendar/subscribe/10192
+
+
+### Get Fotmob League Overview
+https://www.fotmob.com/api/leagues?id=69&tab=overview&type=league
+
+
+### All Fotmob Leagues
+https://www.fotmob.com/api/allLeagues
