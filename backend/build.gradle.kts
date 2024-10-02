@@ -1,15 +1,18 @@
-import org.jooq.meta.jaxb.ForcedType
 import org.jooq.meta.jaxb.Logging
-import org.jooq.meta.jaxb.Property
+
+
+val postgresHost = System.getenv("DB_HOST") ?: "localhost"
+val postgresDbName= System.getenv("DB_NAME") ?: "synci-db"
+val postgresUser = System.getenv("DB_USER") ?: "postgres"
+val postgresPassword = System.getenv("DB_PASSWORD") ?: "postgres"
 
 val javaVersion = 21
 val jooqVersion = "3.19.11"
 val postgresVersion = "42.7.4"
-val postgresJdbcUrl = "jdbc:postgresql://localhost:5432/synci-db"
-val postgresUser = "postgres"
-val postgresPassword = "postgres"
+val postgresJdbcUrl = "jdbc:postgresql://${postgresHost}:5432/${postgresDbName}"
 val hikariCPVersion = "5.1.0"
 val kotlinJvmVersion = "1.9.25"
+val flywayVersion = "10.17.3"
 
 plugins {
 	kotlin("jvm") version "2.0.20"
@@ -17,8 +20,8 @@ plugins {
 	kotlin("plugin.spring") version "2.0.20"
 	id("org.springframework.boot") version "3.3.3"
 	id("io.spring.dependency-management") version "1.1.6"
-    id("org.flywaydb.flyway") version "9.7.0"
     id("nu.studer.jooq") version "9.0"
+    id("org.flywaydb.flyway") version "10.17.3"
 }
 
 configurations {
@@ -38,6 +41,16 @@ repositories {
 	mavenCentral()
 }
 
+buildscript {
+    // TODO: try to remove version duplications
+    val flywayVersion = "10.17.3"
+    dependencies {
+        // flyway needs the postgresql extension on the classpath
+        classpath("org.flywaydb:flyway-database-postgresql:$flywayVersion")
+    }
+}
+
+
 dependencies {
     implementation("com.zaxxer:HikariCP:$hikariCPVersion")
     implementation("org.springframework.boot:spring-boot-starter-jdbc")
@@ -56,6 +69,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
     implementation("org.postgresql:postgresql:$postgresVersion")
 	implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.flywaydb:flyway-database-postgresql:$flywayVersion")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
     "flywayMigration"("org.postgresql:postgresql:$postgresVersion")
     jooqGenerator("org.postgresql:postgresql:$postgresVersion")
@@ -67,10 +81,10 @@ dependencies {
 }
 
 flyway {
-    configurations = arrayOf("flywayMigration")
     url = postgresJdbcUrl
     user = postgresUser
     password = postgresPassword
+    cleanDisabled = false
 }
 
 jooq {
@@ -86,8 +100,8 @@ jooq {
                 jdbc.apply {
                     driver = "org.postgresql.Driver"
                     url = postgresJdbcUrl
-                    user = "postgres"
-                    password = "postgres"
+                    user = postgresUser
+                    password = postgresPassword
                 }
                 generator.apply {
                     name = "org.jooq.codegen.DefaultGenerator"
@@ -120,13 +134,20 @@ kotlin {
 
 tasks.named<nu.studer.gradle.jooq.JooqGenerate>("generateJooq") {
     // generateJooq can be configured to use a different/specific toolchain
-    // dependsOn(tasks.named("flywayMigrate"))
-    // inputs.files(fileTree("src/main/resources/db/migration"))
-    //     .withPropertyName("migrations")
-    //     .withPathSensitivity(PathSensitivity.RELATIVE)
+     dependsOn(tasks.named("flywayMigrate"))
+
+     inputs.files(fileTree("src/main/resources/db/migration"))
+         .withPropertyName("migrations")
+         .withPathSensitivity(PathSensitivity.RELATIVE)
+
     (launcher::set)(javaToolchains.launcherFor {
         languageVersion.set(JavaLanguageVersion.of(javaVersion))
     })
+
+    outputs.cacheIf{ true }
+    // forces to regenerate jooq sources on each build. this is not a nice solution but works for now
+    outputs.upToDateWhen { false }
+
     allInputsDeclared.set(true)
 }
 

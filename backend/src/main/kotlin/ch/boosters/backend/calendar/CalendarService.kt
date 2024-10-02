@@ -1,8 +1,7 @@
 package ch.boosters.backend.calendar
 
 import ch.boosters.backend.data.event.EventRepository
-import ch.boosters.backend.data.syncConfig.SyncConfig
-import ch.boosters.backend.data.syncConfig.SyncConfigRepository
+import ch.boosters.backend.data.event.model.Event
 import net.fortuna.ical4j.model.Calendar
 import net.fortuna.ical4j.model.ComponentContainer
 import net.fortuna.ical4j.model.PropertyContainer
@@ -11,26 +10,30 @@ import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.ProdId
 import net.fortuna.ical4j.model.property.immutable.ImmutableCalScale
 import org.springframework.stereotype.Service
-import java.util.UUID
+
+const val PROD_ID = "-//Events Calendar//iCal4j 1.0//EN"
 
 @Service
-class CalendarService(private val eventRepository: EventRepository, private val syncConfigRepository: SyncConfigRepository) {
-    fun createCalendar(id: UUID): String {
-        //val currentConfig = syncConfigRepository.getSyncConfigById(id)
+class CalendarService(private val eventRepository: EventRepository) {
 
-        //TODO: search for events by currentConfig -> Teams
-
-
-        val icsCalendar = Calendar()
-        icsCalendar.add<PropertyContainer>(ProdId("-//Events Calendar//iCal4j 1.0//EN"))
-        icsCalendar.add<PropertyContainer>(ImmutableCalScale.GREGORIAN)
-
+    fun createCalendar(): String {
         val events = eventRepository.allEvents()
-        events.map {
-            val meeting = VEvent(it.startsOn, it.endsOn, it.name)
-            icsCalendar.add<ComponentContainer<CalendarComponent>>(meeting)
-        }
+        return toCalendar(events).toString()
+    }
 
-        return icsCalendar.toString()
+    fun createCalendar(teamId: String): String {
+        val events = eventRepository.eventsOfTeam(teamId)
+        return toCalendar(events).toString()
+    }
+
+    private fun toCalendar(events: List<Event>): Calendar {
+        val icsCalendar = Calendar()
+        icsCalendar.add<PropertyContainer>(ProdId(PROD_ID))
+        icsCalendar.add<PropertyContainer>(ImmutableCalScale.GREGORIAN)
+        events.forEach {
+            val event = VEvent(it.startsOn, it.endsOn, it.name)
+            icsCalendar.add<ComponentContainer<CalendarComponent>>(event)
+        }
+        return icsCalendar
     }
 }

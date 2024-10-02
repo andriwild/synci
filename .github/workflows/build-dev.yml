@@ -1,0 +1,120 @@
+name: dev build and push
+
+on:
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+        type: choice
+        options:
+        - info
+        - warning
+        - debug
+  push:
+    branches:
+      - main
+
+env:
+  REGISTRY: ghcr.io
+  # github.repository as <account>/<repo>
+  IMAGE_NAME: ${{ github.repository }}
+
+  POSTGRES_DB_NAME: ${{ secrets.POSTGRES_DB_NAME }}
+  POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+  POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+
+  STAGE: dev
+
+  FRONTEND_PORT: 5174
+  BACKEND_PORT: 8081
+
+jobs:
+
+  build_backend:
+    name: Build backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Start PostgreSQL service
+        run: |
+          sudo systemctl start postgresql.service
+          pg_isready
+
+      - name: Update db user
+        run: |
+          sudo -u postgres psql --command="ALTER USER postgres WITH PASSWORD 'postgres'"
+
+      - name: Create synci database
+        run: |
+          sudo -u postgres psql --command='CREATE DATABASE "synci-db" OWNER postgres;'
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log into registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.TOKEN }}
+
+      - name: Build backend image 
+        run: |
+          docker build --network="host" -t ${{ env.REGISTRY }}/${{ github.repository }}/backend-${{ env.STAGE }}:latest ./backend
+
+      - name: Push backend image
+        run: |
+          docker push ${{ env.REGISTRY }}/${{ github.repository }}/backend-${{ env.STAGE }}:latest
+     
+
+  build_frontend:
+    name: Build frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log into registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.TOKEN }}
+
+      - name: Build frontend image
+        run: |
+          docker build -t ${{ env.REGISTRY }}/${{ github.repository }}/frontend-${{ env.STAGE }}:latest ./frontend
+
+      - name: Push frontend image
+        run: |
+          docker push ${{ env.REGISTRY }}/${{ github.repository }}/frontend-${{ env.STAGE }}:latest
+          
+
+  deploy:
+    name: Deploy frontend and backend
+    needs: [build_backend, build_frontend]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup SSH
+      run: |
+          install -m 600 -D /dev/null ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
+
+    - name: Create docker context
+      run: |
+          docker context create remote --docker "host=ssh://${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}"
+          docker context use remote
+
+    - name: Log into registry
+      run: |
+          docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_TOKEN }} ${{ env.REGISTRY }}
+
+    - name: Deploy to remote server
+      run: |
+          docker --context remote compose -f ./docker-compose-remote.yml -p dev up -d
+
+
