@@ -1,0 +1,11 @@
+sources:
+  fotmob:
+    url: https://www.fotmob.com/api
+    name: FOT_MOB
+    leagues:
+      - id: 69
+        name: Super League
+      - id: 47
+        name: Premier League
+      - id: 42
+        name: Champions League
