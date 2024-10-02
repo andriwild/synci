@@ -12,12 +12,27 @@ import org.springframework.stereotype.Service
 
 @Service
 class CalendarService(private val eventRepository: EventRepository) {
+
     fun createCalendar(): String {
         val icsCalendar = Calendar()
         icsCalendar.add<PropertyContainer>(ProdId("-//Events Calendar//iCal4j 1.0//EN"))
         icsCalendar.add<PropertyContainer>(ImmutableCalScale.GREGORIAN)
 
         val events = eventRepository.allEvents()
+        events.map {
+            val meeting = VEvent(it.startsOn, it.endsOn, it.name)
+            icsCalendar.add<ComponentContainer<CalendarComponent>>(meeting)
+        }
+
+        return icsCalendar.toString()
+    }
+
+    fun createCalendar(teamId: String): String {
+        val icsCalendar = Calendar()
+        icsCalendar.add<PropertyContainer>(ProdId("-//Events Calendar//iCal4j 1.0//EN"))
+        icsCalendar.add<PropertyContainer>(ImmutableCalScale.GREGORIAN)
+
+        val events = eventRepository.eventsOfTeam(teamId)
         events.map {
             val meeting = VEvent(it.startsOn, it.endsOn, it.name)
             icsCalendar.add<ComponentContainer<CalendarComponent>>(meeting)
