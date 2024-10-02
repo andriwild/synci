@@ -14,7 +14,7 @@ class QuartzConfig {
     @Bean
     fun dailyJobDetail(): JobDetailFactoryBean {
         val jobDetail = JobDetailFactoryBean()
-        jobDetail.setJobClass(EventSyncJob::class.java) // Die Klasse, die den Job implementiert
+        jobDetail.setJobClass(EventSyncJob::class.java)
         jobDetail.setDescription("Invoke Service Method Daily")
         jobDetail.setDurability(true)
         return jobDetail
@@ -24,9 +24,9 @@ class QuartzConfig {
     fun dailyTrigger(jobDetail: JobDetail): SimpleTriggerFactoryBean {
         val trigger = SimpleTriggerFactoryBean()
         trigger.setJobDetail(jobDetail)
-        trigger.setRepeatInterval(24 * 60 * 60 * 1000L) // Einmal täglich (24 Stunden)
-//        trigger.setRepeatInterval(5 * 60 * 1000L) // Alle 5 Minuten
-        trigger.setStartTime(Date(System.currentTimeMillis() + 3000)) // Start nach 3 Sekunden
+        trigger.setRepeatInterval(24 * 60 * 60 * 1000L) // daily trigger (24 h)
+//        trigger.setRepeatInterval(5 * 60 * 1000L) // each 5 min
+        trigger.setStartTime(Date(System.currentTimeMillis() + 3000)) // start after 3 sec
         trigger.setRepeatCount(SimpleTrigger.REPEAT_INDEFINITELY)
         return trigger
     }
