@@ -14,7 +14,7 @@ on:
         - debug
   push:
     branches:
-      - main
+      - dev 
 
 env:
   REGISTRY: ghcr.io
