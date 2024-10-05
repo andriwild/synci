@@ -2,9 +2,9 @@ import org.jooq.meta.jaxb.Logging
 
 
 val postgresHost = System.getenv("DB_HOST") ?: "localhost"
-val postgresDbName= System.getenv("DB_NAME") ?: "synci-db"
-val postgresUser = System.getenv("DB_USER") ?: "postgres"
-val postgresPassword = System.getenv("DB_PASSWORD") ?: "postgres"
+val postgresDbName= System.getenv("POSTGRES_DB") ?: "synci-db"
+val postgresUser = System.getenv("POSTGRES_USER") ?: "postgres"
+val postgresPassword = System.getenv("POSTGRES_PASSWORD") ?: "postgres"
 
 val javaVersion = 21
 val jooqVersion = "3.19.11"

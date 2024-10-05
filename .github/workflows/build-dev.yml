@@ -29,12 +29,18 @@ env:
 
   FRONTEND_PORT: 5174
   BACKEND_PORT: 8081
+  DB_PORT: 5433
+
+  # environment variable starting with 'VITE_' are available in the frontend
+  VITE_BACKEND_URL: https://dev.synci.awild.ch
+  VITE_STAGE: dev
 
 jobs:
 
   build_backend:
     name: Build backend
     runs-on: ubuntu-latest
+
     steps:
       - name: Start PostgreSQL service
         run: |
@@ -51,6 +57,8 @@ jobs:
 
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: dev
 
       - name: Log into registry
         uses: docker/login-action@v3
@@ -71,9 +79,12 @@ jobs:
   build_frontend:
     name: Build frontend
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: dev
 
       - name: Log into registry
         uses: docker/login-action@v3
@@ -84,7 +95,7 @@ jobs:
 
       - name: Build frontend image
         run: |
-          docker build -t ${{ env.REGISTRY }}/${{ github.repository }}/frontend-${{ env.STAGE }}:latest ./frontend
+          docker build --build-arg NODE_ENV=development --build-arg VITE_BACKEND_URL=${{env.VITE_BACKEND_URL}} -t ${{ env.REGISTRY }}/${{ github.repository }}/frontend-${{ env.STAGE }}:latest ./frontend
 
       - name: Push frontend image
         run: |
@@ -95,26 +106,31 @@ jobs:
     name: Deploy frontend and backend
     needs: [build_backend, build_frontend]
     runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: dev
 
-    - name: Setup SSH
-      run: |
-          install -m 600 -D /dev/null ~/.ssh/id_rsa
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
+      - name: Setup SSH
+        run: |
+            install -m 600 -D /dev/null ~/.ssh/id_rsa
+            echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+            ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
 
-    - name: Create docker context
-      run: |
-          docker context create remote --docker "host=ssh://${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}"
-          docker context use remote
+      - name: Create docker context
+        run: |
+            docker context create remote --docker "host=ssh://${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}"
+            docker context use remote
 
-    - name: Log into registry
-      run: |
-          docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_TOKEN }} ${{ env.REGISTRY }}
+      - name: Log into registry
+        run: |
+            docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_TOKEN }} ${{ env.REGISTRY }}
 
-    - name: Deploy to remote server
-      run: |
-          docker --context remote compose -f ./docker-compose-remote.yml -p dev up -d
-
+      - name: Deploy to remote server
+        run: |
+            docker pull ${{ env.REGISTRY }}/${{ github.repository }}/frontend-${{ env.STAGE }}:latest
+            docker pull ${{ env.REGISTRY }}/${{ github.repository }}/backend-${{ env.STAGE }}:latest
+            docker --context remote compose -f ./docker-compose-remote.yml -p dev up -d --force-recreate
 

@@ -63,7 +63,7 @@ CREATE TABLE public.EVENTS_TABLE
 );
 
 
-ALTER TABLE public.EVENTS_TABLE OWNER TO postgres;
+-- ALTER TABLE public.EVENTS_TABLE OWNER TO postgres;
 
 --
 -- Name: event_person; Type: TABLE; Schema: public; Owner: postgres
@@ -78,7 +78,7 @@ CREATE TABLE public.EVENTS_PERSONS_TABLE
 );
 
 
-ALTER TABLE public.EVENTS_PERSONS_TABLE OWNER TO postgres;
+-- ALTER TABLE public.EVENTS_PERSONS_TABLE OWNER TO postgres;
 
 --
 -- Name: event_team; Type: TABLE; Schema: public; Owner: postgres
@@ -93,7 +93,7 @@ CREATE TABLE public.EVENTS_TEAMS_TABLE (
 );
 
 
-ALTER TABLE public.EVENTS_TABLE OWNER TO postgres;
+-- ALTER TABLE public.EVENTS_TABLE OWNER TO postgres;
 
 --
 -- Name: location; Type: TABLE; Schema: public; Owner: postgres
@@ -105,7 +105,7 @@ CREATE TABLE public.LOCATIONS_TABLE(
 );
 
 
-ALTER TABLE public.LOCATIONS_TABLE OWNER TO postgres;
+-- ALTER TABLE public.LOCATIONS_TABLE OWNER TO postgres;
 
 --
 -- Name: person; Type: TABLE; Schema: public; Owner: postgres
@@ -123,7 +123,7 @@ CREATE TABLE public.PERSONS_TABLE(
 );
 
 
-ALTER TABLE public.PERSONS_TABLE OWNER TO postgres;
+ -- ALTER TABLE public.PERSONS_TABLE OWNER TO postgres;
 
 --
 -- Name: sport; Type: TABLE; Schema: public; Owner: postgres
@@ -136,7 +136,7 @@ CREATE TABLE public.SPORTS_TABLE(
 );
 
 
-ALTER TABLE public.SPORTS_TABLE OWNER TO postgres;
+-- ALTER TABLE public.SPORTS_TABLE OWNER TO postgres;
 
 --
 -- Name: sync_config; Type: TABLE; Schema: public; Owner: postgres
@@ -148,7 +148,7 @@ CREATE TABLE public.SYNC_CONFIGS_TABLE(
 );
 
 
-ALTER TABLE public.SYNC_CONFIGS_TABLE OWNER TO postgres;
+-- ALTER TABLE public.SYNC_CONFIGS_TABLE OWNER TO postgres;
 
 --
 -- Name: sync_config_location; Type: TABLE; Schema: public; Owner: postgres
@@ -160,7 +160,7 @@ CREATE TABLE public.SYNC_CONFIGS_LOCATIONS_TABLE(
 );
 
 
-ALTER TABLE public.SYNC_CONFIGS_LOCATIONS_TABLE OWNER TO postgres;
+-- ALTER TABLE public.SYNC_CONFIGS_LOCATIONS_TABLE OWNER TO postgres;
 
 --
 -- Name: sync_config_person; Type: TABLE; Schema: public; Owner: postgres
@@ -172,7 +172,7 @@ CREATE TABLE public.SYNC_CONFIGS_PERSONS_TABLE(
                                                   source_person_id int NOT NULL
 );
 
-ALTER TABLE public.SYNC_CONFIGS_PERSONS_TABLE OWNER TO postgres;
+-- ALTER TABLE public.SYNC_CONFIGS_PERSONS_TABLE OWNER TO postgres;
 
 --
 -- Name: sync_config_sport; Type: TABLE; Schema: public; Owner: postgres
@@ -184,7 +184,7 @@ CREATE TABLE public.SYNC_CONFIGS_SPORTS_TABLE(
 );
 
 
-ALTER TABLE public.SYNC_CONFIGS_SPORTS_TABLE OWNER TO postgres;
+-- ALTER TABLE public.SYNC_CONFIGS_SPORTS_TABLE OWNER TO postgres;
 
 --
 -- Name: sync_config_team; Type: TABLE; Schema: public; Owner: postgres
@@ -198,7 +198,7 @@ CREATE TABLE public.SYNC_CONFIGS_TEAMS_TABLE(
 );
 
 
-ALTER TABLE public.SYNC_CONFIGS_TEAMS_TABLE OWNER TO postgres;
+-- ALTER TABLE public.SYNC_CONFIGS_TEAMS_TABLE OWNER TO postgres;
 
 
 --
@@ -217,7 +217,7 @@ CREATE TABLE public.TEAMS_TABLE(
 );
 
 
-ALTER TABLE public.TEAMS_TABLE OWNER TO postgres;
+-- ALTER TABLE public.TEAMS_TABLE OWNER TO postgres;
 
 --
 -- Data for Name: event; Type: TABLE DATA; Schema: public; Owner: postgres
@@ -457,7 +457,7 @@ CREATE TABLE public.SYNC_CONFIGS_USERS_TABLE(
 );
 
 
-ALTER TABLE public.SYNC_CONFIGS_USERS_TABLE OWNER TO postgres;
+-- ALTER TABLE public.SYNC_CONFIGS_USERS_TABLE OWNER TO postgres;
 
 --
 -- Name: user; Type: TABLE; Schema: public; Owner: postgres
@@ -469,7 +469,7 @@ CREATE TABLE public.USERS_TABLE (
 );
 
 
-ALTER TABLE public.USERS_TABLE OWNER TO postgres;
+-- ALTER TABLE public.USERS_TABLE OWNER TO postgres;
 
 --
 -- Data for Name: sync_config_user; Type: TABLE DATA; Schema: public; Owner: postgres

@@ -1,18 +1,16 @@
 import { SyncConfig } from '../model/SyncConfig';
+const env = import.meta.env
 
-const LOCAL_BACKEND_URL = 'http://localhost:8080/api' 
-const BACKEND_URL = 'https://synci.awild.ch/api'
-
-const BASE_URL = import.meta.env.DEV ? LOCAL_BACKEND_URL: BACKEND_URL
+const BACKEND_URL = env.VITE_BACKEND_URL ? env.VITE_BACKEND_URL + '/api': 'http://localhost:8080/api'
 
 
 async function apiFetch(endpoint: string, options?: RequestInit) {
-    return await fetch(`${BASE_URL}${endpoint}`, options);
+    return await fetch(`${BACKEND_URL}${endpoint}`, options);
 }
 
 export const Api = {
     getSyncConfigUrl: (id: string) => {
-        return `${BASE_URL}/calendar?syncConfigId=${id}`
+        return `${BACKEND_URL}/calendar/subscribe/${id}`
     },
     getTeams: async () => {
         return apiFetch('/team/list')
@@ -22,7 +20,6 @@ export const Api = {
     deleteSyncConfig: async (id: string) => {
         return apiFetch(`/syncconfig/${id}`, {
             method: 'DELETE',
-            mode: 'cors',
         })
             .then(response => response.json())
             .catch(error => console.error('Error: deleteSyncConfig', error));
@@ -41,7 +38,6 @@ export const Api = {
     createSyncConfig: async (id: string, body: SyncConfig, method: string = 'POST') => {
         return apiFetch(`/syncconfig/${id}`,{
             method: method,
-            mode: 'cors',
             body: JSON.stringify(body),
             headers: {'Content-Type': 'application/json'}
         })

@@ -26,6 +26,9 @@ env:
 
   STAGE: prod
 
+  VITE_BACKEND_URL: https://synci.awild.ch
+  VITE_STAGE: prod
+
 jobs:
 
   build_backend:
@@ -82,7 +85,7 @@ jobs:
 
       - name: Build frontend image
         run: |
-          docker build -t ${{ env.REGISTRY }}/${{ github.repository }}/frontend-prod:${{ github.ref_name }} ./frontend
+          docker build --build-arg VITE_BACKEND_URL=${{env.VITE_BACKEND_URL}} -t ${{ env.REGISTRY }}/${{ github.repository }}/frontend-prod:${{ github.ref_name }} ./frontend
 
       - name: Push frontend image
         run: |
@@ -116,5 +119,5 @@ jobs:
 
     - name: Deploy to remote server
       run: |
-          docker --context remote compose -f ./docker-compose-remote.yml -p prod up -d
+          docker --context remote compose -f ./docker-compose-remote.yml -p prod up -d --force-recreate
 

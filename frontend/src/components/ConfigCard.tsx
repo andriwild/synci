@@ -22,8 +22,8 @@ export const ConfigCard: FC<Props> = ({ config, onDelete }) => {
 
     const navigate = useNavigate();
 
-    const toClipboard = (item: SyncConfig) => {
-        navigator.clipboard.writeText(`https://localhost:8080/api/calendar?syncConfigId=${item.id}`);
+    const toClipboard = (config: SyncConfig) => {
+        navigator.clipboard.writeText(Api.getSyncConfigUrl(config.id!));
         alert("Der Link wurde in die Zwischenablage kopiert")
     }
 
@@ -35,9 +35,9 @@ export const ConfigCard: FC<Props> = ({ config, onDelete }) => {
             style={{ width: '400px', marginBottom: 24 }}
             extra={
                 <Flex justify={"end"} gap={"10px"}>
-                    <Button icon={<Pencil size={'1rem'} />} onClick={ () => navigate('/config/' + config.id) } color={"white"}/>
-                    <Button icon={<Copy size={'1rem'} />} onClick={ () => toClipboard(config) } color={"white"}/>
-                    <Button icon={<Trash size={'1rem'} />} onClick={ () => onDelete(config.id!) } color={"white"}/>
+                    <Button icon={<Pencil size={'1rem'} />} onClick={ () => navigate('/config/' + config.id) }/>
+                    <Button icon={<Copy size={'1rem'} />} onClick={ () => toClipboard(config) } />
+                    <Button icon={<Trash size={'1rem'} />} onClick={ () => onDelete(config.id!) } />
                 </Flex>
             }>
                 <h2>{config.name}</h2>

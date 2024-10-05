@@ -10,6 +10,7 @@ import { Home } from "./pages/Home.tsx";
 import { FC } from 'react';
 
 export const App: FC = () => {
+
     return (
         <Router>
             <ConfigProvider
