@@ -8,3 +8,11 @@ https://www.fotmob.com/api/leagues?id=69&tab=overview&type=league
 
 ### All Fotmob Leagues
 https://www.fotmob.com/api/allLeagues
+
+
+### Get All Teams
+http://localhost:8080/api/team/list
+
+
+### Get All Configs
+http://localhost:8080/api/syncconfig/list

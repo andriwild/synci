@@ -26,7 +26,6 @@ class FotMobRepository(
 
     fun storeTeams(teams: List<Team>): IntArray {
         val queries = teams.map { team ->
-            dsl.insertInto(TEAMS_TABLE).columns().values(team.id.toString(), sourceId, team.name)
             dsl.insertInto(TEAMS_TABLE)
                 .columns(TEAMS_TABLE.ID, TEAMS_TABLE.SOURCE_ID, TEAMS_TABLE.NAME)
                 .values(team.id.toString(), sourceId, team.name)

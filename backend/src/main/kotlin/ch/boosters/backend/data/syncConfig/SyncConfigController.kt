@@ -12,11 +12,23 @@ class SyncConfigController(private val syncConfigService: SyncConfigService) {
         return syncConfigService.getAllSyncConfigs()
     }
 
-
-    @PostMapping("/{id}")
-    fun updateConfig(@PathVariable id: UUID, @RequestBody syncConfig: SyncConfig): SyncConfig {
-        return syncConfigService.updateSyncConfig(id, syncConfig)
+    @GetMapping("/{id}")
+    fun newConfig(@PathVariable id: UUID): SyncConfig? {
+        return syncConfigService.getSyncConfig(id)
     }
 
+    @PutMapping("/{id}")
+    fun updateConfig(@PathVariable id: UUID, @RequestBody syncConfig: SyncConfig) {
+        syncConfigService.updateSyncConfig(id, syncConfig)
+    }
 
+    @PostMapping("/new")
+    fun createConfig(@RequestBody syncConfig: SyncConfig) {
+        syncConfigService.createSyncConfig(syncConfig)
+    }
+
+    @DeleteMapping("/{id}")
+    fun deleteConfig(@PathVariable id: UUID): Int {
+        return syncConfigService.deleteSyncConfig(id)
+    }
 }
