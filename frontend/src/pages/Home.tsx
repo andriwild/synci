@@ -1,6 +1,7 @@
-import {Flex, Typography} from "antd";
+import { FC } from "react";
+import { Flex, Typography } from "antd";
 
-export const Home = () => {
+export const Home: FC = () => {
 
     return (
         <Flex vertical style={{height: '100%', width: '100%', padding: 24}}>
