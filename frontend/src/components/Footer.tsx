@@ -1,6 +1,8 @@
-import {Flex, Typography} from "antd";
+import { FC } from "react";
+import { Flex, Typography } from "antd";
 
-export const Footer = () => {
+// TODO: Footer should be at the bottom of the page - always
+export const Footer: FC = () => {
 
     return (
         <Flex justify={'center'} align={'center'} gap={'middle'} style={{height: 100}}>

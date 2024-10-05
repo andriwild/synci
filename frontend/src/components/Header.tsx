@@ -1,8 +1,10 @@
-import {Layout, Menu} from "antd";
-import {useNavigate} from "react-router-dom";
-import {CalendarCheck} from "@phosphor-icons/react";
+import { FC } from "react";
+import { Layout, Menu } from "antd";
+import { useNavigate } from "react-router-dom";
+import { CalendarCheck } from "@phosphor-icons/react";
+import { MenuInfo } from "rc-menu/lib/interface";
 
-export const Header = () => {
+export const Header: FC = () => {
     const navigate = useNavigate();
 
     const items = [
@@ -18,7 +20,7 @@ export const Header = () => {
         }
     ];
 
-    const handleMenuClick = (e: any) => {
+    const handleMenuClick = (e: MenuInfo) => {
         const clickedItem = items.find(item => item.key === e.key);
         if (clickedItem && clickedItem.path) {
             navigate(clickedItem.path);
@@ -26,13 +28,13 @@ export const Header = () => {
     };
 
     return (
-        <Layout.Header style={{ display: 'flex', alignItems: 'center', padding: '0  24px', backgroundColor: '#eaeaea  ' }}>
+        <Layout.Header style={{ display: 'flex', alignItems: 'center', padding: '0  24px', backgroundColor: '#eaeaea' }}>
             <CalendarCheck size={32} style={{color: "black", marginRight: 16}}/>
             <Menu
                 mode="horizontal"
-                defaultSelectedKeys={['1']}
-                items={items}
-                onClick={handleMenuClick}
+                defaultSelectedKeys={ ['1'] }
+                items={ items }
+                onClick={ handleMenuClick }
                 style={{ flex: 1, minWidth: 0 }}
             />
         </Layout.Header>
