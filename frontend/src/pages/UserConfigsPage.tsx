@@ -1,54 +1,53 @@
-import {Button, Card, Flex} from "antd";
-import {useNavigate} from "react-router-dom";
-import {Copy, Pencil, Plus} from "@phosphor-icons/react";
-import {useEffect, useState} from "react";
-import {SyncConfig} from "../model/SyncConfig.ts";
+import { FC } from "react";
+import { Card, Flex } from "antd";
+import { Plus } from "@phosphor-icons/react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { SyncConfig } from "../model/SyncConfig.ts";
+import { Api } from "../services/data.tsx"
+import { ConfigCard } from "../components/ConfigCard.tsx";
 
 
-export const UserConfigsPage = () => {
+export const UserConfigsPage: FC = () => {
     const navigate = useNavigate();
     const [syncConfigs, setSyncConfigs] = useState([] as SyncConfig[]);
 
     useEffect(() => {
-        fetch('http://localhost:8080/api/syncconfig/list')
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-                setSyncConfigs(data);
-            }
-        );
+        Api.getAllSycnConfigs()
+            .then(data => 
+                data.sort(
+                    (a: SyncConfig, b: SyncConfig) => a.name.localeCompare(b.name))
+            )
+            .then(setSyncConfigs);
     }, []);
 
 
+    const deleteConfig = (id: string) => {
+        Api.deleteSyncConfig(id)
+            .then(data => {
+                if (data) {
+                    setSyncConfigs(syncConfigs.filter(item => item.id !== id));
+                }
+            });
+    };
+
     return (
         <Flex gap={24} style={{padding: 24}} wrap={"wrap"}>
-            {syncConfigs.map((item) => {
-                return (
-                    <Card key={item.id} title={item.url} extra={
-                        <Flex  justify={"end"} gap={"10px"}>
-                        <Button icon={<Pencil size={'1rem'} />} onClick={() => navigate('/config/' + item.id)} color={"white"}></Button>
-                        <Button icon={<Copy size={'1rem'} />} onClick={
-                            () => {
-                                navigator.clipboard.writeText(`https://localhost:8080/api/calendar?syncConfigId=${item.id}`);
-                                alert("Der Link wurde in die Zwischenablage kopiert")
-                            }
-                        } color={"white"}></Button>
+            { syncConfigs.map(
+                (item:SyncConfig) => 
+                    <ConfigCard config={item} key={item.id} onDelete={() => deleteConfig(item.id!)}/>
+            )}
+                <Card onClick={() => navigate('/config/new')} style={{
+                    minWidth: '400px', 
+                    display: 'flex', 
+                    justifyContent: 'center', 
+                    backgroundColor: "white", 
+                    alignItems: 'center', 
+                    cursor: "pointer"
+                }}>
+                    <Plus size={'2rem'} color={"black"}/>
+                </Card>
 
-                    </Flex>
-                        } style={{width: '400px', marginBottom: 24}}>
-                        <h2>{item.url}</h2>
-                        <p>Anzahl abonierter Teams:
-                        {/*    {item.teams.length}*/}
-                        </p>
-                        <p>https://localhost:8080/api/calendar?syncConfigId={item.id}</p>
-
-                    </Card>
-                );
-            })}
-            <Card onClick={() => navigate('/config/new')} style={{minWidth: '400px', display: 'flex', justifyContent: 'center', backgroundColor: "white", alignItems: 'center', cursor: "pointer"}}>
-           <Plus size={'2rem'} color={"black"}/>
-             </Card>
-
-        </Flex>
+            </Flex>
     );
 };
