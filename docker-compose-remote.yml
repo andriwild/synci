@@ -40,6 +40,7 @@ services:
   db:
     container_name: "synci-db-${STAGE:-local}"
     image: postgres:15.2-alpine
+    command: ["postgres", "-c", "log_statement=all"]
     restart: always
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
