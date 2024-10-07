@@ -25,7 +25,7 @@ class SyncConfigTeamRepository (private val dsl: DSLContext) {
                     SYNC_CONFIGS_TEAMS_TABLE.ID,
                     SYNC_CONFIGS_TEAMS_TABLE.SYNC_CONFIG_ID,
                     SYNC_CONFIGS_TEAMS_TABLE.TEAM_ID,
-                    SYNC_CONFIGS_TEAMS_TABLE.SOURCE_ID
+                    SYNC_CONFIGS_TEAMS_TABLE.SOURCE_TEAM_ID
                 )
                 .values(teamUuid, configId, it.id, it.source)
         }
