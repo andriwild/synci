@@ -2,7 +2,7 @@ import org.jooq.meta.jaxb.Logging
 
 
 val postgresHost = System.getenv("DB_HOST") ?: "localhost"
-val postgresDbName= System.getenv("POSTGRES_DB") ?: "synci-db"
+val postgresDbName= System.getenv("POSTGRES_DB_NAME") ?: "synci-db"
 val postgresUser = System.getenv("POSTGRES_USER") ?: "postgres"
 val postgresPassword = System.getenv("POSTGRES_PASSWORD") ?: "postgres"
 
