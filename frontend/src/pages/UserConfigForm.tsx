@@ -18,7 +18,7 @@ import { FC } from "react";
 export const UserConfigForm: FC = () => {
     const navigate = useNavigate();
     const [form] = useForm();
-    const {id: id} = useParams();
+    const { id: id } = useParams();
     const createmode = id === 'new';
 
     const [teams, setTeams] = useState([] as Team[]);
@@ -26,17 +26,19 @@ export const UserConfigForm: FC = () => {
     useEffect(() => {
         Api.getTeams().then(setTeams);
 
+        // edit existing config - add teams to form
         if (!createmode) {
             Api.getSycnConfig(id ? id : 'new')
                 .then(it => {
-                    const teamsLabels = it.teams.map( (team:Team) => ({value: team.id, label: team.name }));
-                    form.setFieldsValue({teams: teamsLabels, name: it.name});
+                    form.setFieldsValue({ 
+                        teams: it.teams.map((team:Team) => (team.id)), 
+                        name: it.name
+                    });
                 })
         }
     }, []);
 
     const handleSubmit = (values: {teams: number[], name: string}) => {
-      
         const selectedTeams = teams.filter(team => values.teams.includes(team.id));
 
         const syncConfig: SyncConfig = {
@@ -56,7 +58,6 @@ export const UserConfigForm: FC = () => {
         <Flex vertical style={{height: '100%', width: '100%', padding: 24}}>
             <Card style={{ width: 600, textAlign: 'left' }}>
 
-                {/*<h2 style={{ marginBottom: '20px' }}>Abonement {syncConfig.}</h2>*/}
                 <p>Füge eine Konfiguration hinzu. Wähle dabei aus, für welches Team, welchen Sportler, welchen Ort oder
                 welche Sportart du dich interessierst</p>
 
@@ -73,12 +74,12 @@ export const UserConfigForm: FC = () => {
 
                     <Form.Item name={'teams'} label={'Teams'}>
                         <Select
-                        fieldNames={{ label: "name", value: "id" }}
-                        mode="multiple"
-                        placeholder="Teams auswählen"
-                        options={teams.map(team => ({ id: team.id, name: team.name }))}
-                        style={{ width: '100%' }}
-                    />
+                            // fieldNames={{ value: "id", label: "name", options: "source"}}
+                            mode="multiple"
+                            placeholder="Teams auswählen"
+                            options={teams.map(team => ({ value: team.id, label: team.name }))}
+                            style={{ width: '100%' }}
+                        />
                     </Form.Item>
 
                     <Flex gap={'middle'} justify={'end'} style={{marginTop: 48, marginBottom: 12 }}>
