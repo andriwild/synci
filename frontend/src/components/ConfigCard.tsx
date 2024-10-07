@@ -21,11 +21,13 @@ interface Props {
 export const ConfigCard: FC<Props> = ({ config, onDelete }) => {
 
     const navigate = useNavigate();
+    const sortedTeamNames = config.teams.map(team => team.name).sort();
 
     const toClipboard = (config: SyncConfig) => {
         navigator.clipboard.writeText(Api.getSyncConfigUrl(config.id!));
         alert("Der Link wurde in die Zwischenablage kopiert")
     }
+
 
     return (
         <Card 
@@ -41,7 +43,7 @@ export const ConfigCard: FC<Props> = ({ config, onDelete }) => {
                 </Flex>
             }>
                 <h2>{config.name}</h2>
-                { config.teams.map((team) => (<Tag key={team.id} color="blue">{team.name}</Tag>))}
+                { sortedTeamNames.map(name => (<Tag key={name} color="blue">{name}</Tag>)) }
                 <br/>
                 <Text type="secondary">{Api.getSyncConfigUrl(config.id!)}</Text>
         </Card>

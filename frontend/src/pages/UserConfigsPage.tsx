@@ -32,22 +32,25 @@ export const UserConfigsPage: FC = () => {
     };
 
     return (
-        <Flex gap={24} style={{padding: 24}} wrap={"wrap"}>
+        <Flex gap={24} style={{ padding: 24 }} wrap={ "wrap" }>
             { syncConfigs.map(
                 (item:SyncConfig) => 
-                    <ConfigCard config={item} key={item.id} onDelete={() => deleteConfig(item.id!)}/>
+                    <ConfigCard 
+                        config={ item } 
+                        key={ item.id } 
+                        onDelete={() => deleteConfig(item.id!)}
+                    />
             )}
-                <Card onClick={() => navigate('/config/new')} style={{
-                    minWidth: '400px', 
-                    display: 'flex', 
-                    justifyContent: 'center', 
-                    backgroundColor: "white", 
-                    alignItems: 'center', 
-                    cursor: "pointer"
-                }}>
-                    <Plus size={'2rem'} color={"black"}/>
-                </Card>
-
-            </Flex>
+            <Card onClick={() => navigate('/config/new')} style={{
+                minWidth: '400px', 
+                display: 'flex', 
+                justifyContent: 'center', 
+                backgroundColor: "white", 
+                alignItems: 'center', 
+                cursor: "pointer"
+            }}>
+                <Plus size={'2rem'} color={"black"}/>
+            </Card>
+        </Flex>
     );
 };

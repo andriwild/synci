@@ -31,7 +31,9 @@ export const UserConfigForm: FC = () => {
             Api.getSycnConfig(id ? id : 'new')
                 .then(it => {
                     form.setFieldsValue({ 
-                        teams: it.teams.map((team:Team) => (team.id)), 
+                        teams: it.teams
+                            .sort((a: Team, b: Team) => a.name.localeCompare(b.name))
+                            .map((team:Team) => (team.id)), 
                         name: it.name
                     });
                 })
@@ -55,26 +57,25 @@ export const UserConfigForm: FC = () => {
     const handleBack = () => navigate('/config');
 
     return (
-        <Flex vertical style={{height: '100%', width: '100%', padding: 24}}>
+        <Flex vertical style={{ height: '100%', width: '100%', padding: 24 }}>
             <Card style={{ width: 600, textAlign: 'left' }}>
 
                 <p>Füge eine Konfiguration hinzu. Wähle dabei aus, für welches Team, welchen Sportler, welchen Ort oder
                 welche Sportart du dich interessierst</p>
 
                 <Form
-                    form={form} 
-                    onFinish={handleSubmit} 
-                    layout={'vertical'} 
-                    style={{marginTop: 36}}
+                    form={ form }
+                    onFinish={ handleSubmit }
+                    layout={ 'vertical' }
+                    style={{ marginTop: 36 }}
                 >
 
-                    <Form.Item name={'name'} label={'Config Name'}>
+                    <Form.Item name={ 'name' } label={ 'Config Name' }>
                         <Input placeholder="Config Name" />
                     </Form.Item>
 
-                    <Form.Item name={'teams'} label={'Teams'}>
+                    <Form.Item name={ 'teams' } label={ 'Teams' }>
                         <Select
-                            // fieldNames={{ value: "id", label: "name", options: "source"}}
                             mode="multiple"
                             placeholder="Teams auswählen"
                             options={teams.map(team => ({ value: team.id, label: team.name }))}
@@ -82,9 +83,9 @@ export const UserConfigForm: FC = () => {
                         />
                     </Form.Item>
 
-                    <Flex gap={'middle'} justify={'end'} style={{marginTop: 48, marginBottom: 12 }}>
-                        <Button onClick={handleBack}>Zurück</Button>
-                        <Button htmlType={'submit'} type={'primary'}>Submit</Button>
+                    <Flex gap={ 'middle' } justify={ 'end' } style={{ marginTop: 48, marginBottom: 12 }}>
+                        <Button onClick={ handleBack }>Zurück</Button>
+                        <Button htmlType={ 'submit' } type={ 'primary' }>Submit</Button>
                     </Flex>
 
                 </Form>
