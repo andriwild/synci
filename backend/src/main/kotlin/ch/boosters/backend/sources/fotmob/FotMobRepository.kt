@@ -21,10 +21,10 @@ class FotMobRepository(
     fun clearTables() {
         dsl.truncate(EVENTS_TABLE).cascade().execute()
         dsl.truncate(EVENTS_TEAMS_TABLE).cascade().execute()
-        dsl.truncate(TEAMS_TABLE).cascade().execute()
     }
 
     fun storeTeams(teams: List<Team>): IntArray {
+
         val queries = teams.map { team ->
             dsl.insertInto(TEAMS_TABLE)
                 .columns(TEAMS_TABLE.ID, TEAMS_TABLE.SOURCE_ID, TEAMS_TABLE.NAME)
