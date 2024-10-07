@@ -10,6 +10,7 @@ import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.ProdId
 import net.fortuna.ical4j.model.property.immutable.ImmutableCalScale
 import org.springframework.stereotype.Service
+import java.util.UUID
 
 const val PROD_ID = "-//Events Calendar//iCal4j 1.0//EN"
 
@@ -21,8 +22,8 @@ class CalendarService(private val eventRepository: EventRepository) {
         return toCalendar(events).toString()
     }
 
-    fun createCalendar(teamId: String): String {
-        val events = eventRepository.eventsOfTeam(teamId)
+    fun createCalendar(configId: UUID): String {
+        val events = eventRepository.eventsOfTeam(configId)
         return toCalendar(events).toString()
     }
 

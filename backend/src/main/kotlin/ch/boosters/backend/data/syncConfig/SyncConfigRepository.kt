@@ -38,9 +38,7 @@ class SyncConfigRepository (private val dsl: DSLContext) {
         )
             .from(SYNC_CONFIGS_TABLE)
             .join(SYNC_CONFIGS_TEAMS_TABLE)
-            .on(
-                SYNC_CONFIGS_TABLE.ID.eq(SYNC_CONFIGS_TEAMS_TABLE.SYNC_CONFIG_ID)
-            )
+            .on(SYNC_CONFIGS_TABLE.ID.eq(SYNC_CONFIGS_TEAMS_TABLE.SYNC_CONFIG_ID))
             .join(TEAMS_TABLE)
             .on(SYNC_CONFIGS_TEAMS_TABLE.TEAM_ID.eq(TEAMS_TABLE.ID))
             .fetch().map {
