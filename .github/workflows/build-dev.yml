@@ -33,7 +33,6 @@ env:
 
   # environment variable starting with 'VITE_' are available in the frontend
   VITE_BACKEND_URL: https://dev.synci.awild.ch
-  VITE_STAGE: dev
 
 jobs:
 
@@ -95,7 +94,7 @@ jobs:
 
       - name: Build frontend image
         run: |
-          docker build --build-arg NODE_ENV=development --build-arg VITE_BACKEND_URL=${{env.VITE_BACKEND_URL}} -t ${{ env.REGISTRY }}/${{ github.repository }}/frontend-${{ env.STAGE }}:latest ./frontend
+          docker build --build-arg VITE_STAGE=${{env.STAGE}} --build-arg VITE_BACKEND_URL=${{env.VITE_BACKEND_URL}} -t ${{ env.REGISTRY }}/${{ github.repository }}/frontend-${{ env.STAGE }}:latest ./frontend
 
       - name: Push frontend image
         run: |

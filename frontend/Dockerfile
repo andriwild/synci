@@ -1,10 +1,10 @@
 FROM node:20-alpine AS dependencies
 
-ARG NODE_ENV=production
-ENV NODE_ENV=$NODE_ENV
-
 ARG VITE_BACKEND_URL
 ENV VITE_BACKEND_URL=$VITE_BACKEND_URL
+
+ARG VITE_STAGE=prod
+ENV VITE_STAGE=$VITE_STAGE
 
 WORKDIR /app
 COPY package.json /
@@ -13,13 +13,11 @@ RUN npm install --legacy-peer-deps
 FROM dependencies AS builder
 WORKDIR /app
 ADD . .
+RUN npm --version
 COPY --from=dependencies /node_modules /node_modules
-
 RUN npm run build
 
 FROM nginx:1.26-alpine
 COPY ./default.conf /etc/nginx/conf.d/default.conf
-EXPOSE 5174
+EXPOSE 5173
 COPY --from=builder /app/dist /usr/share/nginx/html
-
-
