@@ -129,8 +129,8 @@ jobs:
 
       - name: Deploy to remote server
         run: |
-            docker compose -p prod stop
-            docker compose -p prod rm -f
-            docker compose -p prod pull
-            docker compose -p prod up -d --force-recreate
+            docker compose -p dev stop
+            docker compose -p dev rm -f
+            docker compose -p dev pull
+            docker compose -p dev up -d --force-recreate
 
