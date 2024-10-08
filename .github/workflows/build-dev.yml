@@ -129,7 +129,8 @@ jobs:
 
       - name: Deploy to remote server
         run: |
-            docker pull ${{ env.REGISTRY }}/${{ github.repository }}/frontend-${{ env.STAGE }}:latest
-            docker pull ${{ env.REGISTRY }}/${{ github.repository }}/backend-${{ env.STAGE }}:latest
-            docker --context remote compose -f ./docker-compose-remote.yml -p dev up -d --force-recreate
+            docker compose -p prod stop
+            docker compose -p prod rm -f
+            docker compose -p prod pull
+            docker compose -p prod up -d --force-recreate
 
