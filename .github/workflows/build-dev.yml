@@ -27,10 +27,6 @@ env:
 
   STAGE: dev
 
-  FRONTEND_PORT: 5174
-  BACKEND_PORT: 8081
-  DB_PORT: 5433
-
   # environment variable starting with 'VITE_' are available in the frontend
   VITE_BACKEND_URL: https://dev.synci.awild.ch
 

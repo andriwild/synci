@@ -6,10 +6,8 @@ services:
     platform: linux/amd64
     image: ghcr.io/andriwild/synci/frontend-${STAGE:-dev}:latest
     environment:
-      - VITE_STAGE=${VITE_STAGE}
+      - VITE_STAGE=${STAGE}
       - VITE_URL_PREFIX=${VITE_URL_PREFIX}
-    ports:
-      - ${FRONTEND_PORT:-5173}:5173
     networks:
         synci-net:
           aliases:
@@ -19,8 +17,6 @@ services:
     container_name: "synci-backend-${STAGE:-local}"
     platform: linux/amd64 # adding a plattform causes gradle build to timeout with no error
     image: ghcr.io/andriwild/synci/backend-${STAGE:-dev}:latest
-    ports:
-      - ${BACKEND_PORT:-8080}:8080
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
@@ -47,8 +43,6 @@ services:
       - POSTGRES_DB=${POSTGRES_DB_NAME}
     volumes:
       - db.data:/var/lib/postgresql/data
-    ports:
-      - 127.0.0.1:${DB_PORT:-5432}:5432
     networks:
         synci-net:
           aliases:
