@@ -72,7 +72,7 @@ dependencies {
     implementation("org.flywaydb:flyway-database-postgresql:$flywayVersion")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
     implementation ("org.springframework.boot:spring-boot-starter-actuator")
-    implementation ("io.micrometer:micrometer-registry-prometheus:1.9.1")
+    implementation("io.micrometer:micrometer-registry-prometheus")
     "flywayMigration"("org.postgresql:postgresql:$postgresVersion")
     jooqGenerator("org.postgresql:postgresql:$postgresVersion")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
