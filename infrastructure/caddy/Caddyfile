@@ -1,0 +1,41 @@
+{
+	debug
+	servers {
+		metrics
+	}
+	admin :2019
+
+}
+
+synci.awild.ch {
+	handle /api* {
+		reverse_proxy synci-backend-prod:8080
+	}
+	handle /dashboard* {
+		uri strip_prefix /dashboard
+		reverse_proxy grafana:3000
+
+	}
+	handle /metrics {
+		reverse_proxy caddy:2019
+		
+	}
+	handle {
+		reverse_proxy synci-frontend-prod:5173
+	}
+}
+
+dev.synci.awild.ch {
+	handle /api* {
+		reverse_proxy synci-backend-dev:8080
+	}
+	handle {
+		reverse_proxy synci-frontend-dev:5173
+	}
+}
+
+dashboard.synci.awild.ch {
+	handle  {
+		reverse_proxy grafana:3000
+	}
+}
