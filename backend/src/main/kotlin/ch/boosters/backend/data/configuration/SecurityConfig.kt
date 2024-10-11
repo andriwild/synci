@@ -22,6 +22,7 @@ class SecurityConfig {
                 requests
                     .requestMatchers(HttpMethod.POST, "/syncconfig/new").permitAll()
                     .requestMatchers(HttpMethod.PUT, "/syncconfig/*").permitAll()
+                    .requestMatchers(HttpMethod.DELETE, "/syncconfig/*").permitAll()
                     .requestMatchers(HttpMethod.GET, "/**").permitAll()
             }
         return http.build()
