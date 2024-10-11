@@ -49,7 +49,9 @@ jobs:
 
       - name: Deploy to remote server
         run: |
-            docker compose -f ../infrastructure/docker-compose.yml -p infra stop
-            docker compose -f ../infrastructure/docker-compose.yml -p infra rm -f
-            docker compose -f ../infrastructure/docker-compose.yml -p infra pull
-            docker compose -f ../infrastructure/docker-compose.yml -p infra up -d --force-recreate
+            ls
+            pwd
+            docker compose -f ./infrastructure/docker-compose.yml -p infra stop
+            docker compose -f ./infrastructure/docker-compose.yml -p infra rm -f
+            docker compose -f ./infrastructure/docker-compose.yml -p infra pull
+            docker compose -f ./infrastructure/docker-compose.yml -p infra up -d --force-recreate
