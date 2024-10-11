@@ -24,7 +24,7 @@ env:
 
 jobs:
 
-  Deploy infrastructure:
+  deploy_infrastructure:
     name: Deploy infrastructure
     runs-on: ubuntu-latest
 
