@@ -18,29 +18,30 @@ services:
       monitoring-net:
 
 
-  # prometheus:
-  #   container_name: prometheus
-  #   image: prom/prometheus:latest
-  #   volumes:
-  #     - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
-  #   networks:
-  #     monitoring-net:
-  #     synci-net-dev:
-  #     synci-net-prod:
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:latest
+    volumes:
+      - /home/admin/synci/config/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      monitoring-net:
+      synci-net-dev:
+      synci-net-prod:
 
-  # grafana:
-  #   container_name: grafana
-  #   image: grafana/grafana:latest
-  #   depends_on:
-  #     - prometheus
-  #   environment:
-  #     - GF_SECURITY_ADMIN_PASSWORD=synci-observer
-  #     - GF_SERVER_ROOT_URL=https://synci.awild.ch/dashboard/
-  #     - GF_SERVER_SERVE_FROM_SUBPATH=true
-  #   networks:
-  #     monitoring-net:
-  #   volumes:
-  #     - grafana-data:/var/lib/grafana
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:latest
+    depends_on:
+      - prometheus
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=synci-observer
+      - GF_SERVER_ROOT_URL=https://synci.awild.ch/dashboard/
+      - GF_SERVER_SERVE_FROM_SUBPATH=true
+    networks:
+      monitoring-net:
+    volumes:
+      - grafana-data:/var/lib/grafana
 
 volumes:
   caddy-config:
