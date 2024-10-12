@@ -40,7 +40,7 @@ jobs:
 
       - name: Copy config file to remote server
         run: |
-          scp -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY }} ./infrastructure/config/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/admin/synci/config/
+          scp ./infrastructure/config/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:synci/config/
 
       - name: Create docker context
         run: |
