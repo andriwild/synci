@@ -5,7 +5,7 @@ services:
     ports:
       - 443:443
     volumes:
-      - ./config/Caddyfile:/etc/caddy/Caddyfile
+      - /home/admin/synci/config/Caddyfile:/etc/caddy/Caddyfile
       - caddy-config:/config
       - caddy-data:/data
     networks:

@@ -38,6 +38,10 @@ jobs:
             echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
             ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
 
+      - name: Copy config file to remote server
+        run: |
+          scp -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY }} ./infrastructure/config/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/admin/synci/config/
+
       - name: Create docker context
         run: |
             docker context create remote --docker "host=ssh://${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}"
