@@ -1,3 +1,4 @@
+# FOTMOB
 ### Create Team Calendar
 http://localhost:8080/api/calendar/subscribe/10192
 
@@ -16,3 +17,17 @@ http://localhost:8080/api/team/list
 
 ### Get All Configs
 http://localhost:8080/api/syncconfig/list
+
+
+# SWISS SKI
+curl -k -L -s --compressed 'https://api.production.cloud.swiss-ski.ch/data/facades/web_race?page_size=1000&order_by=racedate&racedate__gt=2024-10-11&sport=sport_ski_alpine' | jq ".result[] | {disciplinecode, catcode, catname}"
+# location filtered
+curl -k -L -s --compressed 'https://api.production.cloud.swiss-ski.ch/data/facades/web_race?page_size=1000&order_by=racedate&racedate__gt=2024-10-11&sport=sport_ski_alpine' | jq '.result[] | select(.place == "Killington")'
+
+### Next Races
+https://api.production.cloud.swiss-ski.ch/data/facades/web_race?page_size=100&order_by=racedate&racedate__gt=2024-10-11&sport=sport_ski_alpine
+
+
+### Get All Categories
+http://localhost:8080/api/swissski/categories
+
