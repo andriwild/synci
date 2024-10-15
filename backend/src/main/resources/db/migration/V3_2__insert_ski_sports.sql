@@ -26,11 +26,11 @@ VALUES
     (gen_random_uuid(), 'EC_W',  ski_alpine_parent_id);
 
 SELECT id INTO wc_m_parent_id FROM SPORTS_TABLE WHERE name = 'WC_M';
-SELECT id INTO wc_w_parent_id FROM SPORTS_TABLE WHERE name = 'WC_M';
+SELECT id INTO wc_w_parent_id FROM SPORTS_TABLE WHERE name = 'WC_W';
 SELECT id INTO fis_m_parent_id FROM SPORTS_TABLE WHERE name = 'FIS_M';
-SELECT id INTO fis_w_parent_id FROM SPORTS_TABLE WHERE name = 'FIS_M';
+SELECT id INTO fis_w_parent_id FROM SPORTS_TABLE WHERE name = 'FIS_W';
 SELECT id INTO ec_m_parent_id FROM SPORTS_TABLE WHERE name = 'EC_M';
-SELECT id INTO ec_w_parent_id FROM SPORTS_TABLE WHERE name = 'EC_M';
+SELECT id INTO ec_w_parent_id FROM SPORTS_TABLE WHERE name = 'EC_W';
 
 INSERT INTO SPORTS_TABLE (id, name, parent_id)
     values
