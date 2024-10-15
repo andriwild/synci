@@ -2,6 +2,7 @@ sources:
   fotmob:
     url: https://www.fotmob.com/api
     name: FOT_MOB
+    id: 1
     leagues:
       - id: 69
         name: Super League
@@ -19,3 +20,10 @@ sources:
         name: Europa League
       - id: 53
         name: Ligue 1
+  SwissSki:
+    url: https://api.production.cloud.swiss-ski.ch/data/facades
+    name: SWISS_SKI
+    id: 2
+    sport: sport_ski_alpine
+
+
