@@ -15,9 +15,7 @@ class FotMobService(
     private val sourceConfig: SourceConfig
 ) {
     fun updateLeagues() {
-        fotMobRepository.clearTables()
-
-        val leagues = sourceConfig.fotmob.leagues
+        val leagues = sourceConfig.fotMob.leagues
 
         println("Fetching ${leagues.size} leagues from FotMob at ${LocalDateTime.now()}")
         leagues.forEachIndexed { index, league ->
@@ -29,7 +27,7 @@ class FotMobService(
     }
 
     fun fetchLeagueOverview(leagueId: String): Mono<IntArray> {
-        val baseUrl = sourceConfig.fotmob.url
+        val baseUrl = sourceConfig.fotMob.url
         val url = "$baseUrl/leagues?id=$leagueId&tab=overview&type=league"
         val exchangeStrategies = ExchangeStrategies.builder()
             .codecs { configurer ->
