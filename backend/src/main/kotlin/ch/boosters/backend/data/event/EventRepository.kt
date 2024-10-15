@@ -3,11 +3,22 @@ package ch.boosters.backend.data.event
 import ch.boosters.backend.data.event.model.Event
 import ch.boosters.data.Tables.*
 import org.jooq.DSLContext
+import org.jooq.exception.DataAccessException
 import org.springframework.stereotype.Repository
 import java.util.*
 
 @Repository
 class EventRepository(private val dsl: DSLContext) {
+
+    fun clearTable(): Boolean {
+        try {
+            dsl.truncate(EVENTS_TABLE).cascade().execute()
+            dsl.truncate(EVENTS_TEAMS_TABLE).cascade().execute()
+        } catch (e: DataAccessException) {
+            return false
+        }
+        return true
+    }
 
     fun eventsOfTeam(configID: UUID) : List<Event> {
         val teamIds = dsl.selectFrom(SYNC_CONFIGS_TEAMS_TABLE)
