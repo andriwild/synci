@@ -18,11 +18,6 @@ class FotMobRepository(
        initSourceId()
     }
 
-    fun clearTables() {
-        dsl.truncate(EVENTS_TABLE).cascade().execute()
-        dsl.truncate(EVENTS_TEAMS_TABLE).cascade().execute()
-    }
-
     fun storeTeams(teams: List<Team>): IntArray {
 
         val queries = teams.map { team ->
@@ -68,7 +63,7 @@ class FotMobRepository(
     private fun initSourceId(): Int {
         val id = dsl.select()
             .from(SOURCES_TABLE)
-            .where(SOURCES_TABLE.NAME.eq(sourceConfig.fotmob.name))
+            .where(SOURCES_TABLE.NAME.eq(sourceConfig.fotMob.name))
             .fetchOne(SOURCES_TABLE.ID)
         return id!!
     }
