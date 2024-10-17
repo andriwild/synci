@@ -16,10 +16,6 @@ class SwissSkiService(
     private val swissSkiRepository: SwissSkiRepository
 ) {
 
-    fun getSubcategoriesOfCategory(category: String): List<String> {
-        return swissSkiRepository.getSubcategoryOfCategory(category)
-    }
-
     fun updateRaces() {
         val baseUrl = sourceConfig.swissSki.url
 
@@ -33,7 +29,6 @@ class SwissSkiService(
             }
             .build()
 
-        println("checkpoint")
         val response= eventResponse(exchangeStrategies, url)
         response.map (serializer::parseResponse)
             .map(swissSkiRepository::storeEvents)
