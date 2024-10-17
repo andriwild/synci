@@ -7,10 +7,12 @@ import {
   Select
 } from "antd";
 import { useNavigate, useParams } from "react-router-dom";
+import { decodeAbbreviation } from "../model/ski.ts";
 import { useEffect, useState } from "react";
 import { SyncConfig } from "../model/SyncConfig.ts";
 import { useForm } from "antd/es/form/Form";
 import { Team } from "../model/Team.ts";
+import { Sport } from "../model/Sport.ts";
 import { Api } from "../services/data.tsx";
 import { FC } from "react";
 
@@ -22,9 +24,11 @@ export const UserConfigForm: FC = () => {
     const createmode = id === 'new';
 
     const [teams, setTeams] = useState([] as Team[]);
+    const [sports, setSports] = useState([] as Sport[]);
 
     useEffect(() => {
         Api.getTeams().then(setTeams);
+        Api.getSports().then(setSports);
 
         // edit existing config - add teams to form
         if (!createmode) {
@@ -33,20 +37,32 @@ export const UserConfigForm: FC = () => {
                     form.setFieldsValue({ 
                         teams: it.teams
                             .sort((a: Team, b: Team) => a.name.localeCompare(b.name))
-                            .map((team:Team) => (team.id)), 
-                        name: it.name
+                            .map((team:Team) => team.id), 
+                        name: it.name,
+                        sports: it.sports
+                            .sort((a: Sport, b: Sport) => a.name.localeCompare(b.name))
+                            .map((sport:Sport) => sport.id)
                     });
                 })
         }
     }, []);
 
-    const handleSubmit = (values: {teams: number[], name: string}) => {
-        const selectedTeams = teams.filter(team => values.teams.includes(team.id));
+    const handleSubmit = (values: { name: string, teams: number[], sports: string[] }) => {
+        let selectedTeams = [] as Team[];
+        let selectedSports = [] as Sport[];
+
+        if (values.teams !== undefined) {
+            selectedTeams = teams.filter(team => values.teams.includes(team.id));
+        }
+        if (values.sports !== undefined) {
+            selectedSports = sports.filter(sport => values.sports.includes(sport.id))
+        }
 
         const syncConfig: SyncConfig = {
             id: id && id !== 'new' ? id : null,
             name: values.name,
-            teams: selectedTeams
+            teams: selectedTeams,
+            sports: selectedSports
         }
 
         const method = createmode ? 'POST' : 'PUT';
@@ -64,6 +80,7 @@ export const UserConfigForm: FC = () => {
                 welche Sportart du dich interessierst</p>
 
                 <Form
+                    autoComplete="off"
                     form={ form }
                     onFinish={ handleSubmit }
                     layout={ 'vertical' }
@@ -71,7 +88,7 @@ export const UserConfigForm: FC = () => {
                 >
 
                     <Form.Item name={ 'name' } label={ 'Config Name' }>
-                        <Input placeholder="Config Name" />
+                        <Input placeholder="Config Name" autoComplete="off"/>
                     </Form.Item>
 
                     <Form.Item name={ 'teams' } label={ 'Teams' }>
@@ -79,6 +96,16 @@ export const UserConfigForm: FC = () => {
                             mode="multiple"
                             placeholder="Teams auswählen"
                             options={teams.map(team => ({ value: team.id, label: team.name }))}
+                            style={{ width: '100%' }}
+                        />
+                    </Form.Item>
+
+
+                    <Form.Item name={ 'sports' } label={ 'Sports' }>
+                        <Select
+                            mode="multiple"
+                            placeholder="Sportarten auswählen"
+                            options={sports.map(sport => ({ value: sport.id, label: decodeAbbreviation(sport.name) }))}
                             style={{ width: '100%' }}
                         />
                     </Form.Item>
