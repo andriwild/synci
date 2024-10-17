@@ -6,6 +6,7 @@ import {
     Typography,
 } from "antd";
 import { FC } from "react";
+import { decodeAbbreviation } from "../model/ski";
 import { Copy, Pencil, Trash } from "@phosphor-icons/react";
 import { SyncConfig } from "../model/SyncConfig";
 import { Api } from "../services/data";
@@ -22,6 +23,7 @@ export const ConfigCard: FC<Props> = ({ config, onDelete }) => {
 
     const navigate = useNavigate();
     const sortedTeamNames = config.teams.map(team => team.name).sort();
+    const sortedSportsNames = config.sports.map(sport => decodeAbbreviation(sport.name)).sort();
 
     const toClipboard = (config: SyncConfig) => {
         navigator.clipboard.writeText(Api.getSyncConfigUrl(config.id!));
@@ -43,7 +45,8 @@ export const ConfigCard: FC<Props> = ({ config, onDelete }) => {
                 </Flex>
             }>
                 <h2>{config.name}</h2>
-                { sortedTeamNames.map(name => (<Tag key={name} color="blue">{name}</Tag>)) }
+                { sortedTeamNames.map(name => (<Tag key={name} color="green">{name}</Tag>)) }
+                { sortedSportsNames.map(name => (<Tag key={name} color="blue">{name}</Tag>)) }
                 <br/>
                 <Text type="secondary">{Api.getSyncConfigUrl(config.id!)}</Text>
         </Card>
