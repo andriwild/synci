@@ -44,7 +44,6 @@ object SwissSkiEventSerializer: KSerializer<SwissSkiEvent> {
         val jsonObject = jsonInput.decodeJsonElement().jsonObject
 
         val place = jsonObject["place"]?.jsonPrimitive?.content ?: ""
-        println("place: $place");
         val id = jsonObject["id"]?.jsonPrimitive?.content ?: throw SerializationException("Invalid id")
         val raceDate = jsonObject["racedate"]?.jsonPrimitive?.content ?: throw SerializationException("Missing utcTime")
         val nationCode = jsonObject["nationcode"]?.jsonPrimitive?.content ?: ""
@@ -56,10 +55,7 @@ object SwissSkiEventSerializer: KSerializer<SwissSkiEvent> {
         val localDate = LocalDate.parse(raceDate, formatter)
         val localDateTime = localDate.atStartOfDay()
 
-        val event = SwissSkiEvent(place, id, localDateTime, nationCode, gender, disciplineCode, catCode)
-        println(event)
-
-        return event
+        return SwissSkiEvent(place, id, localDateTime, nationCode, gender, disciplineCode, catCode)
     }
 
     override fun serialize(encoder: Encoder, value: SwissSkiEvent) {
