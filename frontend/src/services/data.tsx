@@ -16,6 +16,10 @@ export const Api = {
         return apiFetch('/team/list')
         .then(response => response.json())
     },
+    getSports: async () => {
+        return apiFetch('/swissski/list')
+        .then(response => response.json())
+    },
 
     deleteSyncConfig: async (id: string) => {
         return apiFetch(`/syncconfig/${id}`, {
