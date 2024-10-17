@@ -10,7 +10,7 @@ import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.ProdId
 import net.fortuna.ical4j.model.property.immutable.ImmutableCalScale
 import org.springframework.stereotype.Service
-import java.util.UUID
+import java.util.*
 
 const val PROD_ID = "-//Events Calendar//iCal4j 1.0//EN"
 
@@ -23,8 +23,9 @@ class CalendarService(private val eventRepository: EventRepository) {
     }
 
     fun createCalendar(configId: UUID): String {
-        val events = eventRepository.eventsOfTeam(configId)
-        return toCalendar(events).toString()
+        val teamEvents = eventRepository.eventsOfTeam(configId)
+        val sportEvents = eventRepository.eventsOfSports(configId)
+        return toCalendar(teamEvents + sportEvents).toString()
     }
 
     private fun toCalendar(events: List<Event>): Calendar {
@@ -32,7 +33,11 @@ class CalendarService(private val eventRepository: EventRepository) {
         icsCalendar.add<PropertyContainer>(ProdId(PROD_ID))
         icsCalendar.add<PropertyContainer>(ImmutableCalScale.GREGORIAN)
         events.forEach {
-            val event = VEvent(it.startsOn, it.endsOn, it.name)
+            val event: VEvent = if (it.endsOn == null) {
+                VEvent(it.startsOn.toLocalDate(), it.name) // TODO: meaningful name for ski events
+            } else {
+                VEvent(it.startsOn, it.endsOn, it.name)
+            }
             icsCalendar.add<ComponentContainer<CalendarComponent>>(event)
         }
         return icsCalendar
