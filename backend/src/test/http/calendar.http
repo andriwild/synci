@@ -19,6 +19,11 @@ http://localhost:8080/api/team/list
 http://localhost:8080/api/syncconfig/list
 
 
+
+### Get SyncConfigById
+http://localhost:8080/api/syncconfig/0a7630bb-0d98-4788-8162-1fa63f72efbd
+
+
 # SWISS SKI
 curl -k -L -s --compressed 'https://api.production.cloud.swiss-ski.ch/data/facades/web_race?page_size=1000&order_by=racedate&racedate__gt=2024-10-11&sport=sport_ski_alpine' | jq ".result[] | {disciplinecode, catcode, catname}"
 # location filtered
@@ -29,5 +34,5 @@ https://api.production.cloud.swiss-ski.ch/data/facades/web_race?page_size=100&or
 
 
 ### Get All Categories
-http://localhost:8080/api/swissski/categories
+http://localhost:8080/api/swissski/list
 
