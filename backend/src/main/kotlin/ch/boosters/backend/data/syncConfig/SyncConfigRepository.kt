@@ -77,13 +77,18 @@ class SyncConfigRepository (private val dsl: DSLContext) {
                     val id = record.get(teamId, Int::class.java)
                     val name = record.get(teamName, String::class.java)
                     val sourceId = record.get(teamSourceId, Int::class.java)
+                    // team data might be null, even if a config id is present (configs with only sport subscriptions)
                     if(id != null && name != null && sourceId != null) {
                         Team(
                             id = id.toString(),
                             name = name,
                             source = sourceId
                         )
-                    } else null
+                        // `mapNotNull` must return a value, otherwise the return type is `List<Unit>`
+                    } else {
+                        // null values are filtered out by `mapNotNull`
+                        null
+                    }
                 }.distinct()
 
                 SyncConfig(
@@ -125,13 +130,18 @@ class SyncConfigRepository (private val dsl: DSLContext) {
                     val id = record.get(sportId, UUID::class.java)
                     val name = record.get(sportName, String::class.java)
                     val parentId = record.get(sportParentId, UUID::class.java)
+                    // sport data might be null, even if a config id is present (configs with only team subscriptions)
                     if (id != null && name != null && parentId != null) {
                         Sport(
                             id = id,
                             name = name,
                             parentId = parentId
                         )
-                    } else null
+                        // `mapNotNull` must return a value, otherwise the return type is `List<Unit>`
+                    } else {
+                        // null values are filtered out by `mapNotNull`
+                        null
+                    }
                 }.distinct()
 
                 SyncConfig(
