@@ -11,20 +11,19 @@ import java.time.LocalDateTime
 @Service
 class SwissSkiService(
     private val webClientBuilder: WebClient.Builder,
-    private val serializer: RaceSerializer,
+    private val serializer: SwissSkiSerializer,
     private val swissSkiConfig: SwissSkiConfig,
     private val swissSkiRepository: SwissSkiRepository,
-    private val env: Environment
 ) {
 
     fun updateRaces() {
-        println(env)
-        println(env.getProperty("swissski"))
         val baseUrl = swissSkiConfig.url
 
+        // TODO: #11 introduce proper logging
         println("Fetching races from SwissSki at ${LocalDateTime.now()}")
         val sport = swissSkiConfig.sport
         val url = "$baseUrl/web_race?page_size=1000&order_by=racedate&racedate__gt=2024-10-11&sport=$sport"
+        // TODO: #11 introduce proper logging
         println("Fetching races from SwissSki at ${url}")
         val exchangeStrategies = ExchangeStrategies.builder()
             .codecs { configurer ->
@@ -48,6 +47,7 @@ class SwissSkiService(
                 .retrieve()
                 .bodyToMono(String::class.java)
         } catch (e: Exception) {
+            // TODO: #11 introduce proper logging
             println("Error fetching swiss ski events overview: $e")
             Mono.empty()
         }

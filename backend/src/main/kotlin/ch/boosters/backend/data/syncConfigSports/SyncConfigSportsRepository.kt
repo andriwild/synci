@@ -18,7 +18,6 @@ class SyncConfigSportsRepository(
     }
 
     fun addSports(configId: UUID, sports: List<Sport>) {
-
         sports.map { sport ->
             dsl.insertInto(SYNC_CONFIGS_SPORTS_TABLE)
                 .columns(

@@ -10,13 +10,8 @@ import java.util.*
 @RequestMapping("/calendar")
 class CalendarController(private val calendarService: CalendarService) {
 
-    @GetMapping("/subscribe", produces = ["text/calendar"])
-    fun createCalendar(): String {
-        return calendarService.createCalendar()
-    }
-
     @GetMapping("/subscribe/{configId}", produces = ["text/calendar"])
     fun createCalendarFromTeam(@PathVariable configId: UUID): String {
-        return calendarService.createCalendar(configId)
+        return calendarService.createCalendar(configId).toString()
     }
 }

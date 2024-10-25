@@ -5,7 +5,7 @@ import kotlinx.serialization.json.*
 import org.springframework.stereotype.Service
 
 @Service
-class RaceSerializer (
+class SwissSkiSerializer (
     private val json: Json
 ){
     internal fun parseResponse(jsonString: String): List<SwissSkiEvent> {
