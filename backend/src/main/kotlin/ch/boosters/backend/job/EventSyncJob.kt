@@ -19,6 +19,7 @@ class EventSyncJob : Job {
     override fun execute(context: JobExecutionContext) {
         val result = eventService.clearTables()
         if (result) {
+            // TODO: #13 split up update procedures
             fotMobService.updateLeagues()
             swissSkiService.updateRaces()
         }

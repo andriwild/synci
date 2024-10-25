@@ -12,7 +12,6 @@ class SwissSkiRepository(
     private val swissSkiConfig: SwissSkiConfig,
     ){
 
-
     val sourceId :Int by lazy {
         initSourceId()
     }
@@ -22,15 +21,19 @@ class SwissSkiRepository(
             val sportId = getSportId(event)
             // skip events of not subscribed sports
             if (sportId != null) {
-                dsl.newRecord(EVENTS_TABLE)
-                    .setId(UUID.randomUUID().toString())
-                    .setName(event.place)
-                    .setSourceId(sourceId)
-                    .setStartsOn(event.raceDate)
-                    .setSportId(sportId)
-                    .store()
+                storeEvent(event, sportId)
             }
         }
+    }
+
+    private fun storeEvent(event: SwissSkiEvent, sportId: UUID): Int {
+        return dsl.newRecord(EVENTS_TABLE)
+            .setId(UUID.randomUUID().toString())
+            .setName(event.place)
+            .setSourceId(sourceId)
+            .setStartsOn(event.raceDate)
+            .setSportId(sportId)
+            .store()
     }
 
     private fun initSourceId(): Int {

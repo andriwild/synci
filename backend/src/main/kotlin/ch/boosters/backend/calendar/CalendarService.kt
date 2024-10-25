@@ -17,15 +17,10 @@ const val PROD_ID = "-//Events Calendar//iCal4j 1.0//EN"
 @Service
 class CalendarService(private val eventRepository: EventRepository) {
 
-    fun createCalendar(): String {
-        val events = eventRepository.allEvents()
-        return toCalendar(events).toString()
-    }
-
-    fun createCalendar(configId: UUID): String {
-        val teamEvents = eventRepository.eventsOfTeam(configId)
+    fun createCalendar(configId: UUID): Calendar {
+        val teamEvents = eventRepository.eventsOfTeams(configId)
         val sportEvents = eventRepository.eventsOfSports(configId)
-        return toCalendar(teamEvents + sportEvents).toString()
+        return toCalendar(teamEvents + sportEvents)
     }
 
     private fun toCalendar(events: List<Event>): Calendar {
@@ -34,7 +29,8 @@ class CalendarService(private val eventRepository: EventRepository) {
         icsCalendar.add<PropertyContainer>(ImmutableCalScale.GREGORIAN)
         events.forEach {
             val event: VEvent = if (it.endsOn == null) {
-                VEvent(it.startsOn.toLocalDate(), it.name) // TODO: meaningful name for ski events
+                // TODO: #12 meaningful name for ski events
+                VEvent(it.startsOn.toLocalDate(), it.name)
             } else {
                 VEvent(it.startsOn, it.endsOn, it.name)
             }

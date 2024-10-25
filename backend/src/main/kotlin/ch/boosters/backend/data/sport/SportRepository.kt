@@ -46,15 +46,13 @@ class SportRepository(
                 )
         )
 
-        val sportsList = dsl
+        val sportsList: List<Sport> = dsl
             .withRecursive(descendants)
             .selectFrom(descendants)
             .where(field(name("descendants", "id"), UUID::class.java).ne(rootId))
             .fetchInto(Sport::class.java)
 
         val rootSport = getSportById(rootId)
-        sportsList.add(rootSport)
-
-        return sportsList
+        return if (rootSport == null) sportsList else sportsList.plus(rootSport)
     }
 }

@@ -13,17 +13,8 @@ class SyncConfigRepository (private val dsl: DSLContext) {
     fun getById(id: UUID): SyncConfig? {
         val teamConfigs = getTeamSyncConfigs()
         val sportConfigs = getSportSyncConfigs()
-        // merge sport and team configs together
-        return (teamConfigs + sportConfigs).groupBy { it.id }
-            .filter { it.key == id }
-            .map { it->
-                SyncConfig(
-                    it.key,
-                    it.value.first().name,
-                    it.value.flatMap { it.teams},
-                    it.value.flatMap { it.sports}
-                )}
-            .first()
+        val allConfigs = mergeConfigs(teamConfigs, sportConfigs)
+        return allConfigs.first { it.id == id }
     }
 
     fun createSyncConfig(syncConfig: SyncConfig): UUID {
@@ -33,7 +24,6 @@ class SyncConfigRepository (private val dsl: DSLContext) {
             .columns(SYNC_CONFIGS_TABLE.ID, SYNC_CONFIGS_TABLE.NAME)
             .values(uuid, syncConfig.name)
             .execute()
-
         return uuid
     }
 
@@ -41,17 +31,21 @@ class SyncConfigRepository (private val dsl: DSLContext) {
        val teamConfigs = getTeamSyncConfigs()
        val sportConfigs = getSportSyncConfigs()
 
-       // merge sport and team configs together
-       return (teamConfigs + sportConfigs).groupBy { it.id }
-           .map { it->
-               SyncConfig(
-                   it.key,
-                   it.value.first().name,
-                   it.value.flatMap { it.teams},
-                   it.value.flatMap { it.sports},
-               )
-           }
+       return mergeConfigs(teamConfigs, sportConfigs)
    }
+
+    private fun mergeConfigs(
+        teamConfigs: List<SyncConfig>,
+        sportConfigs: List<SyncConfig>
+    ) = (teamConfigs + sportConfigs).groupBy { it.id }
+        .map { it ->
+            SyncConfig(
+                it.key,
+                it.value.first().name,
+                it.value.flatMap { it.teams },
+                it.value.flatMap { it.sports },
+            )
+        }
 
     fun getTeamSyncConfigs(): List<SyncConfig> {
         val syncConfigId = "sync_config_id"
@@ -83,13 +77,11 @@ class SyncConfigRepository (private val dsl: DSLContext) {
                     val id = record.get(teamId, Int::class.java)
                     val name = record.get(teamName, String::class.java)
                     val sourceId = record.get(teamSourceId, Int::class.java)
-                    if (id != null && name != null && sourceId != null) {
-                        Team(
-                            id = id.toString(),
-                            name = name,
-                            source = sourceId
-                        )
-                    } else null
+                    Team(
+                      id = id.toString(),
+                      name = name,
+                      source = sourceId
+                    )
                 }.distinct()
 
                 SyncConfig(
@@ -131,13 +123,11 @@ class SyncConfigRepository (private val dsl: DSLContext) {
                     val id = record.get(sportId, UUID::class.java)
                     val name = record.get(sportName, String::class.java)
                     val parentId = record.get(sportParentId, UUID::class.java)
-                    if (id != null && name != null) {
-                        Sport(
-                            id = id,
-                            name = name,
-                            parentId = parentId
-                        )
-                    } else null
+                    Sport(
+                        id = id,
+                        name = name,
+                        parentId = parentId
+                    )
                 }.distinct()
 
                 SyncConfig(
