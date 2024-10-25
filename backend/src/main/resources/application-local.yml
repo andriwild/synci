@@ -1,4 +1,5 @@
 ch:
   boosters:
     db:
+
       jdbcUrl: jdbc:postgresql://database-net-db-local:5432/synci-db
