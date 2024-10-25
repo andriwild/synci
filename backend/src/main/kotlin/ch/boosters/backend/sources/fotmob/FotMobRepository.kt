@@ -1,6 +1,5 @@
 package ch.boosters.backend.sources.fotmob
 
-import ch.boosters.backend.sources.SourceConfig
 import ch.boosters.backend.sources.fotmob.model.FotMobEvent
 import ch.boosters.backend.sources.fotmob.model.Team
 import ch.boosters.data.Tables.*
@@ -11,7 +10,7 @@ import java.util.*
 @Repository
 class FotMobRepository(
     private val dsl: DSLContext,
-    private val sourceConfig: SourceConfig,
+    private val fotMobConfig: FotMobConfig,
 ) {
 
     val sourceId :Int by lazy {
@@ -63,7 +62,7 @@ class FotMobRepository(
     private fun initSourceId(): Int {
         val id = dsl.select()
             .from(SOURCES_TABLE)
-            .where(SOURCES_TABLE.NAME.eq(sourceConfig.fotMob.name))
+            .where(SOURCES_TABLE.NAME.eq(fotMobConfig.name))
             .fetchOne(SOURCES_TABLE.ID)
         return id!!
     }

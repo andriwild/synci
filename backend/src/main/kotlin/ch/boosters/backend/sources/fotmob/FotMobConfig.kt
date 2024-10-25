@@ -1,16 +1,11 @@
-package ch.boosters.backend.sources
+package ch.boosters.backend.sources.fotmob
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Configuration
 
-@ConfigurationProperties(prefix = "sources")
+@ConfigurationProperties(prefix = "fotmob")
 @Configuration
-class SourceConfig{
-    var fotMob: FotMobSource = FotMobSource()
-    var swissSki: SwissSkiSource = SwissSkiSource()
-}
-
-class FotMobSource {
+class FotMobConfig {
     var url: String? = null
     var name: String? = null
     var leagues: MutableList<FotMobLeague> = mutableListOf()
@@ -19,10 +14,4 @@ class FotMobSource {
 class FotMobLeague {
     lateinit var id: String
     lateinit var name: String
-}
-
-class SwissSkiSource {
-    var url: String? = null
-    var name: String? = null
-    var sport: String? = null
 }
