@@ -1,6 +1,5 @@
 package ch.boosters.backend.sources.swissski
 
-import ch.boosters.backend.sources.SourceConfig
 import ch.boosters.backend.sources.swissski.model.SwissSkiEvent
 import ch.boosters.data.Tables.*
 import org.jooq.DSLContext
@@ -10,8 +9,9 @@ import java.util.*
 @Repository
 class SwissSkiRepository(
     private val dsl: DSLContext,
-    private val sourceConfig: SourceConfig,
+    private val swissSkiConfig: SwissSkiConfig,
     ){
+
 
     val sourceId :Int by lazy {
         initSourceId()
@@ -36,7 +36,7 @@ class SwissSkiRepository(
     private fun initSourceId(): Int {
         val id = dsl.select()
             .from(SOURCES_TABLE)
-            .where(SOURCES_TABLE.NAME.eq(sourceConfig.swissSki.name))
+            .where(SOURCES_TABLE.NAME.eq(swissSkiConfig.name))
             .fetchOne(SOURCES_TABLE.ID)
         return id!!
     }

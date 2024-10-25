@@ -1,0 +1,21 @@
+fotmob:
+  url: https://www.fotmob.com/api
+  name: FOT_MOB
+  id: 1
+  leagues:
+    - id: 69
+      name: Super League
+    - id: 47
+      name: Premier League
+    - id: 42
+      name: Champions League
+    - id: 87
+      name: LaLiga
+    - id: 54
+      name: Bundesliga
+    - id: 55
+      name: Serie A
+    - id: 73
+      name: Europa League
+    - id: 53
+      name: Ligue 1

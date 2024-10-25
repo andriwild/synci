@@ -1,6 +1,5 @@
 package ch.boosters.backend.sources.fotmob
 
-import ch.boosters.backend.sources.SourceConfig
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.ExchangeStrategies
 import org.springframework.web.reactive.function.client.WebClient
@@ -12,10 +11,10 @@ class FotMobService(
     private val webClientBuilder: WebClient.Builder,
     private val serializer: LeagueSerializer,
     private val fotMobRepository: FotMobRepository,
-    private val sourceConfig: SourceConfig
+    private val fotMobConfig: FotMobConfig,
 ) {
     fun updateLeagues() {
-        val leagues = sourceConfig.fotMob.leagues
+        val leagues = fotMobConfig.leagues
 
         println("Fetching ${leagues.size} leagues from FotMob at ${LocalDateTime.now()}")
         leagues.forEachIndexed { index, league ->
@@ -27,7 +26,7 @@ class FotMobService(
     }
 
     fun fetchLeagueOverview(leagueId: String): Mono<IntArray> {
-        val baseUrl = sourceConfig.fotMob.url
+        val baseUrl = fotMobConfig.url
         val url = "$baseUrl/leagues?id=$leagueId&tab=overview&type=league"
         val exchangeStrategies = ExchangeStrategies.builder()
             .codecs { configurer ->
