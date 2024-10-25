@@ -77,11 +77,13 @@ class SyncConfigRepository (private val dsl: DSLContext) {
                     val id = record.get(teamId, Int::class.java)
                     val name = record.get(teamName, String::class.java)
                     val sourceId = record.get(teamSourceId, Int::class.java)
-                    Team(
-                      id = id.toString(),
-                      name = name,
-                      source = sourceId
-                    )
+                    if(id != null && name != null && sourceId != null) {
+                        Team(
+                            id = id.toString(),
+                            name = name,
+                            source = sourceId
+                        )
+                    } else null
                 }.distinct()
 
                 SyncConfig(
@@ -123,11 +125,13 @@ class SyncConfigRepository (private val dsl: DSLContext) {
                     val id = record.get(sportId, UUID::class.java)
                     val name = record.get(sportName, String::class.java)
                     val parentId = record.get(sportParentId, UUID::class.java)
-                    Sport(
-                        id = id,
-                        name = name,
-                        parentId = parentId
-                    )
+                    if (id != null && name != null && parentId != null) {
+                        Sport(
+                            id = id,
+                            name = name,
+                            parentId = parentId
+                        )
+                    } else null
                 }.distinct()
 
                 SyncConfig(

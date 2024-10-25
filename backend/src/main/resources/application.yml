@@ -46,3 +46,7 @@ management:
     metrics:
       export:
         enabled: true
+
+#logging:
+#  level:
+#    root: DEBUG
