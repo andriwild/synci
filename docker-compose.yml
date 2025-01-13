@@ -8,6 +8,8 @@ services:
     environment:
       - VITE_STAGE=${STAGE}
       - VITE_URL_PREFIX=${VITE_URL_PREFIX}
+    ports:
+      - 5173:5173
     networks:
         synci-net:
           aliases:
@@ -25,6 +27,8 @@ services:
       - SPRING_PROFILES_ACTIVE=${STAGE:-local}
     depends_on:
       - db
+    ports:
+      - 8080:8080
     networks:
         synci-net:
           aliases:
