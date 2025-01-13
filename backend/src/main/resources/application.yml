@@ -15,7 +15,7 @@ spring:
   config:
     import:
     - "classpath:sources/swissski.yml"
-    - "classpath:sources/fotmob.yml"
+    #- "classpath:sources/fotmob.yml"
 
 ch:
   boosters:
