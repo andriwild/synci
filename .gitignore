@@ -26,3 +26,6 @@
 hs_err_pid*
 replay_pid*
 /.idea/
+
+.DS_Store
+/backend/.DS_Store
