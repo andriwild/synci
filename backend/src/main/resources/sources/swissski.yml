@@ -1,0 +1,5 @@
+swissski:
+  url: https://api.production.cloud.swiss-ski.ch/data/facades
+  name: SWISS_SKI
+  id: 2
+  sport: sport_ski_alpine

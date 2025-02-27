@@ -1,58 +1,63 @@
+name: "synci_instance_${STAGE:-local}"
+
 services:
-  # client:
-  #   image: node:20-alpine
-  #   command: ['npm', 'run', 'dev']
-  #   working_dir: /app
-  #   environment:
-  #     - NODE_ENV=development
-  #   ports:
-  #     - '3000:3000'
-  #     - '3035:3035'
-  #   volumes:
-  #     - ./frontend:/app
-  #     - client.node_modules:/app/node_modules
-    # depends_on:
-    #   - server
+  frontend:
+    container_name: "synci-frontend-${STAGE:-local}"
+    platform: linux/amd64
+    image: ghcr.io/andriwild/synci/frontend-${STAGE:-dev}:latest
+    environment:
+      - VITE_STAGE=${STAGE}
+      - VITE_URL_PREFIX=${VITE_URL_PREFIX}
+    networks:
+        synci-net:
+          aliases:
+            - synci-net-frontend-${STAGE:-local}
 
-  # server:
-  #   image: gradle:8.10.1-jdk21
-
-  #   command: ['sh', 'dev.sh']
-  #   working_dir: /app
-  #   restart: always
-  #   ports:
-  #     - '3001:8888'
-  #     - '5005:5005'
-  #   environment:
-  #     - AP_SERVER_URLS=https://dev.rvgs.ch/api-dev
-  #     - TZ=Europe/Zurich
-  #     - SERVER_ID=https://app.rvgs.ch/api
-  #     - SPRING_ENV=development
-  #   volumes:
-  #     - ./server:/app
-  #     - server.cache:/home/gradle/.gradle
-  #     - /etc/localtime:/etc/localtime:ro
-    # depends_on:
-    #   - db
+  backend:
+    container_name: "synci-backend-${STAGE:-local}"
+    platform: linux/amd64 # adding a plattform causes gradle build to timeout with no error
+    image: ghcr.io/andriwild/synci/backend-${STAGE:-dev}:latest
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB_NAME}
+      - DB_HOST=database-net-db-${STAGE:-local}
+      - SPRING_PROFILES_ACTIVE=${STAGE:-local}
+    depends_on:
+      - db
+    networks:
+        synci-net:
+          aliases:
+            - synci-net-backend-${STAGE:-local}
+        database:
+          aliases:
+            - database-net-backend-${STAGE:-local}
 
   db:
+    container_name: "synci-db-${STAGE:-local}"
     image: postgres:15.2-alpine
+    restart: always
     environment:
-      - "POSTGRES_USER=postgres"
-      - "POSTGRES_PASSWORD=postgres"
-      - "POSTGRES_DB=synci-db"
-    ports:
-      - "5432:5432"
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB_NAME}
     volumes:
       - db.data:/var/lib/postgresql/data
+    networks:
+        synci-net:
+          aliases:
+            - synci-net-db-${STAGE:-local}
+        database:
+          aliases:
+            - database-net-db-${STAGE:-local}
 
-  # adminer:
-  #   image: adminer
-  #   restart: always
-  #   ports:
-  #     - "3003:8080"
 
 volumes:
-  # client.node_modules:
-  # server.cache:
   db.data:
+
+networks:
+  database:
+    name: 'database-${STAGE:-local}'
+
+  synci-net:
+    name: 'synci-net-${STAGE:-local}'

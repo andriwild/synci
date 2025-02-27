@@ -1,0 +1,52 @@
+spring:
+  application:
+    name: backend
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://accounts.google.com
+          jwk-set-uri: https://www.googleapis.com/oauth2/v3/certs
+  flyway:
+    locations: db/migration/
+    url: ${ch.boosters.db.jdbcUrl}
+    password: ${ch.boosters.db.password}
+    user: ${ch.boosters.db.username}
+  config:
+    import:
+    - "classpath:sources/swissski.yml"
+    #- "classpath:sources/fotmob.yml"
+
+ch:
+  boosters:
+    db:
+      jdbcUrl: jdbc:postgresql://localhost:5432/${POSTGRES_DB_NAME:synci-db}
+      username: ${POSTGRES_USER:postgres}
+      password: ${POSTGRES_PASSWORD:postgres}
+      driverClassName: org.postgresql.Driver
+      maximumPoolSize: 3
+      connectionTimeout: 2000
+      validationTimeout: 2000
+      connectionTestQuery: "SELECT 1"
+      initializationFailTimeout: -1
+
+server:
+  servlet:
+    context-path: /api
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
+  endpoint:
+    prometheus:
+      enabled: true
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
+#logging:
+#  level:
+#    root: DEBUG

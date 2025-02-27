@@ -1,35 +1,42 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ConfigProvider, Layout, theme } from "antd";
+import { UserConfigsPage } from "./pages/UserConfigsPage.tsx";
+import { UserConfigForm } from "./pages/UserConfigForm.tsx";
+import { Header } from "./components/Header.tsx";
+import { Footer } from "./components/Footer.tsx";
+import { Content } from "antd/es/layout/layout";
+import { Home } from "./pages/Home.tsx";
+import { FC } from 'react';
 
-function App() {
-  const [count, setCount] = useState(0)
+export const App: FC = () => {
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    return (
+        <Router>
+            <ConfigProvider
+                theme={{
+                    algorithm: theme.defaultAlgorithm,
+                    token: {
+                        colorPrimary: '#545454',
+                        borderRadius: 20,
+                        colorBgContainer: '#eaeaea',
+                    },
+                }}
+            >
+            <Layout style={{ minHeight: '100vh', minWidth: '100vw' }}>
+                <Header />
+                <Content>
+                    <Routes>
+                        <Route path="/" element={<Home />} />
+                        <Route path="/config/" element={<UserConfigsPage />} />
+                        <Route path="/config/:id" element={<UserConfigForm />} />
+                    </Routes>
+                </Content>
+                <Footer />
+            </Layout>
+            </ConfigProvider>
+        </Router>
+    );
 }
 
-export default App
+export default App;

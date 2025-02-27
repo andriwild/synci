@@ -1,0 +1,59 @@
+services:
+  caddy:
+    container_name: caddy
+    image: caddy:latest
+    ports:
+      - 443:443
+    volumes:
+      - /home/admin/synci/config/Caddyfile:/etc/caddy/Caddyfile
+      - caddy-config:/config
+      - caddy-data:/data
+    networks:
+      synci-net-dev:
+        aliases:
+          - synci-net-caddy-dev
+      synci-net-prod:
+        aliases:
+          - synci-net-caddy-prod
+      monitoring-net:
+
+
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:latest
+    volumes:
+      - /home/admin/synci/config/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      monitoring-net:
+      synci-net-dev:
+      synci-net-prod:
+
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:latest
+    depends_on:
+      - prometheus
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=synci-observer
+      - GF_SERVER_ROOT_URL=https://synci.awild.ch/dashboard/
+      - GF_SERVER_SERVE_FROM_SUBPATH=true
+    networks:
+      monitoring-net:
+    volumes:
+      - grafana-data:/var/lib/grafana
+
+volumes:
+  caddy-config:
+  caddy-data:
+  grafana-data:
+
+networks:
+  monitoring-net:
+    name: 'monitoring-net'
+
+  synci-net-dev:
+    external: true
+
+  synci-net-prod:
+    external: true

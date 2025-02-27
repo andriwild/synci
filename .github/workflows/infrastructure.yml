@@ -1,0 +1,60 @@
+name: infrastructure
+
+on:
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+        type: choice
+        options:
+        - info
+        - warning
+        - debug
+  push:
+    branches: 
+      - 'main' 
+      - 'dev'
+    paths: 
+      - 'infrastructure/**'
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+
+  deploy_infrastructure:
+    name: Deploy infrastructure
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        run: |
+            install -m 600 -D /dev/null ~/.ssh/id_rsa
+            echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+            ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
+
+      - name: Copy config file to remote server
+        run: |
+          scp ./infrastructure/config/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:synci/config/
+
+      - name: Create docker context
+        run: |
+            docker context create remote --docker "host=ssh://${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}"
+            docker context use remote
+
+      - name: Log into registry
+        run: |
+            docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_TOKEN }} ${{ env.REGISTRY }}
+
+      - name: Deploy to remote server
+        run: |
+            ls
+            pwd
+            docker compose -f ./infrastructure/docker-compose.yml -p infra stop
+            docker compose -f ./infrastructure/docker-compose.yml -p infra rm -f
+            docker compose -f ./infrastructure/docker-compose.yml -p infra up -d --force-recreate
