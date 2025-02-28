@@ -1,13 +1,15 @@
-import './App.css'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ConfigProvider, Layout, theme } from "antd";
-import { UserConfigsPage } from "./pages/UserConfigsPage.tsx";
-import { UserConfigForm } from "./pages/UserConfigForm.tsx";
+import { UserConfigsPage } from "./pages/calender/UserConfigsPage.tsx";
+import { UserConfigForm } from "./pages/calender/UserConfigForm.tsx";
 import { Header } from "./components/Header.tsx";
 import { Footer } from "./components/Footer.tsx";
 import { Content } from "antd/es/layout/layout";
-import { Home } from "./pages/Home.tsx";
+import { HomePage } from "./pages/home/HomePage.tsx";
 import { FC } from 'react';
+import {PreHeader} from "./components/PreHeader.tsx";
+import {SportPage} from "./pages/sport/SportPage.tsx";
+import './index.css';
 
 export const App: FC = () => {
 
@@ -17,17 +19,19 @@ export const App: FC = () => {
                 theme={{
                     algorithm: theme.defaultAlgorithm,
                     token: {
-                        colorPrimary: '#545454',
+                        colorPrimary: '#3D5A80',
                         borderRadius: 20,
-                        colorBgContainer: '#eaeaea',
+                        colorBgContainer: '#EBF0F6',
                     },
                 }}
             >
-            <Layout style={{ minHeight: '100vh', minWidth: '100vw' }}>
+            <Layout style={{height: '100vh',background: '#EBF0F6'}}>
+                <PreHeader />
                 <Header />
-                <Content>
+                <Content style={{ borderRadius: 20, background: 'white', margin: '20px'}}>
                     <Routes>
-                        <Route path="/" element={<Home />} />
+                        <Route path="/" element={<HomePage />} />
+                        <Route path="/sport" element={<SportPage />} />
                         <Route path="/config/" element={<UserConfigsPage />} />
                         <Route path="/config/:id" element={<UserConfigForm />} />
                     </Routes>

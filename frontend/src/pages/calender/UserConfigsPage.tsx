@@ -3,9 +3,9 @@ import { Card, Flex } from "antd";
 import { Plus } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { SyncConfig } from "../model/SyncConfig.ts";
-import { Api } from "../services/data.tsx"
-import { ConfigCard } from "../components/ConfigCard.tsx";
+import { SyncConfig } from "../../model/SyncConfig.ts";
+import { Api } from "../../services/data.tsx"
+import { ConfigCard } from "../../components/ConfigCard.tsx";
 
 
 export const UserConfigsPage: FC = () => {
