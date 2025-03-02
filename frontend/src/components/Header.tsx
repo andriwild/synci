@@ -29,8 +29,11 @@ export const Header: FC = () => {
         }
     ];
 
-    const handleMenuClick = (e: any) => {
-        navigate(e.path);
+    const handleMenuClick = (e : any) => {
+        const selected = items.find(item => item.key === e.key);
+        if (selected) {
+            navigate(selected.path);
+        }
     };
 
 
