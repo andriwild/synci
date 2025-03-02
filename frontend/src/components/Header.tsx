@@ -1,8 +1,8 @@
-import { FC } from "react";
-import {Flex, Image, Layout, Menu, Space, theme, Typography} from "antd";
-import {Link, useNavigate} from "react-router-dom";
-import { MenuInfo } from "rc-menu/lib/interface";
-import Title from "antd/es/typography/Title";
+import {FC} from "react";
+import {Image, Layout, Menu, Space, theme} from "antd";
+import {useNavigate} from "react-router-dom";
+import {MenuInfo} from "rc-menu/lib/interface";
+import {UserProfile} from "./UserProfile.tsx";
 
 export const Header: FC = () => {
     const navigate = useNavigate();
@@ -58,31 +58,7 @@ export const Header: FC = () => {
 
             />
             </Space>
-                <Link to={'/config/new'}>
-                    <Flex style={{ alignItems: 'center', cursor: 'pointer', gap: 10 }}>
-                    <Flex style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
-                    <Typography.Text type={'secondary'} style={{margin: 0}}>Mein Konto</Typography.Text>
-                    <Title level={5} style={{margin: 0}} color={token.colorPrimary}>Elias Bräm</Title>
-                    </Flex>
-                        <Image
-                            src={ './assets/Profile_sample.png' }
-                            preview={ false }
-                            style={{
-                                cursor: 'pointer',
-                                borderRadius: '50%',
-                                height: 40,
-                                width: 40,
-                                objectFit: 'cover',
-                            }}
-                            onClick={ () => {
-                                navigate('/');
-                            }
-                            }
-                        />
-                    </Flex>
-                </Link>
-
-
+            <UserProfile />
         </Layout.Header>
     );
 };

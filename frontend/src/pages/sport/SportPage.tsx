@@ -1,5 +1,7 @@
 import { FC } from "react";
-import {Flex, theme, Typography} from "antd";
+import {Flex, theme} from "antd";
+import {SportTreeComponent} from "./SportTreeComponent.tsx";
+import {CalendarComponent} from "./CalendarComponent.tsx";
 
 export const SportPage: FC = () => {
     return (
@@ -12,17 +14,15 @@ export const SportPage: FC = () => {
             <Flex id={'tree-container'} style={{
                 backgroundColor: 'white',
                 borderRadius: 20,
-                flex: 1,
-                padding: 20}}>
-                <Typography.Title level={3} style={{margin: 0}}>Sportarten</Typography.Title>
+                flex: 1}}>
+                <SportTreeComponent />
             </Flex>
             <Flex id={'calender-container'} style={{
                 backgroundColor: 'white',
                 borderRadius: 20,
                 flex: '0 1 33%',
-                maxWidth: '400px',
-                padding: 20}}>
-                <Typography.Title level={3} style={{margin: 0}}>Kalender</Typography.Title>
+                maxWidth: '400px'}}>
+               <CalendarComponent />
             </Flex>
 
         </Flex>

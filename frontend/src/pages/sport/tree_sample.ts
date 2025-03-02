@@ -1,41 +1,55 @@
-export const sampleSportTree = [
+export type SportCategory = {
+    id: number;
+    name: string;
+    subcategories: SportCategory[];
+}
+
+export const sampleSportTree : SportCategory[] = [
     {
-      "name": "Fussball",
-      "subcategories": []
+        "id": 1,
+        "name": "Fussball",
+        "subcategories": []
     },
     {
-      "name": "Skifahren",
-      "subcategories": [
-        {
-          "name": "Weltcup Damen",
-          "subcategories": [
-            { "name": "Slalom", "subcategories": [] }
-          ]
-        },
-        {
-          "name": "Weltcup Herren",
-          "subcategories": [
-            { "name": "Riesenslalom", "subcategories": [] },
-            { "name": "Super G", "subcategories": [] },
-            { "name": "Abfahrt", "subcategories": [] }
-          ]
-        }
-      ]
+        "id": 2,
+        "name": "Skifahren",
+        "subcategories": [
+            {
+                "id": 3,
+                "name": "Weltcup Damen",
+                "subcategories": [
+                    { "id": 4, "name": "Slalom", "subcategories": [] }
+                ]
+            },
+            {
+                "id": 5,
+                "name": "Weltcup Herren",
+                "subcategories": [
+                    { "id": 6, "name": "Riesenslalom", "subcategories": [] },
+                    { "id": 7, "name": "Super G", "subcategories": [] },
+                    { "id": 8, "name": "Abfahrt", "subcategories": [] }
+                ]
+            }
+        ]
     },
     {
-      "name": "Unihockey",
-      "subcategories": []
+        "id": 9,
+        "name": "Unihockey",
+        "subcategories": []
     },
     {
-      "name": "Basketball",
-      "subcategories": []
+        "id": 10,
+        "name": "Basketball",
+        "subcategories": []
     },
     {
-      "name": "Eishockey",
-      "subcategories": []
+        "id": 11,
+        "name": "Eishockey",
+        "subcategories": []
     },
     {
-      "name": "Handball",
-      "subcategories": []
+        "id": 12,
+        "name": "Handball",
+        "subcategories": []
     }
-    ];
+];
