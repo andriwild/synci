@@ -9,6 +9,7 @@ import {SportPage} from "./pages/sport/SportPage.tsx";
 import './index.css';
 import {LoginPage} from "./pages/login/LoginPage.tsx";
 import {AppLayout} from "./components/AppLayout.tsx";
+import {FaqPage} from "./pages/faq/FaqPage.tsx";
 
 export const App: FC = () => {
     return (
@@ -34,6 +35,7 @@ export const App: FC = () => {
                         <Route path="/sport" element={<SportPage />} />
                         <Route path="/config" element={<UserConfigsPage />} />
                         <Route path="/config/:id" element={<UserConfigForm />} />
+                        <Route path="/faq" element={<FaqPage />} />
                     </Route>
                 </Routes>
             </ConfigProvider>

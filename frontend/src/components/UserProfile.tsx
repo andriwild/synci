@@ -1,7 +1,7 @@
 import {Button, Divider, Flex, Image, Popover, theme, Typography} from "antd";
 import Title from "antd/es/typography/Title";
 import {FC} from "react";
-import {CalendarBlank, Placeholder, UserCircle} from "@phosphor-icons/react";
+import {CalendarBlank, UserCircle} from "@phosphor-icons/react";
 
 export const UserProfile: FC = () => {
     const {token} = theme.useToken();

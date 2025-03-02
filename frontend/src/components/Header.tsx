@@ -1,37 +1,38 @@
 import {FC} from "react";
 import {Image, Layout, Menu, Space, theme} from "antd";
-import {useNavigate} from "react-router-dom";
-import {MenuInfo} from "rc-menu/lib/interface";
+import {useLocation, useNavigate} from "react-router-dom";
+import {CalendarBlank, ListBullets, QuestionMark} from "@phosphor-icons/react";
 import {UserProfile} from "./UserProfile.tsx";
 
 export const Header: FC = () => {
     const navigate = useNavigate();
+    const location =useLocation();
 
     const items = [
-
         {
             key: '1',
-            label: 'Sportarten',
-            path: '/sport',
+            label: <span>Sportarten</span>,
+            icon: <ListBullets />,
+            path: '/sport'
         },
         {
             key: '2',
-            label: 'Meine Kalender',
-            path: '/config',
+            label: <span>Meine Kalender</span>,
+            icon: <CalendarBlank />,
+            path: '/config'
         },
         {
             key: '3',
-            label: 'Wie funktionierts?',
-            path: '/faq',
+            label: <span>Wie funktionierts?</span>,
+            icon: <QuestionMark />,
+            path: '/faq'
         }
     ];
 
-    const handleMenuClick = (e: MenuInfo) => {
-        const clickedItem = items.find(item => item.key === e.key);
-        if (clickedItem && clickedItem.path) {
-            navigate(clickedItem.path);
-        }
+    const handleMenuClick = (e: any) => {
+        navigate(e.path);
     };
+
 
     const { token } = theme.useToken();
     return (
@@ -44,18 +45,17 @@ export const Header: FC = () => {
                     cursor: 'pointer',
                     padding: '10px 20px 10px 0',
                     maxHeight: 60 }}
-                onClick={ () => {
-                        navigate('/');
+                onClick={() => {
+                    navigate('/');
                 }
                 }
             />
             <Menu
                 mode="horizontal"
-                defaultSelectedKeys={ ['1'] }
                 items={ items }
-                onClick={ handleMenuClick }
                 style={{ flex: 1, minWidth: 0, backgroundColor: 'white' }}
-
+                onClick={handleMenuClick}
+                selectedKeys={[location.pathname]}
             />
             </Space>
             <UserProfile />
