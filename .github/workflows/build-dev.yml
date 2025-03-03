@@ -27,9 +27,22 @@ env:
   POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
   POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
 
-  TAG: ${{ github.ref_type == 'tag' && github.ref_name || 'latest' }}
-
 jobs:
+  determine-tag:
+    runs-on: ubuntu-latest
+    outputs:
+      docker_tag: ${{ steps.eval.outputs.tag }}
+    steps:
+      - name: Evaluate Docker Tag
+        id: eval
+        run: |
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            TAG=${GITHUB_REF#refs/tags/}
+          else
+            TAG=latest
+          fi
+          echo "Docker tag determined: $TAG"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
 
   build_backend:
     name: Build backend
@@ -63,11 +76,11 @@ jobs:
 
       - name: Build backend image 
         run: |
-          docker build --network="host" -t ${{ env.REGISTRY }}/${{ github.repository }}/backend:${{ env.TAG }} ./backend
+          docker build --network="host" -t ${{ env.REGISTRY }}/${{ github.repository }}/backend:${{ needs.determine-tag.outputs.docker_tag }} ./backend
 
       - name: Push backend image
         run: |
-          docker push ${{ env.REGISTRY }}/${{ github.repository }}/backend:${{ env.TAG }}
+          docker push ${{ env.REGISTRY }}/${{ github.repository }}/backend:${{ needs.determine-tag.outputs.docker_tag }}
 
 
   build_frontend:
@@ -89,11 +102,11 @@ jobs:
 
       - name: Build frontend image
         run: |
-          docker build -t ${{ env.REGISTRY }}/${{ github.repository }}/frontend:${{ env.TAG }} ./frontend
+          docker build -t ${{ env.REGISTRY }}/${{ github.repository }}/frontend:${{ needs.determine-tag.outputs.docker_tag }} ./frontend
 
       - name: Push frontend image
         run: |
-          docker push ${{ env.REGISTRY }}/${{ github.repository }}/frontend:${{ env.TAG }}
+          docker push ${{ env.REGISTRY }}/${{ github.repository }}/frontend:${{ needs.determine-tag.outputs.docker_tag }}
 
 
   deploy:
