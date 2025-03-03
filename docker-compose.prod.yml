@@ -4,7 +4,7 @@ services:
   frontend:
     container_name: "synci-frontend-prod"
     platform: linux/amd64
-    image: ghcr.io/andriwild/synci/frontend:0.0.7
+    image: ghcr.io/andriwild/synci/frontend:v0.0.7
     environment:
       - VITE_STAGE=prod
       - VITE_BACKEND_URL=https://synci.awild.ch
@@ -18,7 +18,7 @@ services:
   backend:
     container_name: "synci-backend-prod"
     platform: linux/amd64 # adding a plattform causes gradle build to timeout with no error
-    image: ghcr.io/andriwild/synci/backend:0.0.7
+    image: ghcr.io/andriwild/synci/backend:v0.0.7
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
