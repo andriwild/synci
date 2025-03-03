@@ -9,12 +9,14 @@ on:
         default: 'warning'
         type: choice
         options:
-        - info
-        - warning
-        - debug
+          - info
+          - warning
+          - debug
   push:
     branches:
-      - dev 
+      - dev
+    tags:
+      - 'v*.*.*'
 
 env:
   REGISTRY: ghcr.io
@@ -25,10 +27,7 @@ env:
   POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
   POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
 
-  STAGE: dev
-
-  # environment variable starting with 'VITE_' are available in the frontend
-  VITE_BACKEND_URL: https://dev.synci.awild.ch
+  TAG: ${{ github.ref_type == 'tag' && github.ref_name || 'latest' }}
 
 jobs:
 
@@ -64,12 +63,12 @@ jobs:
 
       - name: Build backend image 
         run: |
-          docker build --network="host" -t ${{ env.REGISTRY }}/${{ github.repository }}/backend-${{ env.STAGE }}:latest ./backend
+          docker build --network="host" -t ${{ env.REGISTRY }}/${{ github.repository }}/backend:${{ env.TAG }} ./backend
 
       - name: Push backend image
         run: |
-          docker push ${{ env.REGISTRY }}/${{ github.repository }}/backend-${{ env.STAGE }}:latest
-     
+          docker push ${{ env.REGISTRY }}/${{ github.repository }}/backend:${{ env.TAG }}
+
 
   build_frontend:
     name: Build frontend
@@ -90,12 +89,12 @@ jobs:
 
       - name: Build frontend image
         run: |
-          docker build --build-arg VITE_STAGE=${{env.STAGE}} --build-arg VITE_BACKEND_URL=${{env.VITE_BACKEND_URL}} -t ${{ env.REGISTRY }}/${{ github.repository }}/frontend-${{ env.STAGE }}:latest ./frontend
+          docker build -t ${{ env.REGISTRY }}/${{ github.repository }}/frontend:${{ env.TAG }} ./frontend
 
       - name: Push frontend image
         run: |
-          docker push ${{ env.REGISTRY }}/${{ github.repository }}/frontend-${{ env.STAGE }}:latest
-          
+          docker push ${{ env.REGISTRY }}/${{ github.repository }}/frontend:${{ env.TAG }}
+
 
   deploy:
     name: Deploy frontend and backend
@@ -110,23 +109,22 @@ jobs:
 
       - name: Setup SSH
         run: |
-            install -m 600 -D /dev/null ~/.ssh/id_rsa
-            echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-            ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
+          install -m 600 -D /dev/null ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
 
       - name: Create docker context
         run: |
-            docker context create remote --docker "host=ssh://${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}"
-            docker context use remote
+          docker context create remote --docker "host=ssh://${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}"
+          docker context use remote
 
       - name: Log into registry
         run: |
-            docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_TOKEN }} ${{ env.REGISTRY }}
+          docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_TOKEN }} ${{ env.REGISTRY }}
 
       - name: Deploy to remote server
         run: |
-            docker compose -p dev stop
-            docker compose -p dev rm -f
-            docker compose -p dev pull
-            docker compose -p dev up -d --force-recreate
-
+          docker compose -p dev stop
+          docker compose -p dev rm -f
+          docker compose -p dev pull
+          docker compose -p dev up -d --force-recreate
