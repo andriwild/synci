@@ -1,10 +1,5 @@
-export type SportCategory = {
-    id: number;
-    name: string;
-    subcategories: SportCategory[];
-}
 
-export const sampleSportTree : SportCategory[] = [
+export const sampleSportTree = [
     {
         "id": 1,
         "name": "Fussball",
