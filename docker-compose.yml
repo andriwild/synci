@@ -1,30 +1,30 @@
-name: "synci_instance_${STAGE:-local}"
+name: "synci_instance_dev"
 
 services:
   frontend:
-    container_name: "synci-frontend-${STAGE:-local}"
+    container_name: "synci-frontend-dev"
     platform: linux/amd64
-    image: ghcr.io/andriwild/synci/frontend-${STAGE:-dev}:latest
+    image: ghcr.io/andriwild/synci/frontend:latest
     environment:
-      - VITE_STAGE=${STAGE}
-      - VITE_URL_PREFIX=${VITE_URL_PREFIX}
+      - VITE_STAGE=dev
+      - VITE_BACKEND_URL=https://dev.synci.awild.ch
     ports:
       - 5173:5173
     networks:
         synci-net:
           aliases:
-            - synci-net-frontend-${STAGE:-local}
+            - synci-net-frontend-dev
 
   backend:
-    container_name: "synci-backend-${STAGE:-local}"
+    container_name: "synci-backend-dev"
     platform: linux/amd64 # adding a plattform causes gradle build to timeout with no error
-    image: ghcr.io/andriwild/synci/backend-${STAGE:-dev}:latest
+    image: ghcr.io/andriwild/synci/backend:latest
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB_NAME}
-      - DB_HOST=database-net-db-${STAGE:-local}
-      - SPRING_PROFILES_ACTIVE=${STAGE:-local}
+      - DB_HOST=database-net-db-dev
+      - SPRING_PROFILES_ACTIVE=dev
     depends_on:
       - db
     ports:
@@ -32,13 +32,13 @@ services:
     networks:
         synci-net:
           aliases:
-            - synci-net-backend-${STAGE:-local}
+            - synci-net-backend-dev
         database:
           aliases:
-            - database-net-backend-${STAGE:-local}
+            - database-net-backend-dev
 
   db:
-    container_name: "synci-db-${STAGE:-local}"
+    container_name: "synci-db-dev"
     image: postgres:15.2-alpine
     restart: always
     environment:
@@ -47,13 +47,15 @@ services:
       - POSTGRES_DB=${POSTGRES_DB_NAME}
     volumes:
       - db.data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
     networks:
         synci-net:
           aliases:
-            - synci-net-db-${STAGE:-local}
+            - synci-net-db-dev
         database:
           aliases:
-            - database-net-db-${STAGE:-local}
+            - database-net-db-dev
 
 
 volumes:
@@ -61,7 +63,7 @@ volumes:
 
 networks:
   database:
-    name: 'database-${STAGE:-local}'
+    name: 'database-dev'
 
   synci-net:
-    name: 'synci-net-${STAGE:-local}'
+    name: 'synci-net-dev'
