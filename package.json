@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@ant-design/icons": "^5.6.1",
+    "@tabler/icons": "^3.30.0",
+    "@tabler/icons-react": "^3.30.0"
+  }
+}

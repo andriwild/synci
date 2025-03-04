@@ -702,6 +702,18 @@
   resolved "https://registry.yarnpkg.com/@rollup/rollup-win32-x64-msvc/-/rollup-win32-x64-msvc-4.34.9.tgz#1973871850856ae72bc678aeb066ab952330e923"
   integrity sha512-AyleYRPU7+rgkMWbEh71fQlrzRfeP6SyMnRf9XX4fCdDPAJumdSBqYEcWPMzVQ4ScAl7E4oFfK0GUVn77xSwbw==
 
+"@tabler/icons-react@^3.30.0":
+  version "3.30.0"
+  resolved "https://registry.yarnpkg.com/@tabler/icons-react/-/icons-react-3.30.0.tgz#38159e19aa0c743182796193dd0bef6595de9a29"
+  integrity sha512-9KZ9D1UNAyjlLkkYp2HBPHdf6lAJ2aelDqh8YYAnnmLF3xwprWKxxW8+zw5jlI0IwdfN4XFFuzqePkaw+DpIOg==
+  dependencies:
+    "@tabler/icons" "3.30.0"
+
+"@tabler/icons@3.30.0":
+  version "3.30.0"
+  resolved "https://registry.yarnpkg.com/@tabler/icons/-/icons-3.30.0.tgz#4f80f52cc6355b440a4ee0dadd4c3e3775e50663"
+  integrity sha512-c8OKLM48l00u9TFbh2qhSODMONIzML8ajtCyq95rW8vzkWcBrKRPM61tdkThz2j4kd5u17srPGIjqdeRUZdfdw==
+
 "@types/babel__core@^7.20.5":
   version "7.20.5"
   resolved "https://registry.yarnpkg.com/@types/babel__core/-/babel__core-7.20.5.tgz#3df15f27ba85319caa07ba08d0721889bb39c017"

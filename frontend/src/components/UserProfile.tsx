@@ -11,10 +11,12 @@ export const UserProfile: FC = () => {
             placement="bottomRight"
             trigger={"hover"}
             showArrow={false}
-            overlayInnerStyle={{
-                borderRadius: token.borderRadius,
-                padding: '20px',
-                width: '300px',
+            styles={{
+                body: {
+                    padding: '20px',
+                    width: '300px',
+                    borderRadius: token.borderRadius,
+                },
             }}
             content={
                 <Flex vertical style={{alignItems: 'start', cursor: 'pointer', gap: 10}}>
