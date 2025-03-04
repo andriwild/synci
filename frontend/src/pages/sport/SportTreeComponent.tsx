@@ -1,19 +1,20 @@
 import {useState} from "react";
 import {Flex} from "antd";
 import "./SportTreeComponent.css";
-import {sampleSportTree, SportCategory} from "../../services/category/entities/tree_sample.ts";
+import {sampleSportTree} from "../../services/category/entities/tree_sample.ts";
 import {CaretRight} from "@phosphor-icons/react";
+import {SportCategory} from "../../services/category/entities/sportCategory.ts";
 
 export const SportTreeComponent = () => {
     const [selectedId, setSelectedId] = useState(0);
     const [treeColumns, setTreeColumns] = useState([sampleSportTree]);
 
-    const handleCategoryClick = (category : SportCategory, level : number) => {
-        setSelectedId(category.id);
+    const handleCategoryClick = (category : SportCategory , level : number) => {
 
+        setSelectedId(category.id);
         const newTreeColumns = [...treeColumns.slice(0, level + 1)];
 
-        if (category.subcategories.length > 0) {
+        if (category.subcategories && category.subcategories.length > 0) {
             newTreeColumns[level + 1] = category.subcategories;
         } else {
             newTreeColumns.length = level + 1; // Entfernt unnötige Spalten
@@ -34,7 +35,7 @@ export const SportTreeComponent = () => {
                         background: columnColors[index] || "gray",
                     }}
                 >
-                    {categories.map((category) => (
+                    {categories.map((category : SportCategory) => (
                         <div
                             key={category.id}
                             className={`tree-item ${selectedId === category.id ? "selected" : ""}`}

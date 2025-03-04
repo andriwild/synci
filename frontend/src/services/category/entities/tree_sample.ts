@@ -1,5 +1,6 @@
+import {SportCategory} from "./sportCategory.ts";
 
-export const sampleSportTree = [
+export const sampleSportTree : SportCategory = [
     {
         "id": 1,
         "name": "Fussball",

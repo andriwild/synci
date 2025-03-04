@@ -3,7 +3,7 @@ import {axiosBaseQuery} from "../common/apiHelpers";
 import {SportCategory} from "./entities/sportCategory.ts";
 
 
-export const userApi = createApi({
+export const categoryApi = createApi({
     reducerPath: "sportCategoryApi",
     baseQuery: axiosBaseQuery({
         baseUrl: "/sportCategory"
