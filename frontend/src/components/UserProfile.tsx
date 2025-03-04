@@ -51,6 +51,7 @@ export const UserProfile: FC = () => {
                     </Button>
                     <Button
                         type={'default'}
+                        size={"large"}
                         style={{
                             width: '100%',
                             marginTop: '20px',
@@ -65,6 +66,7 @@ export const UserProfile: FC = () => {
                         <Button
                             type={'primary'}
                             style={{width: '100%'}}
+                            size={"large"}
                             onClick={() => {
                                 //TODO: Implement logout
                             }}

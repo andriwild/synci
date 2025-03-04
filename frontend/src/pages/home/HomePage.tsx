@@ -3,10 +3,11 @@ import {Button, Flex, Image, theme, Typography} from "antd";
 import './HomePage.css';
 import {IconInfoCircle, IconPlayerPlayFilled, IconSoccerField, IconUser} from "@tabler/icons-react";
 import {sampleSportTree} from "../../services/category/entities/tree_sample.ts";
+import {useNavigate} from "react-router-dom";
 
 export const HomePage: FC = () => {
     const {token} = theme.useToken()
-
+    const navigate = useNavigate();
     return (
         <Flex vertical style={{width: '100%'}} id={"home-container"}>
             <Flex style={{justifyContent: 'center', alignItems: 'center'}} id={"home-header"}>
@@ -34,8 +35,13 @@ export const HomePage: FC = () => {
                         Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
                     </Typography.Text>
                     <Flex style={{gap: 20, paddingTop: "20px"}}>
-                        <Button type={'primary'} size={"large"} icon={<IconPlayerPlayFilled size={20}/>}>
-                            Gratis starten
+                        <Button type={'primary'} size={"large"} icon={<IconPlayerPlayFilled size={20}/>}
+                                onClick={() => {
+                                    navigate("/sport");
+                                }
+                                }
+                        >
+                            GRATIS starten
                         </Button>
                         <Button type={'default'} size={"large"}
                                 icon={<IconInfoCircle size={20}/>}
@@ -49,14 +55,25 @@ export const HomePage: FC = () => {
                 </Typography.Title>
                 <Flex style={{justifyContent: 'start', alignItems: 'start', gap: "20px", flexWrap: "wrap", maxWidth: "1260px"}}>
                     {sampleSportTree.map((category) => (
-                        <Flex vertical className={"sport-card"} style={{background: token.colorBgContainer}}>
+                        <Flex vertical className={"sport-card"} style={{background: token.colorBgContainer}} key={category.id}>
                             <IconSoccerField size={50} style={{color: token.colorPrimary, marginTop: "20px"}}/>
                             <Typography.Title level={3}>{category.name}</Typography.Title>
                             <Typography.Text>{category.description}</Typography.Text>
                         </Flex>
                     ))}
-
                 </Flex>
+                <Button
+                    type={'primary'}
+                    size={"large"}
+                    style={{
+                        marginTop: '60px',
+                    }}
+                    onClick={() => {
+                        navigate("/sport");
+                    }}
+                >
+                    Jetzt Kalender konfigurieren
+                </Button>
             </Flex>
             <Flex vertical style={{justifyContent: 'start', alignItems: 'center', paddingTop:"60px", backgroundColor: token.colorBgBase, padding:"60px 0"}}>
                 <Typography.Title level={2} style={{marginBottom: 70}}>
@@ -64,7 +81,7 @@ export const HomePage: FC = () => {
                 </Typography.Title>
                 <Flex style={{justifyContent: 'start', alignItems: 'start', gap: "20px", flexWrap: "wrap", maxWidth: "1260px"}}>
                     {sampleSportTree.map((category) => (
-                        <Flex vertical className={"sport-card"} style={{background: token.colorBgContainer}}>
+                        <Flex vertical className={"sport-card"} style={{background: token.colorBgContainer}} key={category.id}>
                             <IconUser size={50} style={{color: token.colorPrimary, marginTop: "20px"}}/>
                             <Typography.Title level={3}>{category.name}</Typography.Title>
                             <Typography.Text>{category.description}</Typography.Text>
