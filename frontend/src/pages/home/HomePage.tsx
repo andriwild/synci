@@ -1,11 +1,14 @@
-import { FC } from "react";
-import {Flex, Image, Typography} from "antd";
+import {FC} from "react";
+import {Button, Flex, Image, theme, Typography} from "antd";
 import './HomePage.css';
+import {IconInfoCircle, IconPlayerPlayFilled, IconSoccerField, IconUser} from "@tabler/icons-react";
+import {sampleSportTree} from "../../services/category/entities/tree_sample.ts";
 
 export const HomePage: FC = () => {
+    const {token} = theme.useToken()
 
     return (
-        <Flex vertical style={{height: "auto", width: '100%'}} id={"home-container"}>
+        <Flex vertical style={{width: '100%'}} id={"home-container"}>
             <Flex style={{justifyContent: 'center', alignItems: 'center'}} id={"home-header"}>
                 <Image
                     src={'./assets/synci_preview_straight_cut.png'}
@@ -16,17 +19,60 @@ export const HomePage: FC = () => {
                     }
                     }
                 />
-            <Flex vertical style={{
-                justifyContent: 'center',
-                alignItems: 'start',
-                alignContent: 'center',
-                flexBasis: "50%",
-            }}>
-                <Typography.Title level={1}>Sportevents syncronisieren?</Typography.Title>
-                <Typography.Title level={3}>Das ist Synci!</Typography.Title>
+                <Flex vertical style={{
+                    justifyContent: 'center',
+                    alignItems: 'start',
+                    alignContent: 'center',
+                    flexBasis: "50%",
+                }}>
+                    <Typography.Title
+                        level={1}
+                                      style={{width: '80%'}}>Deine Sportevents <br/>überblicken und synchronisieren</Typography.Title>
+
+                    <Typography.Text
+                        style={{width: '80%'}}>
+                        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+                    </Typography.Text>
+                    <Flex style={{gap: 20, paddingTop: "20px"}}>
+                        <Button type={'primary'} size={"large"} icon={<IconPlayerPlayFilled size={20}/>}>
+                            Gratis starten
+                        </Button>
+                        <Button type={'default'} size={"large"}
+                                icon={<IconInfoCircle size={20}/>}
+                        >Mehr erfahren</Button>
+                    </Flex>
+                </Flex>
             </Flex>
+            <Flex vertical style={{justifyContent: 'start', alignItems: 'center', margin: "auto", padding:"60px 0"}}>
+                <Typography.Title level={2} style={{marginBottom: 70}}>
+                    Verfügbare Sportarten
+                </Typography.Title>
+                <Flex style={{justifyContent: 'start', alignItems: 'start', gap: "20px", flexWrap: "wrap", maxWidth: "1260px"}}>
+                    {sampleSportTree.map((category) => (
+                        <Flex vertical className={"sport-card"} style={{background: token.colorBgContainer}}>
+                            <IconSoccerField size={50} style={{color: token.colorPrimary, marginTop: "20px"}}/>
+                            <Typography.Title level={3}>{category.name}</Typography.Title>
+                            <Typography.Text>{category.description}</Typography.Text>
+                        </Flex>
+                    ))}
+
+                </Flex>
             </Flex>
-            <Typography.Title>Synci ist ..</Typography.Title>
+            <Flex vertical style={{justifyContent: 'start', alignItems: 'center', paddingTop:"60px", backgroundColor: token.colorBgBase, padding:"60px 0"}}>
+                <Typography.Title level={2} style={{marginBottom: 70}}>
+                    Team
+                </Typography.Title>
+                <Flex style={{justifyContent: 'start', alignItems: 'start', gap: "20px", flexWrap: "wrap", maxWidth: "1260px"}}>
+                    {sampleSportTree.map((category) => (
+                        <Flex vertical className={"sport-card"} style={{background: token.colorBgContainer}}>
+                            <IconUser size={50} style={{color: token.colorPrimary, marginTop: "20px"}}/>
+                            <Typography.Title level={3}>{category.name}</Typography.Title>
+                            <Typography.Text>{category.description}</Typography.Text>
+                        </Flex>
+                    ))}
+
+                </Flex>
+            </Flex>
         </Flex>
     );
 };

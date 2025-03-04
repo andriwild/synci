@@ -22,7 +22,8 @@ export const App: FC = () => {
                         colorHighlight: '#FFEE77',
                         borderRadius: 20,
                         colorBgContainer: '#EBF0F6',
-                    },
+                        colorBgBase: '#F4F4F4',
+                    }
                 }}
             >
                 <Routes>
