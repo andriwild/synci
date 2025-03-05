@@ -82,11 +82,15 @@ export const Header: FC = () => {
                             onClick={() => setVisible(true)}
                             icon={<IconMenu2 size={24} />}
                         />
-                        <Drawer title="Menu" placement="left" onClose={() => setVisible(false)} open={visible}>
+                        <Drawer title="Menu"
+                                placement="left"
+                                width={"300px"}
+                                onClose={() => setVisible(false)}
+                                open={visible}>
                             <Menu
                                 mode="vertical"
                                 items={items}
-                                style={{ flex: 1, minWidth: 0, backgroundColor: "white" }}
+                                style={{ flex: 1, minWidth: 0, backgroundColor: "transparent" }}
                                 onClick={handleMenuClick}
                                 selectedKeys={[location.pathname]}
                             />
