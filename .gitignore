@@ -32,3 +32,5 @@ replay_pid*
 /frontend/node_modules/
 /frontend/src/config/.env
 /node_modules/
+frontend/package-lock.json
+frontend/yarn.lock
