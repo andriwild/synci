@@ -7,13 +7,13 @@ import {
   Select
 } from "antd";
 import { useNavigate, useParams } from "react-router-dom";
-import { decodeAbbreviation } from "../model/ski.ts";
+import { decodeAbbreviation } from "../../model/ski.ts";
 import { useEffect, useState } from "react";
-import { SyncConfig } from "../model/SyncConfig.ts";
+import { SyncConfig } from "../../model/SyncConfig.ts";
 import { useForm } from "antd/es/form/Form";
-import { Team } from "../model/Team.ts";
-import { Sport } from "../model/Sport.ts";
-import { Api } from "../services/data.tsx";
+import { Team } from "../../model/Team.ts";
+import { Sport } from "../../model/Sport.ts";
+import { Api } from "../../services/data.tsx";
 import { FC } from "react";
 
 

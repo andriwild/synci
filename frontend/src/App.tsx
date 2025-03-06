@@ -1,39 +1,44 @@
-import './App.css'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { ConfigProvider, Layout, theme } from "antd";
-import { UserConfigsPage } from "./pages/UserConfigsPage.tsx";
-import { UserConfigForm } from "./pages/UserConfigForm.tsx";
-import { Header } from "./components/Header.tsx";
-import { Footer } from "./components/Footer.tsx";
-import { Content } from "antd/es/layout/layout";
-import { Home } from "./pages/Home.tsx";
+import { ConfigProvider, theme } from "antd";
+import { UserConfigsPage } from "./pages/calender/UserConfigsPage.tsx";
+import { UserConfigForm } from "./pages/calender/UserConfigForm.tsx";
+import { HomePage } from "./pages/home/HomePage.tsx";
 import { FC } from 'react';
 
-export const App: FC = () => {
+import {SportPage} from "./pages/sport/SportPage.tsx";
+import './index.css';
+import {LoginPage} from "./pages/login/LoginPage.tsx";
+import {AppLayout} from "./components/AppLayout.tsx";
+import {FaqPage} from "./pages/faq/FaqPage.tsx";
 
+export const App: FC = () => {
     return (
         <Router>
             <ConfigProvider
                 theme={{
                     algorithm: theme.defaultAlgorithm,
                     token: {
-                        colorPrimary: '#545454',
+                        colorPrimary: '#3D5A80',
+                        colorHighlight: '#FFEE77',
                         borderRadius: 20,
-                        colorBgContainer: '#eaeaea',
-                    },
+                        colorBgContainer: '#EBF0F6',
+                        colorBgBase: '#F4F4F4',
+                    }
                 }}
             >
-            <Layout style={{ minHeight: '100vh', minWidth: '100vw' }}>
-                <Header />
-                <Content>
-                    <Routes>
-                        <Route path="/" element={<Home />} />
-                        <Route path="/config/" element={<UserConfigsPage />} />
+                <Routes>
+                    {/* No Layout for Login */}
+                    <Route path="/login" element={<LoginPage />} />
+
+                    {/* Apply Layout to all other routes */}
+                    <Route element={<AppLayout/>}>
+                        <Route path="/" element={<HomePage />} />
+                        <Route path="/sport" element={<SportPage />} />
+                        <Route path="/config" element={<UserConfigsPage />} />
                         <Route path="/config/:id" element={<UserConfigForm />} />
-                    </Routes>
-                </Content>
-                <Footer />
-            </Layout>
+                        <Route path="/faq" element={<FaqPage />} />
+                    </Route>
+                </Routes>
             </ConfigProvider>
         </Router>
     );

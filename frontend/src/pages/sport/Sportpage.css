@@ -1,0 +1,13 @@
+#sport-container {
+    display: flex;
+    height: 100%;
+    gap: 20px;
+    border-radius: 20px;
+}
+
+@media screen and (max-width: 768px) {
+    #sport-container {
+        width: calc(100vw - 40px);
+        overflow-x: scroll;
+    }
+}
