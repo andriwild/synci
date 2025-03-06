@@ -92,7 +92,7 @@ jobs:
 
       - name: Build frontend image
         run: |
-          docker build --build-arg --build-arg VITE_STAGE --build-arg VITE_BACKEND_URL -t ${{ env.REGISTRY }}/${{ github.repository }}/frontend-${{ env.STAGE }}:latest ./frontend
+          docker build --build-arg VITE_STAGE --build-arg VITE_BACKEND_URL -t ${{ env.REGISTRY }}/${{ github.repository }}/frontend-${{ env.STAGE }}:latest ./frontend
 
       - name: Push frontend image
         run: |
