@@ -9,14 +9,12 @@ on:
         default: 'warning'
         type: choice
         options:
-          - info
-          - warning
-          - debug
+        - info
+        - warning
+        - debug
   push:
     branches:
-      - dev
-    tags:
-      - 'v*.*.*'
+      - dev 
 
 env:
   REGISTRY: ghcr.io
@@ -27,25 +25,16 @@ env:
   POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
   POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
 
+  BACKEND_PORT: 8081
+  FRONTEND_PORT: 5174
+
+  STAGE: dev
+
+  VITE_BACKEND_URL: https://dev.synci.awild.ch
+
 jobs:
-  determine-tag:
-    runs-on: ubuntu-latest
-    outputs:
-      docker_tag: ${{ steps.eval.outputs.tag }}
-    steps:
-      - name: Evaluate Docker Tag
-        id: eval
-        run: |
-          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
-            TAG=${GITHUB_REF#refs/tags/}
-          else
-            TAG=latest
-          fi
-          echo "Docker tag determined: $TAG"
-          echo "tag=$TAG" >> $GITHUB_OUTPUT
 
   build_backend:
-    needs: determine-tag
     name: Build backend
     runs-on: ubuntu-latest
 
@@ -77,15 +66,14 @@ jobs:
 
       - name: Build backend image 
         run: |
-          docker build --network="host" -t ${{ env.REGISTRY }}/${{ github.repository }}/backend:${{ needs.determine-tag.outputs.docker_tag }} ./backend
+          docker build --network="host" -t ${{ env.REGISTRY }}/${{ github.repository }}/backend-${{ env.STAGE }}:latest ./backend
 
       - name: Push backend image
         run: |
-          docker push ${{ env.REGISTRY }}/${{ github.repository }}/backend:${{ needs.determine-tag.outputs.docker_tag }}
-
+          docker push ${{ env.REGISTRY }}/${{ github.repository }}/backend-${{ env.STAGE }}:latest
+     
 
   build_frontend:
-    needs: determine-tag
     name: Build frontend
     runs-on: ubuntu-latest
 
@@ -104,12 +92,12 @@ jobs:
 
       - name: Build frontend image
         run: |
-          docker build -t ${{ env.REGISTRY }}/${{ github.repository }}/frontend:${{ needs.determine-tag.outputs.docker_tag }} ./frontend
+          docker build --build-arg --build-arg VITE_STAGE --build-arg VITE_BACKEND_URL -t ${{ env.REGISTRY }}/${{ github.repository }}/frontend-${{ env.STAGE }}:latest ./frontend
 
       - name: Push frontend image
         run: |
-          docker push ${{ env.REGISTRY }}/${{ github.repository }}/frontend:${{ needs.determine-tag.outputs.docker_tag }}
-
+          docker push ${{ env.REGISTRY }}/${{ github.repository }}/frontend-${{ env.STAGE }}:latest
+          
 
   deploy:
     name: Deploy frontend and backend
@@ -124,22 +112,22 @@ jobs:
 
       - name: Setup SSH
         run: |
-          install -m 600 -D /dev/null ~/.ssh/id_rsa
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
+            install -m 600 -D /dev/null ~/.ssh/id_rsa
+            echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+            ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
 
       - name: Create docker context
         run: |
-          docker context create remote --docker "host=ssh://${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}"
-          docker context use remote
+            docker context create remote --docker "host=ssh://${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}"
+            docker context use remote
 
       - name: Log into registry
         run: |
-          docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_TOKEN }} ${{ env.REGISTRY }}
+            docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_TOKEN }} ${{ env.REGISTRY }}
 
       - name: Deploy to remote server
         run: |
-          docker compose -p dev stop
-          docker compose -p dev rm -f
-          docker compose -p dev pull
-          docker compose -p dev up -d --force-recreate
+            docker compose -p dev stop
+            docker compose -p dev rm -f
+            docker compose -p dev pull
+            docker compose -p dev up -d --force-recreate
