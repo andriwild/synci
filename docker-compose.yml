@@ -9,7 +9,7 @@ services:
       - VITE_STAGE=${STAGE}
       - VITE_URL_PREFIX=${VITE_URL_PREFIX}
     ports:
-      - ${BACKEND_PORT:-5173}:5173
+      - ${FRONTEND_PORT:-5173}:5173
     networks:
         synci-net:
           aliases:
