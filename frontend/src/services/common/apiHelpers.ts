@@ -18,7 +18,7 @@ type AxiosBaseQueryFn = BaseQueryFn<
 
 export const axiosBaseQuery = ({ baseUrl }: { baseUrl: string }) => {
     const axiosInstance = axios.create({
-        baseURL: VITE_URL_PREFIX+baseUrl
+        baseURL: VITE_URL_PREFIX+"/api"+baseUrl
     });
 
     //TODO Add Token to every request here
