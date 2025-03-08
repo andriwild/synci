@@ -36,15 +36,50 @@ services:
         database:
           aliases:
             - database-net-backend-dev
+  keycloak:
+    container_name: "synci-keycloak-dev"
+    image: quay.io/keycloak/keycloak:latest
+    command: 
+      - "start-dev"
+      - --import-realm
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HTTP_PORT: 8080
+      KC_HOSTNAME_URL: http://localhost:8080
+      KC_HOSTNAME_ADMIN_URL: http://localhost:8080
+      KC_HOSTNAME_STRICT_BACKCHANNEL: true
+      KC_HTTP_RELATIVE_PATH: /
+      KC_HTTP_ENABLED: true
+      KC_HEALTH_ENABLED: true
+      KC_METRICS_ENABLED: true
+      KC_DB: postgres
+      KC_DB_URL_HOST: database-net-keycloak-db-local
+      KC_DB_URL_DATABASE: keycloak
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: keycloak-db
+    ports:
+    - 8090:8080
+    volumes:
+    - ./keycloak/:/opt/keycloak/data/import/
+    networks:
+        synci-net:
+          aliases:
+            - synci-net-keycloak-${STAGE:-local}
+        database:
+          aliases:
+            - database-net-keycloak-${STAGE:-local}
+    depends_on:
+      - keycloak-db
 
   db:
-    container_name: "synci-db-dev"
+    container_name: "synci-db-${STAGE:-local}"
     image: postgres:15.2-alpine
     restart: always
     environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB_NAME}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_DB=${POSTGRES_DB_NAME:-synci-db}
     volumes:
       - db.data:/var/lib/postgresql/data
     ports:
@@ -52,14 +87,35 @@ services:
     networks:
         synci-net:
           aliases:
-            - synci-net-db-dev
+            - synci-net-db-${STAGE:-local}
         database:
           aliases:
-            - database-net-db-dev
+            - database-net-db-${STAGE:-local}
+
+
+  keycloak-db:
+    image: postgres:15.2-alpine
+    container_name: "synci-keycloak-db-${STAGE:-local}"
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_DB_NAME:-keycloak-db}
+    volumes:
+      - keycloak.data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    networks:
+        synci-net:
+          aliases:
+            - synci-net-keycloak-db-${STAGE:-local}
+        database:
+          aliases:
+            - database-net-keycloak-db-${STAGE:-local}
 
 
 volumes:
   db.data:
+  keycloak.data:
 
 networks:
   database:
