@@ -14,6 +14,19 @@ export const sportApi = createApi({
                 url: "/",
                 method: "GET"
             })
-        })
+        }),
+        getById: build.query<Sport, number>({
+            query: (id) => ({
+                url: `/${id}`,
+                method: "GET"
+            })
+        }),
+        create: build.mutation<Sport, Sport>({
+            query: (sport) => ({
+                url: "/",
+                method: "POST",
+                body: sport
+            })
+        }),
     })
 })

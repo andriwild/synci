@@ -5,6 +5,7 @@ export const store = configureStore({
     reducer: {
         [sportApi.reducerPath]: sportApi.reducer,
 
+
     },
     middleware: getDefaultMiddleware =>
         getDefaultMiddleware()

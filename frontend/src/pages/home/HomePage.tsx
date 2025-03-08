@@ -2,7 +2,6 @@ import {FC} from "react";
 import {Button, Flex, Image, theme, Typography} from "antd";
 import './HomePage.css';
 import {IconInfoCircle, IconPlayerPlayFilled, IconSoccerField, IconUser} from "@tabler/icons-react";
-import {sampleSportTree} from "../../services/sport/entities/tree_sample.ts";
 import {useNavigate} from "react-router-dom";
 
 export const HomePage: FC = () => {
@@ -54,13 +53,10 @@ export const HomePage: FC = () => {
                     Verfügbare Sportarten
                 </Typography.Title>
                 <Flex style={{justifyContent: 'start', alignItems: 'start', gap: "20px", flexWrap: "wrap", maxWidth: "1260px"}}>
-                    {sampleSportTree.map((category) => (
-                        <Flex vertical className={"sport-card"} style={{background: token.colorBgContainer}} key={category.id}>
+                        <Flex vertical className={"sport-card"} style={{background: token.colorBgContainer}}>
                             <IconSoccerField size={50} style={{color: token.colorPrimary, marginTop: "20px"}}/>
-                            <Typography.Title level={3}>{category.name}</Typography.Title>
-                            <Typography.Text>{category.description}</Typography.Text>
+                            <Typography.Title level={3}>Sport Name</Typography.Title>
                         </Flex>
-                    ))}
                 </Flex>
                 <Button
                     type={'primary'}
@@ -80,13 +76,10 @@ export const HomePage: FC = () => {
                     Team
                 </Typography.Title>
                 <Flex style={{justifyContent: 'start', alignItems: 'start', gap: "20px", flexWrap: "wrap", maxWidth: "1260px"}}>
-                    {sampleSportTree.map((category) => (
-                        <Flex vertical className={"sport-card"} style={{background: token.colorBgContainer}} key={category.id}>
+                        <Flex vertical className={"sport-card"} style={{background: token.colorBgContainer}}>
                             <IconUser size={50} style={{color: token.colorPrimary, marginTop: "20px"}}/>
-                            <Typography.Title level={3}>{category.name}</Typography.Title>
-                            <Typography.Text>{category.description}</Typography.Text>
+                            <Typography.Title level={3}>Elias</Typography.Title>
                         </Flex>
-                    ))}
 
                 </Flex>
             </Flex>

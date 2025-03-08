@@ -2,6 +2,7 @@ import {Button, ButtonProps, Divider, Flex, Image, Modal, Typography} from "antd
 import {ReactNode, useState} from "react";
 import "./CalenderSelectionModal.css";
 import useBreakpoint from "antd/es/grid/hooks/useBreakpoint";
+import {IconBrandGoogle, IconBrandOffice, IconCalendarPlus, IconMail} from "@tabler/icons-react";
 
 interface CalendarSelectionProps {
     url: string;
@@ -25,50 +26,79 @@ export const CalendarSelectionModal = ({url, buttonText, buttonType, buttonIcon}
                 open={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 onCancel={() => setIsModalOpen(false)}
+                width={screen.md ? "50%" : "90%"}
             >
                 <Flex
-                    flex={"1 1 1"}
-                    justify={"center"}
                     align={"center"}
                     gap={20}
                     vertical
                 >
                     <Typography.Title level={4}>Kalender hinzufügen</Typography.Title>
-                    <Flex gap={10}>
-                        <Button
-                            type="primary"
-                            onClick={() => {
-                                window.open("webcal://" + url)
-                            }
-                            }
-                        >Standard-Mailprogramm</Button>
-                        <Button
-                            type="primary"
-                            onClick={() => {
-                                window.open("https://calendar.google.com/calendar/u/0/r?cid=" + url + "&name=Sportevents-Synci")
-                            }
-                            }
-                        >Google Calender einfügen</Button>
-                        <Button
-                            type="primary"
-                            onClick={() => {
-                                window.open("https://outlook.live.com/owa/?path=/calendar/action/compose&rru=addcalendar&url=" + url + "&name=Sportevents-Synci")
-                            }
-                            }
-                        >In Outlook Live einfügen</Button>
-                    </Flex>
-                    <Divider/>
+                    <Flex gap={40}>
+                        <Flex vertical gap={10} align={"center"}  flex={1} justify={"space-between"}>
+                            <IconMail size={50}/>
+                            <Typography.Title
+                                style={{
+                                    textAlign: "center",
+                                    margin: 0
+                            }}
+                                level={5}>Standard Kalender</Typography.Title>
+                            <Button
+                                icon={<IconCalendarPlus size={20}/>}
+                                type="primary"
+                                onClick={() => {
+                                    window.open("webcal://" + url)
+                                }
+                                }
+                            >Einfügen</Button>
+                        </Flex>
+                        <Flex vertical gap={10} align={"center"} flex={1} justify={"space-between"}>
+                            <IconBrandGoogle size={50}/>
+                            <Typography.Title
+                                style={{
+                                    textAlign: "center",
+                                    margin: 0
+                                }}
+                                level={5}>Google Kalender</Typography.Title>
+                            <Button
+                                icon={<IconCalendarPlus size={20}/>}
+                                type="primary"
+                                onClick={() => {
+                                    window.open("https://calendar.google.com/calendar/u/0/r?cid=" + url + "&name=Sportevents-Synci")
+                                }
+                                }
+                            >Einfügen</Button>
+                        </Flex>
+                        <Flex vertical gap={10} align={"center"}  flex={1} justify={"space-between"}>
+                            <IconBrandOffice size={50}/>
+                            <Typography.Title
+                                style={{
+                                    textAlign: "center",
+                                    margin: 0
+                                }}
+                                level={5}>Outlook Live</Typography.Title>
 
-                    <Typography.Title level={4}>Synci unterstützen</Typography.Title>
+                            <Button
+                                icon={<IconCalendarPlus size={20}/>}
+                                type="primary"
+                                onClick={() => {
+
+
+                                        window.open("https://outlook.live.com/calendar/0/addcalendar?source=fromUrl&url=" + url + "&name=Sportevents-Synci")
+                                }
+                                }
+                            >Einfügen</Button>
+                        </Flex>
+
+                    </Flex>
+                    <Divider children={"Willst du uns unterstützen?"} />
                     <Flex gap={10} vertical
                           align={"center"}>
                         {screen.md ?
                             <Image
                                 src={"./assets/twint/Synci_twint_code.png"}
                                 preview={false}
-                                style={{
-                                    height: "auto",
-                                }}
+                                width={400}
                             />
                             :
                             <Button
@@ -79,7 +109,12 @@ export const CalendarSelectionModal = ({url, buttonText, buttonType, buttonIcon}
                             </Button>
                         }
                         <Typography.Text>Falls du kein Twint hast, kannst du uns hier unterstützen:</Typography.Text>
-                        <Typography.Link>https://buymeacoffee.com/boostershack</Typography.Link>
+                        <Typography.Link
+                            onClick={() => {
+                                window.open("https://buymeacoffee.com/boostershack")
+                            }
+                            }
+                            >https://buymeacoffee.com/boostershack</Typography.Link>
                     </Flex>
 
                 </Flex>

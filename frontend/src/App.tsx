@@ -1,7 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ConfigProvider, theme } from "antd";
-import { UserConfigsPage } from "./pages/calender/UserConfigsPage.tsx";
-import { UserConfigForm } from "./pages/calender/UserConfigForm.tsx";
 import { HomePage } from "./pages/home/HomePage.tsx";
 import { FC } from 'react';
 
@@ -34,8 +32,7 @@ export const App: FC = () => {
                     <Route element={<AppLayout/>}>
                         <Route path="/" element={<HomePage />} />
                         <Route path="/sport" element={<SportPage />} />
-                        <Route path="/config" element={<UserConfigsPage />} />
-                        <Route path="/config/:id" element={<UserConfigForm />} />
+                        <Route path="/config" element={<div>Config</div>} />
                         <Route path="/faq" element={<FaqPage />} />
                     </Route>
                 </Routes>

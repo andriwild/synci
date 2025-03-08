@@ -1,5 +1,5 @@
 export interface Sport {
-    id: number;
+    id: string;
     name: string;
-    subSports: Sport[];
+    subSports: Sport[] | [];
 }
