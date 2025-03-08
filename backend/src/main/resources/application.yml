@@ -1,17 +1,19 @@
+
 spring:
   application:
-    name: backend
+    name: synci-backend
   security:
+    debug: true
     oauth2:
       client:
         provider:
           synci-keycloak:
-            issuer-uri: http://localhost:8090/realms/synci
+            issuer-uri: ${KEYCLOAK_URL}
         registration:
           keycloak:
             provider: synci-keycloak
-            client-id: synci-backend
-            client-secret: qsRBHYpRSoqE5XrCCQE1iM6BqdK66tDK
+            client-id: ${KEYCLOAK_CLIENT_ID}
+            client-secret: ${KEYCLOAK_CLIENT_SECRET}
             authorization-grant-type: authorization_code
             scope:
               - openid
