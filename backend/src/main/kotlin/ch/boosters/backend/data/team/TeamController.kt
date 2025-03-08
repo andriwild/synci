@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/team")
 class TeamController(private val teamService: TeamService) {
-//    @PreAuthorize("hasAnyRole('USER')")
     @GetMapping("/list")
     fun listConfig(): List<Team> {
         return teamService.getAllTeams()

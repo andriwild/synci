@@ -10,6 +10,7 @@ class CustomJwtGrantedAuthoritiesConverter(
 ) : Converter<Jwt, Collection<GrantedAuthority>> {
 
     override fun convert(jwt: Jwt): Collection<GrantedAuthority> {
+        println("JWT: $jwt")
         val finalRoles = mutableListOf<GrantedAuthority>()
         extractRealmRoles(jwt.getClaim("realm_access"), finalRoles)
         extractClientRoles(jwt, finalRoles)
