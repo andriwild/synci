@@ -3,10 +3,19 @@ spring:
     name: backend
   security:
     oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: https://accounts.google.com
-          jwk-set-uri: https://www.googleapis.com/oauth2/v3/certs
+      client:
+        provider:
+          synci-keycloak:
+            issuer-uri: http://localhost:8090/auth/realms/synci
+        registration:
+          keycloak:
+            provider: synci-keycloak
+            client-id: synci-backend
+            client-secret: qsRBHYpRSoqE5XrCCQE1iM6BqdK66tDK
+            authorization-grant-type: authorization_code
+            scope:
+              - openid
+
   flyway:
     locations: db/migration/
     url: ${ch.boosters.db.jdbcUrl}
