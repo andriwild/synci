@@ -16,7 +16,7 @@ export const CalendarComponent = () => {
                     }
                 />
             <CalendarSelectionModal
-                url="http://localhost:8080/api/calendar/subscribe/55e8b617-be90-42ed-a75f-89f374ca303c"
+                url="localhost:8080/api/calendar/subscribe/55e8b617-be90-42ed-a75f-89f374ca303c"
                 buttonText="Zu Kalender hinzufügen"
                 buttonIcon={<i className="fas fa-calendar-plus"></i>}
                 buttonType="primary"

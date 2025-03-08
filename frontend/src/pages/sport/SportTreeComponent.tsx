@@ -22,6 +22,9 @@ export const SportTreeComponent = () => {
     if (sportTree.isLoading) {
         return <div>Loading...</div>;
     }
+    if (sportTree.isError) {
+        return <div>Error: {sportTree.error?.toString()}</div>;
+    }
 
     const handleCategoryClick = (sport: Sport, level: number) => {
         setSelectedId(sport.id);
