@@ -1,9 +1,9 @@
 package ch.boosters.backend.data.event
 
 import ch.boosters.backend.data.event.model.Event
-import ch.boosters.backend.data.sport.Sport
 import ch.boosters.backend.data.sport.SportRepository
 import ch.boosters.data.Tables.*
+import ch.boosters.data.tables.pojos.SportsTable
 import ch.boosters.data.tables.records.SyncConfigsTeamsTableRecord
 import org.jooq.DSLContext
 import org.jooq.exception.DataAccessException
@@ -38,7 +38,7 @@ class EventRepository(
             .flatten()
     }
 
-    private fun eventsOfSport(sport: Sport): MutableList<Event> =
+    private fun eventsOfSport(sport: SportsTable): MutableList<Event> =
         dsl.select().from(EVENTS_TABLE)
             .where(EVENTS_TABLE.SPORT_ID.eq(sport.id))
             .fetch()

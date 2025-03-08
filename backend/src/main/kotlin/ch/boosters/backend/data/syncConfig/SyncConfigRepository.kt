@@ -1,8 +1,8 @@
 package ch.boosters.backend.data.syncConfig
 
-import ch.boosters.backend.data.sport.Sport
 import ch.boosters.backend.data.team.Team
 import ch.boosters.data.Tables.*
+import ch.boosters.data.tables.pojos.SportsTable
 import org.jooq.DSLContext
 import org.springframework.stereotype.Repository
 import java.util.*
@@ -126,17 +126,13 @@ class SyncConfigRepository (private val dsl: DSLContext) {
             .map { (configId, group) ->
                 val configName = group.first().get(syncConfigName, String::class.java) ?: "Unnamed"
 
-                val sports = group.mapNotNull { record ->
+                val sports: List<SportsTable> = group.mapNotNull { record ->
                     val id = record.get(sportId, UUID::class.java)
                     val name = record.get(sportName, String::class.java)
                     val parentId = record.get(sportParentId, UUID::class.java)
                     // sport data might be null, even if a config id is present (configs with only team subscriptions)
                     if (id != null && name != null && parentId != null) {
-                        Sport(
-                            id = id,
-                            name = name,
-                            parentId = parentId
-                        )
+                        SportsTable(id, name, parentId)
                         // `mapNotNull` must return a value, otherwise the return type is `List<Unit>`
                     } else {
                         // null values are filtered out by `mapNotNull`
