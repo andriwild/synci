@@ -14,7 +14,7 @@
 // import { Team } from "../../model/Team.ts";
 // import { Api } from "../../services/data.tsx";
 // import { FC } from "react";
-// import {Sport} from "../../services/sport/entities/sport.ts";
+// import {Sport} from "../../services/sport/entities/event.ts";
 //
 //
 // export const UserConfigForm: FC = () => {
