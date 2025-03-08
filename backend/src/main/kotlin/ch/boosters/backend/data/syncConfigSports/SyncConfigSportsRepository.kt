@@ -1,7 +1,7 @@
 package ch.boosters.backend.data.syncConfigSports
 
-import ch.boosters.backend.data.sport.Sport
 import ch.boosters.data.Tables.*
+import ch.boosters.data.tables.pojos.SportsTable
 import org.jooq.DSLContext
 import org.springframework.stereotype.Repository
 import java.util.*
@@ -10,14 +10,14 @@ import java.util.*
 class SyncConfigSportsRepository(
     private val dsl: DSLContext
 ) {
-    fun updateSports(configId: UUID, sports: List<Sport>) {
+    fun updateSports(configId: UUID, sports: List<SportsTable>) {
         dsl.delete(SYNC_CONFIGS_SPORTS_TABLE)
             .where(SYNC_CONFIGS_SPORTS_TABLE.SYNC_CONFIG_ID.eq(configId))
             .execute()
         addSports(configId, sports)
     }
 
-    fun addSports(configId: UUID, sports: List<Sport>) {
+    fun addSports(configId: UUID, sports: List<SportsTable>) {
         sports.map { sport ->
             dsl.insertInto(SYNC_CONFIGS_SPORTS_TABLE)
                 .columns(

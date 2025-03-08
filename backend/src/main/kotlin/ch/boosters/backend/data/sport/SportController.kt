@@ -5,13 +5,13 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/swissski")
+@RequestMapping("/sports")
 class SportController (
     private val sportsService: SportService
 ) {
 
-    @GetMapping("/list")
-    fun getSubcategoriesOfCategory(): List<Sport> {
-        return sportsService.getSubcategoriesOfCategory()
+    @GetMapping("/")
+    fun getAllSports(): List<Sport> {
+        return sportsService.getSports()
     }
 }
