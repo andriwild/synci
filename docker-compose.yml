@@ -55,7 +55,6 @@ services:
           aliases:
             - database-net-db-${STAGE:-local}
 
-
 volumes:
   db.data:
 
