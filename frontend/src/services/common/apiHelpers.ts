@@ -1,7 +1,7 @@
 import {type BaseQueryFn, retry} from '@reduxjs/toolkit/query/react'
 import type {AxiosError, AxiosRequestConfig} from 'axios'
 import axios from 'axios'
-import {BACKEND_HOST} from '../../../env.ts';
+import {VITE_URL_PREFIX} from '../../../env.ts';
 import {SerializedError} from '@reduxjs/toolkit';
 
 type AxiosBaseQueryFn = BaseQueryFn<
@@ -18,7 +18,7 @@ type AxiosBaseQueryFn = BaseQueryFn<
 
 export const axiosBaseQuery = ({ baseUrl }: { baseUrl: string }) => {
     const axiosInstance = axios.create({
-        baseURL: BACKEND_HOST+baseUrl
+        baseURL: VITE_URL_PREFIX+baseUrl
     });
 
     //TODO Add Token to every request here
