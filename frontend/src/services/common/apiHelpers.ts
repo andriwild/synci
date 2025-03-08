@@ -1,7 +1,7 @@
 import {type BaseQueryFn, retry} from '@reduxjs/toolkit/query/react'
 import type {AxiosError, AxiosRequestConfig} from 'axios'
 import axios from 'axios'
-import {BACKEND_HOST} from '../../config/env';
+import {BACKEND_HOST} from '../../../env.ts';
 import {SerializedError} from '@reduxjs/toolkit';
 
 type AxiosBaseQueryFn = BaseQueryFn<
