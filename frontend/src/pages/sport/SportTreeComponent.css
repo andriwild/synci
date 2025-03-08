@@ -32,9 +32,11 @@
 #tree-container .tree-column {
   color: black;
 }
-
 .tree-item.selected {
   background-color: rgba(0, 0, 0, 0.1);
+}
+#tree-container .tree-column:first-child .tree-item.selected{
+  border-radius: 20px 0 0 0;
 }
 .tree-item h4 {
   margin: 0;
