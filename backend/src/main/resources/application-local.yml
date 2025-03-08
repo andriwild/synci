@@ -1,4 +1,18 @@
 ch:
   boosters:
     db:
-      jdbcUrl: jdbc:postgresql://localhost:5432/synci-db
+      jdbcUrl: jdbc:postgresql://localhost:5432/synci-dbspring:
+  security:
+    oauth2:
+      client:
+        provider:
+          synci-keycloak:
+            issuer-uri: http://localhost:8090/realms/synci
+        registration:
+          keycloak:
+            provider: synci-keycloak
+            client-id: synci-backend
+            client-secret: qsRBHYpRSoqE5XrCCQE1iM6BqdK66tDK
+            authorization-grant-type: authorization_code
+            scope:
+              - openid
