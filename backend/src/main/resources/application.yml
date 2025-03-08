@@ -6,7 +6,7 @@ spring:
       client:
         provider:
           synci-keycloak:
-            issuer-uri: http://localhost:8090/auth/realms/synci
+            issuer-uri: http://localhost:8090/realms/synci
         registration:
           keycloak:
             provider: synci-keycloak

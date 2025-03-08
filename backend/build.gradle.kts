@@ -70,7 +70,7 @@ dependencies {
     implementation("org.postgresql:postgresql:$postgresVersion")
 	implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.flywaydb:flyway-database-postgresql:$flywayVersion")
-    implementation("org.springframework.boot:spring-security-oauth2-jose")
+    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
     implementation ("org.springframework.boot:spring-boot-starter-actuator")
     implementation("io.micrometer:micrometer-registry-prometheus")
     implementation("io.arrow-kt:arrow-core:1.2.4")
