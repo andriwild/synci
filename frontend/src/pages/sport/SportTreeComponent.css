@@ -30,7 +30,7 @@
 }
 
 #tree-container .tree-column {
-  color: black;
+  color: var(--ant-primary-color);
 }
 .tree-item.selected {
   background-color: rgba(0, 0, 0, 0.1);

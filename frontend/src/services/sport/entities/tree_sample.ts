@@ -1,4 +1,4 @@
-import { SportCategory } from "./sportCategory.ts";
+import { SportCategory } from "./sport.ts";
 
 export const sampleSportTree: SportCategory[] = [
     {

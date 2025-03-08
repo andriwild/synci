@@ -1,15 +1,15 @@
 import {createApi} from "@reduxjs/toolkit/query/react";
 import {axiosBaseQuery} from "../common/apiHelpers";
-import {SportCategory} from "./entities/sportCategory.ts";
+import {Sport} from "./entities/sport.ts";
 
 
-export const categoryApi = createApi({
-    reducerPath: "sportCategoryApi",
+export const sportApi = createApi({
+    reducerPath: "sportApi",
     baseQuery: axiosBaseQuery({
-        baseUrl: "/sportCategory"
+        baseUrl: "/sports"
     }),
     endpoints: build => ({
-        getAll: build.query<SportCategory[], void>({
+        getAll: build.query<Sport[], void>({
             query: () => ({
                 url: "/",
                 method: "GET"

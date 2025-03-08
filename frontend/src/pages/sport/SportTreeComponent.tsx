@@ -1,9 +1,9 @@
 import {useState} from "react";
 import {Flex} from "antd";
 import "./SportTreeComponent.css";
-import {sampleSportTree} from "../../services/category/entities/tree_sample.ts";
+import {sampleSportTree} from "../../services/sport/entities/tree_sample.ts";
 import {CaretRight} from "@phosphor-icons/react";
-import {SportCategory} from "../../services/category/entities/sportCategory.ts";
+import {SportCategory} from "../../services/sport/entities/sport.ts";
 
 export const SportTreeComponent = () => {
     const [selectedId, setSelectedId] = useState(0);

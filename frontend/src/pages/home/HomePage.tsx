@@ -2,7 +2,7 @@ import {FC} from "react";
 import {Button, Flex, Image, theme, Typography} from "antd";
 import './HomePage.css';
 import {IconInfoCircle, IconPlayerPlayFilled, IconSoccerField, IconUser} from "@tabler/icons-react";
-import {sampleSportTree} from "../../services/category/entities/tree_sample.ts";
+import {sampleSportTree} from "../../services/sport/entities/tree_sample.ts";
 import {useNavigate} from "react-router-dom";
 
 export const HomePage: FC = () => {

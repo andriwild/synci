@@ -1,14 +1,14 @@
 import {Action, configureStore, ThunkAction} from "@reduxjs/toolkit";
-import {categoryApi} from "../services/category/categoryApi.ts";
+import {sportApi} from "../services/sport/sportApi.ts";
 
 export const store = configureStore({
     reducer: {
-        [categoryApi.reducerPath]: categoryApi.reducer,
+        [sportApi.reducerPath]: sportApi.reducer,
 
     },
     middleware: getDefaultMiddleware =>
         getDefaultMiddleware()
-            .concat(categoryApi.middleware)
+            .concat(sportApi.middleware)
 });
 
 export type AppDispatch = typeof store.dispatch;
