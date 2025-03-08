@@ -1,9 +1,10 @@
 import { Team } from "./Team.ts";
-import { Sport } from "./Sport.ts";
+import {Sport} from "../services/sport/entities/sport.ts";
 
 export interface SyncConfig {
-    id: string | null;
+    id: string;
     name: string;
-    teams: Team[];
+    teams: Map<Team, Sport[]>;
     sports: Sport[];
+    events: Event[];
 }

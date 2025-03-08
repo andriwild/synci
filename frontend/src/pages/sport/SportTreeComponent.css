@@ -1,0 +1,44 @@
+.tree-column {
+  flex-grow: 1;
+  min-width: 200px;
+  cursor: pointer;
+}
+
+.tree-column h3 {
+  margin: 0;
+  padding: 10px;
+  font-size: 1.2em;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #2c2c2c;
+  border-bottom: 1px solid #3f3f3f;
+}
+
+.tree-content {
+  flex-grow: 10;
+  min-width: 300px;
+}
+
+#tree-container {
+  display: flex;
+  height: 100%;
+  width: 100%;
+}
+#tree-container .tree-column:first-child {
+  color: white;
+  border-radius: 20px 0 0 20px;
+}
+
+#tree-container .tree-column {
+  color: var(--ant-primary-color);
+}
+.tree-item.selected {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+#tree-container .tree-column:first-child .tree-item.selected{
+  border-radius: 20px 0 0 0;
+}
+.tree-item h4 {
+  margin: 0;
+}
+

@@ -26,3 +26,12 @@
 hs_err_pid*
 replay_pid*
 /.idea/
+
+.DS_Store
+/backend/.DS_Store
+/frontend/node_modules/
+/frontend/src/config/.env
+/node_modules/
+frontend/package-lock.json
+frontend/yarn.lock
+frontend/dist/
