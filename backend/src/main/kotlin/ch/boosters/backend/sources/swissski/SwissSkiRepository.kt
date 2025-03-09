@@ -5,9 +5,12 @@ import arrow.core.raise.ensure
 import ch.boosters.backend.data.configuration.JooqEitherDsl
 import ch.boosters.backend.errorhandling.DatabaseError
 import ch.boosters.backend.errorhandling.SynciEither
+import ch.boosters.backend.sources.common.lastSyncTimeQuery
+import ch.boosters.backend.sources.common.storeSyncTimeQuery
 import ch.boosters.backend.sources.swissski.model.SwissSkiEvent
 import ch.boosters.data.Tables.*
 import org.springframework.stereotype.Repository
+import java.time.LocalDateTime
 import java.util.*
 
 @Repository
@@ -26,6 +29,22 @@ class SwissSkiRepository(
             .filter { it.second.isRight() }
             .map { storeEvent(it.first, it.second.bind()) }
         stored.bindAll()
+    }
+
+    fun storeSyncTime(): SynciEither<Unit> = either {
+        val id = sourceId.bind()
+        dsl {
+            val q = storeSyncTimeQuery(id)
+            it.execute(q)
+        }.bind()
+    }
+
+    fun lastSyncTime(): SynciEither<LocalDateTime?> = either {
+        val id = sourceId.bind()
+        dsl {
+            val q = lastSyncTimeQuery(id)
+            it.fetchOne(q)?.get(SOURCES_TABLE.LAST_SYNC)
+        }.bind()
     }
 
     private fun storeEvent(event: SwissSkiEvent, sportId: UUID): SynciEither<Int> = either {

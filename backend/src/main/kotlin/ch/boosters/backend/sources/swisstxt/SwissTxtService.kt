@@ -1,9 +1,13 @@
 package ch.boosters.backend.sources.swisstxt
 
+import arrow.core.Either
+import arrow.core.raise.either
+import ch.boosters.backend.errorhandling.SynciEither
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.ExchangeStrategies
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
+import java.time.LocalDateTime
 
 @Service
 class SwissTxtService(
@@ -13,16 +17,32 @@ class SwissTxtService(
     private val serializer: EventSerializer,
     ) {
 
-    fun update() {
+    fun update(): SynciEither<Unit> = either{
+
+        val lastSync = swissTxtRepository.lastSyncTime().bind()
+
+        if(lastSync != null && lastSync.isAfter(LocalDateTime.now().minusDays(1))) {
+            return Either.Right(Unit)
+        }
+
         val leagues = swissTxtConfig.leagues
         println("Fetching ${leagues.size} leagues from SwissTxt")
         leagues.forEach{ league ->
-            fetchEvents(league.id, league.name).block()
+            fetchEvents(league.id)
+                .map(serializer::parseResponse)
+                .map{ (events, teams) ->
+                    // TODO: do not return Unit
+                    val resTeams  = swissTxtRepository.storeTeams(teams)
+                    swissTxtRepository.storeEvents(events, league.name)
+                    resTeams
+                }.block()
+
         }
         println("\nDone!")
+        swissTxtRepository.storeSyncTime()
     }
 
-    private fun fetchEvents(leagueId: String, sportId: String): Mono<IntArray> {
+    private fun fetchEvents(leagueId: String): Mono<String> {
 
         val baseUrl = swissTxtConfig.url
 
@@ -36,12 +56,6 @@ class SwissTxtService(
 
         val response = leaguesResponse(exchangeStrategies, url)
         return response
-            .map(serializer::parseResponse)
-            .map{ (events, teams) ->
-                val resTeams  = swissTxtRepository.storeTeams(teams)
-                swissTxtRepository.storeEvents(events, sportId)
-                resTeams
-            }
     }
 
     private fun leaguesResponse(exchangeStrategies: ExchangeStrategies, url: String): Mono<String> {
