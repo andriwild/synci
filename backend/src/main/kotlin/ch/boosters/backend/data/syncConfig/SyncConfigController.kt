@@ -11,14 +11,14 @@ class SyncConfigController(private val syncConfigService: SyncConfigService) {
 
     @GetMapping("")
     fun getConfig(): SynciEither<List<SyncConfig>> =
-        syncConfigService.getAllSyncConfigs()
+        syncConfigService.allSyncConfigs()
 
     @GetMapping("/{id}")
     fun getConfig(@PathVariable id: UUID): SynciEither<SyncConfig> =
-        syncConfigService.getSyncConfig(id)
+        syncConfigService.syncConfigById(id)
 
     @PutMapping("/{id}")
-    fun updateConfig(@PathVariable id: UUID, @RequestBody syncConfig: SyncConfigDto): SynciEither<Unit> =
+    fun updateConfig(@PathVariable id: UUID, @RequestBody syncConfig: SyncConfigDto): SynciEither<SyncConfig> =
         syncConfigService.updateSyncConfig(id, syncConfig)
 
     @PostMapping("")
