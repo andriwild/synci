@@ -2,3 +2,20 @@ ch:
   boosters:
     db:
       jdbcUrl: jdbc:postgresql://database-net-db-prod:5432/synci-db
+
+spring:
+  security:
+    debug: true
+    oauth2:
+      client:
+        provider:
+          synci-keycloak:
+            issuer-uri: ${KEYCLOAK_URL}
+        registration:
+          keycloak:
+            provider: synci-keycloak
+            client-id: ${KEYCLOAK_CLIENT_ID}
+            client-secret: ${KEYCLOAK_CLIENT_SECRET}
+            authorization-grant-type: authorization_code
+            scope:
+              - openid

@@ -15,14 +15,11 @@ export const CalendarComponent = () => {
     const [currentSyncConfig, setCurrentSyncConfig] = useState<SyncConfig | null>(null);
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
-
-
     useEffect(() => {
         if (syncConfigList.data) {
             setCurrentSyncConfig(syncConfigList.data[0]);
         }
     }, [syncConfigList.data]);
-
 
     if (!user) {
         return (
