@@ -2,6 +2,7 @@ import {createApi} from "@reduxjs/toolkit/query/react";
 import {axiosBaseQuery} from "../common/apiHelpers";
 import {SyncConfig} from "./entities/syncConfig.ts";
 import {SyncConfigRequest} from "./entities/syncConfigDto.ts";
+import {AxiosHeaders} from "axios";
 
 export const syncConfigApi = createApi({
     reducerPath: "syncConfigApi",
@@ -13,8 +14,8 @@ export const syncConfigApi = createApi({
             query: () => ({
                 url: "",
                 method: "GET",
-                headers: new Headers({
-                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                headers: new AxiosHeaders({
+                    Authorization: `Bearer ${localStorage.getItem("access_token")}`
                 })
             })
         }),
@@ -22,8 +23,8 @@ export const syncConfigApi = createApi({
             query: syncConfig => ({
                 url: "",
                 method: "POST",
-                headers: new Headers({
-                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                headers: new AxiosHeaders({
+                    Authorization: `Bearer ${localStorage.getItem("access_token")}`
                 }),
                 body: syncConfig
             })
@@ -32,8 +33,8 @@ export const syncConfigApi = createApi({
             query: syncConfig => ({
                 url: `/${syncConfig.id}`,
                 method: "PUT",
-                headers: new Headers({
-                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                headers: new AxiosHeaders({
+                    Authorization: `Bearer ${localStorage.getItem("access_token")}`
                 }),
                 body: syncConfig
             })
@@ -41,8 +42,8 @@ export const syncConfigApi = createApi({
         delete: build.mutation<void, string>({
             query: id => ({
                 url: `/${id}`,
-                headers: new Headers({
-                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                headers: new AxiosHeaders({
+                    Authorization: `Bearer ${localStorage.getItem("access_token")}`
                 }),
                 method: "DELETE"
             })
