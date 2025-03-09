@@ -1,12 +1,16 @@
 import {FC} from "react";
 import {Button, Flex, Image, theme, Typography} from "antd";
 import './HomePage.css';
-import {IconInfoCircle, IconPlayerPlayFilled, IconSoccerField, IconUser} from "@tabler/icons-react";
+import {IconInfoCircle, IconPlayerPlayFilled, IconUser} from "@tabler/icons-react";
 import {useNavigate} from "react-router-dom";
+import { IconLaurelWreath } from "@tabler/icons-react";
+import {sportApi} from '../../services/sport/sportApi.ts';
 
 export const HomePage: FC = () => {
     const {token} = theme.useToken()
     const navigate = useNavigate();
+    const sports = sportApi.useGetAllQuery();
+
     return (
         <Flex vertical style={{width: '100%'}} id={"home-container"}>
             <Flex style={{justifyContent: 'center', alignItems: 'center'}} id={"home-header"}>
@@ -52,11 +56,15 @@ export const HomePage: FC = () => {
                 <Typography.Title level={2} style={{marginBottom: 70}}>
                     Verfügbare Sportarten
                 </Typography.Title>
-                <Flex style={{justifyContent: 'start', alignItems: 'start', gap: "20px", flexWrap: "wrap", maxWidth: "1260px"}}>
-                        <Flex vertical className={"sport-card"} style={{background: token.colorBgContainer}}>
-                            <IconSoccerField size={50} style={{color: token.colorPrimary, marginTop: "20px"}}/>
-                            <Typography.Title level={3}>Sport Name</Typography.Title>
+                <Flex gap={'middle'}>
+                    {sports.data?.map((sport) => (
+                        <Flex style={{justifyContent: 'start', alignItems: 'start', gap: "20px", flexWrap: "wrap", maxWidth: "1260px"}}>
+                            <Flex vertical className={"sport-card"} style={{background: token.colorBgContainer, alignItems: 'center'}}>
+                                <IconLaurelWreath size={50} style={{color: token.colorPrimary, marginTop: "20px"}}/>
+                                <Typography.Title level={3}>{sport.name}</Typography.Title>
+                            </Flex>
                         </Flex>
+                    ))}
                 </Flex>
                 <Button
                     type={'primary'}
