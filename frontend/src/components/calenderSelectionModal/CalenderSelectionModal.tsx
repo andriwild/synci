@@ -49,6 +49,7 @@ export const CalendarSelectionModal = ({url, buttonText, buttonType, buttonIcon}
                                 level={5}>Standard Kalender</Typography.Title>
                             <Button
                                 icon={<IconCalendarPlus size={20}/>}
+                                disabled={!user}
                                 type="primary"
                                 onClick={() => {
                                     window.open("webcal://" + url)

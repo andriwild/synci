@@ -20,7 +20,7 @@ export const Header: FC = () => {
             icon: <ListBullets />,
         },
         {
-            key: "/config",
+            key: "/syncConfig",
             label: "Meine Kalender",
             icon: <CalendarBlank />,
         },

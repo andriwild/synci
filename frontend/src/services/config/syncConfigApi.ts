@@ -1,0 +1,39 @@
+import {createApi} from "@reduxjs/toolkit/query/react";
+import {axiosBaseQuery} from "../common/apiHelpers";
+import {SyncConfig} from "./entities/syncConfig.ts";
+
+export const syncConfigApi = createApi({
+    reducerPath: "syncConfigApi",
+    baseQuery: axiosBaseQuery({
+        baseUrl: "/syncConfig"
+    }),
+    endpoints: build => ({
+        getAll: build.query<SyncConfig[], void>({
+            query: () => ({
+                url: "",
+                method: "GET"
+            })
+        }),
+        create: build.mutation<SyncConfig, SyncConfig>({
+            query: syncConfig => ({
+                url: "",
+                method: "POST",
+                body: syncConfig
+            })
+        }),
+        update: build.mutation<SyncConfig, SyncConfig>({
+            query: syncConfig => ({
+                url: "",
+                method: "PUT",
+                body: syncConfig
+            })
+        }),
+        delete: build.mutation<void, string>({
+            query: id => ({
+                url: `/${id}`,
+                method: "DELETE"
+            })
+        })
+
+})
+})

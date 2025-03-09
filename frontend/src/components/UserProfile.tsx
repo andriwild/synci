@@ -1,14 +1,16 @@
 import {Button, Divider, Flex, Image, Popover, theme, Typography} from "antd";
 import Title from "antd/es/typography/Title";
 import {FC} from "react";
-import {CalendarBlank, UserCircle} from "@phosphor-icons/react";
+import {CalendarBlank} from "@phosphor-icons/react";
 import {userActions, useUser} from "../services/user/UserSlice";
 import {useDispatch} from "react-redux";
 import {User} from "../services/user/entities/User.ts";
+import {useNavigate} from "react-router-dom";
 
 export const UserProfile: FC = () => {
     const {token} = theme.useToken();
     const user = useUser()
+    const navigate = useNavigate();
 
     const dispatch = useDispatch();
 
@@ -50,7 +52,7 @@ return (
                             }
                         />
                         <Flex style={{flexDirection: 'column', alignItems: 'flex-end'}}>
-                            <Title level={5} style={{margin: 0}} color={token.colorPrimary}>Elias Bräm</Title>
+                            <Title level={5} style={{margin: 0}} color={token.colorPrimary}>{user.name}</Title>
                         </Flex>
                     </Flex>
                     <Divider
@@ -59,12 +61,17 @@ return (
                     >
                         <Typography.Title level={5} style={{margin: 0, fontSize:'0.8rem'}}>Einstellungen</Typography.Title>
                     </Divider>
-                    <Button icon={<CalendarBlank/>} type={'text'} style={{textAlign: 'start'}}>
+                    <Button icon={<CalendarBlank/>}
+                            onClick={() => {
+                                navigate('/syncConfig')
+                            }
+                            }
+                            type={'text'} style={{textAlign: 'start'}}>
                         Meine Kalender
                     </Button>
-                    <Button icon={<UserCircle/>} type={'text'} style={{textAlign: 'start'}}>
-                        Profil bearbeiten
-                    </Button>
+                    {/*<Button icon={<UserCircle/>} type={'text'} style={{textAlign: 'start'}}>*/}
+                    {/*    Profil bearbeiten*/}
+                    {/*</Button>*/}
                     <Button
                         type={'default'}
                         size={"large"}

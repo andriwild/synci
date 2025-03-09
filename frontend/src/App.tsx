@@ -33,7 +33,7 @@ export const App: FC = () => {
                     <Route element={<AppLayout/>}>
                         <Route path="/" element={<HomePage />} />
                         <Route path="/sport" element={<SportPage />} />
-                        <Route path="/config" element={<div>Config</div>} />
+                        <Route path="/syncConfig" element={<div>Config</div>} />
                         <Route path="/faq" element={<FaqPage />} />
                     </Route>
                 </Routes>
