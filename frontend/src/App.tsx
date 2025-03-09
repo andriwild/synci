@@ -5,12 +5,12 @@ import { FC } from 'react';
 
 import {SportPage} from "./pages/sport/SportPage.tsx";
 import './index.css';
-import {LoginPage} from "./pages/login/LoginPage.tsx";
 import {AppLayout} from "./components/AppLayout.tsx";
 import {FaqPage} from "./pages/faq/FaqPage.tsx";
 import {SyncConfigPage} from "./pages/syncConfig/SyncConfigPage.tsx";
 
 export const App: FC = () => {
+
     return (
         <Router>
             <ConfigProvider
@@ -28,7 +28,6 @@ export const App: FC = () => {
             >
                 <Routes>
                     {/* No Layout for Login */}
-                    <Route path="/login" element={<LoginPage />} />
 
                     {/* Apply Layout to all other routes */}
                     <Route element={<AppLayout/>}>

@@ -1,30 +1,37 @@
-package ch.boosters.backend.data.configuration
+package ch.boosters.backend.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
-
 @Configuration
-class SecurityConfig {
+@EnableWebSecurity
+@EnableMethodSecurity
+class SecurityConfiguration(private val corsProperties: CorsProperties){
 
     @Bean
-    fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
+    fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http
-            .csrf { it.disable() } // TODO: remove for production
+            .csrf { it.disable() }
             .cors { it.configurationSource(corsConfigurationSource()) }
-            .authorizeHttpRequests { requests ->
-                requests
-                    .requestMatchers(HttpMethod.POST, "/syncconfig").permitAll()
-                    .requestMatchers(HttpMethod.PUT, "/syncconfig/*").permitAll()
-                    .requestMatchers(HttpMethod.DELETE, "/syncconfig/*").permitAll()
-                    .requestMatchers("/**").permitAll()
+            .authorizeHttpRequests {
+                it
+                    .requestMatchers(HttpMethod.GET, "/sports").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/sports/**").permitAll()
+                    .anyRequest().authenticated()
             }
+            .sessionManagement {
+                it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            }
+
         return http.build()
     }
 
@@ -32,12 +39,7 @@ class SecurityConfig {
     fun corsConfigurationSource(): CorsConfigurationSource {
         val configuration = CorsConfiguration()
         configuration.allowedOrigins = listOf(
-            "http://127.0.0.1:5173",
-            "http://127.0.0.1:5174",
-            "http://localhost:5173",
-            "http://localhost:5174",
-            "https://synci.awild.ch",
-            "https://dev.synci.awild.ch",
+            corsProperties.allowedOrigins
         )
         configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
         configuration.allowedHeaders = listOf("*")
@@ -48,4 +50,3 @@ class SecurityConfig {
         return source
     }
 }
-
