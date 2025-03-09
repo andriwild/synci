@@ -7,6 +7,7 @@ import {syncConfigApi} from "../../services/syncConfig/syncConfigApi.ts";
 import {syncConfigActions, useSyncConfig} from "../../services/syncConfig/syncCofigSlice.ts";
 import {useDispatch} from "react-redux";
 import {NotificationPlacement} from "antd/es/notification/interface";
+import {SportConfigCard} from "./SportConfigCard.tsx";
 
 export const SyncConfigComponent = () => {
     const syncConfigList = syncConfigApi.useGetAllQuery();
@@ -17,7 +18,7 @@ export const SyncConfigComponent = () => {
     const currentSyncConfig = useSyncConfig();
     const dispatch = useDispatch();
 
-    console.log("Currentconfig",currentSyncConfig);
+    console.log("Currentconfig", currentSyncConfig);
 
     useEffect(() => {
         if (syncConfigList.data) {
@@ -27,34 +28,25 @@ export const SyncConfigComponent = () => {
 
     if (!user) {
         return (
-        <Flex vertical style={{gap: 20, padding: "20px 20px"}}>
-            <Alert
-                message="Du bist noch nicht angemeldet"
-                description="Melde dich an, um deine Abos zu sehen"
-                type="warning"
-                showIcon
-                action={
-                    <Button>Anmelden</Button>
-                }
-            />
-        </Flex>
+            <Flex vertical style={{gap: 20, padding: "20px 20px"}}>
+                <Alert
+                    message="Du bist noch nicht angemeldet"
+                    description="Melde dich an, um deine Abos zu sehen"
+                    type="warning"
+                    showIcon
+                    action={
+                        <Button>Anmelden</Button>
+                    }
+                />
+            </Flex>
         );
     }
 
     if (syncConfigList.data?.length === 0) {
         return (
-            <Flex vertical style={{gap: 20, padding: "20px 20px"}}>
-                <Alert
-                    message="Keine Abos vorhanden"
-                    description="Füge ein Abo hinzu, um deine Kalender zu synchronisieren"
-                    type="info"
-                    showIcon
-                    action={
-                        <Button
-                        onClick={() => setOpen(true)}
-                        >Neues Abo hinzufügen</Button>
-                    }
-                />
+            <Flex vertical style={{gap: 20, padding: "20px 20px"}} align={"center"}>
+                <Typography.Title level={5}>Keine Abos vorhanden</Typography.Title>
+             <CreateConfigModal refetch={syncConfigList.refetch}/>
             </Flex>
         );
     }
@@ -67,55 +59,56 @@ export const SyncConfigComponent = () => {
                          title={"Alle verfügbaren Abos"}
                          open={open}
                          onOpenChange={(open) => setOpen(open)}
-                         styles={{body:{background: "white"}}} content={
+                         styles={{body: {background: "white"}}} content={
                     <Flex vertical gap={10}>
                         {syncConfigList.data?.map((syncConfig) => (
-                            <Flex justify={"space-between"} align={"center"} style={{ background: token.colorBgContainer, padding: "10px", borderRadius: 10}} gap={20} key={syncConfig.id}>
+                            <Flex justify={"space-between"} align={"center"}
+                                  style={{background: token.colorBgContainer, padding: "10px", borderRadius: 10}}
+                                  gap={20} key={syncConfig.id}>
                                 <Typography.Text>{syncConfig.name}</Typography.Text>
                                 <Flex gap={10}>
-                                <Button type={"primary"} size={"middle"} onClick={() => {
-                                    dispatch(syncConfigActions.setSyncConfig(syncConfig));
-                                    setOpen(false)
-                                }
-                                } icon={<IconEdit size={15}/>}></Button>
-                                <DeleteConfigModal refetch={syncConfigList.refetch} id={syncConfig.id} name={syncConfig.name}/>
+                                    <Button type={"primary"} size={"middle"} onClick={() => {
+                                        dispatch(syncConfigActions.setSyncConfig(syncConfig));
+                                        setOpen(false)
+                                    }
+                                    } icon={<IconEdit size={15}/>}></Button>
+                                    <DeleteConfigModal refetch={syncConfigList.refetch} id={syncConfig.id}
+                                                       name={syncConfig.name}/>
                                 </Flex>
                             </Flex>
 
                         ))}
-                          <CreateConfigModal refetch={() => syncConfigList.refetch()}/>
+                        <CreateConfigModal refetch={() => syncConfigList.refetch()}/>
                     </Flex>
                 }>
                     <Button icon={<IconReplace size={20}/>} type={"default"}></Button>
                 </Popover>
             </Flex>
 
-                {currentSyncConfig?.sports ?
-                    currentSyncConfig?.sports?.map((sport) => (
-                    <Flex vertical style={{gap: 10}} key={sport.id}>
-                        <Typography.Text>{sport.name}</Typography.Text>
-                    </Flex>
+            {currentSyncConfig?.sports ?
+                currentSyncConfig?.sports?.map((sport) => (
+                    <SportConfigCard key={sport.id} sport={sport}/>
                 ))
                 :
-                    <>
+                <>
                     <Typography.Text>Keine Abos vorhanden</Typography.Text>
-                        <CreateConfigModal refetch={() => syncConfigList.refetch()}/>
-                    </>
-                }
+                    <CreateConfigModal refetch={() => syncConfigList.refetch()}/>
+                </>
+            }
 
-                <CalendarSelectionModal
+            <CalendarSelectionModal
                 url="localhost:8080/api/calendar/subscribe/55e8b617-be90-42ed-a75f-89f374ca303c"
                 buttonText="Zu Kalender hinzufügen"
                 buttonIcon={<i className="fas fa-calendar-plus"></i>}
                 buttonType="primary"
-        />
+            />
 
-</Flex>
-)
-    ;
+        </Flex>
+    )
+        ;
 }
 
-const DeleteConfigModal = ({refetch, id, name}: {refetch: () => void, id: string, name: string}) => {
+const DeleteConfigModal = ({refetch, id, name}: { refetch: () => void, id: string, name: string }) => {
     const [open, setOpen] = useState(false);
     const [form] = Form.useForm();
     const [api, contextHolder] = notification.useNotification();
@@ -144,7 +137,7 @@ const DeleteConfigModal = ({refetch, id, name}: {refetch: () => void, id: string
         <>
             {contextHolder}
             <Button type="default" size="middle"
-                    icon={<IconTrash size={15} />}
+                    icon={<IconTrash size={15}/>}
                     onClick={() => setOpen(true)}
             >
             </Button>
@@ -169,7 +162,7 @@ const DeleteConfigModal = ({refetch, id, name}: {refetch: () => void, id: string
     );
 }
 
-const CreateConfigModal = ({refetch}: {refetch: () => void}) => {
+const CreateConfigModal = ({refetch}: { refetch: () => void }) => {
     const [open, setOpen] = useState(false);
     const [form] = Form.useForm();
     const dispatch = useDispatch();
@@ -185,7 +178,7 @@ const CreateConfigModal = ({refetch}: {refetch: () => void}) => {
 
     const [createSyncConfig, createSyncConfigStatus] = syncConfigApi.useCreateMutation();
 
-    const handleSubmit = async (values : {name: string}) => {
+    const handleSubmit = async (values: { name: string }) => {
         try {
             const response = await createSyncConfig({
                 name: values.name,
@@ -218,9 +211,9 @@ const CreateConfigModal = ({refetch}: {refetch: () => void}) => {
                         <Form.Item
                             label="Abo-Name"
                             name="name"
-                            rules={[{ required: true, message: "Bitte Abo-Namen eingeben" }]}
+                            rules={[{required: true, message: "Bitte Abo-Namen eingeben"}]}
                         >
-                            <Input placeholder="Abo-Name eingeben" />
+                            <Input placeholder="Abo-Name eingeben"/>
                         </Form.Item>
                         <Form.Item>
                             <Button type="primary" htmlType="submit" loading={createSyncConfigStatus.isLoading}>
@@ -231,7 +224,7 @@ const CreateConfigModal = ({refetch}: {refetch: () => void}) => {
                 </Flex>
             </Modal>
             <Button type="primary" size="middle"
-                    icon={<IconPlus size={15} />}
+                    icon={<IconPlus size={15}/>}
                     onClick={() => setOpen(true)}
             >
                 Neu erstellen
