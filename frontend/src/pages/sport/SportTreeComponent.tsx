@@ -12,6 +12,8 @@ export const SportTreeComponent = () => {
     const sportTree = sportApi.useGetAllQuery();
     const [treeColumns, setTreeColumns] = useState<Sport[][]>([sportTree.data || []]);
 
+    const [selectedSport, setSelectedSport] = useState<Sport | null>(null);
+
     useEffect(() => {
         if (sportTree.data) {
             setTreeColumns([sportTree.data]);
@@ -21,6 +23,9 @@ export const SportTreeComponent = () => {
 
     if (sportTree.isLoading) {
         return <div>Loading...</div>;
+    }
+    if (sportTree.isError) {
+        return <div>Error: {sportTree.error?.toString()}</div>;
     }
 
     const handleCategoryClick = (sport: Sport, level: number) => {
@@ -52,7 +57,11 @@ export const SportTreeComponent = () => {
                         <div
                             key={category.id}
                             className={`tree-item ${selectedId === category.id ? "selected" : ""}`}
-                            onClick={() => handleCategoryClick(category, index)}
+                            onClick={() => {
+                                setSelectedSport(category);
+                                handleCategoryClick(category, index);
+                            }
+                            }
                         >
                             <Flex
                                 style={{
@@ -70,7 +79,7 @@ export const SportTreeComponent = () => {
                 </div>
             ))}
 
-            <SportDetailComponent id={selectedId}/>
+            <SportDetailComponent id={selectedId} title={selectedSport?.name || ""}/>
         </Flex>
     );
 }

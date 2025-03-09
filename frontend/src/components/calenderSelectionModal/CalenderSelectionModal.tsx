@@ -64,7 +64,7 @@ export const CalendarSelectionModal = ({url, buttonText, buttonType, buttonIcon}
                                 icon={<IconCalendarPlus size={20}/>}
                                 type="primary"
                                 onClick={() => {
-                                    window.open("https://calendar.google.com/calendar/u/0/r?cid=" + url + "&name=Sportevents-Synci")
+                                    window.open("https://calendar.google.com/calendar/u/0/r?cid=https://" + url + "&name=Sportevents-Synci")
                                 }
                                 }
                             >Einfügen</Button>
@@ -84,7 +84,7 @@ export const CalendarSelectionModal = ({url, buttonText, buttonType, buttonIcon}
                                 onClick={() => {
 
 
-                                        window.open("https://outlook.live.com/calendar/0/addcalendar?source=fromUrl&url=" + url + "&name=Sportevents-Synci")
+                                        window.open("https://outlook.live.com/calendar/0/addcalendar?source=fromUrl&url=https" + url + "&name=Sportevents-Synci")
                                 }
                                 }
                             >Einfügen</Button>

@@ -17,6 +17,7 @@ export const App: FC = () => {
                     algorithm: theme.defaultAlgorithm,
                     token: {
                         colorPrimary: '#3D5A80',
+                        colorTextSecondary: '#C5CDD9',
                         colorHighlight: '#FFEE77',
                         borderRadius: 20,
                         colorBgContainer: '#EBF0F6',

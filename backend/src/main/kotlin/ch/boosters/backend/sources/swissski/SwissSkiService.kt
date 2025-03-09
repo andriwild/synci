@@ -1,6 +1,5 @@
 package ch.boosters.backend.sources.swissski
 
-import org.springframework.core.env.Environment
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.ExchangeStrategies
 import org.springframework.web.reactive.function.client.WebClient
@@ -11,7 +10,7 @@ import java.time.LocalDateTime
 @Service
 class SwissSkiService(
     private val webClientBuilder: WebClient.Builder,
-    private val serializer: SwissSkiSerializer,
+    private val swissSkiSerializer: SwissSkiSerializer,
     private val swissSkiConfig: SwissSkiConfig,
     private val swissSkiRepository: SwissSkiRepository,
 ) {
@@ -31,8 +30,8 @@ class SwissSkiService(
             }
             .build()
 
-        val response= eventResponse(exchangeStrategies, url)
-        response.map (serializer::parseResponse)
+        val response = eventResponse(exchangeStrategies, url)
+        response.map (swissSkiSerializer::parseResponse)
             .map(swissSkiRepository::storeEvents)
             .block()
     }

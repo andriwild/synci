@@ -13,12 +13,6 @@ export const eventApi = createApi({
                 url: `/${id}`,
                 method: "GET"
             }),
-        }),
-        getEventList: build.query<Event[], void>({
-            query: () => ({
-                url: "/",
-                method: "GET"
-            }),
-        }),
+        })
     })
 })
