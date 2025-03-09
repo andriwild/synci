@@ -5,6 +5,7 @@ import {SportEvent} from "../../services/event/entities/event.ts";
 import {convertToSwissDate} from "../../services/common/dateUtil.ts";
 import {sportApi} from "../../services/sport/sportApi.ts";
 import {useEffect, useState} from "react";
+import {useUser} from "../../services/user/UserSlice.ts";
 
 export const SportDetailComponent = ({id, title}: { id: string, title: string }) => {
     const token = theme.useToken().token;
@@ -12,6 +13,8 @@ export const SportDetailComponent = ({id, title}: { id: string, title: string })
 
     const eventQuery = sportApi.useGetEventsQuery({id: id, page: page, pageSize: 5});
     const [eventList, setEventList] = useState<SportEvent[]>([]);
+
+    const user = useUser();
 
     useEffect(() => {
         setEventList([]);
@@ -68,6 +71,7 @@ export const SportDetailComponent = ({id, title}: { id: string, title: string })
             <Button
                 type={"primary"}
                 icon={<IconCalendarPlus size={20}/>}
+                disabled={!user}
                 onClick={() => {
                     //TODO eventApi.addEvent(id);
                 }
@@ -111,6 +115,7 @@ export const SportDetailComponent = ({id, title}: { id: string, title: string })
                                 <Button
                                     icon={<IconCalendarPlus size={20}/>}
                                     type={"primary"}
+                                    disabled={!user}
                                     onClick={() => {
                                         //TODO eventApi.addEvent(id);
                                         console.log("Add Event", event.id);
