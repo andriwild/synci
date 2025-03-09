@@ -1,4 +1,4 @@
-import {Button, Col, Flex, Row, theme, Tooltip, Typography} from "antd";
+import {Button, Col, Flex, Row, theme, Typography} from "antd";
 import "./SportDetailComponent.css";
 import {IconCalendarPlus, IconPlus} from "@tabler/icons-react";
 import {SportEvent} from "../../services/event/entities/event.ts";
@@ -8,14 +8,15 @@ import {useEffect, useState} from "react";
 import {useUser} from "../../services/user/UserSlice.ts";
 import {syncConfigApi} from "../../services/syncConfig/syncConfigApi.ts";
 import {useSyncConfig} from "../../services/syncConfig/syncCofigSlice.ts";
+import {syncConfigDtoMapper} from "../../services/syncConfig/helpers/syncConfigHelper.ts";
 
 export const SportDetailComponent = ({id, title}: { id: string, title: string }) => {
     const token = theme.useToken().token;
     const [page, setPage] = useState<number>(0);
 
-    const eventQuery = sportApi.useGetEventsQuery({id: id, page: page, pageSize: 5});
-    const [eventList, setEventList] = useState<SportEvent[]>([]);
 
+    const eventQuery = sportApi.useGetEventsQuery({ id: id, page: page, pageSize: 5 })
+    const [eventList, setEventList] = useState<SportEvent[]>([]);
     const user = useUser();
     const syncConfig = useSyncConfig();
     const [updateSyncConfig, updateSyncConfigStatus] = syncConfigApi.useUpdateMutation();
@@ -75,8 +76,11 @@ export const SportDetailComponent = ({id, title}: { id: string, title: string })
                     icon={<IconCalendarPlus size={20}/>}
                     disabled={!user}
                     onClick={() => {
-                    }
-                    }
+                        if (!syncConfig || !syncConfig.id) {return;}
+                        const dto = syncConfigDtoMapper(syncConfig);
+                        dto.sports = [...(dto.sports ?? []), id];
+                        updateSyncConfig(dto);
+                    }}
                 >Alle Hinzufügen</Button>
         </Flex>
             <Flex
@@ -119,13 +123,10 @@ export const SportDetailComponent = ({id, title}: { id: string, title: string })
                                     disabled={!user}
                                     loading={updateSyncConfigStatus.isLoading}
                                     onClick={() => {
-                                        if (!syncConfig  || !syncConfig.id) {return;}
-                                        updateSyncConfig({
-                                                ...syncConfig,
-                                                events: [...syncConfig.events, event],
-                                            }
-                                        );
-                                        console.log("Add Event", event.id);
+                                            if (!syncConfig || !syncConfig.id) {return;}
+                                            const dto = syncConfigDtoMapper(syncConfig);
+                                            dto.events = [...(dto.events ?? []), {id: event.id, sourceId: event.sourceId}];
+                                            updateSyncConfig(dto);
                                     }}
                                 ></Button>
                             </Col>

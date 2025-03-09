@@ -1,6 +1,7 @@
 import {createApi} from "@reduxjs/toolkit/query/react";
 import {axiosBaseQuery} from "../common/apiHelpers";
 import {SyncConfig} from "./entities/syncConfig.ts";
+import {SyncConfigRequest} from "./entities/syncConfigDto.ts";
 
 export const syncConfigApi = createApi({
     reducerPath: "syncConfigApi",
@@ -21,7 +22,7 @@ export const syncConfigApi = createApi({
                 body: syncConfig
             })
         }),
-        update: build.mutation<SyncConfig, SyncConfig>({
+        update: build.mutation<SyncConfig, SyncConfigRequest>({
             query: syncConfig => ({
                 url: "{syncConfig.id}",
                 method: "PUT",

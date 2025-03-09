@@ -1,11 +1,11 @@
-import { Team } from "../../../model/Team.ts";
+import { Team } from "../../team/entities/team.ts";
 import {Sport} from "../../sport/entities/sport.ts";
 import {SportEvent} from "../../event/entities/event.ts";
 
 export interface SyncConfig {
     id: string;
     name: string;
-    teams: Map<Team, Sport[]>;
     sports: Sport[];
+    teams: Team[];
     events: SportEvent[];
 }

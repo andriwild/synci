@@ -12,7 +12,6 @@ export const SyncConfigComponent = () => {
     const syncConfigList = syncConfigApi.useGetAllQuery();
     const token = theme.useToken().token;
     const [open, setOpen] = useState(false);
-    console.log("query", syncConfigList.data);
 
     const currentSyncConfig = useSyncConfig();
     const dispatch = useDispatch();
