@@ -31,7 +31,7 @@ class EventRepository(
             .where(SYNC_CONFIGS_SPORTS_TABLE.SYNC_CONFIG_ID.eq(configID))
             .fetch()
         // get children of sportIds
-        val sports = sportsIds.flatMap{ sportRepository.getSubcategoriesById(it.sportId) }
+        val sports = sportsIds.flatMap{ sportRepository.subcategoriesById(it.sportId) }
 
         return sports
             .map { sport -> eventsOfSport(sport)}
