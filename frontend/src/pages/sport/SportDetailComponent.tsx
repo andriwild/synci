@@ -1,7 +1,8 @@
-import {Button, Flex, Table, TableProps, theme, Typography} from "antd";
+import {Button, Col, Flex, Row, theme, Typography} from "antd";
 import "./SportDetailComponent.css";
 import {IconPlus} from "@tabler/icons-react";
 import {Event} from "../../services/event/entities/event.ts";
+import {convertToSwissDate} from "../../services/common/dateUtil.ts";
 
 export const SportDetailComponent = ({id}: { id: string }) => {
     // const sportBasicData = eventApi.getSportEckDaten(id);
@@ -38,15 +39,18 @@ export const SportDetailComponent = ({id}: { id: string }) => {
                 borderRadius: "0 20px 20px 0",
                 padding: "20px",
             }}
-        >   <Flex
+        > <Flex
             justify={"space-between"}
         >
             <Flex
                 vertical
                 className={"tree-content-title"}
             >
-                <Typography.Title level={2} className={"tree-content-main-title"}>Sport</Typography.Title>
-                <Typography.Title level={4} className={"tree-content-sub-title"}>Parent Sport</Typography.Title>
+                <Typography.Title level={2} className={"tree-content-main-title"}
+                                  style={{color: token.colorPrimary}}>Sport</Typography.Title>
+                <Typography.Title level={5} className={"tree-content-sub-title"}
+                                  style={{color: token.colorTextSecondary}}
+                >Parent Sport</Typography.Title>
 
             </Flex>
             <Button
@@ -61,30 +65,68 @@ export const SportDetailComponent = ({id}: { id: string }) => {
             <Flex
                 gap={10}
             >
-                <SportsNumberComponent count={1000} description={"Anzahl der Events"} color={token.colorBgContainer} />
-                <SportsNumberComponent count={10} description={"Anzahl der Abbonenten"} color={token.colorPrimary} />
-                <SportsNumberComponent count={122} description={"Anzahl der Veranstalter"} color={token.colorHighlight} />
-        </Flex>
+                <SportsNumberComponent count={1000} description={"Anzahl der Events"} color={token.colorBgContainer}/>
+            </Flex>
+            <Typography.Title level={4}>Eventvorschau</Typography.Title>
             <Flex
                 vertical
-                className={"tree-content-description"}
+                className={"tree-content-table"}
+                gap={20}
             >
-                <Table<Event> columns={columns} dataSource={data} />
+                {
+                    data.map((event) => (
+                        <Row key={event.id}
+                             gutter={[8, 8]}
+                             wrap
+                             justify={"space-between"}
+                        >
+                            <Col flex="0 0 100px" style={{background: token.colorPrimary}}>
+                                <Typography.Text>{convertToSwissDate(event.date)}</Typography.Text>
+                            </Col>
+                            <Col flex="1 1 300px"  style={{
+                                background: token.colorBgContainer}}>
+                                <Typography.Text>{event.name}</Typography.Text>
+                            </Col>
+                            <Col
+                                flex={"0 0 auto"}
+                            >
+                                <Button
+                                    icon={<IconPlus size={20}/>}
+                                    type={"primary"}
+                                    onClick={() => {
+                                        //TODO eventApi.addEvent(id);
+                                        console.log("Add Event", event.id);
+                                    }}
+                                ></Button>
+                            </Col>
+                        </Row>
+                    ))
+                }
+                <Button
+                    type={"text"}
+                    icon={<IconPlus size={20}/>}
+                    onClick={() => {
+                        //TODO eventApi.addEvent(id);
+                    }
+                    }
+                >mehr anzeigen</Button>
+
             </Flex>
         </Flex>
     );
 };
 
-const SportsNumberComponent = ({count, description, color}: { count: number, description: string, color: string}) => {
+const SportsNumberComponent = ({count, description, color}: { count: number, description: string, color: string }) => {
     return (
         <Flex vertical
               flex={1}
               align={"center"}
-                style={{
-                    padding: "0 20px 20px 20px",
-                    background: color,
-                    borderRadius: "20px",
-                }}
+              style={{
+                  padding: "0 20px 20px 20px",
+                  background: color,
+                  borderRadius: "20px",
+                  maxWidth: "300px",
+              }}
         >
 
             <Typography.Title level={1}>
@@ -116,23 +158,5 @@ const data: Event[] = [
         id: '3',
         date: '2021-09-01',
         name: 'FC Zürich vs FC Luzern',
-    },
-];
-
-const columns: TableProps<Event>['columns'] = [
-    {
-        title: 'ID',
-        dataIndex: 'id',
-        key: 'id',
-    },
-    {
-        title: 'Date',
-        dataIndex: 'date',
-        key: 'date',
-    },
-    {
-        title: 'Name',
-        dataIndex: 'name',
-        key: 'name',
-    },
+    }
 ];

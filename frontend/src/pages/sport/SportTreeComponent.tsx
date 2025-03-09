@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {Flex} from "antd";
+import {Alert, Flex, Spin} from "antd";
 import "./SportTreeComponent.css";
 import {CaretRight} from "@phosphor-icons/react";
 import {Sport} from "../../services/sport/entities/sport.ts";
@@ -20,10 +20,33 @@ export const SportTreeComponent = () => {
 
 
     if (sportTree.isLoading) {
-        return <div>Loading...</div>;
+        return <Flex
+            style={{
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100%",
+                width: "100%",
+            }}
+        >
+            <Spin size={"large"}></Spin>
+        </Flex>;
     }
     if (sportTree.isError) {
-        return <div>Error: {sportTree.error?.toString()}</div>;
+        return <Flex
+            style={{
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100%",
+                width: "100%",
+            }}
+        >
+            <Alert
+                message="Ups, es ist ein Fehler aufgetreten"
+                description={sportTree.error?.toString()}
+                type="error"
+                showIcon
+            />
+        </Flex>;
     }
 
     const handleCategoryClick = (sport: Sport, level: number) => {
