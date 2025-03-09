@@ -20,10 +20,10 @@ class SecurityConfig {
             .cors { it.configurationSource(corsConfigurationSource()) }
             .authorizeHttpRequests { requests ->
                 requests
-                    .requestMatchers(HttpMethod.POST, "/syncconfig/new").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/syncconfig").permitAll()
                     .requestMatchers(HttpMethod.PUT, "/syncconfig/*").permitAll()
                     .requestMatchers(HttpMethod.DELETE, "/syncconfig/*").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/**").permitAll()
+                    .requestMatchers("/**").permitAll()
             }
         return http.build()
     }

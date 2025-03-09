@@ -12,20 +12,20 @@ class EventSyncJob : Job {
 
     @Autowired
     lateinit var swissSkiService: SwissSkiService
-    @Autowired
-    lateinit var eventService: EventService
+
     @Autowired
     lateinit var swissTxtService: SwissTxtService
 
     override fun execute(context: JobExecutionContext) {
-        val result = eventService.clearTables().map {
-            // TODO: use a result here for proper error handling
-            swissSkiService.update()
+        val updates = listOf(
+            swissSkiService.update(),
             swissTxtService.update()
-        }
-        when (result) {
-            is Either.Left -> println("Something went wrong when inserting races: ${result.value.message}")
-            is Either.Right -> println("Successfully inserted data")
+        )
+        updates.map {
+            when (it) {
+                is Either.Left -> println("Something went wrong when inserting races: ${it.value.message}")
+                is Either.Right -> println("Successfully inserted data")
+            }
         }
     }
 }
