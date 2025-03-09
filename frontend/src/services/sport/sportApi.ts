@@ -1,6 +1,8 @@
 import {createApi} from "@reduxjs/toolkit/query/react";
 import {axiosBaseQuery} from "../common/apiHelpers";
 import {Sport} from "./entities/sport.ts";
+import {PagedRequest, PagedResult} from "../common/PagedResult.ts";
+import {SportEvent} from "../event/entities/event.ts";
 
 
 export const sportApi = createApi({
@@ -11,22 +13,28 @@ export const sportApi = createApi({
     endpoints: build => ({
         getAll: build.query<Sport[], void>({
             query: () => ({
-                url: "/",
+                url: "",
                 method: "GET"
             })
         }),
         getById: build.query<Sport, number>({
             query: (id) => ({
-                url: `/${id}`,
+                url: `${id}`,
                 method: "GET"
             })
         }),
-        create: build.mutation<Sport, Sport>({
+        getEvents: build.query<PagedResult<SportEvent>, PagedRequest>({
+            query: (request) => ({
+                url: `${request.id}/events?page=${request.page}&pageSize=${request.pageSize}`,
+                method: "GET"
+            })
+        }),
+        update: build.mutation<Sport, Sport>({
             query: (sport) => ({
-                url: "/",
-                method: "POST",
+                url: `/${sport.id}`,
+                method: "PUT",
                 body: sport
             })
         }),
-    })
+})
 })

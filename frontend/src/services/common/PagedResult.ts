@@ -1,23 +1,12 @@
-
-
-
 export type PagedResult<T=unknown> = {
-    currentPage: number;
-    totalPages: number;
-    results: T[];
-    pageSize?: number;
-    totalElements?: number;
-}
-
-export type NativePagedResult<T=unknown> = {
-    number: number;
-    totalPages: number;
-    content: T[];
-    size?: number;
-    totalElements?: number;
+    amount: number;
+    page: number;
+    pageSize: number;
+    elements: T[];
 }
 
 export type PagedRequest = {
+    id?: string;
     page: number;
-    pageSize?: number;
+    pageSize: number;
 }

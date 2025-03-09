@@ -26,7 +26,7 @@ export const axiosBaseQuery = ({ baseUrl }: { baseUrl: string }) => {
     const fn: AxiosBaseQueryFn = async ({ url, method, body, params }) => {
         try {
             const result = await axiosInstance({ url, method, data: body, params })
-            return { data: result.data }
+            return { data: result.data.body }
         } catch (axiosError) {
             const err = axiosError as AxiosError
             return {

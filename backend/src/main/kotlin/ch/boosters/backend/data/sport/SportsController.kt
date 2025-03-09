@@ -16,7 +16,7 @@ import java.util.UUID
 class SportsController (
     private val sportsService: SportsService
 ) {
-    @GetMapping("/")
+    @GetMapping("")
     fun getAll(): Either<SynciError, List<Sport>> =
         sportsService.findSports()
 

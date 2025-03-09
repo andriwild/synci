@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {Alert, Flex, Spin} from "antd";
+import {Flex} from "antd";
 import "./SportTreeComponent.css";
 import {CaretRight} from "@phosphor-icons/react";
 import {Sport} from "../../services/sport/entities/sport.ts";
@@ -12,6 +12,8 @@ export const SportTreeComponent = () => {
     const sportTree = sportApi.useGetAllQuery();
     const [treeColumns, setTreeColumns] = useState<Sport[][]>([sportTree.data || []]);
 
+    const [selectedSport, setSelectedSport] = useState<Sport | null>(null);
+
     useEffect(() => {
         if (sportTree.data) {
             setTreeColumns([sportTree.data]);
@@ -20,33 +22,10 @@ export const SportTreeComponent = () => {
 
 
     if (sportTree.isLoading) {
-        return <Flex
-            style={{
-                justifyContent: "center",
-                alignItems: "center",
-                height: "100%",
-                width: "100%",
-            }}
-        >
-            <Spin size={"large"}></Spin>
-        </Flex>;
+        return <div>Loading...</div>;
     }
     if (sportTree.isError) {
-        return <Flex
-            style={{
-                justifyContent: "center",
-                alignItems: "center",
-                height: "100%",
-                width: "100%",
-            }}
-        >
-            <Alert
-                message="Ups, es ist ein Fehler aufgetreten"
-                description={sportTree.error?.toString()}
-                type="error"
-                showIcon
-            />
-        </Flex>;
+        return <div>Error: {sportTree.error?.toString()}</div>;
     }
 
     const handleCategoryClick = (sport: Sport, level: number) => {
@@ -78,7 +57,11 @@ export const SportTreeComponent = () => {
                         <div
                             key={category.id}
                             className={`tree-item ${selectedId === category.id ? "selected" : ""}`}
-                            onClick={() => handleCategoryClick(category, index)}
+                            onClick={() => {
+                                setSelectedSport(category);
+                                handleCategoryClick(category, index);
+                            }
+                            }
                         >
                             <Flex
                                 style={{
@@ -96,7 +79,7 @@ export const SportTreeComponent = () => {
                 </div>
             ))}
 
-            <SportDetailComponent id={selectedId}/>
+            <SportDetailComponent id={selectedId} title={selectedSport?.name || ""}/>
         </Flex>
     );
 }

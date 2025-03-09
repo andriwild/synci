@@ -4,8 +4,6 @@ import {sportApi} from "../services/sport/sportApi.ts";
 export const store = configureStore({
     reducer: {
         [sportApi.reducerPath]: sportApi.reducer,
-
-
     },
     middleware: getDefaultMiddleware =>
         getDefaultMiddleware()
