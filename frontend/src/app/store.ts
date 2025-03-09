@@ -1,8 +1,10 @@
 import {Action, configureStore, ThunkAction} from "@reduxjs/toolkit";
 import {sportApi} from "../services/sport/sportApi.ts";
+import {userSliceReducer} from "../services/user/UserSlice.ts";
 
 export const store = configureStore({
     reducer: {
+        user: userSliceReducer,
         [sportApi.reducerPath]: sportApi.reducer,
     },
     middleware: getDefaultMiddleware =>

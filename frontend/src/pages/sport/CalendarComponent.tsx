@@ -4,7 +4,6 @@ import {CalendarSelectionModal} from "../../components/calenderSelectionModal/Ca
 export const CalendarComponent = () => {
     return (
         <Flex vertical style={{gap: 20, padding: "0 20px"}}>
-
             <h1>Meine Abos</h1>
                 <Alert
                     message="Du bis noch nicht angemeldet"
@@ -20,6 +19,7 @@ export const CalendarComponent = () => {
                 buttonText="Zu Kalender hinzufügen"
                 buttonIcon={<i className="fas fa-calendar-plus"></i>}
                 buttonType="primary"
+
             />
 
         </Flex>

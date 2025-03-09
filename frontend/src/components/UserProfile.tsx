@@ -2,11 +2,26 @@ import {Button, Divider, Flex, Image, Popover, theme, Typography} from "antd";
 import Title from "antd/es/typography/Title";
 import {FC} from "react";
 import {CalendarBlank, UserCircle} from "@phosphor-icons/react";
+import {userActions, useUser} from "../services/user/UserSlice";
+import {useDispatch} from "react-redux";
+import {User} from "../services/user/entities/User.ts";
 
 export const UserProfile: FC = () => {
     const {token} = theme.useToken();
+    const user = useUser()
 
-    return (
+    const dispatch = useDispatch();
+
+    const handleLogin = () => {
+        const mockUser: User = {
+            id: 1,
+            name: "John Doe",
+            uid: "john.doe",
+        };
+        dispatch(userActions.setUser(mockUser));
+    };
+
+return (
         <Popover
             placement="bottomRight"
             trigger={"hover"}
@@ -19,6 +34,7 @@ export const UserProfile: FC = () => {
                 },
             }}
             content={
+                user &&
                 <Flex vertical style={{alignItems: 'start', cursor: 'pointer', gap: 10}}>
                     <Flex style={{alignItems: 'center', cursor: 'pointer', gap: 20}}>
                         <Image
@@ -73,14 +89,15 @@ export const UserProfile: FC = () => {
                         >
                             Abmelden
                         </Button>
-
                 </Flex>
-            }
+                    }
         >
             <Flex style={{alignItems: 'center', cursor: 'pointer', gap: 10}}>
+                {user ?
+                    <>
                 <Flex style={{flexDirection: 'column', alignItems: 'flex-end'}}>
                     <Typography.Text type={'secondary'} style={{margin: 0}}>Mein Konto</Typography.Text>
-                    <Title level={5} style={{margin: 0}} color={token.colorPrimary}>Elias Bräm</Title>
+                   <Title level={5} style={{margin: 0}} color={token.colorPrimary}>{user.name}</Title>
                 </Flex>
                 <Image
                     src={'../assets/Profile_sample.png'}
@@ -94,6 +111,10 @@ export const UserProfile: FC = () => {
                     }
                     }
                 />
+                    </>
+                    :
+                    <Button type={"primary"} onClick={handleLogin}>Login</Button>
+                }
             </Flex>
         </Popover>
     );
