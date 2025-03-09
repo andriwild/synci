@@ -8,6 +8,7 @@ import {syncConfigActions, useSyncConfig} from "../../services/syncConfig/syncCo
 import {useDispatch} from "react-redux";
 import {NotificationPlacement} from "antd/es/notification/interface";
 import {SportConfigCard} from "./SportConfigCard.tsx";
+import {VITE_URL_PREFIX} from "../../../env.ts";
 
 export const SyncConfigComponent = () => {
     const syncConfigList = syncConfigApi.useGetAllQuery();
@@ -104,7 +105,7 @@ export const SyncConfigComponent = () => {
             }
 
             <CalendarSelectionModal
-                url=
+                url={ `${VITE_URL_PREFIX}/api/sync/${currentSyncConfig?.id}/calendar`}
                 buttonText="Zu Kalender hinzufügen"
                 buttonIcon={<i className="fas fa-calendar-plus"></i>}
                 buttonType="primary"
