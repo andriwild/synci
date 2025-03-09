@@ -1,0 +1,10 @@
+ALTER TABLE public.TEAMS_TABLE
+  DROP CONSTRAINT fk_team_source;
+
+ALTER TABLE public.TEAMS_TABLE
+  ADD CONSTRAINT fk_team_source FOREIGN KEY (source_id)
+    REFERENCES public.SOURCES_TABLE (id)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE;
+
+DELETE FROM teams_table WHERE source_id = 3;
