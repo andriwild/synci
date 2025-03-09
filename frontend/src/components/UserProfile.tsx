@@ -1,27 +1,18 @@
 import {Button, Divider, Flex, Image, Popover, theme, Typography} from "antd";
 import Title from "antd/es/typography/Title";
-import {FC} from "react";
+import {FC, useState} from "react";
 import {CalendarBlank} from "@phosphor-icons/react";
 import {userActions, useUser} from "../services/user/UserSlice";
 import {useDispatch} from "react-redux";
 import {User} from "../services/user/entities/User.ts";
 import {useNavigate} from "react-router-dom";
+import {Login} from "../pages/login/Login.tsx";
 
 export const UserProfile: FC = () => {
     const {token} = theme.useToken();
     const user = useUser()
     const navigate = useNavigate();
-
-    const dispatch = useDispatch();
-
-    const handleLogin = () => {
-        const mockUser: User = {
-            id: 1,
-            name: "John Doe",
-            uid: "john.doe",
-        };
-        dispatch(userActions.setUser(mockUser));
-    };
+    const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
 return (
         <Popover
@@ -52,7 +43,7 @@ return (
                             }
                         />
                         <Flex style={{flexDirection: 'column', alignItems: 'flex-end'}}>
-                            <Title level={5} style={{margin: 0}} color={token.colorPrimary}>{user.name}</Title>
+                            <Title level={5} style={{margin: 0}} color={token.colorPrimary}>{user.firstName + ' ' + user.lastName}</Title>
                         </Flex>
                     </Flex>
                     <Divider
@@ -104,7 +95,7 @@ return (
                     <>
                 <Flex style={{flexDirection: 'column', alignItems: 'flex-end'}}>
                     <Typography.Text type={'secondary'} style={{margin: 0}}>Mein Konto</Typography.Text>
-                   <Title level={5} style={{margin: 0}} color={token.colorPrimary}>{user.name}</Title>
+                   <Title level={5} style={{margin: 0}} color={token.colorPrimary}>{user.firstName + ' ' + user.lastName}</Title>
                 </Flex>
                 <Image
                     src={'../assets/Profile_sample.png'}
@@ -120,7 +111,10 @@ return (
                 />
                     </>
                     :
-                    <Button type={"primary"} onClick={handleLogin}>Login</Button>
+                    <>
+                    <Button onClick={() => setIsLoginModalOpen(true)}>Anmelden</Button>
+                    <Login isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
+                    </>
                 }
             </Flex>
         </Popover>

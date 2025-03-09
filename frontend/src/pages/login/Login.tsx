@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import {useEffect, useRef, useState} from "react";
 import { Modal, Button } from "antd";
 import {VITE_KEYCLOAK_HOST, VITE_SECRET_KEYCLOAK, VITE_CLIENT_ID_KEYCLOAK} from "../../../env.ts";
+import {userActions, useUser} from "../../services/user/UserSlice.ts";
+import {useDispatch} from "react-redux";
 
 
 export const Login = ({ isOpen, onClose }) => {
-
     const URL_ADDON = "/realms/synci/protocol/openid-connect/auth";
     const CLIENT_ID = VITE_CLIENT_ID_KEYCLOAK;
     const REDIRECT_URI = window.location.href;
@@ -12,6 +13,8 @@ export const Login = ({ isOpen, onClose }) => {
     const SCOPE = "openid";
     const [authCode, setAuthCode] = useState("");
     const [accessToken, setAccessToken] = useState(localStorage.getItem("access_token") || null);
+    const user= useUser();
+    const dispatch = useDispatch();
 
     const openAuthPopup = (idpHint) => {
         const authUrl = `${VITE_KEYCLOAK_HOST + URL_ADDON}?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=${RESPONSE_TYPE}&scope=${SCOPE}&kc_idp_hint=${idpHint}`;
@@ -70,6 +73,18 @@ export const Login = ({ isOpen, onClose }) => {
                     if (data.access_token) {
                         localStorage.setItem("access_token", data.access_token);
                         setAccessToken(data.access_token);
+                        //decode token
+                        const base64Url = data.access_token.split('.')[1];
+                        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                        }).join(''));
+                        console.log("Decoded Token:", JSON.parse(jsonPayload));
+                        dispatch(userActions.setUser({
+                            firstName: JSON.parse(jsonPayload).given_name,
+                            lastName: JSON.parse(jsonPayload).family_name,
+                            email: JSON.parse(jsonPayload).email,
+                        }));
                         console.log("Access Token gespeichert:", data.access_token);
                     } else {
                         console.error("Fehler beim Abrufen des Tokens:", data);
