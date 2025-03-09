@@ -1,4 +1,4 @@
-import {Alert, Button, Flex, Form, Input, Modal, Popover, theme, Typography} from "antd";
+import {Alert, Button, Flex, Form, Input, Modal, notification, Popover, theme, Typography} from "antd";
 import {CalendarSelectionModal} from "../../components/calenderSelectionModal/CalenderSelectionModal.tsx";
 import {IconEdit, IconPlus, IconReplace,} from "@tabler/icons-react";
 import {useEffect, useState} from "react";
@@ -6,6 +6,7 @@ import {useUser} from "../../services/user/UserSlice.ts";
 import {syncConfigApi} from "../../services/syncConfig/syncConfigApi.ts";
 import {syncConfigActions, useSyncConfig} from "../../services/syncConfig/syncCofigSlice.ts";
 import {useDispatch} from "react-redux";
+import {NotificationPlacement} from "antd/es/notification/interface";
 
 export const SyncConfigComponent = () => {
     const user = useUser();
@@ -20,8 +21,7 @@ export const SyncConfigComponent = () => {
         if (syncConfigList.data) {
             dispatch(syncConfigActions.setSyncConfig(syncConfigList.data[0]));
         }
-    }, [syncConfigList.data]);
-
+    }, []);
 
     if (!user) {
         return (
@@ -75,10 +75,10 @@ export const SyncConfigComponent = () => {
                                     setOpen(false)
                                 }
                                 } icon={<IconEdit size={15}/>}></Button>
+
                             </Flex>
                         ))}
-                          <CreateConfigModal/>
-
+                          <CreateConfigModal refetch={() => syncConfigList.refetch()}/>
                     </Flex>
                 }>
                     <Button icon={<IconReplace size={20}/>} type={"default"}></Button>
@@ -94,7 +94,7 @@ export const SyncConfigComponent = () => {
                 :
                     <>
                     <Typography.Text>Keine Abos vorhanden</Typography.Text>
-                        <CreateConfigModal/>
+                        <CreateConfigModal refetch={() => syncConfigList.refetch()}/>
                     </>
                 }
 
@@ -111,20 +111,34 @@ export const SyncConfigComponent = () => {
 }
 
 
-const CreateConfigModal = () => {
+const CreateConfigModal = ({refetch}: {refetch: () => void}) => {
     const [open, setOpen] = useState(false);
     const [form] = Form.useForm();
+    const dispatch = useDispatch();
+    const [api, contextHolder] = notification.useNotification();
+
+    const openNotification = (placement: NotificationPlacement) => {
+        api.info({
+            message: "Abo erstellt",
+            description: "Das neue Abo wurde erfolgreich erstellt. Du kannst jetzt deine Events hinzufügen",
+            placement,
+        });
+    };
 
     const [createSyncConfig, createSyncConfigStatus] = syncConfigApi.useCreateMutation();
 
     const handleSubmit = async (values : {name: string}) => {
         try {
-            await createSyncConfig({
+            const response = await createSyncConfig({
                 name: values.name,
                 events: [],
                 teams: [],
                 sports: []
             });
+            dispatch(syncConfigActions.setSyncConfig(response.data));
+            openNotification("bottomRight");
+            form.resetFields();
+            refetch();
             setOpen(false);
         } catch (e) {
             console.error(e);
@@ -133,6 +147,7 @@ const CreateConfigModal = () => {
 
     return (
         <>
+            {contextHolder}
             <Modal
                 title="Neues Abo hinzufügen"
                 open={open}
