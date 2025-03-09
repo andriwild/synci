@@ -90,7 +90,7 @@ export const SyncConfigComponent = () => {
 
                 {currentSyncConfig?.sports ?
                     currentSyncConfig?.sports?.map((sport) => (
-                    <Flex vertical style={{gap: 10}}>
+                    <Flex vertical style={{gap: 10}} key={sport.id}>
                         <Typography.Text>{sport.name}</Typography.Text>
                     </Flex>
                 ))

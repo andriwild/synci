@@ -41,7 +41,9 @@ export const SportDetailComponent = ({id, title}: { id: string, title: string })
                     paddingTop: "20px",
                 }}
             >
-                <Typography.Title level={2}>Herzlich Willkommen bei Synci</Typography.Title>
+                <Typography.Title level={2}
+                    style={{ textAlign: "center", color: token.colorPrimary }}
+                >Herzlich Willkommen bei Synci</Typography.Title>
                 <Typography.Text>
                     Wähle eine Kategorie aus, um mehr zu erfahren.
                 </Typography.Text>
