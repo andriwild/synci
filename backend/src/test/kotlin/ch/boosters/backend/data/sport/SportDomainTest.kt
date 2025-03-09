@@ -1,5 +1,6 @@
 package ch.boosters.backend.data.sport
 
+import ch.boosters.backend.data.sport.business.findSportsByParent
 import ch.boosters.data.tables.pojos.SportsTable
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
