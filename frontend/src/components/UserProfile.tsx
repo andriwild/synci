@@ -2,11 +2,9 @@ import {Button, Divider, Flex, Image, Popover, theme, Typography} from "antd";
 import Title from "antd/es/typography/Title";
 import {FC, useState} from "react";
 import {CalendarBlank} from "@phosphor-icons/react";
-import {userActions, useUser} from "../services/user/UserSlice";
-import {useDispatch} from "react-redux";
-import {User} from "../services/user/entities/User.ts";
+import {useUser} from "../services/user/UserSlice";
 import {useNavigate} from "react-router-dom";
-import {Login} from "../pages/login/Login.tsx";
+import {LoginPopUp} from "../pages/login/LoginPopUp.tsx";
 
 export const UserProfile: FC = () => {
     const {token} = theme.useToken();
@@ -113,7 +111,7 @@ return (
                     :
                     <>
                     <Button onClick={() => setIsLoginModalOpen(true)}>Anmelden</Button>
-                    <Login isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
+                    <LoginPopUp isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
                     </>
                 }
             </Flex>
