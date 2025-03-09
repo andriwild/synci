@@ -1,7 +1,7 @@
 ch:
   boosters:
     db:
-      jdbcUrl: jdbc:postgresql://database-net-db-local:5432/synci-db
+      jdbcUrl: jdbc:postgresql://localhost:5432/synci-db
 spring:
   security:
     oauth2:

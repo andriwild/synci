@@ -1,7 +1,7 @@
 import {type BaseQueryFn, retry} from '@reduxjs/toolkit/query/react'
 import type {AxiosError, AxiosRequestConfig} from 'axios'
 import axios from 'axios'
-import {BACKEND_HOST} from '../../../env.ts';
+import {BACKEND_HOST, KEYCLOAK_HOST} from '../../../env.ts';
 import {SerializedError} from '@reduxjs/toolkit';
 
 type AxiosBaseQueryFn = BaseQueryFn<
@@ -22,6 +22,32 @@ export const axiosBaseQuery = ({ baseUrl }: { baseUrl: string }) => {
     });
 
     //TODO Add Token to every request here
+
+    const fn: AxiosBaseQueryFn = async ({ url, method, body, params }) => {
+        try {
+            const result = await axiosInstance({ url, method, data: body, params })
+            return { data: result.data }
+        } catch (axiosError) {
+            const err = axiosError as AxiosError
+            return {
+                error: {
+                    status: err.response?.status,
+                    data: err.response?.data || {
+                        message: err.message
+                    },
+                } as HttpError,
+            }
+        }
+    };
+    return retry(fn, {
+        maxRetries: 0,
+    });
+}
+
+export const axiosUserBaseQuery = ({ baseUrl }: { baseUrl: string }) => {
+    const axiosInstance = axios.create({
+        baseURL: KEYCLOAK_HOST+baseUrl
+    });
 
     const fn: AxiosBaseQueryFn = async ({ url, method, body, params }) => {
         try {
