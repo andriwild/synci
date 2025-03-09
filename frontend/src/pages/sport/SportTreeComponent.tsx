@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {Flex} from "antd";
+import {Flex, Spin} from "antd";
 import "./SportTreeComponent.css";
 import {CaretRight} from "@phosphor-icons/react";
 import {Sport} from "../../services/sport/entities/sport.ts";
@@ -22,7 +22,7 @@ export const SportTreeComponent = () => {
 
 
     if (sportTree.isLoading) {
-        return <div>Loading...</div>;
+        return <Spin size={"large"}/>;
     }
     if (sportTree.isError) {
         return <div>Error: {sportTree.error?.toString()}</div>;
