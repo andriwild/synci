@@ -57,8 +57,8 @@ services:
       KC_DB: postgres
       KC_DB_URL_HOST: database-net-keycloak-db-local
       KC_DB_URL_DATABASE: keycloak
-      KC_DB_USERNAME: postgres
-      KC_DB_PASSWORD: keycloak-db
+      KC_DB_USERNAME: ${POSTGRES_KEYCLOAK_USER:-postgres}
+      KC_DB_PASSWORD: ${POSTGRES_KEYCLOAK_PASSWORD:-keycloak-db}
     ports:
     - 8090:8080
     volumes:
@@ -96,8 +96,8 @@ services:
     container_name: "synci-keycloak-db-${STAGE:-local}"
     environment:
       POSTGRES_DB: keycloak
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_DB_NAME:-keycloak-db}
+      POSTGRES_USER: ${POSTGRES_KEYCLOAK_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_KEYCLOAK_PASSWORD:-keycloak-db}
     volumes:
       - keycloak.data:/var/lib/postgresql/data
     ports:
