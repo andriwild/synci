@@ -13,7 +13,6 @@ export const SyncConfigComponent = () => {
     const token = theme.useToken().token;
     const [open, setOpen] = useState(false);
     const user = useUser();
-    console.log(syncConfigList.data);
 
     const currentSyncConfig = useSyncConfig();
     const dispatch = useDispatch();
@@ -69,7 +68,7 @@ export const SyncConfigComponent = () => {
                          styles={{body:{background: "white"}}} content={
                     <Flex vertical gap={10}>
                         {syncConfigList.data?.map((syncConfig) => (
-                            <Flex justify={"space-between"} align={"center"} style={{ background: token.colorBgContainer, padding: "10px", borderRadius: 10}} gap={20}>
+                            <Flex justify={"space-between"} align={"center"} style={{ background: token.colorBgContainer, padding: "10px", borderRadius: 10}} gap={20} key={syncConfig.id}>
                                 <Typography.Text>{syncConfig.name}</Typography.Text>
                                 <Flex gap={10}>
                                 <Button type={"primary"} size={"middle"} onClick={() => {
