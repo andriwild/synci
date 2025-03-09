@@ -7,7 +7,7 @@ export const CalendarComponent = () => {
 
             <h1>Meine Abos</h1>
                 <Alert
-                    message="Du bis noch nicht angemeldet"
+                    message="Du bist noch nicht angemeldet"
                     description="Melde dich an, um deine Abos zu sehen"
                     type="warning"
                     showIcon
