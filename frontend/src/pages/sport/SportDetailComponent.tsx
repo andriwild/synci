@@ -1,4 +1,4 @@
-import {Button, Col, Flex, Row, theme, Typography} from "antd";
+import {Button, Col, Flex, Row, theme, Tooltip, Typography} from "antd";
 import "./SportDetailComponent.css";
 import {IconCalendarPlus, IconPlus} from "@tabler/icons-react";
 import {SportEvent} from "../../services/event/entities/event.ts";
@@ -6,6 +6,8 @@ import {convertToSwissDate} from "../../services/common/dateUtil.ts";
 import {sportApi} from "../../services/sport/sportApi.ts";
 import {useEffect, useState} from "react";
 import {useUser} from "../../services/user/UserSlice.ts";
+import {syncConfigApi} from "../../services/syncConfig/syncConfigApi.ts";
+import {useSyncConfig} from "../../services/syncConfig/syncCofigSlice.ts";
 
 export const SportDetailComponent = ({id, title}: { id: string, title: string }) => {
     const token = theme.useToken().token;
@@ -15,6 +17,8 @@ export const SportDetailComponent = ({id, title}: { id: string, title: string })
     const [eventList, setEventList] = useState<SportEvent[]>([]);
 
     const user = useUser();
+    const syncConfig = useSyncConfig();
+    const [updateSyncConfig, updateSyncConfigStatus] = syncConfigApi.useUpdateMutation();
 
     useEffect(() => {
         setEventList([]);
@@ -65,18 +69,15 @@ export const SportDetailComponent = ({id, title}: { id: string, title: string })
             >
                 <Typography.Title level={2} className={"tree-content-main-title"}
                                   style={{color: token.colorPrimary}}>{title}</Typography.Title>
-
-
             </Flex>
-            <Button
-                type={"primary"}
-                icon={<IconCalendarPlus size={20}/>}
-                disabled={!user}
-                onClick={() => {
-                    //TODO eventApi.addEvent(id);
-                }
-                }
-            >Alle Hinzufügen</Button>
+                <Button
+                    type={"primary"}
+                    icon={<IconCalendarPlus size={20}/>}
+                    disabled={!user}
+                    onClick={() => {
+                    }
+                    }
+                >Alle Hinzufügen</Button>
         </Flex>
             <Flex
                 gap={10}
@@ -116,8 +117,14 @@ export const SportDetailComponent = ({id, title}: { id: string, title: string })
                                     icon={<IconCalendarPlus size={20}/>}
                                     type={"primary"}
                                     disabled={!user}
+                                    loading={updateSyncConfigStatus.isLoading}
                                     onClick={() => {
-                                        //TODO eventApi.addEvent(id);
+                                        if (!syncConfig  || !syncConfig.id) {return;}
+                                        updateSyncConfig({
+                                                ...syncConfig,
+                                                events: [...syncConfig.events, event],
+                                            }
+                                        );
                                         console.log("Add Event", event.id);
                                     }}
                                 ></Button>
