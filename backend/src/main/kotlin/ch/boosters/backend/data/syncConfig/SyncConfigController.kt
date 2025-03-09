@@ -6,8 +6,12 @@ import org.springframework.web.bind.annotation.*
 import java.util.UUID
 
 @RestController
-@RequestMapping("/syncconfig")
+@RequestMapping("/syncconfigs")
 class SyncConfigController(private val syncConfigService: SyncConfigService) {
+
+    @GetMapping("")
+    fun getConfig(): SynciEither<List<SyncConfig>> =
+        syncConfigService.getAllSyncConfigs()
 
     @GetMapping("/{id}")
     fun getConfig(@PathVariable id: UUID): SynciEither<SyncConfig> =

@@ -53,4 +53,11 @@ class SyncConfigRepository(private val dsl: JooqEitherDsl) {
                 .where(SYNC_CONFIGS_TABLE.ID.eq(id))
                 .execute()
         }
+
+    fun findAllSyncConfigs(): SynciEither<List<SyncConfigsTable>> =
+        dsl { it: DSLContext ->
+            it
+                .selectFrom(SYNC_CONFIGS_TABLE)
+                .fetchInto(SyncConfigsTable::class.java)
+        }
 }
