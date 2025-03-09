@@ -17,6 +17,8 @@ export const SyncConfigComponent = () => {
     const currentSyncConfig = useSyncConfig();
     const dispatch = useDispatch();
 
+    console.log("Currentconfig",currentSyncConfig);
+
     useEffect(() => {
         if (syncConfigList.data) {
             dispatch(syncConfigActions.setSyncConfig(syncConfigList.data[0]));

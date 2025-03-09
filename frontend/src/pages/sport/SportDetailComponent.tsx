@@ -101,8 +101,8 @@ export const SportDetailComponent = ({id, title}: { id: string, title: string })
             >
                 <Typography.Title level={4} style={{marginBottom: 0}}>Eventvorschau</Typography.Title>
                 {
-                    eventList.map((event: SportEvent) => (
-                        <Row key={event.sourceId}
+                    eventList.map((event: SportEvent, index : number) => (
+                        <Row key={index}
                              gutter={[8, 8]}
                              wrap
                              justify={"space-between"}
