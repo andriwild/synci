@@ -14,11 +14,11 @@ class SyncConfigService(
     private val syncConfigSportsRepository: SyncConfigSportsRepository
 ) {
 
-    fun createSyncConfig(syncConfig: SyncConfig): SynciEither<UUID> = either {
+    fun createSyncConfig(syncConfig: SyncConfig): SynciEither<SyncConfig> = either {
         val id = syncConfigRepository.createSyncConfig(syncConfig).bind()
         syncConfigTeamRepository.addTeams(id, syncConfig.teams).bind()
         syncConfigSportsRepository.addSports(id, syncConfig.sports).bind()
-        id
+        getSyncConfig(id).bind()
     }
 
     fun getSyncConfig(id: UUID): SynciEither<SyncConfig> =
