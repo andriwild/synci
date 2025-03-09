@@ -8,6 +8,7 @@ import './index.css';
 import {LoginPage} from "./pages/login/LoginPage.tsx";
 import {AppLayout} from "./components/AppLayout.tsx";
 import {FaqPage} from "./pages/faq/FaqPage.tsx";
+import {SyncConfigPage} from "./pages/syncConfig/SyncConfigPage.tsx";
 
 export const App: FC = () => {
     return (
@@ -33,7 +34,7 @@ export const App: FC = () => {
                     <Route element={<AppLayout/>}>
                         <Route path="/" element={<HomePage />} />
                         <Route path="/sport" element={<SportPage />} />
-                        <Route path="/syncConfig" element={<div>Config</div>} />
+                        <Route path="/syncConfig" element={<SyncConfigPage/>} />
                         <Route path="/faq" element={<FaqPage />} />
                     </Route>
                 </Routes>
