@@ -6,15 +6,16 @@ import {useEffect, useState} from "react";
 import {Team} from "../../model/Team.ts";
 import {Sport} from "../../services/sport/entities/sport.ts";
 import {useUser} from "../../services/user/UserSlice.ts";
+import {syncConfigApi} from "../../services/config/syncConfigApi.ts";
 
 export const CalendarComponent = () => {
     const user = useUser();
-    //const syncConfigList = syncConfigApi.useGetAllQuery();
+    const syncConfigList = syncConfigApi.useGetAllQuery();
+    console.log(syncConfigList.data);
 
     const [currentSyncConfig, setCurrentSyncConfig] = useState<SyncConfig | null>(null);
-    console.log(currentSyncConfig);
-    useEffect(() => {
 
+    useEffect(() => {
         setCurrentSyncConfig(
             {
                 id: "55e8b617-be90-42ed-a75f-89f374ca303c",
@@ -87,10 +88,10 @@ export const CalendarComponent = () => {
     }
 
     return (
-        <Flex vertical style={{gap: 20, padding: "20px 20px"}}>
-            <Flex justify={"space-between"}>
+        <Flex vertical style={{gap: 20, padding: "20px 20px", width: "100%"}}>
+            <Flex justify={"space-between"} style={{width: "100%"}}>
                 {/*TODO Edit field*/}
-                <Typography.Title level={2} style={{margin: 0}}>currentSyncConfig.name</Typography.Title>
+                <Typography.Title level={2} style={{margin: 0}}>{currentSyncConfig?.name}</Typography.Title>
                 <Button icon={<IconReplace size={20}/>} type={"default"}></Button>
             </Flex>
                 <CalendarSelectionModal

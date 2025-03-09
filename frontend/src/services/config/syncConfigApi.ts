@@ -23,7 +23,7 @@ export const syncConfigApi = createApi({
         }),
         update: build.mutation<SyncConfig, SyncConfig>({
             query: syncConfig => ({
-                url: "",
+                url: "{syncConfig.id}",
                 method: "PUT",
                 body: syncConfig
             })
