@@ -3,8 +3,6 @@ import {CalendarSelectionModal} from "../../components/calenderSelectionModal/Ca
 import {IconReplace,} from "@tabler/icons-react";
 import {SyncConfig} from "../../services/config/entities/syncConfig.ts";
 import {useEffect, useState} from "react";
-import {Team} from "../../model/Team.ts";
-import {Sport} from "../../services/sport/entities/sport.ts";
 import {useUser} from "../../services/user/UserSlice.ts";
 import {syncConfigApi} from "../../services/config/syncConfigApi.ts";
 
@@ -15,61 +13,14 @@ export const CalendarComponent = () => {
 
     const [currentSyncConfig, setCurrentSyncConfig] = useState<SyncConfig | null>(null);
 
+
+
     useEffect(() => {
-        setCurrentSyncConfig(
-            {
-                id: "55e8b617-be90-42ed-a75f-89f374ca303c",
-                name: "Kalender Elias",
-                teams: new Map<Team, Sport[]>(),
-                sports: [
-                    {
-                        id: "1",
-                        name: "Fussball",
-                        subSports: [],
-                    },
-                    {
-                        id: "2",
-                        name: "Handball",
-                        subSports: [],
-                    },
-                    {
-                        id: "3",
-                        name: "Volleyball",
-                        subSports: [],
-                    },
-                ],
-                events: [
-                    {
-                        id: "1",
-                        name: "Fussball Match",
-                        startsOn: "heute",
-                        endsOn: "morgen",
-                        sportId: "1",
-                        locationId: "1",
-                        sourceId: 1,
-                    },
-                    {
-                        id: "2",
-                        name: "Handball Match",
-                        startsOn: "heute",
-                        endsOn: "morgen",
-                        sportId: "2",
-                        locationId: "2",
-                        sourceId: 2,
-                    },
-                    {
-                        id: "3",
-                        name: "Volleyball Match",
-                        startsOn: "heute",
-                        endsOn: "morgen",
-                        sportId: "3",
-                        locationId: "3",
-                        sourceId: 3,
-                    }
-                ],
-            }
-        );
-    }, []);
+        if (syncConfigList.data) {
+            setCurrentSyncConfig(syncConfigList.data[0]);
+        }
+    }, [syncConfigList.data]);
+
 
     if (!user) {
         return (

@@ -5,7 +5,7 @@ import {SyncConfig} from "./entities/syncConfig.ts";
 export const syncConfigApi = createApi({
     reducerPath: "syncConfigApi",
     baseQuery: axiosBaseQuery({
-        baseUrl: "/syncConfig"
+        baseUrl: "/syncconfig"
     }),
     endpoints: build => ({
         getAll: build.query<SyncConfig[], void>({
