@@ -7,8 +7,9 @@ import {sportApi} from "../../services/sport/sportApi.ts";
 import {useEffect, useState} from "react";
 import {useUser} from "../../services/user/UserSlice.ts";
 import {syncConfigApi} from "../../services/syncConfig/syncConfigApi.ts";
-import {useSyncConfig} from "../../services/syncConfig/syncCofigSlice.ts";
+import {syncConfigActions, useSyncConfig} from "../../services/syncConfig/syncCofigSlice.ts";
 import {syncConfigDtoMapper} from "../../services/syncConfig/helpers/syncConfigHelper.ts";
+import { useDispatch } from "react-redux";
 
 export const SportDetailComponent = ({id, title}: { id: string, title: string }) => {
     const token = theme.useToken().token;
@@ -19,6 +20,7 @@ export const SportDetailComponent = ({id, title}: { id: string, title: string })
     const user = useUser();
     const syncConfig = useSyncConfig();
     const [updateSyncConfig, updateSyncConfigStatus] = syncConfigApi.useUpdateMutation();
+    const dispatch = useDispatch();
 
     useEffect(() => {
         setEventList([]);
@@ -75,12 +77,14 @@ export const SportDetailComponent = ({id, title}: { id: string, title: string })
                     type={"primary"}
                     icon={<IconCalendarPlus size={20}/>}
                     disabled={!user}
-                    onClick={() => {
-                        if (!syncConfig || !syncConfig.id) {return;}
-                        console.log(syncConfig);
+                    onClick={async () => {
+                        if (!syncConfig || !syncConfig.id) {
+                            return;
+                        }
                         const dto = syncConfigDtoMapper(syncConfig);
                         dto.sports = [...(dto.sports ?? []), id];
-                        updateSyncConfig(dto);
+                        const newSyncConfig = await updateSyncConfig(dto);
+                        dispatch(syncConfigActions.setSyncConfig(newSyncConfig.data));
                     }}
                 >Alle Hinzufügen</Button>
         </Flex>
@@ -123,11 +127,14 @@ export const SportDetailComponent = ({id, title}: { id: string, title: string })
                                     type={"primary"}
                                     disabled={!user}
                                     loading={updateSyncConfigStatus.isLoading}
-                                    onClick={() => {
-                                            if (!syncConfig || !syncConfig.id) {return;}
-                                            const dto = syncConfigDtoMapper(syncConfig);
-                                            dto.events = [...(dto.events ?? []), {id: event.id, sourceId: event.sourceId}];
-                                            updateSyncConfig(dto);
+                                    onClick={async () => {
+                                        if (!syncConfig || !syncConfig.id) {
+                                            return;
+                                        }
+                                        const dto = syncConfigDtoMapper(syncConfig);
+                                        dto.events = [...(dto.events ?? []), {id: event.id, sourceId: event.sourceId}];
+                                        const response = await updateSyncConfig(dto);
+                                        dispatch(syncConfigActions.setSyncConfig(response.data));
                                     }}
                                 ></Button>
                             </Col>
