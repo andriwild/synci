@@ -28,6 +28,11 @@ class SyncConfigService(
         getSyncConfig(id).bind()
     }
 
+    fun getAllSyncConfigs(): SynciEither<List<SyncConfig>> = either {
+        val configs = syncConfigRepository.findAllSyncConfigs().bind()
+        configs.map { getSyncConfig(it.id) }.bindAll()
+    }
+
     fun getSyncConfig(id: UUID): SynciEither<SyncConfig> = either {
         val syncConfig       = syncConfigRepository.syncConfigById(id).bind()
         val sportsOfConfig   = syncConfigSportsRepository.getSportsIdBySyncConfigId(id).bind()
