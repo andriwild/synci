@@ -1,5 +1,6 @@
-package ch.boosters.backend.data.sport
+package ch.boosters.backend.data.sport.business
 
+import ch.boosters.backend.data.sport.model.Sport
 import ch.boosters.data.tables.pojos.SportsTable
 import java.util.UUID
 

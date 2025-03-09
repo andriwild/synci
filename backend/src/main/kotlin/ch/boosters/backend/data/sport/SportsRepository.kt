@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository
 import java.util.*
 
 @Repository
-class SportRepository(
+class SportsRepository(
     private val dsl: DSLContext
 ) {
 
@@ -55,4 +55,20 @@ class SportRepository(
         Either.safeDbOp {
             dsl.selectFrom(sports).fetch().into(SportsTable::class.java)
         }
+
+    fun eventsBySports(sportIds: List<UUID>, limit: Int, offset: Int): Either<SynciError, List<EventsTable>> =
+        Either.safeDbOp {
+            dsl
+                .selectFrom(Tables.EVENTS_TABLE)
+                .where(Tables.EVENTS_TABLE.SPORT_ID.`in`(sportIds))
+                .limit(offset, limit)
+                .fetch()
+                .into(EventsTable::class.java)
+        }
+
+    fun eventsBySportsCount(sportIds: List<UUID>): Either<SynciError, Int> = either {
+        dsl.selectFrom(Tables.EVENTS_TABLE)
+            .where(Tables.EVENTS_TABLE.SPORT_ID.`in`(sportIds))
+            .count()
+    }
 }
