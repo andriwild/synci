@@ -21,7 +21,7 @@ class SyncConfigController(private val syncConfigService: SyncConfigService) {
         syncConfigService.updateSyncConfig(id, syncConfig)
 
     @PostMapping("")
-    fun createConfig(@RequestBody syncConfig: SyncConfig): SynciEither<UUID> =
+    fun createConfig(@RequestBody syncConfig: SyncConfig): SynciEither<SyncConfig> =
         syncConfigService.createSyncConfig(syncConfig)
 
     @DeleteMapping("/{id}")
