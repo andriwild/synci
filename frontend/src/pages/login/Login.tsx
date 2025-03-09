@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { Modal, Button } from "antd";
-import {VITE_KEYCLOAK_HOST} from "../../../env.ts";
+import {VITE_KEYCLOAK_HOST, VITE_SECRET_KEYCLOAK, VITE_CLIENT_ID_KEYCLOAK} from "../../../env.ts";
 
 
-export const LoginPage = ({ isOpen, onClose }) => {
+export const Login = ({ isOpen, onClose }) => {
 
     const URL_ADDON = "/realms/synci/protocol/openid-connect/auth";
-    const CLIENT_ID = "synci-backend";
+    const CLIENT_ID = VITE_CLIENT_ID_KEYCLOAK;
     const REDIRECT_URI = window.location.href;
     const RESPONSE_TYPE = "code";
     const SCOPE = "openid";
@@ -58,9 +58,9 @@ export const LoginPage = ({ isOpen, onClose }) => {
                         method: "POST",
                         headers: { "Content-Type": "application/x-www-form-urlencoded" },
                         body: new URLSearchParams({
-                            client_id: "synci-backend",
-                            client_secret: "qsRBHYpRSoqE5XrCCQE1iM6BqdK66tDK",
-                            redirect_uri: "http://localhost:5173/sport",
+                            client_id: VITE_CLIENT_ID_KEYCLOAK,
+                            client_secret: VITE_SECRET_KEYCLOAK,
+                            redirect_uri:  window.location.href,
                             grant_type: "authorization_code",
                             code: authCode,
                         }),
@@ -98,8 +98,8 @@ export const LoginPage = ({ isOpen, onClose }) => {
                 method: "POST",
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
                 body: new URLSearchParams({
-                    client_id: "synci-backend",
-                    client_secret: "qsRBHYpRSoqE5XrCCQE1iM6BqdK66tDK",
+                    client_id: VITE_CLIENT_ID_KEYCLOAK,
+                    client_secret: VITE_SECRET_KEYCLOAK,
                     // refresh_token: token,
                 }),
             });
@@ -122,7 +122,7 @@ export const LoginPage = ({ isOpen, onClose }) => {
 
     return (
         <Modal
-            title="Mit Google anmelden"
+            title="Mit OAUTH anmelden"
             open={isOpen}
             onCancel={onClose}
             footer={null}

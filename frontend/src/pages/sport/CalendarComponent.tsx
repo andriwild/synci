@@ -1,6 +1,6 @@
 import {Alert, Button, Flex} from "antd";
 import {CalendarSelectionModal} from "../../components/calenderSelectionModal/CalenderSelectionModal.tsx";
-import {LoginPage} from "../login/LoginPage.tsx";
+import {Login} from "../login/Login.tsx";
 import {useState} from "react";
 
 export const CalendarComponent = () => {
@@ -19,7 +19,7 @@ export const CalendarComponent = () => {
                         <Button onClick={() => setIsLoginModalOpen(true)}>Anmelden</Button>
                     }
                 />
-            <LoginPage isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
+            <Login isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
 
             <CalendarSelectionModal
                 url="localhost:8080/api/calendar/subscribe/55e8b617-be90-42ed-a75f-89f374ca303c"
