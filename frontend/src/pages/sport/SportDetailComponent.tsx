@@ -75,6 +75,7 @@ export const SportDetailComponent = ({id, title}: { id: string, title: string })
                     disabled={!user}
                     onClick={() => {
                         if (!syncConfig || !syncConfig.id) {return;}
+                        console.log(syncConfig);
                         const dto = syncConfigDtoMapper(syncConfig);
                         dto.sports = [...(dto.sports ?? []), id];
                         updateSyncConfig(dto);
@@ -95,7 +96,7 @@ export const SportDetailComponent = ({id, title}: { id: string, title: string })
                 <Typography.Title level={4} style={{marginBottom: 0}}>Eventvorschau</Typography.Title>
                 {
                     eventList.map((event: SportEvent) => (
-                        <Row key={event.id}
+                        <Row key={event.sourceId}
                              gutter={[8, 8]}
                              wrap
                              justify={"space-between"}

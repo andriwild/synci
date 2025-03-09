@@ -2,7 +2,6 @@ import {SyncConfigRequest} from "../entities/syncConfigDto.ts";
 import {SyncConfig} from "../entities/syncConfig.ts";
 
 export const syncConfigDtoMapper = (syncConfig: SyncConfig): SyncConfigRequest => {
-    console.log(syncConfig)
     return {
         id: syncConfig.id,
         name: syncConfig.name,

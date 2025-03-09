@@ -6,7 +6,7 @@ import {SyncConfigRequest} from "./entities/syncConfigDto.ts";
 export const syncConfigApi = createApi({
     reducerPath: "syncConfigApi",
     baseQuery: axiosBaseQuery({
-        baseUrl: "/syncconfig"
+        baseUrl: "/syncconfigs"
     }),
     endpoints: build => ({
         getAll: build.query<SyncConfig[], void>({
@@ -24,7 +24,7 @@ export const syncConfigApi = createApi({
         }),
         update: build.mutation<SyncConfig, SyncConfigRequest>({
             query: syncConfig => ({
-                url: "{syncConfig.id}",
+                url: `/${syncConfig.id}`,
                 method: "PUT",
                 body: syncConfig
             })
