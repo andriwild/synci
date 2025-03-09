@@ -7,17 +7,19 @@ import {IconLaurelWreath} from '@tabler/icons-react';
 import {sportApi} from '../../services/sport/sportApi.ts';
 import Title from 'antd/es/typography/Title';
 import Link from 'antd/es/typography/Link';
+import useBreakpoint from 'antd/es/grid/hooks/useBreakpoint';
 
 export const HomePage: FC = () => {
     const {token} = theme.useToken();
     const navigate = useNavigate();
+    const screens = useBreakpoint();
     const sports = sportApi.useGetAllQuery();
 
     const steps = [
         {
             title: 'Sportkategorie auswählen',
             content: (
-                <Flex style={{width: '100%', gap: '20px', padding: '20px'}}>
+                <Flex vertical={!screens.md} style={{width: screens.md ? '100%' : '200px', gap: '20px', padding: '20px'}}>
                     <div style={{flex: 1, whiteSpace: 'normal', textAlign: 'start', alignContent: 'start'}}>
                         <Title level={5}>Sportkategorie auswählen</Title>
                         <div>
@@ -59,11 +61,12 @@ export const HomePage: FC = () => {
             title: 'Synci unterstützen',
             content: (
                 <Flex style={{width: '100%', gap: '20px', padding: '10px'}}>
-                    <Flex vertical style={{ flex: 1, textAlign: 'start', gap: 8 }}>
-                        <Title level={5} style={{ marginBottom: 4 }}>Synci unterstützen</Title>
+                    <Flex vertical style={{flex: 1, textAlign: 'start', gap: 8}}>
+                        <Title level={5} style={{marginBottom: 4}}>Synci unterstützen</Title>
                         <Typography.Text>
-                            Wenn du willst, kannst du uns unterstützen. Das ist komplett freiwillig. Vielen Dank für deine Unterstützung!
-                            <br />
+                            Wenn du willst, kannst du uns unterstützen. Das ist komplett freiwillig. Vielen Dank für
+                            deine Unterstützung!
+                            <br/>
                             Falls du kein Twint hast, kannst du uns hier unterstützen:
                         </Typography.Text>
                         <Link
@@ -91,7 +94,8 @@ export const HomePage: FC = () => {
                     <div style={{flex: 1, whiteSpace: 'normal', textAlign: 'start', alignContent: 'start'}}>
                         <Title level={5}>Einträge abgespeichert</Title>
                         <div>
-                            Deine Events sind nun in deinem Kalender abgespeichert. Wenn du gewisse Einträge nicht mehr abonnieren möchtest, kannst du dies hier wieder ändern.
+                            Deine Events sind nun in deinem Kalender abgespeichert. Wenn du gewisse Einträge nicht mehr
+                            abonnieren möchtest, kannst du dies hier wieder ändern.
                         </div>
                     </div>
                     <div style={{flex: 1, whiteSpace: 'normal', marginRight: '5px', alignItems: 'center'}}>
@@ -177,23 +181,29 @@ export const HomePage: FC = () => {
                 <Typography.Title level={2} style={{marginBottom: 70}}>
                     Verfügbare Sportarten
                 </Typography.Title>
-                <Flex gap={'middle'}>
+                <Flex
+                    gap={'middle'}
+                    style={{
+                        flexDirection: screens.md ? 'row' : 'column',
+                        alignItems: 'center',
+                    }}
+                >
                     {sports.data?.map((sport) => (
-                        <Flex style={{
-                            justifyContent: 'start',
-                            alignItems: 'start',
-                            gap: '20px',
-                            flexWrap: 'wrap',
-                            maxWidth: '1260px',
-                        }}>
-                            <Flex vertical className={'sport-card'}
-                                  style={{background: token.colorBgContainer, alignItems: 'center'}}>
-                                <IconLaurelWreath size={50} style={{color: token.colorPrimary, marginTop: '20px'}}/>
-                                <Typography.Title level={3}>{sport.name}</Typography.Title>
-                            </Flex>
+                        <Flex
+                            className="sport-card"
+                            vertical
+                            style={{
+                                background: token.colorBgContainer,
+                                alignItems: 'center',
+                                width: '360px',
+                            }}
+                        >
+                            <IconLaurelWreath size={50} style={{color: token.colorPrimary, marginTop: '20px'}}/>
+                            <Typography.Title level={3}>{sport.name}</Typography.Title>
                         </Flex>
                     ))}
                 </Flex>
+
                 <Button
                     type={'primary'}
                     size={'large'}
@@ -218,7 +228,7 @@ export const HomePage: FC = () => {
                     So einfach funktioniert Synci
                 </Typography.Title>
                 <Flex vertical style={{width: '800px'}}>
-                    <Steps current={current} items={items}/>
+                    <Steps current={current} items={items} direction={screens.md ? 'horizontal' : 'vertical'}/>
                     <div style={contentStyle} id={steps[current].title}>{steps[current].content}</div>
                     <div style={{marginTop: 24, display: 'flex', justifyContent: 'flex-end'}}>
                         {current > 0 && (
