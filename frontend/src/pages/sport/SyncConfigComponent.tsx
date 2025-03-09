@@ -13,6 +13,7 @@ export const SyncConfigComponent = () => {
     const token = theme.useToken().token;
     const [open, setOpen] = useState(false);
     const user = useUser();
+    console.log(syncConfigList.data);
 
     const currentSyncConfig = useSyncConfig();
     const dispatch = useDispatch();

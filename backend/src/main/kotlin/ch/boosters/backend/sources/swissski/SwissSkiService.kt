@@ -1,5 +1,8 @@
 package ch.boosters.backend.sources.swissski
 
+import arrow.core.Either
+import arrow.core.raise.either
+import ch.boosters.backend.errorhandling.SynciEither
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.ExchangeStrategies
 import org.springframework.web.reactive.function.client.WebClient
@@ -15,7 +18,13 @@ class SwissSkiService(
     private val swissSkiRepository: SwissSkiRepository,
 ) {
 
-    fun updateRaces() {
+    fun update(): SynciEither<Unit> = either {
+        val lastSync = swissSkiRepository.lastSyncTime().bind()
+
+        if(lastSync != null && lastSync.isAfter(LocalDateTime.now().minusDays(1))) {
+            return Either.Right(Unit)
+        }
+
         val baseUrl = swissSkiConfig.url
 
         // TODO: #11 introduce proper logging
@@ -34,6 +43,8 @@ class SwissSkiService(
         response.map (swissSkiSerializer::parseResponse)
             .map(swissSkiRepository::storeEvents)
             .block()
+
+        swissSkiRepository.storeSyncTime()
     }
 
     private fun eventResponse(exchangeStrategies: ExchangeStrategies, url: String): Mono<String> {

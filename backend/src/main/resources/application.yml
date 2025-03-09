@@ -15,6 +15,7 @@ spring:
   config:
     import:
     - "classpath:sources/swissski.yml"
+    - "classpath:sources/swisstxt.yml"
     #- "classpath:sources/fotmob.yml"
 
 ch:
