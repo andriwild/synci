@@ -8,7 +8,7 @@ import java.util.UUID
 @RequestMapping("/syncconfig")
 class SyncConfigController(private val syncConfigService: SyncConfigService) {
 
-    @GetMapping("/list")
+    @GetMapping("")
     fun listConfig(): SynciEither<List<SyncConfig>> =
         syncConfigService.getAllSyncConfigs()
 
@@ -20,7 +20,7 @@ class SyncConfigController(private val syncConfigService: SyncConfigService) {
     fun updateConfig(@PathVariable id: UUID, @RequestBody syncConfig: SyncConfig): SynciEither<Unit> =
         syncConfigService.updateSyncConfig(id, syncConfig)
 
-    @PostMapping("/new")
+    @PostMapping("")
     fun createConfig(@RequestBody syncConfig: SyncConfig): SynciEither<UUID> =
         syncConfigService.createSyncConfig(syncConfig)
 
