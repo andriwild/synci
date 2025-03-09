@@ -1,7 +1,7 @@
 package ch.boosters.backend.data.event
 
 import ch.boosters.backend.data.event.model.Event
-import ch.boosters.backend.data.sport.SportRepository
+import ch.boosters.backend.data.sport.SportsRepository
 import ch.boosters.data.Tables.*
 import ch.boosters.data.tables.pojos.SportsTable
 import ch.boosters.data.tables.records.SyncConfigsTeamsTableRecord
@@ -13,7 +13,7 @@ import java.util.*
 @Repository
 class EventRepository(
     private val dsl: DSLContext,
-    private val sportRepository: SportRepository
+    private val sportRepository: SportsRepository
 ) {
 
     fun clearTable(): Boolean {
@@ -31,7 +31,7 @@ class EventRepository(
             .where(SYNC_CONFIGS_SPORTS_TABLE.SYNC_CONFIG_ID.eq(configID))
             .fetch()
         // get children of sportIds
-        val sports = sportsIds.flatMap{ sportRepository.getSubcategoriesById(it.sportId) }
+        val sports = sportsIds.flatMap{ sportRepository.subcategoriesById(it.sportId) }
 
         return sports
             .map { sport -> eventsOfSport(sport)}
