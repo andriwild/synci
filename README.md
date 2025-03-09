@@ -12,9 +12,14 @@ The app consists of 3 parts:
 
 For development, you need to start each of them individually. Do the following:
 
-### Database
+### General setup
 
-Execute the following command from the project root:
+### Database/Keycloak
+
+- Copy the `.env.sample` to `.env`
+- fill the missing environment variables
+  - get all the keycloak stuff from TODO: where do we get the secrets from?
+- Execute the following command from the project root:
 
 ```bash
 ./startDependencies.sh
@@ -29,7 +34,7 @@ Execute the following commands from the project root:
 
 ```bash
 cd backend
-./gradlew bootRun
+./gradlew bootRun --args='--spring.profiles.active=local'
 ```
 This will apply all db migrations, initialize jOOQ and start the backend.
 
@@ -37,7 +42,9 @@ Access the backend via [http://localhost:8080](http://localhost:8080)
 
 ### Frontend
 
-Execute the following commands from the project root:
+- Copy the `./frontend/.env.sample` to `./frontend/.env`
+  - Get all the keycloak stuff from TODO: where do we get the secrets from?
+- Execute the following commands from the project root:
 
 ```bash
 cd frontend 
