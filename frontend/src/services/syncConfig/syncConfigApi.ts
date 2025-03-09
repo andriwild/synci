@@ -15,7 +15,7 @@ export const syncConfigApi = createApi({
                 method: "GET"
             })
         }),
-        create: build.mutation<SyncConfig, SyncConfig>({
+        create: build.mutation<SyncConfig, SyncConfigRequest>({
             query: syncConfig => ({
                 url: "",
                 method: "POST",

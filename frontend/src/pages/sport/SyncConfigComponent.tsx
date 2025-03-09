@@ -1,6 +1,6 @@
-import {Alert, Button, Flex, Popover, theme, Typography} from "antd";
+import {Alert, Button, Flex, Form, Input, Modal, Popover, theme, Typography} from "antd";
 import {CalendarSelectionModal} from "../../components/calenderSelectionModal/CalenderSelectionModal.tsx";
-import {IconEdit, IconReplace,} from "@tabler/icons-react";
+import {IconEdit, IconPlus, IconReplace,} from "@tabler/icons-react";
 import {useEffect, useState} from "react";
 import {useUser} from "../../services/user/UserSlice.ts";
 import {syncConfigApi} from "../../services/syncConfig/syncConfigApi.ts";
@@ -62,7 +62,7 @@ export const SyncConfigComponent = () => {
                 {/*TODO Edit field*/}
                 <Typography.Title level={4} style={{margin: 0}}>{currentSyncConfig?.name}</Typography.Title>
                 <Popover placement="bottomRight"
-                         title={"Alle Verfügbaren Kalender"}
+                         title={"Alle verfügbaren Abos"}
                          open={open}
                          onOpenChange={(open) => setOpen(open)}
                          styles={{body:{background: "white"}}} content={
@@ -77,6 +77,8 @@ export const SyncConfigComponent = () => {
                                 } icon={<IconEdit size={15}/>}></Button>
                             </Flex>
                         ))}
+                          <CreateConfigModal/>
+
                     </Flex>
                 }>
                     <Button icon={<IconReplace size={20}/>} type={"default"}></Button>
@@ -89,7 +91,11 @@ export const SyncConfigComponent = () => {
                         <Typography.Text>{sport.name}</Typography.Text>
                     </Flex>
                 ))
-                : <Typography.Text>Keine Abos vorhanden</Typography.Text>
+                :
+                    <>
+                    <Typography.Text>Keine Abos vorhanden</Typography.Text>
+                        <CreateConfigModal/>
+                    </>
                 }
 
                 <CalendarSelectionModal
@@ -103,3 +109,61 @@ export const SyncConfigComponent = () => {
 )
     ;
 }
+
+
+const CreateConfigModal = () => {
+    const [open, setOpen] = useState(false);
+    const [form] = Form.useForm();
+
+    const [createSyncConfig, createSyncConfigStatus] = syncConfigApi.useCreateMutation();
+
+    const handleSubmit = async (values : {name: string}) => {
+        try {
+            await createSyncConfig({
+                name: values.name,
+                events: [],
+                teams: [],
+                sports: []
+            });
+            setOpen(false);
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
+    return (
+        <>
+            <Modal
+                title="Neues Abo hinzufügen"
+                open={open}
+                onCancel={() => setOpen(false)}
+                footer={null}
+            >
+                <Flex vertical gap={10}>
+                    <Typography.Text>Hier kannst du ein neues Abo erstellen</Typography.Text>
+                    <Form form={form} layout="vertical" onFinish={handleSubmit}>
+                        <Form.Item
+                            label="Abo-Name"
+                            name="name"
+                            rules={[{ required: true, message: "Bitte Abo-Namen eingeben" }]}
+                        >
+                            <Input placeholder="Abo-Name eingeben" />
+                        </Form.Item>
+                        <Form.Item>
+                            <Button type="primary" htmlType="submit" loading={createSyncConfigStatus.isLoading}>
+                                Erstellen
+                            </Button>
+                        </Form.Item>
+                    </Form>
+                </Flex>
+            </Modal>
+            <Button type="primary" size="middle"
+                    icon={<IconPlus size={15} />}
+                    onClick={() => setOpen(true)}
+            >
+                Neu erstellen
+            </Button>
+        </>
+    );
+};
+
