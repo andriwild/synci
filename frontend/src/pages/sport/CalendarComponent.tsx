@@ -5,7 +5,7 @@ import {SyncConfig} from "../../services/config/entities/syncConfig.ts";
 import {useEffect, useState} from "react";
 import {useUser} from "../../services/user/UserSlice.ts";
 import {syncConfigApi} from "../../services/config/syncConfigApi.ts";
-import {Login} from "../login/Login.tsx";
+import {LoginPopUp} from "../login/LoginPopUp.tsx";
 
 export const CalendarComponent = () => {
     const user = useUser();
@@ -33,7 +33,7 @@ export const CalendarComponent = () => {
                     <Button onClick={() => setIsLoginModalOpen(true)}>Anmelden</Button>
                 }
             />
-            <Login isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
+            <LoginPopUp isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
         </Flex>
         );
     }

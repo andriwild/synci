@@ -5,7 +5,6 @@ import { FC } from 'react';
 
 import {SportPage} from "./pages/sport/SportPage.tsx";
 import './index.css';
-import {Login} from "./pages/login/Login.tsx";
 import {AppLayout} from "./components/AppLayout.tsx";
 import {FaqPage} from "./pages/faq/FaqPage.tsx";
 
@@ -29,7 +28,6 @@ export const App: FC = () => {
             >
                 <Routes>
                     {/* No Layout for Login */}
-                    <Route path="/login" element={<Login />} />
 
                     {/* Apply Layout to all other routes */}
                     <Route element={<AppLayout/>}>
