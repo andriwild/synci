@@ -13,9 +13,8 @@ import {syncConfigDtoMapper} from "../../services/syncConfig/helpers/syncConfigH
 export const SportDetailComponent = ({id, title}: { id: string, title: string }) => {
     const token = theme.useToken().token;
     const [page, setPage] = useState<number>(0);
-
-
-    const eventQuery = sportApi.useGetEventsQuery({ id: id, page: page, pageSize: 5 })
+    const pageSize = 5;
+    const eventQuery = sportApi.useGetEventsQuery({ id: id, page: page, pageSize: pageSize })
     const [eventList, setEventList] = useState<SportEvent[]>([]);
     const user = useUser();
     const syncConfig = useSyncConfig();
@@ -30,7 +29,6 @@ export const SportDetailComponent = ({id, title}: { id: string, title: string })
             setEventList(eventList.concat(eventQuery.data.elements));
         }
     }, [eventQuery.data]);
-
 
     if (!id) {
         return (
@@ -133,14 +131,20 @@ export const SportDetailComponent = ({id, title}: { id: string, title: string })
                         </Row>
                     ))
                 }
-                <Button
-                    type={"text"}
-                    icon={<IconPlus size={20}/>}
-                    onClick={() => {
-                        setPage(page + 1);
-                    }
-                    }
-                >mehr anzeigen</Button>
+                {eventList.length === 0 &&
+                    <Typography.Text>Keine Events vorhanden</Typography.Text>
+                }
+                {
+                    (eventQuery.data?.amount || 0) > eventList.length &&
+                    <Button
+                        type={"text"}
+                        icon={<IconPlus size={20}/>}
+                        onClick={() => {
+                            setPage(page + 1);
+                        }
+                        }
+                    >Mehr anzeigen</Button>
+                }
 
             </Flex>
         </Flex>
