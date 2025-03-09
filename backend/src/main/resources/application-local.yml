@@ -12,7 +12,7 @@ ch:
           keycloak:
             provider: synci-keycloak
             client-id: synci-backend
-            client-secret: qsRBHYpRSoqE5XrCCQE1iM6BqdK66tDK
+            client-secret: PsAbJk9P2jXJI07eykbUSTWUWD6TDslt
             authorization-grant-type: authorization_code
             scope:
               - openid
