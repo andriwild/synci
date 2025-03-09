@@ -41,6 +41,13 @@ export const SyncConfigComponent = () => {
             </Flex>
         );
     }
+    if (!syncConfigList.data) {
+        return (
+            <Flex vertical style={{gap: 20, padding: "20px 20px"}}>
+                <Typography.Title level={5}>Lade Abos...</Typography.Title>
+            </Flex>
+        );
+    }
 
     if (syncConfigList.data?.length === 0) {
         return (
