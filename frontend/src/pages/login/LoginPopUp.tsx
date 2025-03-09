@@ -102,17 +102,14 @@ export const LoginPopUp : FC<LoginPageProps> = ({ isOpen, onClose }) => {
 
                 // Token decodieren
                 const decodedToken = decodeJwt(data.access_token);
-                console.log("Decoded Token:", decodedToken);
 
                 // User-Informationen setzen
                 dispatch(userActions.setUser({
                     firstName: decodedToken.given_name || "",
                     lastName: decodedToken.family_name || "",
                     email: decodedToken.email || "",
-                    picture: decodedToken.picture || "",
                 }));
 
-                console.log("Access Token gespeichert:", data.access_token);
             } catch (error) {
                 console.error("Fehler beim Token-Austausch:", error);
             }
@@ -139,12 +136,10 @@ export const LoginPopUp : FC<LoginPageProps> = ({ isOpen, onClose }) => {
                 body: new URLSearchParams({
                     client_id: VITE_CLIENT_ID_KEYCLOAK,
                     client_secret: VITE_SECRET_KEYCLOAK,
-                    // refresh_token: token,
                 }),
             });
 
             if (response.ok) {
-                console.log("Erfolgreich abgemeldet");
 
                 // Lokale Token löschen
                 localStorage.removeItem("access_token");

@@ -10,7 +10,6 @@ import {FaqPage} from "./pages/faq/FaqPage.tsx";
 
 export const App: FC = () => {
 
-    console.log(import.meta.env.VITE_KEYCLOAK_HOST)
     return (
         <Router>
             <ConfigProvider
