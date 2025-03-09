@@ -12,13 +12,19 @@ export const syncConfigApi = createApi({
         getAll: build.query<SyncConfig[], void>({
             query: () => ({
                 url: "",
-                method: "GET"
+                method: "GET",
+                headers: new Headers({
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                })
             })
         }),
         create: build.mutation<SyncConfig, SyncConfigRequest>({
             query: syncConfig => ({
                 url: "",
                 method: "POST",
+                headers: new Headers({
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                }),
                 body: syncConfig
             })
         }),
@@ -26,12 +32,18 @@ export const syncConfigApi = createApi({
             query: syncConfig => ({
                 url: `/${syncConfig.id}`,
                 method: "PUT",
+                headers: new Headers({
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                }),
                 body: syncConfig
             })
         }),
         delete: build.mutation<void, string>({
             query: id => ({
                 url: `/${id}`,
+                headers: new Headers({
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                }),
                 method: "DELETE"
             })
         })
