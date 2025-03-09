@@ -1,7 +1,8 @@
 ch:
   boosters:
     db:
-      jdbcUrl: jdbc:postgresql://localhost:5432/synci-dbspring:
+      jdbcUrl: jdbc:postgresql://localhost:5432/synci-db
+spring:
   security:
     oauth2:
       client:
@@ -12,7 +13,9 @@ ch:
           keycloak:
             provider: synci-keycloak
             client-id: synci-backend
-            client-secret: PsAbJk9P2jXJI07eykbUSTWUWD6TDslt
+            client-secret: ${KEYCLOAK_CLIENT_SECRET}
             authorization-grant-type: authorization_code
             scope:
               - openid
+cors:
+  allowedOrigins: http://localhost:5173
