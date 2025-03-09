@@ -40,9 +40,9 @@ class SwissSkiService(
             .build()
 
         val response = eventResponse(exchangeStrategies, url)
-        response.map (swissSkiSerializer::parseResponse)
-            .map(swissSkiRepository::storeEvents)
-            .block()
+        val swissSkiEvents = response.map (swissSkiSerializer::parseResponse)
+        swissSkiRepository.deleteSwissSkiData()
+        swissSkiEvents.map(swissSkiRepository::storeEvents).block()
 
         swissSkiRepository.storeSyncTime()
     }

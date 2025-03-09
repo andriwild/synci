@@ -1,5 +1,6 @@
 package ch.boosters.backend.data.syncConfig
 
+import ch.boosters.backend.data.syncConfig.model.SyncConfigDto
 import ch.boosters.backend.errorhandling.SynciEither
 import org.springframework.web.bind.annotation.*
 import java.util.UUID
@@ -8,20 +9,16 @@ import java.util.UUID
 @RequestMapping("/syncconfig")
 class SyncConfigController(private val syncConfigService: SyncConfigService) {
 
-    @GetMapping("")
-    fun listConfig(): SynciEither<List<SyncConfig>> =
-        syncConfigService.getAllSyncConfigs()
-
     @GetMapping("/{id}")
-    fun newConfig(@PathVariable id: UUID): SynciEither<SyncConfig> =
+    fun getConfig(@PathVariable id: UUID): SynciEither<SyncConfig> =
         syncConfigService.getSyncConfig(id)
 
     @PutMapping("/{id}")
-    fun updateConfig(@PathVariable id: UUID, @RequestBody syncConfig: SyncConfig): SynciEither<Unit> =
+    fun updateConfig(@PathVariable id: UUID, @RequestBody syncConfig: SyncConfigDto): SynciEither<Unit> =
         syncConfigService.updateSyncConfig(id, syncConfig)
 
     @PostMapping("")
-    fun createConfig(@RequestBody syncConfig: SyncConfig): SynciEither<SyncConfig> =
+    fun createConfig(@RequestBody syncConfig: SyncConfigDto): SynciEither<SyncConfig> =
         syncConfigService.createSyncConfig(syncConfig)
 
     @DeleteMapping("/{id}")

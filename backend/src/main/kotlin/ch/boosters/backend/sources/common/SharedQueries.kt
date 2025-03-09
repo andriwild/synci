@@ -1,6 +1,8 @@
 package ch.boosters.backend.sources.common
 
+import ch.boosters.data.Tables.EVENTS_TABLE
 import ch.boosters.data.Tables.SOURCES_TABLE
+import ch.boosters.data.Tables.TEAMS_TABLE
 import org.jooq.Query
 import org.jooq.Record1
 import org.jooq.SelectConditionStep
@@ -19,3 +21,13 @@ fun lastSyncTimeQuery(sourceId: Int): SelectConditionStep<Record1<LocalDateTime>
         .from(SOURCES_TABLE)
         .where(SOURCES_TABLE.ID.eq(sourceId))
 }
+
+fun deleteDataBySource(sourceId: Int) =
+    listOf(
+        DSL
+            .deleteFrom(EVENTS_TABLE)
+            .where(EVENTS_TABLE.SOURCE_ID.eq(sourceId)),
+        DSL
+            .deleteFrom(TEAMS_TABLE)
+            .where(TEAMS_TABLE.SOURCE_ID.eq(sourceId))
+    )

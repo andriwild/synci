@@ -6,12 +6,14 @@ import arrow.core.raise.ensure
 import ch.boosters.backend.data.configuration.JooqEitherDsl
 import ch.boosters.backend.errorhandling.DatabaseError
 import ch.boosters.backend.errorhandling.SynciEither
+import ch.boosters.backend.sources.common.deleteDataBySource
 import ch.boosters.backend.sources.common.lastSyncTimeQuery
 import ch.boosters.backend.sources.swisstxt.model.SwissTxtEvent
 import ch.boosters.backend.sources.swisstxt.model.Team
 import ch.boosters.data.Tables.*
 import ch.boosters.data.tables.EventsTable
 import ch.boosters.data.tables.EventsTeamsTable
+import org.jooq.DSLContext
 import org.jooq.impl.DSL
 import org.springframework.stereotype.Repository
 import java.time.LocalDateTime
@@ -22,9 +24,15 @@ class SwissTxtRepository(
     private val dsl: JooqEitherDsl,
     private val swissTxtConfig: SwissTxtConfig,
 ) {
-
     val sourceId: SynciEither<Int> by lazy {
         initSourceId()
+    }
+
+    fun deleteSwissTxtData(): SynciEither<List<Int>> = either {
+        val sourceId = sourceId.bind()
+        dsl { db: DSLContext ->
+            deleteDataBySource(sourceId).map { db.execute(it) }
+        }.bind()
     }
 
     fun storeTeams(teams: List<Team>): SynciEither<IntArray> = either {
