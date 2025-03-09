@@ -5,10 +5,12 @@ import arrow.core.raise.ensure
 import ch.boosters.backend.data.configuration.JooqEitherDsl
 import ch.boosters.backend.errorhandling.DatabaseError
 import ch.boosters.backend.errorhandling.SynciEither
+import ch.boosters.backend.sources.common.deleteDataBySource
 import ch.boosters.backend.sources.common.lastSyncTimeQuery
 import ch.boosters.backend.sources.common.storeSyncTimeQuery
 import ch.boosters.backend.sources.swissski.model.SwissSkiEvent
 import ch.boosters.data.Tables.*
+import org.jooq.DSLContext
 import org.springframework.stereotype.Repository
 import java.time.LocalDateTime
 import java.util.*
@@ -21,6 +23,13 @@ class SwissSkiRepository(
 
     val sourceId: SynciEither<Int> by lazy {
         initSourceId()
+    }
+
+    fun deleteSwissSkiData(): SynciEither<List<Int>> = either {
+        val sourceId = sourceId.bind()
+        dsl { db: DSLContext ->
+            deleteDataBySource(sourceId).map { db.execute(it) }
+        }.bind()
     }
 
     fun storeEvents(events: List<SwissSkiEvent>): SynciEither<List<Int>> = either {
@@ -69,7 +78,7 @@ class SwissSkiRepository(
                 .fetchOne(SOURCES_TABLE.ID)
         }.bind()
         // TODO: use a different error here, as databaseerror should only be used for fatal errors
-        ensure (id != null) { DatabaseError("") }
+        ensure(id != null) { DatabaseError("") }
         id
     }
 
@@ -82,7 +91,7 @@ class SwissSkiRepository(
                 .fetchOne(SPORTS_TABLE.ID)
         }.bind()
         // TODO: use a different error here, as databaseerror should only be used for fatal errors
-        ensure (sportId != null) { DatabaseError("Could not find an id to sport $sportsName") }
+        ensure(sportId != null) { DatabaseError("Could not find an id to sport $sportsName") }
         sportId
     }
 }

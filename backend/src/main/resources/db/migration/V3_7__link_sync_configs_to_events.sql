@@ -1,4 +1,4 @@
-CREATE TABLE public.SYNC_CONFIG_EVENTS_TABLE
+CREATE TABLE public.SYNC_CONFIGS_EVENTS_TABLE
 (
     id              uuid         NOT NULL,
     sync_config_id  uuid         NOT NULL,

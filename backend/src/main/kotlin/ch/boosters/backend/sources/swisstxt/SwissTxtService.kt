@@ -27,6 +27,9 @@ class SwissTxtService(
 
         val leagues = swissTxtConfig.leagues
         println("Fetching ${leagues.size} leagues from SwissTxt")
+
+        // TODO: refactor: we need to delete the data only right before saving
+        swissTxtRepository.deleteSwissTxtData()
         leagues.forEach{ league ->
             fetchEvents(league.id)
                 .map(serializer::parseResponse)
