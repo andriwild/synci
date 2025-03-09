@@ -1,6 +1,6 @@
 import {Alert, Button, Flex, Form, Input, Modal, notification, Popover, theme, Typography} from "antd";
 import {CalendarSelectionModal} from "../../components/calenderSelectionModal/CalenderSelectionModal.tsx";
-import {IconEdit, IconPlus, IconReplace,} from "@tabler/icons-react";
+import {IconEdit, IconPlus, IconReplace, IconTrash,} from "@tabler/icons-react";
 import {useEffect, useState} from "react";
 import {useUser} from "../../services/user/UserSlice.ts";
 import {syncConfigApi} from "../../services/syncConfig/syncConfigApi.ts";
@@ -9,10 +9,10 @@ import {useDispatch} from "react-redux";
 import {NotificationPlacement} from "antd/es/notification/interface";
 
 export const SyncConfigComponent = () => {
-    const user = useUser();
     const syncConfigList = syncConfigApi.useGetAllQuery();
     const token = theme.useToken().token;
     const [open, setOpen] = useState(false);
+    const user = useUser();
 
     const currentSyncConfig = useSyncConfig();
     const dispatch = useDispatch();
@@ -21,7 +21,7 @@ export const SyncConfigComponent = () => {
         if (syncConfigList.data) {
             dispatch(syncConfigActions.setSyncConfig(syncConfigList.data[0]));
         }
-    }, []);
+    }, [user]);
 
     if (!user) {
         return (
@@ -68,15 +68,18 @@ export const SyncConfigComponent = () => {
                          styles={{body:{background: "white"}}} content={
                     <Flex vertical gap={10}>
                         {syncConfigList.data?.map((syncConfig) => (
-                            <Flex justify={"space-between"} style={{ background: token.colorBgContainer, padding: "10px", borderRadius: 10}} gap={20}>
+                            <Flex justify={"space-between"} align={"center"} style={{ background: token.colorBgContainer, padding: "10px", borderRadius: 10}} gap={20}>
                                 <Typography.Text>{syncConfig.name}</Typography.Text>
-                                <Button type={"primary"} size={"small"} onClick={() => {
+                                <Flex gap={10}>
+                                <Button type={"primary"} size={"middle"} onClick={() => {
                                     dispatch(syncConfigActions.setSyncConfig(syncConfig));
                                     setOpen(false)
                                 }
                                 } icon={<IconEdit size={15}/>}></Button>
-
+                                <DeleteConfigModal refetch={syncConfigList.refetch} id={syncConfig.id} name={syncConfig.name}/>
+                                </Flex>
                             </Flex>
+
                         ))}
                           <CreateConfigModal refetch={() => syncConfigList.refetch()}/>
                     </Flex>
@@ -110,6 +113,59 @@ export const SyncConfigComponent = () => {
     ;
 }
 
+const DeleteConfigModal = ({refetch, id, name}: {refetch: () => void, id: string, name: string}) => {
+    const [open, setOpen] = useState(false);
+    const [form] = Form.useForm();
+    const [api, contextHolder] = notification.useNotification();
+
+    const openNotification = (placement: NotificationPlacement) => {
+        api.info({
+            message: "Abo gelöscht",
+            description: "Das Abo wurde erfolgreich gelöscht",
+            placement,
+        });
+    };
+
+    const [deleteSyncConfig, deleteSyncConfigStatus] = syncConfigApi.useDeleteMutation();
+
+    const handleSubmit = async () => {
+        try {
+            await deleteSyncConfig(id);
+            openNotification("bottomRight");
+            refetch();
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
+    return (
+        <>
+            {contextHolder}
+            <Button type="default" size="middle"
+                    icon={<IconTrash size={15} />}
+                    onClick={() => setOpen(true)}
+            >
+            </Button>
+            <Modal
+                title={`Abo ${name} löschen`}
+                open={open}
+                onCancel={() => setOpen(false)}
+                footer={null}
+            >
+                <Flex vertical gap={10}>
+                    <Typography.Text>Willst du das Abo wirklich löschen?</Typography.Text>
+                    <Form form={form} layout="vertical" onFinish={handleSubmit}>
+                        <Form.Item>
+                            <Button type="primary" htmlType="submit" loading={deleteSyncConfigStatus.isLoading}>
+                                Löschen
+                            </Button>
+                        </Form.Item>
+                    </Form>
+                </Flex>
+            </Modal>
+        </>
+    );
+}
 
 const CreateConfigModal = ({refetch}: {refetch: () => void}) => {
     const [open, setOpen] = useState(false);
@@ -118,7 +174,7 @@ const CreateConfigModal = ({refetch}: {refetch: () => void}) => {
     const [api, contextHolder] = notification.useNotification();
 
     const openNotification = (placement: NotificationPlacement) => {
-        api.info({
+        api.success({
             message: "Abo erstellt",
             description: "Das neue Abo wurde erfolgreich erstellt. Du kannst jetzt deine Events hinzufügen",
             placement,
