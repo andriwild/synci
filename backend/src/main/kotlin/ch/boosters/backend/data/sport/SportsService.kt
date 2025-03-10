@@ -10,7 +10,6 @@ import ch.boosters.backend.data.sport.model.EventsBySportApi
 import ch.boosters.backend.data.sport.model.Sport
 import ch.boosters.backend.data.sport.model.flatten
 import ch.boosters.backend.errorhandling.ElementNotFound
-import ch.boosters.backend.errorhandling.SynciEither
 import ch.boosters.backend.errorhandling.SynciError
 import ch.boosters.data.tables.pojos.SportsTable
 import org.springframework.stereotype.Service
@@ -27,14 +26,10 @@ class SportsService(
         sport
     }
 
-
     fun findSports(): Either<SynciError, List<Sport>> = either {
         val sports: List<SportsTable> = sportRepository.allSports().bind()
         sports.groupByRootSports()
     }
-
-    fun findSportsByIds(sportIds: List<UUID>):  SynciEither<List<SportsTable>> =
-        sportRepository.sportsById(sportIds)
 
     fun getEventsBySport(sportId: UUID, pageSize: Int, pageNumber: Int): Either<SynciError, EventsBySportApi> = either {
         val allIds = findSportsByParent(sportId).bind().flatten()
