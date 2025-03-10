@@ -1,6 +1,8 @@
 package ch.boosters.backend.sources.swissski
 
-import org.springframework.core.env.Environment
+import arrow.core.Either
+import arrow.core.raise.either
+import ch.boosters.backend.errorhandling.SynciEither
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.ExchangeStrategies
 import org.springframework.web.reactive.function.client.WebClient
@@ -11,12 +13,18 @@ import java.time.LocalDateTime
 @Service
 class SwissSkiService(
     private val webClientBuilder: WebClient.Builder,
-    private val serializer: SwissSkiSerializer,
+    private val swissSkiSerializer: SwissSkiSerializer,
     private val swissSkiConfig: SwissSkiConfig,
     private val swissSkiRepository: SwissSkiRepository,
 ) {
 
-    fun updateRaces() {
+    fun update(): SynciEither<Unit> = either {
+        val lastSync = swissSkiRepository.lastSyncTime().bind()
+
+        if(lastSync != null && lastSync.isAfter(LocalDateTime.now().minusDays(1))) {
+            return Either.Right(Unit)
+        }
+
         val baseUrl = swissSkiConfig.url
 
         // TODO: #11 introduce proper logging
@@ -31,10 +39,12 @@ class SwissSkiService(
             }
             .build()
 
-        val response= eventResponse(exchangeStrategies, url)
-        response.map (serializer::parseResponse)
-            .map(swissSkiRepository::storeEvents)
-            .block()
+        val response = eventResponse(exchangeStrategies, url)
+        val swissSkiEvents = response.map (swissSkiSerializer::parseResponse)
+        swissSkiRepository.deleteSwissSkiData()
+        swissSkiEvents.map(swissSkiRepository::storeEvents).block()
+
+        swissSkiRepository.storeSyncTime()
     }
 
     private fun eventResponse(exchangeStrategies: ExchangeStrategies, url: String): Mono<String> {

@@ -1,12 +1,18 @@
 import {Button, Divider, Flex, Image, Popover, theme, Typography} from "antd";
 import Title from "antd/es/typography/Title";
-import {FC} from "react";
-import {CalendarBlank, UserCircle} from "@phosphor-icons/react";
+import {FC, useState} from "react";
+import {CalendarBlank} from "@phosphor-icons/react";
+import {useUser} from "../services/user/UserSlice";
+import {useNavigate} from "react-router-dom";
+import {LoginPopUp} from "../pages/login/LoginPopUp.tsx";
 
 export const UserProfile: FC = () => {
     const {token} = theme.useToken();
+    const user = useUser()
+    const navigate = useNavigate();
+    const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
-    return (
+return (
         <Popover
             placement="bottomRight"
             trigger={"hover"}
@@ -19,6 +25,7 @@ export const UserProfile: FC = () => {
                 },
             }}
             content={
+                user &&
                 <Flex vertical style={{alignItems: 'start', cursor: 'pointer', gap: 10}}>
                     <Flex style={{alignItems: 'center', cursor: 'pointer', gap: 20}}>
                         <Image
@@ -34,7 +41,7 @@ export const UserProfile: FC = () => {
                             }
                         />
                         <Flex style={{flexDirection: 'column', alignItems: 'flex-end'}}>
-                            <Title level={5} style={{margin: 0}} color={token.colorPrimary}>Elias Bräm</Title>
+                            <Title level={5} style={{margin: 0}} color={token.colorPrimary}>{user.firstName + ' ' + user.lastName}</Title>
                         </Flex>
                     </Flex>
                     <Divider
@@ -43,12 +50,17 @@ export const UserProfile: FC = () => {
                     >
                         <Typography.Title level={5} style={{margin: 0, fontSize:'0.8rem'}}>Einstellungen</Typography.Title>
                     </Divider>
-                    <Button icon={<CalendarBlank/>} type={'text'} style={{textAlign: 'start'}}>
+                    <Button icon={<CalendarBlank/>}
+                            onClick={() => {
+                                navigate('/syncConfig')
+                            }
+                            }
+                            type={'text'} style={{textAlign: 'start'}}>
                         Meine Kalender
                     </Button>
-                    <Button icon={<UserCircle/>} type={'text'} style={{textAlign: 'start'}}>
-                        Profil bearbeiten
-                    </Button>
+                    {/*<Button icon={<UserCircle/>} type={'text'} style={{textAlign: 'start'}}>*/}
+                    {/*    Profil bearbeiten*/}
+                    {/*</Button>*/}
                     <Button
                         type={'default'}
                         size={"large"}
@@ -73,14 +85,15 @@ export const UserProfile: FC = () => {
                         >
                             Abmelden
                         </Button>
-
                 </Flex>
-            }
+                    }
         >
             <Flex style={{alignItems: 'center', cursor: 'pointer', gap: 10}}>
+                {user ?
+                    <>
                 <Flex style={{flexDirection: 'column', alignItems: 'flex-end'}}>
                     <Typography.Text type={'secondary'} style={{margin: 0}}>Mein Konto</Typography.Text>
-                    <Title level={5} style={{margin: 0}} color={token.colorPrimary}>Elias Bräm</Title>
+                   <Title level={5} style={{margin: 0}} color={token.colorPrimary}>{user.firstName + ' ' + user.lastName}</Title>
                 </Flex>
                 <Image
                     src={'../assets/Profile_sample.png'}
@@ -94,6 +107,13 @@ export const UserProfile: FC = () => {
                     }
                     }
                 />
+                    </>
+                    :
+                    <>
+                    <Button onClick={() => setIsLoginModalOpen(true)}>Anmelden</Button>
+                    <LoginPopUp isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
+                    </>
+                }
             </Flex>
         </Popover>
     );

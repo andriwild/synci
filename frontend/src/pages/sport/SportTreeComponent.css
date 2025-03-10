@@ -17,6 +17,7 @@
 .tree-content {
   flex-grow: 10;
   min-width: 300px;
+  overflow-x: auto;
 }
 
 #tree-container {

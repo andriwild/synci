@@ -1,12 +1,9 @@
+
 spring:
   application:
-    name: backend
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: https://accounts.google.com
-          jwk-set-uri: https://www.googleapis.com/oauth2/v3/certs
+    name: synci-backend
+
+
   flyway:
     locations: db/migration/
     url: ${ch.boosters.db.jdbcUrl}
@@ -15,6 +12,7 @@ spring:
   config:
     import:
     - "classpath:sources/swissski.yml"
+    - "classpath:sources/swisstxt.yml"
     #- "classpath:sources/fotmob.yml"
 
 ch:

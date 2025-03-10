@@ -1,0 +1,46 @@
+###
+
+# curl -X POST "http://example.com/api/sync-config"
+#  -H "Content-Type: application/json"
+#  -d '{
+#    "id": "e2b7a8f0-9f3d-11eb-a8b3-0242ac130003",
+#    "name": "SampleConfig",
+#    "events": [
+#      {"id": "event1", "sourceId": 100},
+#      {"id": "event2", "sourceId": 101}
+#    ],
+#    "teams": [
+#      {"id": "team1", "sourceId": 200},
+#      {"id": "team2", "sourceId": 201}
+#    ],
+#    "sports": [
+#      "b8f8f9e2-1101-4ef7-9ef5-1234567890ab",
+#      "c9d9e9f3-1123-4f12-9efa-1234567890bc"
+#    ]
+#  }'
+
+
+### get a single syncconfig
+
+GET {{backendUrl}}/syncconfig/fd9582d2-99a2-4ed4-bb95-754f425b42dd
+
+### create a new sync config
+
+POST {{backendUrl}}/syncconfig
+Content-Type: application/json
+
+{
+  "id": "e2b7a8f0-9f3e-11eb-a8b3-0242ac830003",
+  "name": "SampleConfig",
+  "events": [
+    { "id": "e2d06a51-4bcc-4822-a2f2-97686f32b128", "sourceId": 2 },
+    { "id": "1803641", "sourceId": 3 }
+  ],
+  "teams": [
+    { "id": "14099", "sourceId": 3 }
+  ],
+  "sports": [ "225ffb58-e4ae-4c50-804a-843d9bf5d098" ]
+}
+
+###
+

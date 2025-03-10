@@ -1,7 +1,7 @@
 import { FC } from "react";
 import {Flex, theme} from "antd";
 import {SportTreeComponent} from "./SportTreeComponent.tsx";
-import {CalendarComponent} from "./CalendarComponent.tsx";
+import {SyncConfigComponent} from "./SyncConfigComponent.tsx";
 import useBreakpoint from "antd/es/grid/hooks/useBreakpoint";
 import './Sportpage.css';
 
@@ -24,7 +24,7 @@ export const SportPage: FC = () => {
                 borderRadius: 20,
                 flex: '0 1 33%',
                 maxWidth: '400px'}}>
-               <CalendarComponent />
+               <SyncConfigComponent />
             </Flex>
             }
 

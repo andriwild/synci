@@ -1,34 +1,31 @@
 package ch.boosters.backend.data.syncConfig
 
+import ch.boosters.backend.data.syncConfig.model.SyncConfigDto
+import ch.boosters.backend.errorhandling.SynciEither
 import org.springframework.web.bind.annotation.*
 import java.util.UUID
 
 @RestController
-@RequestMapping("/syncconfig")
+@RequestMapping("/syncconfigs")
 class SyncConfigController(private val syncConfigService: SyncConfigService) {
 
-    @GetMapping("/list")
-    fun listConfig(): List<SyncConfig> {
-        return syncConfigService.getAllSyncConfigs()
-    }
+    @GetMapping("")
+    fun getConfig(): SynciEither<List<SyncConfig>> =
+        syncConfigService.allSyncConfigs()
 
     @GetMapping("/{id}")
-    fun newConfig(@PathVariable id: UUID): SyncConfig? {
-        return syncConfigService.getSyncConfig(id)
-    }
+    fun getConfig(@PathVariable id: UUID): SynciEither<SyncConfig> =
+        syncConfigService.syncConfigById(id)
 
     @PutMapping("/{id}")
-    fun updateConfig(@PathVariable id: UUID, @RequestBody syncConfig: SyncConfig) {
+    fun updateConfig(@PathVariable id: UUID, @RequestBody syncConfig: SyncConfigDto): SynciEither<SyncConfig> =
         syncConfigService.updateSyncConfig(id, syncConfig)
-    }
 
-    @PostMapping("/new")
-    fun createConfig(@RequestBody syncConfig: SyncConfig) {
+    @PostMapping("")
+    fun createConfig(@RequestBody syncConfig: SyncConfigDto): SynciEither<SyncConfig> =
         syncConfigService.createSyncConfig(syncConfig)
-    }
 
     @DeleteMapping("/{id}")
-    fun deleteConfig(@PathVariable id: UUID): Int {
-        return syncConfigService.deleteSyncConfig(id)
-    }
+    fun deleteConfig(@PathVariable id: UUID): SynciEither<Int> =
+        syncConfigService.deleteSyncConfig(id)
 }

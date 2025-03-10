@@ -1,7 +1,7 @@
 import { FC, useState } from "react";
 import {Button, Divider, Drawer, Flex, Image, Layout, Menu, theme, Typography} from "antd";
 import { useLocation, useNavigate } from "react-router-dom";
-import { CalendarBlank, ListBullets, QuestionMark } from "@phosphor-icons/react";
+import { CalendarBlank, ListBullets } from "@phosphor-icons/react";
 import { UserProfile } from "./UserProfile.tsx";
 import useBreakpoint from "antd/es/grid/hooks/useBreakpoint";
 import { IconMenu2 } from "@tabler/icons-react";
@@ -20,14 +20,9 @@ export const Header: FC = () => {
             icon: <ListBullets />,
         },
         {
-            key: "/config",
+            key: "/syncConfig",
             label: "Meine Kalender",
             icon: <CalendarBlank />,
-        },
-        {
-            key: "/faq",
-            label: "Wie funktionierts",
-            icon: <QuestionMark />,
         }
     ];
 

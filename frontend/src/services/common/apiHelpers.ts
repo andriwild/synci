@@ -10,6 +10,7 @@ type AxiosBaseQueryFn = BaseQueryFn<
         method: AxiosRequestConfig['method']
         body?: AxiosRequestConfig['data']
         params?: AxiosRequestConfig['params']
+        headers?: AxiosRequestConfig['headers']
         muteNotification?: boolean
     },
     unknown,
@@ -17,16 +18,22 @@ type AxiosBaseQueryFn = BaseQueryFn<
 >;
 
 export const axiosBaseQuery = ({ baseUrl }: { baseUrl: string }) => {
+    //const token = localStorage.getItem("access_token");
+
     const axiosInstance = axios.create({
         baseURL: VITE_URL_PREFIX+"/api"+baseUrl
     });
 
-    //TODO Add Token to every request here
-
-    const fn: AxiosBaseQueryFn = async ({ url, method, body, params }) => {
+    const fn: AxiosBaseQueryFn = async ({ url, method, body, params, headers }) => {
         try {
-            const result = await axiosInstance({ url, method, data: body, params })
-            return { data: result.data }
+            const result = await axiosInstance({
+                url,
+                method,
+                data: body,
+                params,
+                headers: headers
+            });
+            return { data: result.data.body }
         } catch (axiosError) {
             const err = axiosError as AxiosError
             return {

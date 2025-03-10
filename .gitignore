@@ -7,6 +7,9 @@
 # Log file
 *.log
 
+# sensitive data
+.env
+
 # BlueJ files
 *.ctxt
 
@@ -35,3 +38,4 @@ replay_pid*
 frontend/package-lock.json
 frontend/yarn.lock
 frontend/dist/
+/keycloak/
