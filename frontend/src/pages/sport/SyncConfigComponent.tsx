@@ -10,7 +10,6 @@ import {NotificationPlacement} from "antd/es/notification/interface";
 import {SportConfigCard} from "./SportConfigCard.tsx";
 import {VITE_BACKEND_HOST} from "../../../env.ts";
 import {SyncConfig} from "../../services/syncConfig/entities/syncConfig.ts";
-import {TypedUseQueryHookResult, UseQuerySubscriptionResult} from "@reduxjs/toolkit/query/react";
 
 export const SyncConfigComponent = () => {
     const syncConfigList = syncConfigApi.useGetAllQuery();
