@@ -37,10 +37,6 @@ export const SyncConfigComponent = () => {
                     showIcon
                     action={
                         <Button
-                        onClick={() => {
-                           dispatch(userActions.setUser({firstName: "Elias",lastName: "Bräm", email: "@gmx.ch"}));
-                        }
-                        }
                            >Anmelden</Button>
                     }
                 />
