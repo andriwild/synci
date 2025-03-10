@@ -38,3 +38,4 @@ replay_pid*
 frontend/package-lock.json
 frontend/yarn.lock
 frontend/dist/
+/keycloak/

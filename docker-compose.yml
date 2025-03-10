@@ -28,6 +28,7 @@ services:
       - POSTGRES_DB=${POSTGRES_DB_NAME}
       - DB_HOST=database-net-db-${STAGE:-local}
       - SPRING_PROFILES_ACTIVE=${STAGE:-local}
+      - KEYCLOAK_URL=${KEYCLOAK_URL}
     depends_on:
       - db
     ports:
