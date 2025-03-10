@@ -1,8 +1,9 @@
 import {FC, useEffect, useState} from "react";
-import { Modal, Button } from "antd";
+import {Modal, Button, Flex, Typography, Divider, Image} from "antd";
 import {VITE_KEYCLOAK_HOST, VITE_SECRET_KEYCLOAK, VITE_CLIENT_ID_KEYCLOAK} from "../../../env.ts";
 import {userActions} from "../../services/user/UserSlice.ts";
 import {useDispatch} from "react-redux";
+import {IconBrandGithub, IconBrandGoogle} from "@tabler/icons-react";
 
 interface LoginPageProps {
     isOpen: boolean;
@@ -16,7 +17,6 @@ export const LoginPopUp : FC<LoginPageProps> = ({ isOpen, onClose }) => {
     const RESPONSE_TYPE = "code";
     const SCOPE = "openid";
     const [authCode, setAuthCode] = useState("");
-    const [accessToken, setAccessToken] = useState(localStorage.getItem("access_token") || null);
     const dispatch = useDispatch();
 
     const openAuthPopup = (idpHint: string) => {
@@ -98,7 +98,6 @@ export const LoginPopUp : FC<LoginPageProps> = ({ isOpen, onClose }) => {
 
                 // Token speichern
                 localStorage.setItem("access_token", data.access_token);
-                setAccessToken(data.access_token);
 
                 // Token decodieren
                 const decodedToken = decodeJwt(data.access_token);
@@ -119,65 +118,48 @@ export const LoginPopUp : FC<LoginPageProps> = ({ isOpen, onClose }) => {
     }, [authCode, dispatch]);
 
 
-    const logout = async () => {
-        const token = localStorage.getItem("access_token");
-
-        if (!token) {
-            console.warn("Kein Token gefunden – Benutzer ist möglicherweise bereits abgemeldet.");
-            return;
-        }
-
-        const logoutUrl = `${VITE_KEYCLOAK_HOST}/realms/synci/protocol/openid-connect/logout`;
-
-        try {
-            const response = await fetch(logoutUrl, {
-                method: "POST",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: new URLSearchParams({
-                    client_id: VITE_CLIENT_ID_KEYCLOAK,
-                    client_secret: VITE_SECRET_KEYCLOAK,
-                }),
-            });
-
-            if (response.ok) {
-
-                // Lokale Token löschen
-                localStorage.removeItem("access_token");
-                setAccessToken(null);
-            } else {
-                console.error("Fehler beim Logout:", await response.text());
-            }
-        } catch (error) {
-            console.error("Fehler bei der Logout-Anfrage:", error);
-        }
-    };
-
-
 
     return (
         <Modal
-            title="Mit OAUTH anmelden"
             open={isOpen}
             onCancel={onClose}
+            cancelText={"Abbrechen"}
             footer={null}
         >
-            <Button type="primary" onClick={ () => {
+            <Flex vertical gap={20} align={"center"} style={{ padding: 20 }}>
+                <Image
+                    src={"./assets/Logo_synci.png"}
+                    preview={false}
+                    style={{
+                        cursor: "pointer",
+                        maxHeight: 60,
+                    }}
+                />
+                <Typography.Title level={1}>Login</Typography.Title>
+                <Flex vertical gap={20}>
+            <Button type="default"
+                    size={"large"}
+                    icon={<IconBrandGoogle/>}
+                    onClick={ () => {
                     openAuthPopup("google")
             }}>
                 Mit Google anmelden
             </Button>
-            <Button type="primary" onClick={ () => {
+            <Button type="default"
+                    size={"large"}
+                    icon={<IconBrandGithub/>}
+                    onClick={ () => {
                 openAuthPopup("github")
             }}>
-                Mit github anmelden
+                Mit GitHub anmelden
             </Button>
-            <Button type="primary" danger onClick={logout}>
-                Abmelden
-            </Button>
-
-
-            {authCode && <p>Authentifizierung erfolgreich! Code: {authCode}</p>}
-            {accessToken && <p>AccessToken: {accessToken}</p>}
+            </Flex>
+                <Divider style={{marginBottom: 0}}>Warum muss ich mich anmelden?</Divider>
+                <Flex vertical align={"center"} gap={10}>
+                    <Typography.Text>Erstelle deine eigenen Abonemente</Typography.Text>
+                    <Typography.Text>Komm später zurück und passe deine Abonemente an</Typography.Text>
+                </Flex>
+            </Flex>
         </Modal>
     );
 };
