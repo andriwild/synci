@@ -9,6 +9,7 @@ import {useDispatch} from "react-redux";
 import {NotificationPlacement} from "antd/es/notification/interface";
 import {SportConfigCard} from "./SportConfigCard.tsx";
 import {VITE_BACKEND_HOST} from "../../../env.ts";
+import {SyncConfig} from "../../services/syncConfig/entities/syncConfig.ts";
 
 export const SyncConfigComponent = () => {
     const syncConfigList = syncConfigApi.useGetAllQuery();
@@ -35,7 +36,8 @@ export const SyncConfigComponent = () => {
                     type="warning"
                     showIcon
                     action={
-                        <Button>Anmelden</Button>
+                        <Button
+                           >Anmelden</Button>
                     }
                 />
             </Flex>
@@ -51,7 +53,7 @@ export const SyncConfigComponent = () => {
 
     if (syncConfigList.data?.length === 0) {
         return (
-            <Flex vertical style={{gap: 20, padding: "20px 20px"}} align={"center"}>
+            <Flex vertical style={{gap: 20, padding: "20px 20px", width: "100%"}} align={"center"}>
                 <Typography.Title level={5}>Keine Abos vorhanden</Typography.Title>
              <CreateConfigModal refetch={syncConfigList.refetch}/>
             </Flex>
@@ -66,20 +68,20 @@ export const SyncConfigComponent = () => {
                          title={"Alle verfügbaren Abos"}
                          open={open}
                          onOpenChange={(open) => setOpen(open)}
-                         styles={{body: {background: "white"}}} content={
-                    <Flex vertical gap={10}>
+                         styles={{body: {background: "white", padding: "20px", minWidth: "300px"}}} content={
+                    <Flex vertical gap={20}>
                         {syncConfigList.data?.map((syncConfig) => (
                             <Flex justify={"space-between"} align={"center"}
                                   style={{background: token.colorBgContainer, padding: "10px", borderRadius: 10}}
                                   gap={20} key={syncConfig.id}>
                                 <Typography.Text>{syncConfig.name}</Typography.Text>
-                                <Flex gap={10}>
-                                    <Button type={"primary"} size={"middle"} onClick={() => {
+                                <Flex gap={10} align={"center"}>
+                                    <Button type={"primary"} size={"small"} onClick={() => {
                                         dispatch(syncConfigActions.setSyncConfig(syncConfig));
                                         setOpen(false)
                                     }
                                     } icon={<IconEdit size={15}/>}></Button>
-                                    <DeleteConfigModal refetch={syncConfigList.refetch} id={syncConfig.id}
+                                    <DeleteConfigModal list={syncConfigList.data || []} refetch={syncConfigList.refetch} id={syncConfig.id}
                                                        name={syncConfig.name}/>
                                 </Flex>
                             </Flex>
@@ -104,7 +106,7 @@ export const SyncConfigComponent = () => {
             }
 
             <CalendarSelectionModal
-                url={ `webcal://${VITE_BACKEND_HOST}/api/calendars/${currentSyncConfig?.id}/subscribe`}
+                url={ `${VITE_BACKEND_HOST}/api/calendars/${currentSyncConfig?.id}/subscribe`}
                 buttonText="Zu Kalender hinzufügen"
                 buttonIcon={<i className="fas fa-calendar-plus"></i>}
                 buttonType="primary"
@@ -115,10 +117,16 @@ export const SyncConfigComponent = () => {
         ;
 }
 
-const DeleteConfigModal = ({refetch, id, name}: { refetch: () => void, id: string, name: string }) => {
+const DeleteConfigModal = ({list, refetch, id, name}: {
+    list: SyncConfig[],
+    refetch: () => void,
+    id: string,
+    name: string }) => {
     const [open, setOpen] = useState(false);
     const [form] = Form.useForm();
     const [api, contextHolder] = notification.useNotification();
+    const dispatch = useDispatch();
+    const syncConfig = useSyncConfig();
 
     const openNotification = (placement: NotificationPlacement) => {
         api.info({
@@ -134,6 +142,10 @@ const DeleteConfigModal = ({refetch, id, name}: { refetch: () => void, id: strin
         try {
             await deleteSyncConfig(id);
             openNotification("bottomRight");
+            if (id == syncConfig?.id) {
+                list.filter((config) => config.id !== id);
+            dispatch(syncConfigActions.setSyncConfig(list.filter((config) => config.id !== id)[0]));
+            }
             refetch();
         } catch (e) {
             console.error(e);
@@ -143,7 +155,7 @@ const DeleteConfigModal = ({refetch, id, name}: { refetch: () => void, id: strin
     return (
         <>
             {contextHolder}
-            <Button type="default" size="middle"
+            <Button type="default" size="small"
                     icon={<IconTrash size={15}/>}
                     onClick={() => setOpen(true)}
             >
@@ -207,7 +219,7 @@ const CreateConfigModal = ({refetch}: { refetch: () => void }) => {
         <>
             {contextHolder}
             <Modal
-                title="Neues Abo hinzufügen"
+                title="Neues Abo erstellen"
                 open={open}
                 onCancel={() => setOpen(false)}
                 footer={null}
@@ -224,7 +236,7 @@ const CreateConfigModal = ({refetch}: { refetch: () => void }) => {
                         </Form.Item>
                         <Form.Item>
                             <Button type="primary" htmlType="submit" loading={createSyncConfigStatus.isLoading}>
-                                Erstellen
+                                Speichern
                             </Button>
                         </Form.Item>
                     </Form>
@@ -234,7 +246,7 @@ const CreateConfigModal = ({refetch}: { refetch: () => void }) => {
                     icon={<IconPlus size={15}/>}
                     onClick={() => setOpen(true)}
             >
-                Neu erstellen
+                Neues Abo erstellen
             </Button>
         </>
     );
