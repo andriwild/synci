@@ -222,7 +222,7 @@ export const HomePage: FC = () => {
                 alignItems: 'center',
                 paddingTop: '60px',
                 backgroundColor: token.colorBgBase,
-                padding: '60px 0',
+                padding: '40px 0',
             }}>
                 <Typography.Title level={2} style={{marginBottom: 70}}>
                     So einfach funktioniert Synci
