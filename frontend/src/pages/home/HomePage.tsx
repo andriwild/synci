@@ -9,31 +9,43 @@ export const HomePage: FC = () => {
     const navigate = useNavigate();
     return (
         <Flex vertical style={{width: '100%'}} id={"home-container"}>
-            <Flex style={{justifyContent: 'center', alignItems: 'center'}} id={"home-header"}>
+            <Flex style={{justifyContent: 'center', alignItems: 'center'}} id={"home-header"} wrap>
+                <Flex
+                 flex={"1 1 400px"}
+                 justify={"center"}
+                >
                 <Image
+
                     src={'./assets/synci_preview_straight_cut.png'}
                     preview={false}
                     style={{
                         padding: '10%',
-                        flexBasis: "50%"
+                        flexBasis: "50%",
+                        maxWidth: "600px",
                     }
                     }
                 />
-                <Flex vertical style={{
+                </Flex>
+                <Flex vertical
+                      flex={"1 1 400px"}
+                      gap={20}
+                      style={{
                     justifyContent: 'center',
-                    alignItems: 'start',
+                    alignItems: 'center',
                     alignContent: 'center',
-                    flexBasis: "50%",
+                          padding: '40px'
                 }}>
                     <Typography.Title
                         level={1}
-                                      style={{width: '80%'}}>Deine Sportevents <br/>überblicken und synchronisieren</Typography.Title>
+                                      style={{width: '100%'}}>Deine Sportevents <br/>überblicken und synchronisieren</Typography.Title>
 
                     <Typography.Text
-                        style={{width: '80%'}}>
+                        style={{width: '100%'}}>
                         Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
                     </Typography.Text>
-                    <Flex style={{gap: 20, paddingTop: "20px"}}>
+                    <Flex style={{gap: 20, paddingTop: "20px", width: '100%'}}
+                            justify={"start"}
+                          >
                         <Button type={'primary'} size={"large"} icon={<IconPlayerPlayFilled size={20}/>}
                                 onClick={() => {
                                     navigate("/sport");
