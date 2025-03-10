@@ -66,7 +66,7 @@ services:
       KEYCLOAK_GOOGLE_SECRET: ${KEYCLOAK_GOOGLE_SECRET}
       KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
     ports:
-    - 8090:8080
+    - "8090:8080"
     volumes:
     - ./keycloak/:/opt/keycloak/data/import/
     - ./imports/realm-export.json:/opt/keycloak/data/import/realm.json
