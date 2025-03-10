@@ -1,5 +1,5 @@
 import {Button, Flex, Image, Typography} from "antd";
-import {IconInfoCircle, IconPlayerPlayFilled} from "@tabler/icons-react";
+import {IconPlayerPlayFilled} from "@tabler/icons-react";
 import {useNavigate} from "react-router-dom";
 
 export const FirstImpressionComponent = () => {
