@@ -40,9 +40,8 @@ services:
         database:
           aliases:
             - database-net-backend-${STAGE:-local}
-            - database-net-backend-dev
   keycloak:
-    container_name: "synci-keycloak-dev"
+    container_name: "synci-keycloak-${STAGE:-local}"
     image: quay.io/keycloak/keycloak:latest
     command: 
       - "start-dev"
@@ -59,7 +58,7 @@ services:
       KC_HEALTH_ENABLED: true
       KC_METRICS_ENABLED: true
       KC_DB: postgres
-      KC_DB_URL_HOST: database-net-keycloak-db-local
+      KC_DB_URL_HOST: database-net-keycloak-db-${STAGE:-local}
       KC_DB_URL_DATABASE: keycloak
       KC_DB_USERNAME: ${POSTGRES_KEYCLOAK_USER}
       KC_DB_PASSWORD: ${POSTGRES_KEYCLOAK_PASSWORD}
