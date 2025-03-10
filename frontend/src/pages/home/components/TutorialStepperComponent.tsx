@@ -23,7 +23,7 @@ export const TutorialStepperComponent = () => {
                     </div>
                     <div style={{flex: "1 1 300px", whiteSpace: 'normal', marginRight: '5px', alignItems: 'center'}}>
                         <Image
-                            src={'./public/assets/images/categories-screenshot.png'}
+                            src={'./assets/images/categories-screenshot.png'}
                             preview={false}
                             style={{height: 'auto'}}
                         />
@@ -44,7 +44,7 @@ export const TutorialStepperComponent = () => {
                     </div>
                     <div style={{flex: 1, whiteSpace: 'normal', marginRight: '5px', alignItems: 'center'}}>
                         <Image
-                            src={'./public/assets/images/save-category-screenshot.png'}
+                            src={'./assets/images/save-category-screenshot.png'}
                             preview={false}
                             style={{height: 'auto'}}
                         />
@@ -74,7 +74,7 @@ export const TutorialStepperComponent = () => {
 
                     <div style={{flex: 1, whiteSpace: 'normal', marginRight: '5px', alignItems: 'center'}}>
                         <Image
-                            src={'./public/assets/images/support-synci-screenshot.png'}
+                            src={'./assets/images/support-synci-screenshot.png'}
                             preview={false}
                             style={{height: 'auto'}}
                         />
@@ -95,7 +95,7 @@ export const TutorialStepperComponent = () => {
                     </div>
                     <div style={{flex: 1, whiteSpace: 'normal', marginRight: '5px', alignItems: 'center'}}>
                         <Image
-                            src={'./public/assets/images/category-entry-screenshot.png'}
+                            src={'./assets/images/category-entry-screenshot.png'}
                             preview={false}
                             style={{height: 'auto', maxHeight: '180px'}}
                         />
