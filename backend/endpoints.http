@@ -42,5 +42,7 @@ Content-Type: application/json
   "sports": [ "225ffb58-e4ae-4c50-804a-843d9bf5d098" ]
 }
 
-###
+### subscribe calendar
+
+GET {{backendUrl}}/calendars/fd9582d2-99a2-4ed4-bb95-754f425b42dd/subscribe
 
