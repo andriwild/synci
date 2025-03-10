@@ -18,8 +18,6 @@ type AxiosBaseQueryFn = BaseQueryFn<
 >;
 
 export const axiosBaseQuery = ({ baseUrl }: { baseUrl: string }) => {
-    //const token = localStorage.getItem("access_token");
-
     const axiosInstance = axios.create({
         baseURL: VITE_BACKEND_URL+baseUrl
     });
