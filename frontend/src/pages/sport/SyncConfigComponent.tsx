@@ -2,7 +2,7 @@ import {Alert, Button, Flex, Form, Input, Modal, notification, Popover, theme, T
 import {CalendarSelectionModal} from "../../components/calenderSelectionModal/CalenderSelectionModal.tsx";
 import {IconEdit, IconPlus, IconReplace, IconTrash,} from "@tabler/icons-react";
 import {useEffect, useState} from "react";
-import {userActions, useUser} from "../../services/user/UserSlice.ts";
+import {useUser} from "../../services/user/UserSlice.ts";
 import {syncConfigApi} from "../../services/syncConfig/syncConfigApi.ts";
 import {syncConfigActions, useSyncConfig} from "../../services/syncConfig/syncCofigSlice.ts";
 import {useDispatch} from "react-redux";
