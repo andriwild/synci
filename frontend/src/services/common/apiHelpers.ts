@@ -1,7 +1,7 @@
 import {type BaseQueryFn, retry} from '@reduxjs/toolkit/query/react'
 import type {AxiosError, AxiosRequestConfig} from 'axios'
 import axios from 'axios'
-import {VITE_URL_PREFIX} from '../../../env.ts';
+import {VITE_BACKEND_URL} from '../../../env.ts';
 import {SerializedError} from '@reduxjs/toolkit';
 
 type AxiosBaseQueryFn = BaseQueryFn<
@@ -21,7 +21,7 @@ export const axiosBaseQuery = ({ baseUrl }: { baseUrl: string }) => {
     //const token = localStorage.getItem("access_token");
 
     const axiosInstance = axios.create({
-        baseURL: VITE_URL_PREFIX+"/api"+baseUrl
+        baseURL: VITE_BACKEND_URL+baseUrl
     });
 
     const fn: AxiosBaseQueryFn = async ({ url, method, body, params, headers }) => {
