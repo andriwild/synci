@@ -4,73 +4,46 @@ import arrow.core.Either
 import arrow.core.raise.either
 import ch.boosters.backend.data.configuration.JooqEitherDsl
 import ch.boosters.backend.data.event.model.Event
-import ch.boosters.backend.data.sport.SportsRepository
 import ch.boosters.backend.errorhandling.SynciEither
 import ch.boosters.backend.errorhandling.SynciError
 import ch.boosters.data.Tables.*
-import ch.boosters.data.tables.pojos.SportsTable
+import ch.boosters.data.tables.pojos.EventsTable
 import ch.boosters.data.tables.pojos.SyncConfigsTeamsTable
+import org.jooq.DSLContext
 import org.springframework.stereotype.Repository
 import java.util.*
 
 @Repository
-class EventRepository(
-    private val dsl: JooqEitherDsl,
-    private val sportRepository: SportsRepository
-) {
+class EventRepository(private val dsl: JooqEitherDsl) {
 
     fun clearTable(): Either<SynciError, Unit> = dsl {
         it.truncate(EVENTS_TABLE).cascade().execute()
         it.truncate(EVENTS_TEAMS_TABLE).cascade().execute()
     }
 
-    fun eventsOfSports(configID: UUID): SynciEither<List<Event>> = either {
-        val sportsIds = dsl {
-            it.selectFrom(SYNC_CONFIGS_SPORTS_TABLE)
-                .where(SYNC_CONFIGS_SPORTS_TABLE.SYNC_CONFIG_ID.eq(configID))
-                .fetch()
-        }.bind()
-        // get children of sportIds
-        val sports = sportsIds.flatMap {
-            sportRepository
-                .subcategoriesById(it.sportId)
-                .bind()
-        }
-        sports
-            .map { sport -> eventsOfSport(sport).bind() }
-            .flatten()
-    }
-
-    private fun eventsOfSport(sport: SportsTable): SynciEither<MutableList<Event>> =
+    fun eventsByConfig(configID: UUID): SynciEither<List<EventsTable>> =
         dsl {
-            it.select().from(EVENTS_TABLE)
-                .where(EVENTS_TABLE.SPORT_ID.eq(sport.id))
-                .fetch()
-                .map {
-                    Event(
-                        it.getValue(EVENTS_TABLE.NAME),
-                        it.getValue(EVENTS_TABLE.ID),
-                        it.getValue(EVENTS_TABLE.STARTS_ON),
-                        it.getValue(EVENTS_TABLE.ENDS_ON)
-                    )
-                }
+            it.select(EVENTS_TABLE.asterisk())
+                .from(EVENTS_TABLE)
+                .join(SYNC_CONFIGS_EVENTS_TABLE)
+                .on(SYNC_CONFIGS_EVENTS_TABLE.EVENT_ID.eq(EVENTS_TABLE.ID))
+                .where(SYNC_CONFIGS_EVENTS_TABLE.SYNC_CONFIG_ID.eq(configID))
+                .fetch().into(EventsTable::class.java)
         }
 
-    fun eventsOfTeams(configID: UUID): SynciEither<List<Event>> = either {
-        val teams = dsl {
-            it.selectFrom(SYNC_CONFIGS_TEAMS_TABLE)
-                .where(SYNC_CONFIGS_TEAMS_TABLE.SYNC_CONFIG_ID.eq(configID))
+    fun eventsOfTeams(configID: UUID): SynciEither<List<EventsTable>> =
+        dsl {
+            it.select(EVENTS_TABLE.asterisk()).from(EVENTS_TABLE)
+                .join(SYNC_CONFIGS_EVENTS_TABLE)
+                .on(SYNC_CONFIGS_EVENTS_TABLE.EVENT_ID.eq(EVENTS_TABLE.ID))
+                .join(SYNC_CONFIGS_TABLE)
+                .on(SYNC_CONFIGS_TABLE.ID.eq(SYNC_CONFIGS_EVENTS_TABLE.SYNC_CONFIG_ID))
+                .where(SYNC_CONFIGS_TABLE.ID.eq(configID))
                 .fetch()
-                .into(SyncConfigsTeamsTable::class.java)
-        }.bind()
+                .into(EventsTable::class.java)
+        }
 
-        teams
-            .map { eventsOfTeam(it) }
-            .bindAll()
-            .flatten()
-    }
-
-    private fun eventsOfTeam(team: SyncConfigsTeamsTable): SynciEither<MutableList<Event>> =
+    private fun eventsOfTeam(team: SyncConfigsTeamsTable): SynciEither<List<EventsTable>> =
         dsl {
             it.select()
                 .from(EVENTS_TABLE)
@@ -78,26 +51,25 @@ class EventRepository(
                 .on(EVENTS_TABLE.ID.eq(EVENTS_TEAMS_TABLE.EVENT_ID))
                 .where(EVENTS_TEAMS_TABLE.TEAM_ID.eq(team.teamId))
                 .fetch()
-                .map {
-                    Event(
-                        it.getValue(EVENTS_TABLE.NAME),
-                        it.getValue(EVENTS_TABLE.ID),
-                        it.getValue(EVENTS_TABLE.STARTS_ON),
-                        it.getValue(EVENTS_TABLE.ENDS_ON)
-                    )
-                }
+                .into(EventsTable::class.java)
         }
 
-    fun allEvents(): SynciEither<List<Event>> = either {
-        val result = dsl { it.select().from(EVENTS_TABLE).fetch() }.bind()
-
-        result.map {
-            Event(
-                it.getValue(EVENTS_TABLE.NAME),
-                it.getValue(EVENTS_TABLE.ID),
-                it.getValue(EVENTS_TABLE.STARTS_ON),
-                it.getValue(EVENTS_TABLE.ENDS_ON)
-            )
+    fun sportsByConfig(id: UUID): SynciEither<List<UUID>> =
+        dsl { it: DSLContext ->
+            it.select(SPORTS_TABLE.ID)
+                .from(SPORTS_TABLE)
+                .join(SYNC_CONFIGS_SPORTS_TABLE)
+                .on(SYNC_CONFIGS_SPORTS_TABLE.SPORT_ID.eq(SPORTS_TABLE.ID))
+                .where(SYNC_CONFIGS_SPORTS_TABLE.SYNC_CONFIG_ID.eq(id))
+                .fetchInto(UUID::class.java)
         }
-    }
+
+    fun eventsBySports(ids: List<UUID>): SynciEither<List<EventsTable>> =
+        dsl { it: DSLContext ->
+            it
+                .select(EVENTS_TABLE.asterisk())
+                .from(EVENTS_TABLE)
+                .where(EVENTS_TABLE.SPORT_ID.`in`(ids))
+                .fetchInto(EventsTable::class.java)
+        }
 }
