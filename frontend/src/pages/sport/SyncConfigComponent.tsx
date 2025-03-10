@@ -104,7 +104,7 @@ export const SyncConfigComponent = () => {
             }
 
             <CalendarSelectionModal
-                url={ `${VITE_URL_PREFIX}/api/sync/${currentSyncConfig?.id}/calendar`}
+                url={ `${VITE_URL_PREFIX}/api/calendars/${currentSyncConfig?.id}/subscribe`}
                 buttonText="Zu Kalender hinzufügen"
                 buttonIcon={<i className="fas fa-calendar-plus"></i>}
                 buttonType="primary"
