@@ -3,12 +3,9 @@ package ch.boosters.backend.data.syncConfig.syncConfigEvents
 import arrow.core.raise.either
 import ch.boosters.backend.data.configuration.JooqEitherDsl
 import ch.boosters.backend.data.syncConfig.model.EventDto
-import ch.boosters.backend.data.syncConfig.model.TeamDto
 import ch.boosters.backend.errorhandling.SynciEither
 import ch.boosters.data.Tables.EVENTS_TABLE
 import ch.boosters.data.Tables.SYNC_CONFIGS_EVENTS_TABLE
-import ch.boosters.data.Tables.SYNC_CONFIGS_TABLE
-import ch.boosters.data.Tables.SYNC_CONFIGS_TEAMS_TABLE
 import ch.boosters.data.tables.pojos.EventsTable
 import org.jooq.DSLContext
 import org.jooq.impl.DSL
@@ -17,6 +14,7 @@ import java.util.*
 
 @Repository
 class SyncConfigEventsRepository(private val dsl: JooqEitherDsl) {
+
     fun updateEvents(configId: UUID, events: List<EventDto>): SynciEither<List<EventDto>> = either {
         dsl {
             it.deleteFrom(SYNC_CONFIGS_EVENTS_TABLE)
