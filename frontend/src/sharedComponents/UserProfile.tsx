@@ -80,7 +80,10 @@ return (
                             style={{width: '100%'}}
                             size={"large"}
                             onClick={() => {
-                                //TODO: Implement logout
+                                localStorage.removeItem('access_token');
+                                localStorage.removeItem('user');
+                                localStorage.removeItem('selectedSyncConfig');
+                                window.location.reload();
                             }}
                         >
                             Abmelden
