@@ -48,6 +48,7 @@ class SyncConfigService(
     fun updateSyncConfig(id: UUID, syncConfig: SyncConfigDto): SynciEither<SyncConfig> = either {
         syncConfigRepository.updateSyncConfig(id, syncConfig).bind()
         syncConfigTeamRepository.updateTeams(id, syncConfig.teams).bind()
+        syncConfigEventsRepository.updateEvents(id, syncConfig.events).bind()
         syncConfigSportsRepository.updateSports(id, syncConfig.sports).bind()
         syncConfigById(id).bind()
     }
