@@ -1,6 +1,6 @@
 import {Sport} from "../../services/sport/entities/sport.ts";
 import {Button, Flex, Tag, theme, Typography} from "antd";
-import {IconCalendarWeek, IconTrash} from "@tabler/icons-react";
+import {IconSitemap, IconTrash} from "@tabler/icons-react";
 import {syncConfigApi} from "../../services/syncConfig/syncConfigApi.ts";
 import {syncConfigActions, useSyncConfig} from "../../services/syncConfig/syncCofigSlice.ts";
 import {syncConfigDtoMapper} from "../../services/syncConfig/helpers/syncConfigHelper.ts";
@@ -19,7 +19,7 @@ export const SportConfigCard = ({sport}: { sport: Sport }) => {
             justify={"space-between"}
             style={{borderRadius: 20, background: token.colorBgContainer, padding: 20}}>
             <Flex gap={20} align={"center"}>
-            <IconCalendarWeek size={40} color={token.colorPrimary}/>
+            <IconSitemap size={40} color={token.colorPrimary}/>
                 <Flex vertical gap={10}
                       align={"start"}>
                     <Typography.Title level={5}

@@ -10,6 +10,7 @@ import {syncConfigApi} from "../../services/syncConfig/syncConfigApi.ts";
 import {syncConfigActions, useSyncConfig} from "../../services/syncConfig/syncCofigSlice.ts";
 import {syncConfigDtoMapper} from "../../services/syncConfig/helpers/syncConfigHelper.ts";
 import { useDispatch } from "react-redux";
+import {TeamsPreviewComponent} from "./components/TeamsPreviewComponent.tsx";
 
 export const SportDetailComponent = ({id, title}: { id: string, title: string }) => {
     const token = theme.useToken().token;
@@ -93,6 +94,7 @@ export const SportDetailComponent = ({id, title}: { id: string, title: string })
             >
                 <SportsNumberComponent count={eventQuery.data?.amount || 0} description={"Anzahl der Events"} color={token.colorBgContainer}/>
             </Flex>
+                <TeamsPreviewComponent sportId={id}/>
 
             <Flex
                 vertical
