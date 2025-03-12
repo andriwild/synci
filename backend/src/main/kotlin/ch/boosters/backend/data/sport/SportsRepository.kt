@@ -1,7 +1,9 @@
 package ch.boosters.backend.data.sport
 
 import arrow.core.Either
+import arrow.core.raise.either
 import ch.boosters.backend.data.configuration.JooqEitherDsl
+import ch.boosters.backend.errorhandling.SynciEither
 import ch.boosters.backend.errorhandling.SynciError
 import ch.boosters.data.Tables
 import ch.boosters.data.tables.pojos.EventsTable
@@ -17,6 +19,16 @@ class SportsRepository(
 
     fun allSports(): Either<SynciError, List<SportsTable>> =
         dsl { it.selectFrom(sports).fetch().into(SportsTable::class.java) }
+
+    fun sportIdByName(name: String): SynciEither<UUID?> = either {
+        dsl {
+            it
+                .selectFrom(sports)
+                .where(sports.NAME.eq(name))
+                .fetchOne()
+                ?.get(sports.ID)
+        }.bind()
+    }
 
     fun eventsBySports(sportIds: List<UUID>, limit: Int, offset: Int): Either<SynciError, List<EventsTable>> =
         dsl {

@@ -11,7 +11,7 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
 @Serializable(with = SwissTxtTeamSerializer::class)
-data class Team(val name: String, val id: Int)
+data class Team(val name: String, val id: String)
 
 object SwissTxtTeamSerializer : KSerializer<Team> {
     override val descriptor: SerialDescriptor = buildClassSerialDescriptor("Event") {
@@ -25,7 +25,7 @@ object SwissTxtTeamSerializer : KSerializer<Team> {
         val name = jsonObject["competitor1"]?.jsonObject?.get("name")?.jsonPrimitive?.content ?: ""
         val id = jsonObject["competitor1"]?.jsonObject?.get("id")?.jsonPrimitive?.content ?: ""
 
-        return Team(name, id.toInt())
+        return Team(name, id)
     }
 
     override fun serialize(encoder: Encoder, value: Team) {
