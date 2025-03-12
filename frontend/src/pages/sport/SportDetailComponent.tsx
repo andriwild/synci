@@ -101,7 +101,7 @@ export const SportDetailComponent = ({id, title}: { id: string, title: string })
                 className={"tree-content-table"}
                 gap={20}
             >
-                <Typography.Title level={4} style={{marginBottom: 0}}>Eventvorschau</Typography.Title>
+                <Typography.Title level={4} style={{marginBottom: 0}}>Events</Typography.Title>
                 {
                     eventList.map((event: SportEvent, index : number) => (
                         <Row key={index}

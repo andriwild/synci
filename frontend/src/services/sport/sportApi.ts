@@ -3,6 +3,7 @@ import {axiosBaseQuery} from "../common/apiHelpers";
 import {Sport} from "./entities/sport.ts";
 import {PagedRequest, PagedResult} from "../common/PagedResult.ts";
 import {SportEvent} from "../event/entities/event.ts";
+import {Team} from "../team/entities/team.ts";
 
 
 export const sportApi = createApi({
@@ -26,6 +27,12 @@ export const sportApi = createApi({
         getEvents: build.query<PagedResult<SportEvent>, PagedRequest>({
             query: (request) => ({
                 url: `${request.id}/events?page=${request.page}&pageSize=${request.pageSize}`,
+                method: "GET"
+            })
+        }),
+        getTeams: build.query<Team[], string>({
+            query: (sportId) => ({
+                url: `${sportId}/teams`,
                 method: "GET"
             })
         }),
