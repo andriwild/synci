@@ -5,7 +5,7 @@ import { FC } from 'react';
 
 import {SportPage} from "./pages/sport/SportPage.tsx";
 import './index.css';
-import {AppLayout} from "./components/AppLayout.tsx";
+import {AppLayout} from "./sharedComponents/AppLayout.tsx";
 import {FaqPage} from "./pages/faq/FaqPage.tsx";
 import {SyncConfigPage} from "./pages/syncConfig/SyncConfigPage.tsx";
 

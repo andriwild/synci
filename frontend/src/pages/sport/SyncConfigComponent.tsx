@@ -1,5 +1,5 @@
 import {Alert, Button, Flex, Form, Input, Modal, notification, Popover, theme, Typography} from "antd";
-import {CalendarSelectionModal} from "../../components/calenderSelectionModal/CalenderSelectionModal.tsx";
+import {CalendarSelectionModal} from "../../sharedComponents/calenderSelectionModal/CalenderSelectionModal.tsx";
 import {IconEdit, IconPlus, IconReplace, IconTrash,} from "@tabler/icons-react";
 import {useEffect, useState} from "react";
 import {useUser} from "../../services/user/UserSlice.ts";
@@ -7,9 +7,11 @@ import {syncConfigApi} from "../../services/syncConfig/syncConfigApi.ts";
 import {syncConfigActions, useSyncConfig} from "../../services/syncConfig/syncCofigSlice.ts";
 import {useDispatch} from "react-redux";
 import {NotificationPlacement} from "antd/es/notification/interface";
-import {SportConfigCard} from "./SportConfigCard.tsx";
+import {SportConfigCard} from "../../sharedComponents/config/SportConfigCard.tsx";
 import {VITE_BACKEND_HOST} from "../../../env.ts";
 import {SyncConfig} from "../../services/syncConfig/entities/syncConfig.ts";
+import {EventConfigCard} from "../../sharedComponents/config/EventConfigCard.tsx";
+import {TeamConfigCard} from "../../sharedComponents/config/TeamConfigCard.tsx";
 
 export const SyncConfigComponent = () => {
     const syncConfigList = syncConfigApi.useGetAllQuery();
@@ -94,11 +96,22 @@ export const SyncConfigComponent = () => {
                 </Popover>
             </Flex>
 
-            {currentSyncConfig?.sports ?
+            {(currentSyncConfig?.sports &&
                 currentSyncConfig?.sports?.map((sport) => (
                     <SportConfigCard key={sport.id} sport={sport}/>
                 ))
-                :
+            )}
+            {currentSyncConfig?.events &&
+            currentSyncConfig?.events.map((event) => (
+                <EventConfigCard key={event.id} event={event}/>
+            ))}
+            {currentSyncConfig?.teams &&
+            currentSyncConfig?.teams.map((team) => (
+                <TeamConfigCard key={team.id} team={team}/>
+            ))}
+            {currentSyncConfig?.sports?.length === 0 &&
+            currentSyncConfig?.events?.length === 0 &&
+            currentSyncConfig?.teams?.length === 0 &&
                 <>
                     <Typography.Text>Keine Abos vorhanden</Typography.Text>
                     <CreateConfigModal refetch={() => syncConfigList.refetch()}/>
