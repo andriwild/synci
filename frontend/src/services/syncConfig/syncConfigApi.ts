@@ -2,7 +2,6 @@ import {createApi} from "@reduxjs/toolkit/query/react";
 import {axiosBaseQuery} from "../common/apiHelpers";
 import {SyncConfig} from "./entities/syncConfig.ts";
 import {SyncConfigRequest} from "./entities/syncConfigDto.ts";
-import {AxiosHeaders} from "axios";
 
 export const syncConfigApi = createApi({
     reducerPath: "syncConfigApi",
