@@ -23,33 +23,32 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 @EnableMethodSecurity
 class SecurityConfiguration(
     private val corsProperties: CorsProperties,
-    //@Value("\${spring.security.oauth2.client.provider.synci-keycloak.issuer-uri}")
-    //private val issuerUri: String
+    @Value("\${spring.security.oauth2.client.provider.synci-keycloak.issuer-uri}")
+    private val issuerUri: String
 ){
 
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
+        http
+            .csrf { it.disable() }
+            .cors { it.configurationSource(corsConfigurationSource()) }
+            .authorizeHttpRequests {
+                it
+                    .requestMatchers(HttpMethod.GET, "/sports").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/sports/**").permitAll()
+                    .anyRequest().authenticated()
+            }
+            .oauth2ResourceServer {
+                it.jwt { jwt ->
+                    jwt.decoder(JwtDecoders.fromIssuerLocation(issuerUri))
+                    jwt.jwtAuthenticationConverter(customJwtAuthenticationConverter())
+                }
+            }
+            .sessionManagement {
+                it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            }
+
         return http.build()
-//        http
-//            .csrf { it.disable() }
-//            .cors { it.configurationSource(corsConfigurationSource()) }
-//            .authorizeHttpRequests {
-//                it
-//                    .requestMatchers(HttpMethod.GET, "/sports").permitAll()
-//                    .requestMatchers(HttpMethod.GET, "/sports/**").permitAll()
-//                    .anyRequest().authenticated()
-//            }
-//            .oauth2ResourceServer {
-//                it.jwt { jwt ->
-//                    jwt.decoder(JwtDecoders.fromIssuerLocation(issuerUri))
-//                    jwt.jwtAuthenticationConverter(customJwtAuthenticationConverter())
-//                }
-//            }
-//            .sessionManagement {
-//                it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//            }
-//
-//        return http.build()
     }
 
     @Bean
