@@ -16,16 +16,17 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Serializable(with = SwissTxtEventSerializer::class)
-data class SwissTxtEvent(
-    val name: String,
+data class SwissTxtTeamEvent(
     val id: Int,
     @Contextual val startsOn: LocalDateTime,
     @Contextual val endsOn: LocalDateTime,
     val homeId: String,
-    val awayId: String
+    val homeName: String,
+    val awayId: String,
+    val awayName: String,
 )
 
-object SwissTxtEventSerializer : KSerializer<SwissTxtEvent> {
+object SwissTxtEventSerializer : KSerializer<SwissTxtTeamEvent> {
     override val descriptor: SerialDescriptor = buildClassSerialDescriptor("Event") {
         element<String>("name")
         element<Int>("id")
@@ -33,28 +34,28 @@ object SwissTxtEventSerializer : KSerializer<SwissTxtEvent> {
         element<String>("endsOn")
     }
 
-    override fun deserialize(decoder: Decoder): SwissTxtEvent {
-        val jsonInput = decoder as? JsonDecoder ?: throw SerializationException("This serializer can be used only with JSON")
-        val jsonObject = jsonInput.decodeJsonElement().jsonObject
-        val home = jsonObject["competitor1"]?.jsonObject?.get("name")?.jsonPrimitive?.content ?: ""
-        val homeId = jsonObject["competitor1"]?.jsonObject?.get("id")?.jsonPrimitive?.content ?: ""
-        val away = jsonObject["competitor2"]?.jsonObject?.get("name")?.jsonPrimitive?.content ?: ""
-        val awayId = jsonObject["competitor2"]?.jsonObject?.get("id")?.jsonPrimitive?.content ?: ""
-        val name = "$home - $away"
+    override fun deserialize(decoder: Decoder): SwissTxtTeamEvent {
+        val jsonInput =
+            decoder as? JsonDecoder ?: throw SerializationException("This serializer can be used only with JSON")
 
-        val id = jsonObject["id"]?.jsonPrimitive?.content?.toIntOrNull() ?: throw SerializationException("Invalid id")
+        val jsonObject = jsonInput.decodeJsonElement().jsonObject
+        val homeName   = jsonObject["competitor1"]?.jsonObject?.get("name")?.jsonPrimitive?.content ?: ""
+        val homeId     = jsonObject["competitor1"]?.jsonObject?.get("id")  ?.jsonPrimitive?.content ?: ""
+        val awayName   = jsonObject["competitor2"]?.jsonObject?.get("name")?.jsonPrimitive?.content ?: ""
+        val awayId     = jsonObject["competitor2"]?.jsonObject?.get("id")  ?.jsonPrimitive?.content ?: ""
+        val id         = jsonObject["id"]?.jsonPrimitive?.content?.toIntOrNull() ?: throw SerializationException("Invalid id")
 
         val utcTime = jsonObject["dateTimeInfo"]?.jsonObject?.get("fullDateTime")?.jsonPrimitive?.content
             ?: throw SerializationException("Missing utcTime")
 
         val formatter = DateTimeFormatter.ISO_DATE_TIME
-        val startsOn = LocalDateTime.parse(utcTime, formatter)
-        val endsOn = startsOn.plusHours(2)
+        val startsOn  = LocalDateTime.parse(utcTime, formatter)
+        val endsOn    = startsOn.plusHours(2)
 
-        return SwissTxtEvent(name, id, startsOn, endsOn, homeId, awayId)
+        return SwissTxtTeamEvent(id, startsOn, endsOn, homeId, homeName, awayId, awayName)
     }
 
-    override fun serialize(encoder: Encoder, value: SwissTxtEvent) {
+    override fun serialize(encoder: Encoder, value: SwissTxtTeamEvent) {
         // Implement if needed
         throw NotImplementedError("Serialization is not implemented")
     }
