@@ -3,18 +3,18 @@ package ch.boosters.backend.data.sport
 import arrow.core.Either
 import ch.boosters.backend.data.sport.model.EventsBySportApi
 import ch.boosters.backend.data.sport.model.Sport
+import ch.boosters.backend.data.team.TeamService
+import ch.boosters.backend.errorhandling.SynciEither
 import ch.boosters.backend.errorhandling.SynciError
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
-import java.util.UUID
+import ch.boosters.data.tables.pojos.TeamsTable
+import org.springframework.web.bind.annotation.*
+import java.util.*
 
 @RestController
 @RequestMapping("/sports")
 class SportsController (
-    private val sportsService: SportsService
+    private val sportsService: SportsService,
+    private val teamService: TeamService
 ) {
     @GetMapping("")
     fun getAll(): Either<SynciError, List<Sport>> =
@@ -27,4 +27,10 @@ class SportsController (
         @RequestParam page: Int
     ): Either<SynciError, EventsBySportApi> =
         sportsService.getEventsBySport(id, pageSize, page)
+
+    @GetMapping("/{id}/teams")
+    fun getTeamsBySport(
+        @PathVariable id: UUID,
+    ): SynciEither<List<TeamsTable>> =
+        teamService.getTeamsBySportId(id)
 }

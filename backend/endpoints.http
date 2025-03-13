@@ -46,3 +46,8 @@ Content-Type: application/json
 
 GET {{backendUrl}}/calendars/fd9582d2-99a2-4ed4-bb95-754f425b42dd/subscribe
 
+
+### sports by id
+
+
+GET {{backendUrl}}/sports/65b90a0d-2859-4aee-90bb-d5cc0210dc99/teams

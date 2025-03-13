@@ -1,17 +1,22 @@
 package ch.boosters.backend.data.team
 
-import ch.boosters.backend.data.syncConfig.model.TeamDto
+import arrow.core.raise.either
+import ch.boosters.backend.data.team.teamSports.TeamSportsRepository
 import ch.boosters.backend.errorhandling.SynciEither
-import ch.boosters.data.tables.pojos.SportsTable
 import ch.boosters.data.tables.pojos.TeamsTable
 import org.springframework.stereotype.Service
-import java.util.UUID
+import java.util.*
 
 @Service
-class TeamService(private val teamRepository: TeamRepository) {
+class TeamService(
+    private val teamRepository: TeamRepository,
+    private val teamSportsRepository: TeamSportsRepository
+) {
     fun getAllTeams(): SynciEither<List<Team>> =
         teamRepository.getAllTeams()
 
-    fun getTeamsByIds(teamIds: List<TeamDto>): SynciEither<List<TeamsTable>> =
-        teamRepository.getTeamsByIds(teamIds)
+    fun getTeamsBySportId(sportId: UUID): SynciEither<List<TeamsTable>>  = either {
+        val teams = teamSportsRepository.getTeamsBySportId(sportId).bind()
+        teamRepository.getTeamsByIds(teams).bind()
+    }
 }
