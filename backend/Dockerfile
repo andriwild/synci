@@ -1,5 +1,8 @@
 FROM gradle:8.10.1-jdk21-alpine as builder
 
+ARG KEYCLOAK_URL
+ENV KEYCLOAK_URL=$KEYCLOAK_URL
+
 WORKDIR /app
 
 COPY . .
