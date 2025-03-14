@@ -46,7 +46,7 @@ services:
     command: 
       - "start"
       - "--proxy-headers=forwarded"
-      - "--hostname=auth.synci.awild.ch"
+      - "--hostname=https://auth.synci.awild.ch"
       - "--http-enabled=true"
       - --import-realm
     environment:
