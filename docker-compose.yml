@@ -48,9 +48,9 @@ services:
       - "--proxy-headers=forwarded"
       - "--hostname=auth.synci.awild.ch"
       - "--http-enabled=true"
-      - "--proxy-address-forwarding=true"
       - --import-realm
     environment:
+      KC_PROXY: edge
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
       KC_HEALTH_ENABLED: true
