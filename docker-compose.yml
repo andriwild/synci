@@ -51,7 +51,7 @@ services:
       - --import-realm
     environment:
       KC_PROXY: edge
-      KC_HOSTNAME_STRICT=false
+      KC_HOSTNAME_STRICT: false
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
       KC_HEALTH_ENABLED: true
