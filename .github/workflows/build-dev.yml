@@ -32,6 +32,7 @@ env:
   KEYCLOAK_ADMIN_PASSWORD: ${{secrets.KEYCLOAK_ADMIN_PASSWORD}}
   POSTGRES_KEYCLOAK_USER: ${{secrets.POSTGRES_KEYCLOAK_USER}}
   POSTGRES_KEYCLOAK_PASSWORD: ${{secrets.POSTGRES_KEYCLOAK_PASSWORD}}
+  POSTGRES_KEYCLOAK_PASSWORD: ${{secrets.POSTGRES_KEYCLOAK_PASSWORD}}
 
   BACKEND_PORT: 8081
   FRONTEND_PORT: 5174
@@ -74,7 +75,7 @@ jobs:
 
       - name: Build backend image 
         run: |
-          docker build --network="host" -t ${{ env.REGISTRY }}/${{ github.repository }}/backend-${{ env.STAGE }}:latest ./backend
+          docker build --network="host" --build-arg KEYCLOAK_URL -t ${{ env.REGISTRY }}/${{ github.repository }}/backend-${{ env.STAGE }}:latest ./backend
 
       - name: Push backend image
         run: |
@@ -100,7 +101,7 @@ jobs:
 
       - name: Build frontend image
         run: |
-          docker build --build-arg VITE_STAGE --build-arg VITE_BACKEND_URL -t ${{ env.REGISTRY }}/${{ github.repository }}/frontend-${{ env.STAGE }}:latest ./frontend
+          docker build --build-arg VITE_STAGE --build-arg VITE_BACKEND_URL --build-arg VITE_KEYCLOAK_HOST --build-arg VITE_CLIENT_ID_KEYCLOAK --build-arg VITE_SECRET_KEYCLOAK -t ${{ env.REGISTRY }}/${{ github.repository }}/frontend-${{ env.STAGE }}:latest ./frontend
 
       - name: Push frontend image
         run: |
