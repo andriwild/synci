@@ -4,7 +4,7 @@ import useBreakpoint from "antd/es/grid/hooks/useBreakpoint";
 import {sportApi} from "../../../services/sport/sportApi.ts";
 import {useNavigate} from "react-router-dom";
 
-export const AvailibleSpotsComponent = () => {
+export const AvailableSpotsComponent = () => {
     const screens = useBreakpoint();
     const sports = sportApi.useGetAllQuery();
     const {token} = theme.useToken();
@@ -33,7 +33,7 @@ export const AvailibleSpotsComponent = () => {
                         }}
                     >
                         <IconLaurelWreath size={50} style={{color: token.colorPrimary, marginTop: '20px'}}/>
-                        <Typography.Title level={3}>{sport.name}</Typography.Title>
+                        <Typography.Title level={3}>{sport.label}</Typography.Title>
                     </Flex>
                 ))}
             </Flex>
