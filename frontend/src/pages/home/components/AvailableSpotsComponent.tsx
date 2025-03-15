@@ -4,7 +4,7 @@ import useBreakpoint from "antd/es/grid/hooks/useBreakpoint";
 import {sportApi} from "../../../services/sport/sportApi.ts";
 import {useNavigate} from "react-router-dom";
 
-export const AvailibleSpotsComponent = () => {
+export const AvailableSpotsComponent = () => {
     const screens = useBreakpoint();
     const sports = sportApi.useGetAllQuery();
     const {token} = theme.useToken();
