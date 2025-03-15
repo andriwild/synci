@@ -9,6 +9,8 @@ spring:
         provider:
           synci-keycloak:
             issuer-uri: ${KEYCLOAK_URL}
+            jwk-set-uri: ${KEYCLOAK_URL}/protocol/openid-connect/certs
+
         registration:
           keycloak:
             provider: synci-keycloak
