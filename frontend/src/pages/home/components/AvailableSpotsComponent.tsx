@@ -33,7 +33,7 @@ export const AvailibleSpotsComponent = () => {
                         }}
                     >
                         <IconLaurelWreath size={50} style={{color: token.colorPrimary, marginTop: '20px'}}/>
-                        <Typography.Title level={3}>{sport.name}</Typography.Title>
+                        <Typography.Title level={3}>{sport.label}</Typography.Title>
                     </Flex>
                 ))}
             </Flex>

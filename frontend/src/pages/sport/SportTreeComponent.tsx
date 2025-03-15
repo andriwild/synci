@@ -85,7 +85,7 @@ export const SportTreeComponent = () => {
                                     width: "100%",
                                 }}
                             >
-                                <h4>{category.name}</h4>
+                                <h4>{category.label}</h4>
                                 {category.subSports.length > 0 && <CaretRight size={10}/>}
                             </Flex>
                         </div>
