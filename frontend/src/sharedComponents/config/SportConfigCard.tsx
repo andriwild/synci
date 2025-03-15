@@ -24,7 +24,7 @@ export const SportConfigCard = ({sport}: { sport: Sport }) => {
                       align={"start"}>
                     <Typography.Title level={5}
                     style={{margin: "0"}}
-                    >{sport.name}</Typography.Title>
+                    >{sport.label}</Typography.Title>
                     <Tag color={token.colorPrimary}>Sportart</Tag>
                 </Flex>
             </Flex>

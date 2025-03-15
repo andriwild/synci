@@ -1,6 +1,6 @@
 import {Flex} from 'antd';
 import './HomePage.css';
-import {AvailibleSpotsComponent} from "./components/AvailibleSpotsComponent.tsx";
+import {AvailableSpotsComponent} from "./components/AvailableSpotsComponent.tsx";
 import {TutorialStepperComponent} from "./components/TutorialStepperComponent.tsx";
 import {FirstImpressionComponent} from "./components/FirstImpressionComponent.tsx";
 
@@ -8,7 +8,7 @@ export const HomePage = () => {
     return (
         <Flex vertical style={{width: '100%'}} id={"home-container"}>
             <FirstImpressionComponent/>
-            <AvailibleSpotsComponent/>
+            <AvailableSpotsComponent/>
             <TutorialStepperComponent/>
         </Flex>
     );
