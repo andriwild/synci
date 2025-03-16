@@ -46,13 +46,13 @@ services:
     command: 
       - "start"
       - "--http-enabled=true"
-      - "--hostname-strict-https=true"
       - "--import-realm"
     environment:
       KC_HOSTNAME_URL: https://auth.synci.awild.ch
       KC_HOSTNAME: auth.synci.awild.ch
       KC_PROXY: edge
       KC_HOSTNAME_STRICT: false
+      KC_HOSTNAME_STRICT_HTTPS: true
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
       KC_HEALTH_ENABLED: true
