@@ -49,6 +49,8 @@ services:
       - "--http-enabled=true"
       - "--import-realm"
     environment:
+      KC_HOSTNAME_URL: https://auth.synci.awild.ch
+      KC_HOSTNAME: auth.synci.awild.ch
       KC_PROXY: edge
       KC_HOSTNAME_STRICT: false
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
