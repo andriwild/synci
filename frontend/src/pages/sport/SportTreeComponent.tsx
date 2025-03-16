@@ -93,7 +93,7 @@ export const SportTreeComponent = () => {
                 </div>
             ))}
 
-            <SportDetailComponent id={selectedId} title={selectedSport?.name || ""} key={selectedId}/>
+            <SportDetailComponent id={selectedId} title={selectedSport?.label || ""} key={selectedId}/>
         </Flex>
     );
 }
