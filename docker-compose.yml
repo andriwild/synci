@@ -45,7 +45,6 @@ services:
     image: quay.io/keycloak/keycloak:latest
     command: 
       - "start"
-      - "--hostname=auth.synci.awild.ch"
       - "--http-enabled=true"
       - "--import-realm"
     environment:
