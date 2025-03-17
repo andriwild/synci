@@ -44,8 +44,6 @@ env:
 
   STAGE: dev
 
-  VITE_BACKEND_URL: https://dev.synci.awild.ch
-
 jobs:
 
   build_backend:
