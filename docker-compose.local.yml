@@ -3,3 +3,14 @@ services:
   db:
     ports:
       - '5432:5432'
+
+  keycloak:
+    command: 
+      - "start-dev"
+      - "--import-realm"
+    environment:
+      KC_HOSTNAME: http://localhost:8090
+      KC_HOSTNAME_URL: http://localhost:8090
+      KC_HOSTNAME_ADMIN_URL: http://localhost:8090
+      KC_PROXY: none
+      KC_HOSTNAME_STRICT: false
