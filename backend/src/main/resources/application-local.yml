@@ -9,6 +9,7 @@ spring:
         provider:
           synci-keycloak:
             issuer-uri: http://localhost:8090/realms/synci
+            jwk-set-uri: http://localhost:8090/realms/synci/protocol/openid-connect/certs
         registration:
           keycloak:
             provider: synci-keycloak
