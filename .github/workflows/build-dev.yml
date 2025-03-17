@@ -104,13 +104,7 @@ jobs:
 
       - name: Build frontend image
         run: |
-          docker build \
-          --build-arg VITE_STAGE \
-          --build-arg VITE_BACKEND_URL\
-          --build-arg VITE_KEYCLOAK_HOST \
-          --build-arg VITE_CLIENT_ID_KEYCLOAK \
-          --build-arg VITE_SECRET_KEYCLOAK \
-          -t ${{ env.REGISTRY }}/${{ github.repository }}/frontend-${{ env.STAGE }}:latest ./frontend
+          docker build --build-arg VITE_STAGE --build-arg VITE_BACKEND_URL --build-arg VITE_KEYCLOAK_HOST --build-arg VITE_CLIENT_ID_KEYCLOAK --build-arg VITE_SECRET_KEYCLOAK -t ${{ env.REGISTRY }}/${{ github.repository }}/frontend-${{ env.STAGE }}:latest ./frontend
 
       - name: Push frontend image
         run: |
