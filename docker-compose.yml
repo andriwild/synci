@@ -22,6 +22,7 @@ services:
     container_name: "synci-backend-${STAGE:-local}"
     platform: linux/amd64 # adding a plattform causes gradle build to timeout with no error
     image: ghcr.io/andriwild/synci/backend-${STAGE:-dev}:latest
+    restart: always
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
