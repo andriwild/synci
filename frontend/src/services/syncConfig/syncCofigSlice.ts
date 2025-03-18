@@ -25,6 +25,10 @@ const slice = createSlice({
         ...reducers,
         setSyncConfig: (state, action) => {
             state.syncConfig = action.payload;
+            if (action.payload === undefined) {
+                state.initialized = false;
+                return;
+            }
             localStorage.setItem("syncConfig", JSON.stringify(action.payload)); // Store in localStorage
         },
         clearSyncConfig: (state) => {

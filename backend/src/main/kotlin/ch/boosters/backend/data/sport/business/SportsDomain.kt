@@ -13,6 +13,7 @@ fun List<SportsTable>.findSportsByParent(parentUUID: UUID?): Sport? {
     return Sport(
         id = parent.id,
         name = parent.name,
+        label = parent.label,
         subSports = grouped[parent.id]
             ?.mapNotNull { s -> findSportsByParent(s.id) }
             ?: emptyList()
@@ -27,6 +28,7 @@ fun List<SportsTable>.groupByRootSports(): List<Sport> {
             Sport(
                 id = record.id,
                 name = record.name,
+                label = record.label,
                 subSports = findAllSportsByParent(record.id)
             )
         } ?: emptyList()

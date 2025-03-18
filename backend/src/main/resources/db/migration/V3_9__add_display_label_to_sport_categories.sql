@@ -40,7 +40,7 @@ WHERE name IN (
 
 UPDATE SPORTS_TABLE
 SET label = CASE name
-                WHEN 'SKI_ALPINE' THEN 'Ski Alpine'
+                WHEN 'SKI_ALPINE' THEN 'Ski Alpin'
     -- Für Einträge ohne Disziplin-Kürzel: Cup und Geschlecht enthalten, aber Label soll nur "Ski Alpin" anzeigen
                 WHEN 'WC_M'         THEN 'World Cup Männer'
                 WHEN 'WC_W'         THEN 'World Cup Frauen'
@@ -48,13 +48,13 @@ SET label = CASE name
                 WHEN 'FIS_W'        THEN 'FIS Frauen'
                 WHEN 'EC_M'         THEN 'Europa Cup Männer'
                 WHEN 'EC_W'         THEN 'Europa Cup Frauen'
-    -- Riesen Slalom (GS)
-                WHEN 'WC_GS_M'      THEN 'Riesen Slalom'
-                WHEN 'WC_GS_W'      THEN 'Riesen Slalom'
-                WHEN 'FIS_GS_M'     THEN 'Riesen Slalom'
-                WHEN 'FIS_GS_W'     THEN 'Riesen Slalom'
-                WHEN 'EC_GS_M'      THEN 'Riesen Slalom'
-                WHEN 'EC_GS_W'      THEN 'Riesen Slalom'
+    -- Riesenslalom (GS)
+                WHEN 'WC_GS_M'      THEN 'Riesenslalom'
+                WHEN 'WC_GS_W'      THEN 'Riesenslalom'
+                WHEN 'FIS_GS_M'     THEN 'Riesenslalom'
+                WHEN 'FIS_GS_W'     THEN 'Riesenslalom'
+                WHEN 'EC_GS_M'      THEN 'Riesenslalom'
+                WHEN 'EC_GS_W'      THEN 'Riesenslalom'
     -- Slalom (SL)
                 WHEN 'WC_SL_M'      THEN 'Slalom'
                 WHEN 'WC_SL_W'      THEN 'Slalom'
