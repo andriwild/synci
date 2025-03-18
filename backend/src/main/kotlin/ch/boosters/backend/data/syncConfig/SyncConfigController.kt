@@ -2,11 +2,13 @@ package ch.boosters.backend.data.syncConfig
 
 import ch.boosters.backend.data.syncConfig.model.SyncConfigDto
 import ch.boosters.backend.errorhandling.SynciEither
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 import java.util.UUID
 
 @RestController
 @RequestMapping("/syncconfigs")
+@PreAuthorize("isAuthenticated()")
 class SyncConfigController(private val syncConfigService: SyncConfigService) {
 
     @GetMapping("")
