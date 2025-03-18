@@ -37,10 +37,6 @@ export const SyncConfigComponent = () => {
                     description="Melde dich an, um deine Abos zu sehen"
                     type="warning"
                     showIcon
-                    action={
-                        <Button
-                           >Anmelden</Button>
-                    }
                 />
             </Flex>
         );

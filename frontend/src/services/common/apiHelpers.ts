@@ -19,7 +19,7 @@ type AxiosBaseQueryFn = BaseQueryFn<
 
 export const axiosBaseQuery = ({ baseUrl }: { baseUrl: string }) => {
     const axiosInstance = axios.create({
-        baseURL: VITE_BACKEND_URL+baseUrl
+        baseURL: VITE_BACKEND_URL+"/api"+baseUrl
     });
 
     const fn: AxiosBaseQueryFn = async ({ url, method, body, params, headers }) => {
