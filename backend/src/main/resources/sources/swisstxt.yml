@@ -2,50 +2,52 @@ swisstxt:
   name: SWISSTXT
   url: https://sport.api.swisstxt.ch/v1
   id: 3
-  leagues:
-    - name: SUPER_LEAGUE
-      id: "5059-171"
-    - name: BUNDESLIGA
-      id: "5055-58"
-    - name: PREMIER_LEAGUE
-      id: "5058-86"
-    - name: SERIE_A
-      id: "5077-85"
-    - name: LIGUE_1
-      id: "5073-57"
-    - name: CL_QUALIFICATION_1
-      id: "5061-461-770"
-    - name: CL_QUALIFICATION_1
-      id: "5061-461-771"
-    - name: CL_QUALIFICATION_2
-      id: "5061-463-770"
-    - name: CL_QUALIFICATION_2
-      id: "5061-463-771"
-    - name: CL_QUALIFICATION_3
-      id: "5061-464-770"
-    - name: CL_QUALIFICATION_3
-      id: "5061-464-771"
-    - name: CL_PLAYOFF_ROUND
-      id: "5061-558-770"
-    - name: CL_PLAYOFF_ROUND
-      id: "5061-558-771"
-    - name: CL_MAIN_ROUND
-      id: "5061-970-160"
-    - name: CL_MAIN_ROUND
-      id: "5061-970-161"
-    - name: CL_MAIN_ROUND
-      id: "5061-970-162"
-    - name: CL_MAIN_ROUND
-      id: "5061-970-163"
-    - name: CL_MAIN_ROUND
-      id: "5061-970-164"
-    - name: CL_MAIN_ROUND
-      id: "5061-970-165"
-    - name: CL_MAIN_ROUND
-      id: "5061-970-166"
-    - name: CL_MAIN_ROUND
-      id: "5061-970-167"
-    - name: CL_KO_ROUND
-      id: "5061-103"
-    - name: CL_KO_ROUND
-      id: "5061-891"
+  sport:
+    - key: "SOCCER"
+      leagues:
+      - name: SUPER_LEAGUE
+        id: "5059-171"
+      - name: BUNDESLIGA
+        id: "5055-58"
+      - name: PREMIER_LEAGUE
+        id: "5058-86"
+      - name: SERIE_A
+        id: "5077-85"
+      - name: LIGUE_1
+        id: "5073-57"
+      - name: CL_QUALIFICATION_1
+        id: "5061-461-770"
+      - name: CL_QUALIFICATION_1
+        id: "5061-461-771"
+      - name: CL_QUALIFICATION_2
+        id: "5061-463-770"
+      - name: CL_QUALIFICATION_2
+        id: "5061-463-771"
+      - name: CL_QUALIFICATION_3
+        id: "5061-464-770"
+      - name: CL_QUALIFICATION_3
+        id: "5061-464-771"
+      - name: CL_PLAYOFF_ROUND
+        id: "5061-558-770"
+      - name: CL_PLAYOFF_ROUND
+        id: "5061-558-771"
+      - name: CL_MAIN_ROUND
+        id: "5061-970-160"
+      - name: CL_MAIN_ROUND
+        id: "5061-970-161"
+      - name: CL_MAIN_ROUND
+        id: "5061-970-162"
+      - name: CL_MAIN_ROUND
+        id: "5061-970-163"
+      - name: CL_MAIN_ROUND
+        id: "5061-970-164"
+      - name: CL_MAIN_ROUND
+        id: "5061-970-165"
+      - name: CL_MAIN_ROUND
+        id: "5061-970-166"
+      - name: CL_MAIN_ROUND
+        id: "5061-970-167"
+      - name: CL_KO_ROUND
+        id: "5061-103"
+      - name: CL_KO_ROUND
+        id: "5061-891"

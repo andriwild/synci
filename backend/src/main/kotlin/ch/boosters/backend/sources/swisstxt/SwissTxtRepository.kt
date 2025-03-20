@@ -4,12 +4,12 @@ import arrow.core.Either
 import arrow.core.raise.either
 import arrow.core.raise.ensure
 import ch.boosters.backend.data.configuration.JooqEitherDsl
+import ch.boosters.backend.data.team.Team
 import ch.boosters.backend.errorhandling.DatabaseError
 import ch.boosters.backend.errorhandling.SynciEither
 import ch.boosters.backend.sources.common.deleteDataBySource
 import ch.boosters.backend.sources.common.lastSyncTimeQuery
-import ch.boosters.backend.sources.swisstxt.model.SwissTxtEvent
-import ch.boosters.backend.sources.swisstxt.model.Team
+import ch.boosters.backend.sources.swisstxt.model.SwissTxtTeamEvent
 import ch.boosters.data.Tables.*
 import ch.boosters.data.tables.EventsTable
 import ch.boosters.data.tables.EventsTeamsTable
@@ -40,7 +40,7 @@ class SwissTxtRepository(
         val queries = teams.map { team ->
             DSL.insertInto(TEAMS_TABLE)
                 .columns(TEAMS_TABLE.ID, TEAMS_TABLE.SOURCE_ID, TEAMS_TABLE.NAME)
-                .values(team.id.toString(), id, team.name)
+                .values(team.id, id, team.name)
                 .onConflict()
                 .doNothing()
         }
@@ -49,17 +49,18 @@ class SwissTxtRepository(
     }
 
 
-    fun storeEvents(events: List<SwissTxtEvent>, sportKey: String): SynciEither<List<String>> = either {
+    fun storeEvents(sportKey: String, events: List<SwissTxtTeamEvent>): SynciEither<List<String>> = either {
         val sportId = getSportId(sportKey).bind()
         val sourceId = sourceId.bind()
 
         dsl { jooq ->
 
             events.forEach {
+                val eventName = "${it.homeName} - ${it.awayName}"
                 val eventRecord = jooq.newRecord(EventsTable.EVENTS_TABLE)
                 eventRecord.setId(it.id.toString())
                 eventRecord.setSourceId(sourceId)
-                eventRecord.setName(it.name)
+                eventRecord.setName(eventName)
                 eventRecord.setStartsOn(it.startsOn)
                 eventRecord.setEndsOn(it.endsOn)
                 eventRecord.setSportId(sportId)
