@@ -18,7 +18,7 @@ For development, you need to start each of them individually. Do the following:
 
 - Copy the `.env.sample` to `.env`
 - fill the missing environment variables
-  - get all the keycloak stuff from TODO: where do we get the secrets from?
+  - get all the keycloak stuff from [Secure Safe](https://app.securesafe.com/) using our `synci`-Account
 - Execute the following command from the project root:
 
 ```bash
@@ -43,7 +43,7 @@ Access the backend via [http://localhost:8080](http://localhost:8080)
 ### Frontend
 
 - Copy the `./frontend/.env.sample` to `./frontend/.env`
-  - Get all the keycloak stuff from TODO: where do we get the secrets from?
+  - Get all the keycloak stuff from [Secure Safe](https://app.securesafe.com/) using our `synci`-Account
 - Execute the following commands from the project root:
 
 ```bash
