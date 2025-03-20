@@ -3,7 +3,6 @@ package ch.boosters.backend.data.sport
 import arrow.core.Either
 import ch.boosters.backend.data.sport.model.EventsBySportApi
 import ch.boosters.backend.data.sport.model.Sport
-import ch.boosters.backend.data.team.TeamService
 import ch.boosters.backend.errorhandling.SynciEither
 import ch.boosters.backend.errorhandling.SynciError
 import ch.boosters.data.tables.pojos.TeamsTable
@@ -14,7 +13,6 @@ import java.util.*
 @RequestMapping("/sports")
 class SportsController (
     private val sportsService: SportsService,
-    private val teamService: TeamService
 ) {
     @GetMapping("")
     fun getAll(): Either<SynciError, List<Sport>> =
@@ -32,5 +30,5 @@ class SportsController (
     fun getTeamsBySport(
         @PathVariable id: UUID,
     ): SynciEither<List<TeamsTable>> =
-        teamService.getTeamsBySportId(id)
+        sportsService.getTeamsBySportId(id)
 }
