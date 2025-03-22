@@ -10,9 +10,11 @@ import ch.boosters.backend.errorhandling.SynciEither
 import ch.boosters.backend.sources.common.deleteDataBySource
 import ch.boosters.backend.sources.common.lastSyncTimeQuery
 import ch.boosters.backend.sources.swisstxt.model.SwissTxtTeamEvent
-import ch.boosters.data.Tables.*
-import ch.boosters.data.tables.EventsTable
+import ch.boosters.data.tables.EventsTable.Companion.EVENTS_TABLE
 import ch.boosters.data.tables.EventsTeamsTable
+import ch.boosters.data.tables.SourcesTable.Companion.SOURCES_TABLE
+import ch.boosters.data.tables.SportsTable.Companion.SPORTS_TABLE
+import ch.boosters.data.tables.TeamsTable.Companion.TEAMS_TABLE
 import org.jooq.DSLContext
 import org.jooq.impl.DSL
 import org.springframework.stereotype.Repository
@@ -51,36 +53,37 @@ class SwissTxtRepository(
 
     fun storeEvents(sportKey: String, events: List<SwissTxtTeamEvent>): SynciEither<List<String>> = either {
         val sportId = getSportId(sportKey).bind()
-        val sourceId = sourceId.bind()
+        val sourceId = this@SwissTxtRepository.sourceId.bind()
 
         dsl { jooq ->
 
             events.forEach {
                 val eventName = "${it.homeName} - ${it.awayName}"
-                val eventRecord = jooq.newRecord(EventsTable.EVENTS_TABLE)
-                eventRecord.setId(it.id.toString())
-                eventRecord.setSourceId(sourceId)
-                eventRecord.setName(eventName)
-                eventRecord.setStartsOn(it.startsOn)
-                eventRecord.setEndsOn(it.endsOn)
-                eventRecord.setSportId(sportId)
+                val eventRecord = jooq.newRecord(EVENTS_TABLE).apply {
+                    id = it.id.toString()
+                    this.sourceId = sourceId
+                    name = eventName
+                    startsOn = it.startsOn
+                    endsOn = it.endsOn
+                    this.sportId = sportId
+                }
                 eventRecord.store()
 
-                val eventTeamRecord = jooq.newRecord(EventsTeamsTable.EVENTS_TEAMS_TABLE)
-                eventTeamRecord.setId(UUID.randomUUID())
-                eventTeamRecord.setEventId(it.id.toString())
-                eventTeamRecord.setSourceEventId(sourceId)
-                eventTeamRecord.setTeamId(it.homeId)
-                eventTeamRecord.setSourceTeamId(sourceId)
-                eventTeamRecord.store()
-
-                val eventTeamRecord2 = jooq.newRecord(EventsTeamsTable.EVENTS_TEAMS_TABLE)
-                eventTeamRecord2.setId(UUID.randomUUID())
-                eventTeamRecord2.setEventId(it.id.toString())
-                eventTeamRecord2.setSourceEventId(sourceId)
-                eventTeamRecord2.setTeamId(it.awayId)
-                eventTeamRecord2.setSourceTeamId(sourceId)
-                jooq.batchStore(eventTeamRecord2)
+                val eventTeamRecord = jooq.newRecord(EventsTeamsTable.EVENTS_TEAMS_TABLE).apply {
+                    id = UUID.randomUUID()
+                    eventId = it.id.toString()
+                    sourceEventId = sourceId
+                    teamId = it.homeId
+                    sourceTeamId = sourceId
+                }
+                val eventTeamRecord2 = jooq.newRecord(EventsTeamsTable.EVENTS_TEAMS_TABLE).apply {
+                    id = UUID.randomUUID()
+                    eventId = it.id.toString()
+                    sourceEventId = sourceId
+                    teamId = it.awayId
+                    sourceTeamId = sourceId
+                }
+                jooq.batchStore(eventTeamRecord, eventTeamRecord2).execute()
             }
             jooq.select(EVENTS_TABLE.ID).from(EVENTS_TABLE).fetchInto(String::class.java)
         }.bind()

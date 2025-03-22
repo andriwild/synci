@@ -4,7 +4,7 @@ import arrow.core.raise.either
 import ch.boosters.backend.data.configuration.JooqEitherDsl
 import ch.boosters.backend.data.team.Team
 import ch.boosters.backend.errorhandling.SynciEither
-import ch.boosters.data.Tables.TEAMS_SPORTS_TABLE
+import ch.boosters.data.tables.TeamsSportsTable.Companion.TEAMS_SPORTS_TABLE
 import org.jooq.impl.DSL
 import org.springframework.stereotype.Repository
 import java.util.*

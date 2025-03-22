@@ -4,7 +4,8 @@ import arrow.core.raise.either
 import ch.boosters.backend.data.configuration.JooqEitherDsl
 import ch.boosters.backend.data.syncConfig.model.SyncConfigDto
 import ch.boosters.backend.errorhandling.SynciEither
-import ch.boosters.data.Tables.*
+import ch.boosters.data.tables.SyncConfigsTable.Companion.SYNC_CONFIGS_TABLE
+import ch.boosters.data.tables.SyncConfigsUsersTable.Companion.SYNC_CONFIGS_USERS_TABLE
 import ch.boosters.data.tables.pojos.SyncConfigsTable
 import org.jooq.DSLContext
 import org.jooq.impl.DSL
