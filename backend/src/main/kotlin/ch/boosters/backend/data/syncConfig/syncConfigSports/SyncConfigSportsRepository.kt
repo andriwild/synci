@@ -3,8 +3,8 @@ package ch.boosters.backend.data.syncConfig.syncConfigSports
 import arrow.core.raise.either
 import ch.boosters.backend.data.configuration.JooqEitherDsl
 import ch.boosters.backend.errorhandling.SynciEither
-import ch.boosters.data.Tables.*
-import ch.boosters.data.tables.pojos.EventsTable
+import ch.boosters.data.tables.SportsTable.Companion.SPORTS_TABLE
+import ch.boosters.data.tables.SyncConfigsSportsTable.Companion.SYNC_CONFIGS_SPORTS_TABLE
 import ch.boosters.data.tables.pojos.SportsTable
 import org.jooq.DSLContext
 import org.springframework.stereotype.Repository

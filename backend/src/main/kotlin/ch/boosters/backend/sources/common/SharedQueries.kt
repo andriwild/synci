@@ -1,8 +1,8 @@
 package ch.boosters.backend.sources.common
 
-import ch.boosters.data.Tables.EVENTS_TABLE
-import ch.boosters.data.Tables.SOURCES_TABLE
-import ch.boosters.data.Tables.TEAMS_TABLE
+import ch.boosters.data.tables.EventsTable.Companion.EVENTS_TABLE
+import ch.boosters.data.tables.SourcesTable.Companion.SOURCES_TABLE
+import ch.boosters.data.tables.TeamsTable.Companion.TEAMS_TABLE
 import org.jooq.Query
 import org.jooq.Record1
 import org.jooq.SelectConditionStep
@@ -16,7 +16,7 @@ fun storeSyncTimeQuery(sourceId: Int): Query {
 
 }
 
-fun lastSyncTimeQuery(sourceId: Int): SelectConditionStep<Record1<LocalDateTime>> {
+fun lastSyncTimeQuery(sourceId: Int): SelectConditionStep<Record1<LocalDateTime?>> {
     return DSL.select(SOURCES_TABLE.LAST_SYNC)
         .from(SOURCES_TABLE)
         .where(SOURCES_TABLE.ID.eq(sourceId))

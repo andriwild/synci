@@ -4,8 +4,8 @@ import arrow.core.raise.either
 import ch.boosters.backend.data.configuration.JooqEitherDsl
 import ch.boosters.backend.data.syncConfig.model.EventDto
 import ch.boosters.backend.errorhandling.SynciEither
-import ch.boosters.data.Tables.EVENTS_TABLE
-import ch.boosters.data.Tables.SYNC_CONFIGS_EVENTS_TABLE
+import ch.boosters.data.tables.EventsTable.Companion.EVENTS_TABLE
+import ch.boosters.data.tables.SyncConfigsEventsTable.Companion.SYNC_CONFIGS_EVENTS_TABLE
 import ch.boosters.data.tables.pojos.EventsTable
 import org.jooq.DSLContext
 import org.jooq.impl.DSL

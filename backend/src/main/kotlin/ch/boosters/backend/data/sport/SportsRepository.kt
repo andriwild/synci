@@ -5,9 +5,10 @@ import arrow.core.raise.either
 import ch.boosters.backend.data.configuration.JooqEitherDsl
 import ch.boosters.backend.errorhandling.SynciEither
 import ch.boosters.backend.errorhandling.SynciError
-import ch.boosters.data.Tables
-import ch.boosters.data.tables.TeamsSportsTable.TEAMS_SPORTS_TABLE
-import ch.boosters.data.tables.TeamsTable.TEAMS_TABLE
+import ch.boosters.data.tables.EventsTable.Companion.EVENTS_TABLE
+import ch.boosters.data.tables.SportsTable.Companion.SPORTS_TABLE
+import ch.boosters.data.tables.TeamsSportsTable.Companion.TEAMS_SPORTS_TABLE
+import ch.boosters.data.tables.TeamsTable.Companion.TEAMS_TABLE
 import ch.boosters.data.tables.pojos.EventsTable
 import ch.boosters.data.tables.pojos.SportsTable
 import ch.boosters.data.tables.pojos.TeamsTable
@@ -18,7 +19,7 @@ import java.util.*
 class SportsRepository(
     private val dsl: JooqEitherDsl
 ) {
-    private val sports = Tables.SPORTS_TABLE
+    private val sports = SPORTS_TABLE
 
     fun allSports(): Either<SynciError, List<SportsTable>> =
         dsl { it.selectFrom(sports).fetch().into(SportsTable::class.java) }
@@ -35,8 +36,8 @@ class SportsRepository(
 
     fun eventsBySports(sportIds: List<UUID>, limit: Int, offset: Int): Either<SynciError, List<EventsTable>> =
         dsl {
-            it.selectFrom(Tables.EVENTS_TABLE)
-                .where(Tables.EVENTS_TABLE.SPORT_ID.`in`(sportIds))
+            it.selectFrom(EVENTS_TABLE)
+                .where(EVENTS_TABLE.SPORT_ID.`in`(sportIds))
                 .limit(offset, limit)
                 .fetch()
                 .into(EventsTable::class.java)
@@ -44,8 +45,8 @@ class SportsRepository(
 
     fun eventsBySportsCount(sportIds: List<UUID>): Either<SynciError, Int> =
         dsl {
-            it.selectFrom(Tables.EVENTS_TABLE)
-                .where(Tables.EVENTS_TABLE.SPORT_ID.`in`(sportIds))
+            it.selectFrom(EVENTS_TABLE)
+                .where(EVENTS_TABLE.SPORT_ID.`in`(sportIds))
                 .count()
         }
 

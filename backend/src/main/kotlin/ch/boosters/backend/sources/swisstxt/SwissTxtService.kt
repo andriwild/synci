@@ -61,7 +61,7 @@ class SwissTxtService(
 
         val teamIds = swissTxtRepository.storeTeams(teams).bind()
         val teamSportIds = teamSportsRepository.storeTeams(teams, sportId).bind()
-        swissTxtRepository.storeEvents(league.id, events).bind()
+        swissTxtRepository.storeEvents(league.name, events).bind()
         Pair(teamIds, teamSportIds)
     }
 

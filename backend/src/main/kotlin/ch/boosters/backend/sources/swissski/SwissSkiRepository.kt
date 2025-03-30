@@ -9,7 +9,9 @@ import ch.boosters.backend.sources.common.deleteDataBySource
 import ch.boosters.backend.sources.common.lastSyncTimeQuery
 import ch.boosters.backend.sources.common.storeSyncTimeQuery
 import ch.boosters.backend.sources.swissski.model.SwissSkiEvent
-import ch.boosters.data.Tables.*
+import ch.boosters.data.tables.EventsTable.Companion.EVENTS_TABLE
+import ch.boosters.data.tables.SourcesTable.Companion.SOURCES_TABLE
+import ch.boosters.data.tables.SportsTable.Companion.SPORTS_TABLE
 import org.jooq.DSLContext
 import org.springframework.stereotype.Repository
 import java.time.LocalDateTime
@@ -58,14 +60,14 @@ class SwissSkiRepository(
 
     private fun storeEvent(event: SwissSkiEvent, sportId: UUID): SynciEither<Int> = either {
         val id = sourceId.bind()
-        val x = dsl {
-            it.newRecord(EVENTS_TABLE)
-                .setId(UUID.randomUUID().toString())
-                .setName(event.place)
-                .setSourceId(id)
-                .setStartsOn(event.raceDate)
-                .setSportId(sportId)
-                .store()
+        val x = dsl { it: DSLContext ->
+            it.newRecord(EVENTS_TABLE).apply {
+                this.id = UUID.randomUUID().toString()
+                name = event.place
+                sourceId = id
+                startsOn = event.raceDate
+                this.sportId = sportId
+            }.store()
         }
         x.bind()
     }

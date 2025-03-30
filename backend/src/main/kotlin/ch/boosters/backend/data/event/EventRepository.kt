@@ -1,14 +1,16 @@
 package ch.boosters.backend.data.event
 
 import arrow.core.Either
-import arrow.core.raise.either
 import ch.boosters.backend.data.configuration.JooqEitherDsl
-import ch.boosters.backend.data.event.model.Event
 import ch.boosters.backend.errorhandling.SynciEither
 import ch.boosters.backend.errorhandling.SynciError
-import ch.boosters.data.Tables.*
+import ch.boosters.data.tables.EventsTable.Companion.EVENTS_TABLE
+import ch.boosters.data.tables.EventsTeamsTable.Companion.EVENTS_TEAMS_TABLE
+import ch.boosters.data.tables.SportsTable.Companion.SPORTS_TABLE
+import ch.boosters.data.tables.SyncConfigsEventsTable.Companion.SYNC_CONFIGS_EVENTS_TABLE
+import ch.boosters.data.tables.SyncConfigsSportsTable.Companion.SYNC_CONFIGS_SPORTS_TABLE
+import ch.boosters.data.tables.SyncConfigsTable.Companion.SYNC_CONFIGS_TABLE
 import ch.boosters.data.tables.pojos.EventsTable
-import ch.boosters.data.tables.pojos.SyncConfigsTeamsTable
 import org.jooq.DSLContext
 import org.springframework.stereotype.Repository
 import java.util.*
@@ -39,17 +41,6 @@ class EventRepository(private val dsl: JooqEitherDsl) {
                 .join(SYNC_CONFIGS_TABLE)
                 .on(SYNC_CONFIGS_TABLE.ID.eq(SYNC_CONFIGS_EVENTS_TABLE.SYNC_CONFIG_ID))
                 .where(SYNC_CONFIGS_TABLE.ID.eq(configID))
-                .fetch()
-                .into(EventsTable::class.java)
-        }
-
-    private fun eventsOfTeam(team: SyncConfigsTeamsTable): SynciEither<List<EventsTable>> =
-        dsl {
-            it.select()
-                .from(EVENTS_TABLE)
-                .join(EVENTS_TEAMS_TABLE)
-                .on(EVENTS_TABLE.ID.eq(EVENTS_TEAMS_TABLE.EVENT_ID))
-                .where(EVENTS_TEAMS_TABLE.TEAM_ID.eq(team.teamId))
                 .fetch()
                 .into(EventsTable::class.java)
         }

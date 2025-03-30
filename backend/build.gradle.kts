@@ -108,12 +108,13 @@ jooq {
                     password = postgresPassword
                 }
                 generator.apply {
-                    name = "org.jooq.codegen.DefaultGenerator"
+                    name = "org.jooq.codegen.KotlinGenerator"
                     database.apply {
                         name = "org.jooq.meta.postgres.PostgresDatabase"
                         inputSchema = "public"
                     }
                     generate.apply {
+                        isKotlinNotNullPojoAttributes = true
                         isDeprecated = false
                         isRecords = true
                         isImmutablePojos = true
