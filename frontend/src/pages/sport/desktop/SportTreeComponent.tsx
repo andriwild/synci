@@ -2,8 +2,8 @@ import {useEffect, useState} from "react";
 import {Alert, Flex, Spin} from "antd";
 import "./SportTreeComponent.css";
 import {CaretRight} from "@phosphor-icons/react";
-import {Sport} from "../../services/sport/entities/sport.ts";
-import {sportApi} from "../../services/sport/sportApi.ts";
+import {Sport} from "../../../services/sport/entities/sport.ts";
+import {sportApi} from "../../../services/sport/sportApi.ts";
 import {SportDetailComponent} from "./SportDetailComponent.tsx";
 
 

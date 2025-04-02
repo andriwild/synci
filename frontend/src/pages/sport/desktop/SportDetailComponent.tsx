@@ -1,16 +1,16 @@
 import {Button, Col, Flex, Row, theme, Typography} from "antd";
-import "./SportDetailComponent.css";
+import "../shared-components/SportDetailComponent.css";
 import {IconCalendarPlus, IconPlus} from "@tabler/icons-react";
-import {SportEvent} from "../../services/event/entities/event.ts";
-import {convertToSwissDate} from "../../services/common/dateUtil.ts";
-import {sportApi} from "../../services/sport/sportApi.ts";
+import {SportEvent} from "../../../services/event/entities/event.ts";
+import {convertToSwissDate} from "../../../services/common/dateUtil.ts";
+import {sportApi} from "../../../services/sport/sportApi.ts";
 import {useEffect, useState} from "react";
-import {useUser} from "../../services/user/UserSlice.ts";
-import {syncConfigApi} from "../../services/syncConfig/syncConfigApi.ts";
-import {syncConfigActions, useSyncConfig} from "../../services/syncConfig/syncCofigSlice.ts";
-import {syncConfigDtoMapper} from "../../services/syncConfig/helpers/syncConfigHelper.ts";
+import {useUser} from "../../../services/user/UserSlice.ts";
+import {syncConfigApi} from "../../../services/syncConfig/syncConfigApi.ts";
+import {syncConfigActions, useSyncConfig} from "../../../services/syncConfig/syncCofigSlice.ts";
+import {syncConfigDtoMapper} from "../../../services/syncConfig/helpers/syncConfigHelper.ts";
 import { useDispatch } from "react-redux";
-import {TeamsPreviewComponent} from "./components/TeamsPreviewComponent.tsx";
+import {TeamsPreviewComponent} from "../shared-components/TeamsPreviewComponent.tsx";
 
 export const SportDetailComponent = ({id, title}: { id: string, title: string }) => {
     const token = theme.useToken().token;

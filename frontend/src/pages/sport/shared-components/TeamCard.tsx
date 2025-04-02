@@ -22,7 +22,7 @@ export const TeamCard = ({ team } : { team: Team }) => {
                     background: token.colorBgContainer,
                     borderRadius: "20px",
                     padding: "20px",
-                    width: "200px"
+                    minWidth: "200px",
                 }}
         >
             <IconUsersGroup size={30}/>
@@ -38,7 +38,7 @@ export const TeamCard = ({ team } : { team: Team }) => {
                         dispatch(syncConfigActions.setSyncConfig(response.data));
                     }}
                     loading={updateSyncConfigStatus.isLoading}
-                    type="primary">Team Abonnieren</Button>
+                    type="primary">Hinzufügen</Button>
         </Flex>
     );
 }
