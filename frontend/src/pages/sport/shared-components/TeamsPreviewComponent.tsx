@@ -8,7 +8,7 @@ export const TeamsPreviewComponent = ({ sportId } : { sportId: string }) => {
     if (teamQuery.isLoading) {
         return <Spin size={"default"}/>
     }
-    if (!teamQuery.data) {
+    if (!teamQuery.data || teamQuery.data.length === 0) {
         return null;
     }
     return (

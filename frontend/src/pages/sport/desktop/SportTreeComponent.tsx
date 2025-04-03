@@ -5,6 +5,7 @@ import {CaretRight} from "@phosphor-icons/react";
 import {Sport} from "../../../services/sport/entities/sport.ts";
 import {sportApi} from "../../../services/sport/sportApi.ts";
 import {SportDetailComponent} from "./SportDetailComponent.tsx";
+import Title from "antd/es/typography/Title";
 
 
 export const SportTreeComponent = () => {
@@ -22,7 +23,17 @@ export const SportTreeComponent = () => {
 
 
     if (sportTree.isLoading) {
-        return <Spin size={"large"}/>;
+        return (
+            <Flex justify={"center"} vertical align={"center"} style={{
+                height: "100%",
+                width: "100%",
+            }}>
+                <Spin size={"large"}/>
+                <Title level={4}>
+                    Lade Sportarten...
+                </Title>
+            </Flex>
+        )
     }
     if (sportTree.isError) {
         return <Flex

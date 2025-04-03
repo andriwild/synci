@@ -83,7 +83,6 @@ export const SportDetailMobileComponent = ({callback, id, title}: { callback: Di
                 <SportsNumberComponent count={eventQuery.data?.amount || 0} description={"Anzahl der Events"} color={token.colorBgContainer}/>
             </Flex>
                 <TeamsPreviewComponent sportId={id}/>
-
             <Flex
                 vertical
                 className={"tree-content-table"}
@@ -163,7 +162,6 @@ const SportsNumberComponent = ({count, description, color}: { count: number, des
                   maxWidth: "300px",
               }}
         >
-
             <Typography.Title level={1}>
                 {count}
             </Typography.Title>
