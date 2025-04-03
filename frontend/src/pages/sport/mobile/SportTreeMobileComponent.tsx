@@ -2,13 +2,14 @@ import {useState} from "react";
 import "./SportTreeMobileComponent.css";
 import {Sport} from "../../../services/sport/entities/sport.ts";
 import {sportApi} from "../../../services/sport/sportApi.ts";
-import {Alert, Flex, Spin} from "antd";
+import {Alert, Button, Flex, Spin, theme} from "antd";
 import {CaretRight} from "@phosphor-icons/react";
 import {SportDetailMobileComponent} from "./SportDetailMobileComponent.tsx";
 
 export const SportTreeMobileComponent = () => {
     const {data, isLoading, isError, error} = sportApi.useGetAllQuery();
     const [expandedIds, setExpandedIds] = useState<string[]>([]);
+    const token = theme.useToken().token;
 
     const [selectedSport, setSelectedSport] = useState<Sport | null>(null);
 
@@ -31,6 +32,7 @@ export const SportTreeMobileComponent = () => {
             <div key={sport.id}>
                 <Flex
                     justify={"space-between"}
+                    align={"center"}
                     className="tree-item"
                     onClick={() => toggleExpand(sport)}
                     style={{
@@ -43,16 +45,18 @@ export const SportTreeMobileComponent = () => {
                         backgroundColor: columnColors[level % columnColors.length],
                     }}
                 >
-
                     <span style={level === 0 ? {color: "white"} : {}}>{sport.label}</span>
-                    {sport.subSports.length > 0 &&  <CaretRight
+                    {sport.subSports.length > 0 &&
+                        <Button type={"primary"} style={{padding: 0, margin: 0, background: token.colorBgContainer}} icon={
+                        <CaretRight
                         size={14}
                         onClick={(e) => {
                             e.stopPropagation();
                             setSelectedSport(sport);
                         }}
-                        style={level === 0 ? {color: "white"} : {}}/>}
-
+                        style={{color: "black"}}/>}>
+                        </Button>
+                    }
                 </Flex>
                 {expandedIds.includes(sport.id) &&
                     sport.subSports.length > 0 &&
