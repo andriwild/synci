@@ -5,12 +5,31 @@ import {CalendarBlank} from "@phosphor-icons/react";
 import {useUser} from "../services/user/UserSlice";
 import {useNavigate} from "react-router-dom";
 import {LoginPopUp} from "../pages/login/LoginPopUp.tsx";
+import {VITE_CLIENT_ID_KEYCLOAK, VITE_KEYCLOAK_HOST, VITE_SECRET_KEYCLOAK} from "../../env.ts";
 
 export const UserProfile: FC = () => {
     const {token} = theme.useToken();
     const user = useUser()
     const navigate = useNavigate();
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+
+    const logout = async () => {
+        try {
+            return await fetch(`${VITE_KEYCLOAK_HOST}/realms/synci/protocol/openid-connect/logout`, {
+                method: 'post',
+                headers: {"Content-Type": "application/x-www-form-urlencoded"},
+                body: new URLSearchParams({
+                    client_id: VITE_CLIENT_ID_KEYCLOAK,
+                    client_secret: VITE_SECRET_KEYCLOAK,
+                    grant_type: "password",
+                    refresh_token: localStorage.getItem("refresh_token") || "",
+                }),
+            });
+        } catch (error) {
+            console.error("Fehler beim Token-Austausch:", error);
+        }
+    };
+
 
 return (
         <Popover
@@ -79,11 +98,15 @@ return (
                             type={'primary'}
                             style={{width: '100%'}}
                             size={"large"}
-                            onClick={() => {
-                                localStorage.removeItem('access_token');
-                                localStorage.removeItem('user');
-                                localStorage.removeItem('selectedSyncConfig');
-                                window.location.reload();
+                            onClick={async () => {
+                                const response = await logout();
+                                if (response && response.status === 204) {
+                                    localStorage.removeItem('access_token');
+                                    localStorage.removeItem('refresh_token');
+                                    localStorage.removeItem('user');
+                                    localStorage.removeItem('selectedSyncConfig');
+                                    window.location.reload();
+                                }
                             }}
                         >
                             Abmelden

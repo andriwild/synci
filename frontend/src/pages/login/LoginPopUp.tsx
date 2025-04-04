@@ -21,7 +21,6 @@ export const LoginPopUp : FC<LoginPageProps> = ({ isOpen, onClose }) => {
 
     const openAuthPopup = (idpHint: string) => {
         const authUrl = `${VITE_KEYCLOAK_HOST + URL_ADDON}?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=${RESPONSE_TYPE}&scope=${SCOPE}&kc_idp_hint=${idpHint}`;
-
         const width = 500;
         const height = 600;
         const top = (window.innerHeight - height) / 2;
@@ -52,7 +51,7 @@ export const LoginPopUp : FC<LoginPageProps> = ({ isOpen, onClose }) => {
                     clearInterval(interval);
                     onClose();
                 }
-            }, 1000);
+            }, 200);
         }
     };
 
@@ -98,6 +97,9 @@ export const LoginPopUp : FC<LoginPageProps> = ({ isOpen, onClose }) => {
 
                 // Token speichern
                 localStorage.setItem("access_token", data.access_token);
+
+                // Refresh_Token speichern
+                localStorage.setItem("refresh_token", data.refresh_token);
 
                 // Token decodieren
                 const decodedToken = decodeJwt(data.access_token);
