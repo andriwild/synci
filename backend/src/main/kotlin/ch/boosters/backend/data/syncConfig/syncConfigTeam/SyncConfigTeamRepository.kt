@@ -4,8 +4,8 @@ import arrow.core.raise.either
 import ch.boosters.backend.data.configuration.JooqEitherDsl
 import ch.boosters.backend.data.syncConfig.model.TeamDto
 import ch.boosters.backend.errorhandling.SynciEither
-import ch.boosters.data.Tables.SYNC_CONFIGS_TEAMS_TABLE
-import ch.boosters.data.Tables.TEAMS_TABLE
+import ch.boosters.data.tables.SyncConfigsTeamsTable.Companion.SYNC_CONFIGS_TEAMS_TABLE
+import ch.boosters.data.tables.TeamsTable.Companion.TEAMS_TABLE
 import ch.boosters.data.tables.pojos.TeamsTable
 import org.jooq.DSLContext
 import org.jooq.impl.DSL
@@ -31,22 +31,6 @@ class SyncConfigTeamRepository(private val dsl: JooqEitherDsl) {
                 .fetchInto(TeamsTable::class.java)
         }
 
-//    fun getEventsIdsBySyncConfigId(id: UUID): SynciEither<List<EventsTable>> =
-//        dsl { it: DSLContext ->
-//            it
-//                .select(EVENTS_TABLE.asterisk())
-//                .from(EVENTS_TABLE)
-//                .join(SYNC_CONFIGS_EVENTS_TABLE)
-//                .on(
-//                    SYNC_CONFIGS_EVENTS_TABLE.SOURCE_EVENT_ID.eq(EVENTS_TABLE.SOURCE_ID)
-//                        .and(
-//                            SYNC_CONFIGS_EVENTS_TABLE.EVENT_ID.eq(EVENTS_TABLE.ID)
-//                        )
-//                )
-//                .where(SYNC_CONFIGS_EVENTS_TABLE.SYNC_CONFIG_ID.eq(id))
-//                .fetchInto(EventsTable::class.java)
-//        }
-
     fun updateTeams(configId: UUID, teams: List<TeamDto>): SynciEither<List<TeamDto>> = either {
         dsl {
             it.deleteFrom(SYNC_CONFIGS_TEAMS_TABLE)
@@ -71,5 +55,4 @@ class SyncConfigTeamRepository(private val dsl: JooqEitherDsl) {
         dsl { it.batch(queries).execute() }.bind()
         teams
     }
-
 }
