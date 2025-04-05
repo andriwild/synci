@@ -10,5 +10,5 @@ CREATE TABLE public.SYNC_CONFIGS_USERS_TABLE
     CONSTRAINT fk_sync_config FOREIGN KEY (sync_config_id)
         REFERENCES public.SYNC_CONFIGS_TABLE (id)
         ON UPDATE CASCADE
-        ON DELETE RESTRICT
+        ON DELETE CASCADE
 );
