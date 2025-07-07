@@ -19,3 +19,5 @@ spring:
             authorization-grant-type: authorization_code
             scope:
               - openid
+cors:
+  allowedOrigins: https://dev.synci.awild.ch

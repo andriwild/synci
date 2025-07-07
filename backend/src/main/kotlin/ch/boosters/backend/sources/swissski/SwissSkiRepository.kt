@@ -60,7 +60,7 @@ class SwissSkiRepository(
 
     private fun storeEvent(event: SwissSkiEvent, sportId: UUID): SynciEither<Int> = either {
         val id = sourceId.bind()
-        val x = dsl { it: DSLContext ->
+        val result = dsl { it: DSLContext ->
             it.newRecord(EVENTS_TABLE).apply {
                 this.id = UUID.randomUUID().toString()
                 name = event.place
@@ -68,8 +68,9 @@ class SwissSkiRepository(
                 startsOn = event.raceDate
                 this.sportId = sportId
             }.store()
-        }
-        x.bind()
+        }.bind()
+        ensure(result == 1) { DatabaseError("Failed to store event $event") }
+        result
     }
 
     private fun initSourceId(): SynciEither<Int> = either {

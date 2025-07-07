@@ -53,7 +53,7 @@ class SwissTxtRepository(
 
     fun storeEvents(sportKey: String, events: List<SwissTxtTeamEvent>): SynciEither<List<String>> = either {
         val sportId = getSportId(sportKey).bind()
-        val sourceId = this@SwissTxtRepository.sourceId.bind()
+        val srcId = sourceId.bind()
 
         dsl { jooq ->
 
@@ -61,7 +61,7 @@ class SwissTxtRepository(
                 val eventName = "${it.homeName} - ${it.awayName}"
                 val eventRecord = jooq.newRecord(EVENTS_TABLE).apply {
                     id = it.id.toString()
-                    this.sourceId = sourceId
+                    sourceId = srcId
                     name = eventName
                     startsOn = it.startsOn
                     endsOn = it.endsOn
@@ -72,16 +72,16 @@ class SwissTxtRepository(
                 val eventTeamRecord = jooq.newRecord(EventsTeamsTable.EVENTS_TEAMS_TABLE).apply {
                     id = UUID.randomUUID()
                     eventId = it.id.toString()
-                    sourceEventId = sourceId
+                    sourceEventId = srcId
                     teamId = it.homeId
-                    sourceTeamId = sourceId
+                    sourceTeamId = srcId
                 }
                 val eventTeamRecord2 = jooq.newRecord(EventsTeamsTable.EVENTS_TEAMS_TABLE).apply {
                     id = UUID.randomUUID()
                     eventId = it.id.toString()
-                    sourceEventId = sourceId
+                    sourceEventId = srcId
                     teamId = it.awayId
-                    sourceTeamId = sourceId
+                    sourceTeamId = srcId
                 }
                 jooq.batchStore(eventTeamRecord, eventTeamRecord2).execute()
             }
