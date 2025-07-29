@@ -26,6 +26,7 @@ export const AvailableSpotsComponent = () => {
                     <Flex
                         className="sport-card"
                         vertical
+                        key={sport.id}
                         style={{
                             background: token.colorBgContainer,
                             alignItems: 'center',

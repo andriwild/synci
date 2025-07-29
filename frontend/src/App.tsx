@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ConfigProvider, theme } from "antd";
 import { HomePage } from "./pages/home/HomePage.tsx";
-import {FC, useEffect} from 'react';
+import {useEffect} from 'react';
 
 import {SportPage} from "./pages/sport/SportPage.tsx";
 import './index.css';
@@ -9,17 +9,27 @@ import {AppLayout} from "./sharedComponents/AppLayout.tsx";
 import {FaqPage} from "./pages/faq/FaqPage.tsx";
 import {SyncConfigPage} from "./pages/syncConfig/SyncConfigPage.tsx";
 import {useAuth0} from "@auth0/auth0-react";
+import {useAppDispatch} from "./app/hooks.ts";
+import {userActions} from "./services/user/UserSlice.ts";
 
-export const App: FC = () => {
-    const { isAuthenticated, getAccessTokenSilently } = useAuth0();
+export const App = () => {
+    const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
         const fetchAndStoreToken = async () => {
             if (isAuthenticated) {
                 try {
                     const token = await getAccessTokenSilently();
-                    console.log("Token erfolgreich geladen:", token);
-                    localStorage.setItem("access_token", token);
+                    dispatch(userActions.setUser({
+                        id: user?.sub || '',
+                        name: user?.name || '',
+                        email: user?.email || '',
+                        token: token,
+                        picture: user?.picture || '',
+                    }
+                    ));
+                    console.log(user);
                 } catch (e) {
                     console.error("Token konnte nicht geladen werden", e);
                 }

@@ -11,13 +11,13 @@ import {VITE_BACKEND_HOST} from "../../../env.ts";
 import {SyncConfig} from "../../services/syncConfig/entities/syncConfig.ts";
 import {EventConfigCard} from "../../sharedComponents/config/EventConfigCard.tsx";
 import {TeamConfigCard} from "../../sharedComponents/config/TeamConfigCard.tsx";
-import {useAuth0} from "@auth0/auth0-react";
+import {useUser} from "../../services/user/UserSlice.ts";
 
 export const SyncConfigComponent = () => {
     const syncConfigList = syncConfigApi.useGetAllQuery();
     const token = theme.useToken().token;
     const [open, setOpen] = useState(false);
-    const user = useAuth0().user;
+    const user = useUser();
 
     const currentSyncConfig = useSyncConfig();
     const dispatch = useDispatch();

@@ -1,6 +1,7 @@
+
+import axios from 'axios';
 import {type BaseQueryFn, retry} from '@reduxjs/toolkit/query/react'
 import type {AxiosError, AxiosRequestConfig} from 'axios'
-import axios from 'axios'
 import {VITE_BACKEND_URL} from '../../../env.ts';
 import {SerializedError} from '@reduxjs/toolkit';
 
@@ -16,21 +17,37 @@ type AxiosBaseQueryFn = BaseQueryFn<
     unknown,
     HttpError
 >;
+
 export const axiosBaseQuery = ({ baseUrl }: { baseUrl: string }) => {
     const axiosInstance = axios.create({
         baseURL: VITE_BACKEND_URL + "api" + baseUrl
     });
 
+    axiosInstance.interceptors.request.use(
+        (config) => {
+            try {
+                const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user') || '{}') : null;
+                if (!user) {
+                    console.warn('Kein User im LocalStorage gefunden, Auth Header wird nicht gesetzt.');
+                    return config;
+                }
+                console.log("State:", user);
+
+                if (user?.token) {
+                    config.headers.Authorization = `Bearer ${user.token}`;
+                }
+            } catch (error) {
+                console.warn('Fehler beim Hinzufügen des Auth Headers:', error);
+            }
+            return config;
+        },
+        (error) => {
+            return Promise.reject(error);
+        }
+    );
+
     const fn: AxiosBaseQueryFn = async ({ url, method, body, params, headers }) => {
         try {
-            const token = localStorage.getItem("access_token");
-            if (token) {
-                headers = {
-                    ...headers,
-                    Authorization: `Bearer ${token}`
-                };
-            }
-
             const result = await axiosInstance({
                 url,
                 method,
@@ -53,7 +70,6 @@ export const axiosBaseQuery = ({ baseUrl }: { baseUrl: string }) => {
 
     return retry(fn, { maxRetries: 0 });
 };
-
 
 export interface HttpError {
     status: number;

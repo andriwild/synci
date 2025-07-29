@@ -3,25 +3,31 @@ import Title from "antd/es/typography/Title";
 import {CalendarBlank} from "@phosphor-icons/react";
 import {useNavigate} from "react-router-dom";
 import {useAuth0} from "@auth0/auth0-react";
+import {userActions, useUser} from "../services/user/UserSlice.ts";
+import {useDispatch} from "react-redux";
 
 export const UserProfile = () => {
     const {token} = theme.useToken();
     const navigate = useNavigate();
-
+    const user = useUser();
+    const dispatch = useDispatch();
     const {
-        isLoading, // Loading state, the SDK needs to reach Auth0 on load
-        isAuthenticated,
-        error,
-        loginWithRedirect: login, // Starts the login flow
-        logout: auth0Logout, // Starts the logout flow
-        user, // User profile
+        isLoading,
+        loginWithRedirect: login,
+        logout: auth0Logout,
     } = useAuth0();
 
     const signup = () =>
         login({ authorizationParams: { screen_hint: "signup" } });
 
-    const logout = () =>
-        auth0Logout({ logoutParams: { returnTo: window.location.origin } });
+    const logout = () => {
+        auth0Logout({logoutParams: {returnTo: window.location.origin}}).then(() => {
+            dispatch(userActions.clearUser());
+            navigate('/');
+        }
+        );
+    }
+
 
     if (isLoading) return "Loading...";
 
@@ -42,7 +48,7 @@ return (
                 <Flex vertical style={{alignItems: 'start', cursor: 'pointer', gap: 10}}>
                     <Flex style={{alignItems: 'center', cursor: 'pointer', gap: 20}}>
                         <Image
-                            src={'../assets/Profile_sample.png'}
+                            src={user?.picture || '../assets/Profile_sample.png'}
                             preview={false}
                             style={{
                                 cursor: 'pointer',
@@ -54,7 +60,7 @@ return (
                             }
                         />
                         <Flex style={{flexDirection: 'column', alignItems: 'flex-end'}}>
-                            <Title level={5} style={{margin: 0}} color={token.colorPrimary}>{user.firstName + ' ' + user.lastName}</Title>
+                            <Title level={5} style={{margin: 0}} color={token.colorPrimary}>{user.email}</Title>
                         </Flex>
                     </Flex>
                     <Divider
@@ -100,7 +106,7 @@ return (
                     }
         >
             <Flex style={{alignItems: 'center', cursor: 'pointer', gap: 10}}>
-                {isAuthenticated ?
+                {user ?
                     <>
 
                 <Flex style={{flexDirection: 'column', alignItems: 'flex-end'}}>
@@ -123,7 +129,7 @@ return (
                     :
                     <>
                         <Button onClick={signup}>Konto Erstellen</Button>
-                        <Button type={'primary'} onClick={login}>Anmelden</Button>
+                        <Button type={'primary'} onClick={() => login()}>Anmelden</Button>
                     </>
                 }
             </Flex>
