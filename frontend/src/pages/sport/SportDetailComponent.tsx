@@ -5,12 +5,12 @@ import {SportEvent} from "../../services/event/entities/event.ts";
 import {convertToSwissDate} from "../../services/common/dateUtil.ts";
 import {sportApi} from "../../services/sport/sportApi.ts";
 import {useEffect, useState} from "react";
-import {useUser} from "../../services/user/UserSlice.ts";
 import {syncConfigApi} from "../../services/syncConfig/syncConfigApi.ts";
 import {syncConfigActions, useSyncConfig} from "../../services/syncConfig/syncCofigSlice.ts";
 import {syncConfigDtoMapper} from "../../services/syncConfig/helpers/syncConfigHelper.ts";
 import { useDispatch } from "react-redux";
 import {TeamsPreviewComponent} from "./components/TeamsPreviewComponent.tsx";
+import {useAuth0} from "@auth0/auth0-react";
 
 export const SportDetailComponent = ({id, title}: { id: string, title: string }) => {
     const token = theme.useToken().token;
@@ -18,7 +18,7 @@ export const SportDetailComponent = ({id, title}: { id: string, title: string })
     const pageSize = 5;
     const eventQuery = id ? sportApi.useGetEventsQuery({ id: id, page: page, pageSize: pageSize }) : { data: null };
     const [eventList, setEventList] = useState<SportEvent[]>([]);
-    const user = useUser();
+    const user = useAuth0().user;
     const syncConfig = useSyncConfig();
     const [updateSyncConfig, updateSyncConfigStatus] = syncConfigApi.useUpdateMutation();
     const dispatch = useDispatch();

@@ -16,38 +16,44 @@ type AxiosBaseQueryFn = BaseQueryFn<
     unknown,
     HttpError
 >;
-
 export const axiosBaseQuery = ({ baseUrl }: { baseUrl: string }) => {
     const axiosInstance = axios.create({
-        baseURL: VITE_BACKEND_URL+"api"+baseUrl
+        baseURL: VITE_BACKEND_URL + "api" + baseUrl
     });
 
     const fn: AxiosBaseQueryFn = async ({ url, method, body, params, headers }) => {
         try {
+            const token = localStorage.getItem("access_token");
+            if (token) {
+                headers = {
+                    ...headers,
+                    Authorization: `Bearer ${token}`
+                };
+            }
+
             const result = await axiosInstance({
                 url,
                 method,
                 data: body,
                 params,
-                headers: headers
+                headers
             });
-            return { data: result.data.body }
+
+            return { data: result.data.body };
         } catch (axiosError) {
-            const err = axiosError as AxiosError
+            const err = axiosError as AxiosError;
             return {
                 error: {
                     status: err.response?.status,
-                    data: err.response?.data || {
-                        message: err.message
-                    },
+                    data: err.response?.data || { message: err.message },
                 } as HttpError,
-            }
+            };
         }
     };
-    return retry(fn, {
-        maxRetries: 0,
-    });
-}
+
+    return retry(fn, { maxRetries: 0 });
+};
+
 
 export interface HttpError {
     status: number;

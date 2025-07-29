@@ -13,4 +13,6 @@ class TeamController(private val teamService: TeamService) {
 
     @GetMapping("")
     fun listConfig(): SynciEither<List<TeamsTable>> = teamService.getAllTeams()
+
+
 }

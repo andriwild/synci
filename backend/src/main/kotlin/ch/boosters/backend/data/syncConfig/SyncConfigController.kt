@@ -2,6 +2,7 @@ package ch.boosters.backend.data.syncConfig
 
 import arrow.core.Either
 import arrow.core.raise.either
+import ch.boosters.backend.auth.CurrentUserResolver
 import ch.boosters.backend.data.syncConfig.model.SyncConfigDto
 import ch.boosters.backend.errorhandling.InvalidUser
 import ch.boosters.backend.errorhandling.SynciEither
@@ -14,16 +15,19 @@ import java.util.UUID
 @RestController
 @RequestMapping("/syncconfigs")
 @PreAuthorize("isAuthenticated()")
-class SyncConfigController(private val syncConfigService: SyncConfigService) {
+class SyncConfigController(
+    private val syncConfigService: SyncConfigService,
+    private val currentUserResolver: CurrentUserResolver
+) {
     @GetMapping("")
     fun getConfig(authentication: Authentication): SynciEither<List<SyncConfig>> = either {
-        val userId = authentication.userId().bind()
+        val userId = currentUserResolver.getUserId(authentication).bind()
         return syncConfigService.allSyncConfigsForUser(userId)
     }
 
     @GetMapping("/{id}")
     fun getConfig(@PathVariable id: UUID, authentication: Authentication): SynciEither<SyncConfig> = either {
-        val userId = authentication.userId().bind()
+        val userId = currentUserResolver.getUserId(authentication).bind()
         return syncConfigService.syncConfigById(id, userId)
     }
 
@@ -33,20 +37,20 @@ class SyncConfigController(private val syncConfigService: SyncConfigService) {
         @RequestBody syncConfig: SyncConfigDto,
         authentication: Authentication
     ): SynciEither<SyncConfig> = either {
-        val userId = authentication.userId().bind()
+        val userId = currentUserResolver.getUserId(authentication).bind()
         return syncConfigService.updateSyncConfig(id, syncConfig, userId)
     }
 
     @PostMapping("")
     fun createConfig(@RequestBody syncConfig: SyncConfigDto, authentication: Authentication): SynciEither<SyncConfig> =
         either {
-            val userId = authentication.userId().bind()
+            val userId = currentUserResolver.getUserId(authentication).bind()
             return syncConfigService.createSyncConfig(syncConfig, userId)
         }
 
     @DeleteMapping("/{id}")
     fun deleteConfig(@PathVariable id: UUID, authentication: Authentication): SynciEither<Int> = either {
-        val userId = authentication.userId().bind()
+        val userId = currentUserResolver.getUserId(authentication).bind()
         return syncConfigService.deleteSyncConfig(id, userId)
     }
 }
