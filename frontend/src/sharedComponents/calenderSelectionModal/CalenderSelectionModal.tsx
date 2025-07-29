@@ -3,7 +3,7 @@ import {ReactNode, useState} from "react";
 import "./CalenderSelectionModal.css";
 import useBreakpoint from "antd/es/grid/hooks/useBreakpoint";
 import {IconBrandGoogle, IconBrandOffice, IconCalendarPlus, IconMail} from "@tabler/icons-react";
-import {useUser} from "../../services/user/UserSlice.ts";
+import {useAuth0} from "@auth0/auth0-react";
 
 interface CalendarSelectionProps {
     url: string;
@@ -15,7 +15,7 @@ interface CalendarSelectionProps {
 export const CalendarSelectionModal = ({url, buttonText, buttonType, buttonIcon}: CalendarSelectionProps) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const screen = useBreakpoint();
-    const user = useUser();
+    const user = useAuth0().user;
 
     return (
         <>

@@ -1,15 +1,33 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ConfigProvider, theme } from "antd";
 import { HomePage } from "./pages/home/HomePage.tsx";
-import { FC } from 'react';
+import {FC, useEffect} from 'react';
 
 import {SportPage} from "./pages/sport/SportPage.tsx";
 import './index.css';
 import {AppLayout} from "./sharedComponents/AppLayout.tsx";
 import {FaqPage} from "./pages/faq/FaqPage.tsx";
 import {SyncConfigPage} from "./pages/syncConfig/SyncConfigPage.tsx";
+import {useAuth0} from "@auth0/auth0-react";
 
 export const App: FC = () => {
+    const { isAuthenticated, getAccessTokenSilently } = useAuth0();
+
+    useEffect(() => {
+        const fetchAndStoreToken = async () => {
+            if (isAuthenticated) {
+                try {
+                    const token = await getAccessTokenSilently();
+                    console.log("Token erfolgreich geladen:", token);
+                    localStorage.setItem("access_token", token);
+                } catch (e) {
+                    console.error("Token konnte nicht geladen werden", e);
+                }
+            }
+        };
+
+        fetchAndStoreToken();
+    }, [isAuthenticated]);
 
     return (
         <Router>

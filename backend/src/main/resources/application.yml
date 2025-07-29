@@ -1,9 +1,10 @@
 
 spring:
-  application:
-    name: synci-backend
-
-
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://dev-j45i1nkuf82sla5r.us.auth0.com/
   flyway:
     locations: db/migration/
     url: ${ch.boosters.db.jdbcUrl}
@@ -14,6 +15,10 @@ spring:
     - "classpath:sources/swissski.yml"
     - "classpath:sources/swisstxt.yml"
     #- "classpath:sources/fotmob.yml"
+
+logging:
+  level:
+    org.springframework.security: DEBUG
 
 ch:
   boosters:

@@ -23,7 +23,7 @@ export const SyncConfigPage = () => {
                   height: "100%",
                   overflow: "auto",
               }}>
-            {syncConfig.data?.map((config) => (
+            {syncConfig?.data?.map((config) => (
                 <Badge count={
                     (currentSyncConfig?.id == config.id) ? <IconSquareCheck size={20} color={"green"}/> :
                         <IconSquare size={20} onClick={

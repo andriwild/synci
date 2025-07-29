@@ -2,7 +2,6 @@ import {Alert, Button, Flex, Form, Input, Modal, notification, Popover, theme, T
 import {CalendarSelectionModal} from "../../sharedComponents/calenderSelectionModal/CalenderSelectionModal.tsx";
 import {IconEdit, IconPlus, IconReplace, IconTrash,} from "@tabler/icons-react";
 import {useEffect, useState} from "react";
-import {useUser} from "../../services/user/UserSlice.ts";
 import {syncConfigApi} from "../../services/syncConfig/syncConfigApi.ts";
 import {syncConfigActions, useSyncConfig} from "../../services/syncConfig/syncCofigSlice.ts";
 import {useDispatch} from "react-redux";
@@ -12,12 +11,13 @@ import {VITE_BACKEND_HOST} from "../../../env.ts";
 import {SyncConfig} from "../../services/syncConfig/entities/syncConfig.ts";
 import {EventConfigCard} from "../../sharedComponents/config/EventConfigCard.tsx";
 import {TeamConfigCard} from "../../sharedComponents/config/TeamConfigCard.tsx";
+import {useAuth0} from "@auth0/auth0-react";
 
 export const SyncConfigComponent = () => {
     const syncConfigList = syncConfigApi.useGetAllQuery();
     const token = theme.useToken().token;
     const [open, setOpen] = useState(false);
-    const user = useUser();
+    const user = useAuth0().user;
 
     const currentSyncConfig = useSyncConfig();
     const dispatch = useDispatch();
