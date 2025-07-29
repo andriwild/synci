@@ -16,10 +16,6 @@ spring:
     - "classpath:sources/swisstxt.yml"
     #- "classpath:sources/fotmob.yml"
 
-logging:
-  level:
-    org.springframework.security: DEBUG
-
 ch:
   boosters:
     db:
