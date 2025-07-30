@@ -10,7 +10,7 @@ import {syncConfigActions, useSyncConfig} from "../../services/syncConfig/syncCo
 import {syncConfigDtoMapper} from "../../services/syncConfig/helpers/syncConfigHelper.ts";
 import { useDispatch } from "react-redux";
 import {TeamsPreviewComponent} from "./components/TeamsPreviewComponent.tsx";
-import {useAuth0} from "@auth0/auth0-react";
+import {useUser} from "../../services/user/UserSlice.ts";
 
 export const SportDetailComponent = ({id, title}: { id: string, title: string }) => {
     const token = theme.useToken().token;
@@ -18,7 +18,7 @@ export const SportDetailComponent = ({id, title}: { id: string, title: string })
     const pageSize = 5;
     const eventQuery = id ? sportApi.useGetEventsQuery({ id: id, page: page, pageSize: pageSize }) : { data: null };
     const [eventList, setEventList] = useState<SportEvent[]>([]);
-    const user = useAuth0().user;
+    const user = useUser();
     const syncConfig = useSyncConfig();
     const [updateSyncConfig, updateSyncConfigStatus] = syncConfigApi.useUpdateMutation();
     const dispatch = useDispatch();

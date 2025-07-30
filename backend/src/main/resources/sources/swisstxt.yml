@@ -6,7 +6,7 @@ swisstxt:
     - key: "SOCCER"
       leagues:
       - name: SUPER_LEAGUE
-        id: "5059-171"
+        id: "5232-171"
       - name: BUNDESLIGA
         id: "5055-58"
       - name: PREMIER_LEAGUE
