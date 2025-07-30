@@ -4,6 +4,15 @@ import {useEffect, useState} from "react";
 
 import {useDispatch} from "react-redux";
 import {NotificationPlacement} from "antd/es/notification/interface";
+import {syncConfigActions, useSyncConfig} from "../../../services/syncConfig/syncCofigSlice.ts";
+import { syncConfigApi } from "../../../services/syncConfig/syncConfigApi";
+import { useUser } from "../../../services/user/UserSlice";
+import {SportConfigCard} from "../../../sharedComponents/config/SportConfigCard.tsx";
+import {TeamConfigCard} from "../../../sharedComponents/config/TeamConfigCard.tsx";
+import { CalendarSelectionModal } from "../../../sharedComponents/calenderSelectionModal/CalenderSelectionModal.tsx";
+import {VITE_BACKEND_HOST} from "../../../../env.ts";
+import {SyncConfig} from "../../../services/syncConfig/entities/syncConfig.ts";
+import {EventConfigCard} from "../../../sharedComponents/config/EventConfigCard.tsx";
 
 
 export const SyncConfigComponent = () => {
