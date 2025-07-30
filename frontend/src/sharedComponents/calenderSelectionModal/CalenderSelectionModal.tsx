@@ -94,7 +94,6 @@ export const CalendarSelectionModal = ({url, buttonText, buttonType, buttonIcon}
                                 }
                             >Einfügen</Button>
                         </Flex>
-
                     </Flex>
                     <Divider children={"Willst du uns unterstützen?"} />
                     <Flex gap={10} vertical

@@ -1,9 +1,10 @@
 import { FC } from "react";
 import {Flex, theme} from "antd";
-import {SportTreeComponent} from "./SportTreeComponent.tsx";
-import {SyncConfigComponent} from "./SyncConfigComponent.tsx";
+import {SportTreeComponent} from "./desktop/SportTreeComponent.tsx";
+import {SyncConfigComponent} from "./desktop/SyncConfigComponent.tsx";
 import useBreakpoint from "antd/es/grid/hooks/useBreakpoint";
-import './Sportpage.css';
+import './SportPage.css';
+import {SportTreeMobileComponent} from "./mobile/SportTreeMobileComponent.tsx";
 
 
 export const SportPage: FC = () => {
@@ -16,7 +17,9 @@ export const SportPage: FC = () => {
                 backgroundColor: 'white',
                 borderRadius: 20,
                 flex: 1}}>
-                <SportTreeComponent />
+                {screens.md && <SportTreeComponent />}
+                {!screens.md && <SportTreeMobileComponent />}
+
             </Flex>
             {screens.md &&
             <Flex id={'calender-container'} style={{

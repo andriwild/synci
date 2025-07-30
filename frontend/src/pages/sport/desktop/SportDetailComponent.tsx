@@ -1,16 +1,17 @@
 import {Button, Col, Flex, Row, theme, Typography} from "antd";
-import "./SportDetailComponent.css";
+import "../shared-components/SportDetailComponent.css";
 import {IconCalendarPlus, IconPlus} from "@tabler/icons-react";
-import {SportEvent} from "../../services/event/entities/event.ts";
-import {convertToSwissDate} from "../../services/common/dateUtil.ts";
-import {sportApi} from "../../services/sport/sportApi.ts";
+import {SportEvent} from "../../../services/event/entities/event.ts";
+import {convertToSwissDate} from "../../../services/common/dateUtil.ts";
+import {sportApi} from "../../../services/sport/sportApi.ts";
 import {useEffect, useState} from "react";
-import {syncConfigApi} from "../../services/syncConfig/syncConfigApi.ts";
-import {syncConfigActions, useSyncConfig} from "../../services/syncConfig/syncCofigSlice.ts";
-import {syncConfigDtoMapper} from "../../services/syncConfig/helpers/syncConfigHelper.ts";
 import { useDispatch } from "react-redux";
-import {TeamsPreviewComponent} from "./components/TeamsPreviewComponent.tsx";
-import {useUser} from "../../services/user/UserSlice.ts";
+import {syncConfigActions, useSyncConfig} from "../../../services/syncConfig/syncCofigSlice.ts";
+import { syncConfigApi } from "../../../services/syncConfig/syncConfigApi.ts";
+import {useUser} from "../../../services/user/UserSlice.ts";
+import {syncConfigDtoMapper} from "../../../services/syncConfig/helpers/syncConfigHelper.ts";
+import {TeamsPreviewComponent} from "../shared-components/TeamsPreviewComponent.tsx";
+
 
 export const SportDetailComponent = ({id, title}: { id: string, title: string }) => {
     const token = theme.useToken().token;
@@ -95,7 +96,6 @@ export const SportDetailComponent = ({id, title}: { id: string, title: string })
                 <SportsNumberComponent count={eventQuery.data?.amount || 0} description={"Anzahl der Events"} color={token.colorBgContainer}/>
             </Flex>
                 <TeamsPreviewComponent sportId={id}/>
-
             <Flex
                 vertical
                 className={"tree-content-table"}
