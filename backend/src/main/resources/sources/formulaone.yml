@@ -1,0 +1,5 @@
+formulaone:
+  name: FORMULA_ONE
+  url: https://f1api.dev/api
+  id: 4
+  sport: formulaone
