@@ -5,12 +5,16 @@ import {useNavigate} from "react-router-dom";
 import {useAuth0} from "@auth0/auth0-react";
 import {userActions, useUser} from "../services/user/UserSlice.ts";
 import {useDispatch} from "react-redux";
+import {useState} from "react";
 
 export const UserProfile = () => {
     const {token} = theme.useToken();
     const navigate = useNavigate();
     const user = useUser();
     const dispatch = useDispatch();
+
+    const [opened, setOpened] = useState(false);
+
     const {
         isLoading,
         loginWithRedirect: login,
@@ -23,7 +27,7 @@ export const UserProfile = () => {
     const logout = () => {
         auth0Logout({logoutParams: {returnTo: window.location.origin}}).then(() => {
             dispatch(userActions.clearUser());
-            navigate('/');
+            setOpened(false);
         }
         );
     }
@@ -36,6 +40,10 @@ return (
             placement="bottomRight"
             trigger={"hover"}
             showArrow={false}
+            open={opened}
+            onOpenChange={(open) => {
+                setOpened(open);
+            }}
             styles={{
                 body: {
                     padding: '20px',
@@ -128,7 +136,7 @@ return (
                     </>
                     :
                     <>
-                        <Button onClick={signup}>Konto Erstellen</Button>
+                        <Button onClick={signup}>Konto erstellen</Button>
                         <Button type={'primary'} onClick={() => login()}>Anmelden</Button>
                     </>
                 }
