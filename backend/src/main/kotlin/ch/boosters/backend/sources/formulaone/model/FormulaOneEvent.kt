@@ -41,7 +41,6 @@ object FormulaOneEventSerializer: KSerializer<FormulaOneEvent> {
         val raceTime = jsonObject["schedule"]?.jsonObject?.get("race")?.jsonObject?.get("time")?.jsonPrimitive?.content
 
         val dateTimeString = "$raceDate $raceTime"
-        //Input 2025-03-16 04:00:00Z
         val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ssX")
         val raceDateTime = LocalDateTime.parse(dateTimeString, dateTimeFormatter)
 
