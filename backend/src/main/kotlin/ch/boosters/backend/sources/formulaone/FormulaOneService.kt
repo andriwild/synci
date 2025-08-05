@@ -21,7 +21,7 @@ class FormulaOneService(
     fun update(): SynciEither<Unit> = either {
         val lastSync = formulaOneRepository.lastSyncTime().bind()
 
-        if(lastSync != null && lastSync.isAfter(LocalDateTime.now().minusDays(0))) {
+        if(lastSync != null && lastSync.isAfter(LocalDateTime.now().minusDays(1))) {
             return Either.Right(Unit)
         }
 
