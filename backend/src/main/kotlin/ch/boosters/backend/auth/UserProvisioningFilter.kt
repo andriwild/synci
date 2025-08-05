@@ -8,15 +8,12 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
-import org.slf4j.LoggerFactory
 import java.util.*
 
 @Component
 class UserProvisioningFilter(
     private val dsl: DSLContext
 ) : OncePerRequestFilter() {
-
-    private val logger = LoggerFactory.getLogger(javaClass)
 
     override fun doFilterInternal(
         request: HttpServletRequest,

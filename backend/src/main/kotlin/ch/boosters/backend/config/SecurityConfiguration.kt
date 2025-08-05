@@ -32,7 +32,6 @@ class SecurityConfiguration(
             .csrf { it.disable() }
             .cors { it.configurationSource(corsConfigurationSource()) }
             .addFilterAfter(userProvisioningFilter, BearerTokenAuthenticationFilter::class.java)
-
             .authorizeHttpRequests {
                 it
                     .requestMatchers(HttpMethod.GET, "/sports").permitAll()

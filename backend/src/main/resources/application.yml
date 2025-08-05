@@ -4,7 +4,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${AUTH0_URL}
+          issuer-uri: ${AUTH0_URL:https://dev-j45i1nkuf82sla5r.us.auth0.com/}
   flyway:
     locations: db/migration/
     url: ${ch.boosters.db.jdbcUrl}
