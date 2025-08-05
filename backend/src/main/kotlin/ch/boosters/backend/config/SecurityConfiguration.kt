@@ -36,6 +36,7 @@ class SecurityConfiguration(
                 it
                     .requestMatchers(HttpMethod.GET, "/sports").permitAll()
                     .requestMatchers(HttpMethod.GET, "/sports/**").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/calendars/**").permitAll()
                     .anyRequest().authenticated()
             }
             .oauth2ResourceServer {
