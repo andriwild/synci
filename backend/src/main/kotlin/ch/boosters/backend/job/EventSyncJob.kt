@@ -1,5 +1,5 @@
 import arrow.core.Either
-import ch.boosters.backend.data.event.EventService
+import ch.boosters.backend.sources.formulaone.FormulaOneService
 import ch.boosters.backend.sources.swissski.SwissSkiService
 import ch.boosters.backend.sources.swisstxt.SwissTxtService
 import org.quartz.Job
@@ -16,10 +16,14 @@ class EventSyncJob : Job {
     @Autowired
     lateinit var swissTxtService: SwissTxtService
 
+    @Autowired
+    lateinit var formulaOneService: FormulaOneService
+
     override fun execute(context: JobExecutionContext) {
         val updates = listOf(
             swissSkiService.update(),
-            swissTxtService.update()
+            swissTxtService.update(),
+            formulaOneService.update()
         )
         updates.map {
             when (it) {

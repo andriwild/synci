@@ -28,7 +28,6 @@ export const CalendarSelectionModal = ({url, buttonText, buttonType, buttonIcon}
             >{buttonText}</Button>
             <Modal
                 open={isModalOpen}
-                //onClose={() => setIsModalOpen(false)}
                 onCancel={() => setIsModalOpen(false)}
                 width={screen.md ? "50%" : "90%"}
             >
