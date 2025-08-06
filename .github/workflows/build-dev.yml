@@ -103,7 +103,7 @@ jobs:
 
       - name: Build frontend image
         run: |
-          docker build --build-arg VITE_STAGE --build-arg VITE_BACKEND_URL --build-arg VITE_AUTH0_CLIENT_ID --build-arg VITE_AUTH0_DOMAIN -t ${{ env.REGISTRY }}/${{ github.repository }}/frontend-${{ env.STAGE }}:latest ./frontend
+          docker build --build-arg VITE_STAGE --build-arg VITE_BACKEND_URL --build-arg VITE_BACKEND_HOST --build-arg VITE_AUTH0_CLIENT_ID --build-arg VITE_AUTH0_DOMAIN -t ${{ env.REGISTRY }}/${{ github.repository }}/frontend-${{ env.STAGE }}:latest ./frontend
 
       - name: Push frontend image
         run: |
