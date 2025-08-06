@@ -12,6 +12,7 @@ import net.fortuna.ical4j.model.PropertyContainer
 import net.fortuna.ical4j.model.component.CalendarComponent
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.ProdId
+import net.fortuna.ical4j.model.property.Uid
 import net.fortuna.ical4j.model.property.immutable.ImmutableCalScale
 import org.springframework.stereotype.Service
 import java.util.*
@@ -54,6 +55,9 @@ class CalendarService(
             } else {
                 VEvent(it.startsOn, it.endsOn, it.name)
             }
+            val uid = it.id
+            event.add<PropertyContainer>(Uid(uid))
+
             icsCalendar.add<ComponentContainer<CalendarComponent>>(event)
         }
         return icsCalendar
