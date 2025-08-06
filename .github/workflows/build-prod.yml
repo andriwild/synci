@@ -25,6 +25,7 @@ env:
   POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
 
   VITE_BACKEND_URL: https://synci.awild.ch
+  VITE_BACKEND_HOST: synci.awild.ch
   STAGE: prod
 
 jobs:
@@ -83,7 +84,7 @@ jobs:
 
       - name: Build frontend image
         run: |
-          docker build --build-arg VITE_STAGE --build-arg VITE_BACKEND_URL -t ${{ env.REGISTRY }}/${{ github.repository }}/frontend-prod:${{ github.ref_name }} ./frontend
+          docker build --build-arg VITE_STAGE --build-arg VITE_BACKEND_URL  --build-arg VITE_BACKEND_HOST --build-arg VITE_AUTH0_CLIENT_ID --build-arg VITE_AUTH0_DOMAIN  -t ${{ env.REGISTRY }}/${{ github.repository }}/frontend-prod:${{ github.ref_name }} ./frontend
 
       - name: Push frontend image
         run: |
