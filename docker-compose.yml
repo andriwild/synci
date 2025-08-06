@@ -7,10 +7,10 @@ services:
     image: ghcr.io/andriwild/synci/frontend-${STAGE:-dev}:latest
     environment:
       - VITE_STAGE=${STAGE}
+      - VITE_BACKEND_URL =${VITE_BACKEND_URL}
       - VITE_BACKEND_HOST=${VITE_BACKEND_HOST}
-      - VITE_SECRET_KEYCLOAK=${VITE_SECRET_KEYCLOAK}
-      - VITE_CLIENT_ID_KEYCLOAK=${VITE_CLIENT_ID_KEYCLOAK}
-      - VITE_KEYCLOAK_HOST=${VITE_KEYCLOAK_HOST}
+      - VITE_AUTH0_CLIENT_ID=${VITE_AUTH0_CLIENT_ID}
+      - VITE_AUTH0_DOMAIN=${VITE_AUTH0_DOMAIN}
     ports:
       - ${FRONTEND_PORT:-5173}:5173
     networks:
