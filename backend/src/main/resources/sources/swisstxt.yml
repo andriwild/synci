@@ -8,29 +8,33 @@ swisstxt:
       - name: SUPER_LEAGUE
         id: "5232-171"
       - name: BUNDESLIGA
-        id: "5055-58"
+        id: "5226"
       - name: PREMIER_LEAGUE
-        id: "5058-86"
+        id: "5231-86"
       - name: SERIE_A
-        id: "5077-85"
+        id: "5224-85"
       - name: LIGUE_1
-        id: "5073-57"
+        id: "5235"
+      - name: LA_LIGA
+        id: "5237-87"
+      - name: EUROPA_LEAGUE
+        id: "5229"
       - name: CL_QUALIFICATION_1
-        id: "5061-461-770"
+        id: "5228-461-770"
       - name: CL_QUALIFICATION_1
-        id: "5061-461-771"
+        id: "5228-461-771"
       - name: CL_QUALIFICATION_2
-        id: "5061-463-770"
+        id: "5228-463-770"
       - name: CL_QUALIFICATION_2
-        id: "5061-463-771"
+        id: "5228-463-771"
       - name: CL_QUALIFICATION_3
-        id: "5061-464-770"
+        id: "5228-464-770"
       - name: CL_QUALIFICATION_3
-        id: "5061-464-771"
+        id: "5228-464-771"
       - name: CL_PLAYOFF_ROUND
-        id: "5061-558-770"
+        id: "5228-558-770"
       - name: CL_PLAYOFF_ROUND
-        id: "5061-558-771"
+        id: "5228-558-771"
       - name: CL_MAIN_ROUND
         id: "5061-970-160"
       - name: CL_MAIN_ROUND
@@ -51,3 +55,11 @@ swisstxt:
         id: "5061-103"
       - name: CL_KO_ROUND
         id: "5061-891"
+    - key: "ICE_HOCKEY"
+      leagues:
+      - name: NATIONAL_LEAGUE_QUALIFICATION
+        id: "5225"
+      - name: SWISS_LEAGUE_QUALIFICATION
+        id: "5238"
+      - name: NHL_QUALIFICATION
+        id: "5233"
