@@ -17,6 +17,8 @@ export const AvailableSpotsComponent = () => {
             </Typography.Title>
             <Flex
                 gap={'middle'}
+                justify={'center'}
+                wrap
                 style={{
                     flexDirection: screens.md ? 'row' : 'column',
                     alignItems: 'center',
