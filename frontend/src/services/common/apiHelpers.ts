@@ -18,20 +18,37 @@ type AxiosBaseQueryFn = BaseQueryFn<
     HttpError
 >;
 
+interface Auth0Client {
+    getTokenSilently: () => Promise<string>;
+    loginWithRedirect: () => Promise<void>;
+}
+
+let auth0Client: Auth0Client | null = null;
+let storeDispatch: any = null;
+let userActions: any = null;
+
+export const setAuth0Client = (client: Auth0Client) => {
+    auth0Client = client;
+};
+
+export const setStoreHelpers = (dispatch: any, actions: any) => {
+    storeDispatch = dispatch;
+    userActions = actions;
+};
+
 export const axiosBaseQuery = ({ baseUrl }: { baseUrl: string }) => {
     const axiosInstance = axios.create({
         baseURL: VITE_BACKEND_URL + "api" + baseUrl
     });
 
     axiosInstance.interceptors.request.use(
-        (config) => {
+        async (config) => {
             try {
                 const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user') || '{}') : null;
                 if (!user) {
                     console.warn('Kein User im LocalStorage gefunden, Auth Header wird nicht gesetzt.');
                     return config;
                 }
-                console.log("State:", user);
 
                 if (user?.token) {
                     config.headers.Authorization = `Bearer ${user.token}`;
@@ -42,6 +59,47 @@ export const axiosBaseQuery = ({ baseUrl }: { baseUrl: string }) => {
             return config;
         },
         (error) => {
+            return Promise.reject(error);
+        }
+    );
+
+    axiosInstance.interceptors.response.use(
+        (response) => response,
+        async (error) => {
+            const originalRequest = error.config;
+            
+            if (error.response?.status === 401 && !originalRequest._retry && auth0Client) {
+                originalRequest._retry = true;
+                
+                try {
+                    const newToken = await auth0Client.getTokenSilently();
+                    const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user') || '{}') : null;
+                    
+                    if (user && newToken) {
+                        const updatedUser = { ...user, token: newToken };
+                        localStorage.setItem('user', JSON.stringify(updatedUser));
+                        
+                        if (storeDispatch && userActions) {
+                            storeDispatch(userActions.setUser(updatedUser));
+                        }
+                        
+                        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+                        return axiosInstance(originalRequest);
+                    }
+                } catch (refreshError) {
+                    console.error('Token refresh fehlgeschlagen:', refreshError);
+                    
+                    if (storeDispatch && userActions) {
+                        storeDispatch(userActions.clearUser());
+                    }
+                    localStorage.removeItem('user');
+                    
+                    if (auth0Client.loginWithRedirect) {
+                        await auth0Client.loginWithRedirect();
+                    }
+                }
+            }
+            
             return Promise.reject(error);
         }
     );

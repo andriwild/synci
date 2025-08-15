@@ -11,10 +11,16 @@ import {SyncConfigPage} from "./pages/syncConfig/SyncConfigPage.tsx";
 import {useAuth0} from "@auth0/auth0-react";
 import {useAppDispatch} from "./app/hooks.ts";
 import {userActions} from "./services/user/UserSlice.ts";
+import {setAuth0Client, setStoreHelpers} from "./services/common/apiHelpers.ts";
 
 export const App = () => {
-    const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
+    const { user, isAuthenticated, getAccessTokenSilently, loginWithRedirect } = useAuth0();
     const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        setAuth0Client({ getTokenSilently: getAccessTokenSilently, loginWithRedirect });
+        setStoreHelpers(dispatch, userActions);
+    }, [getAccessTokenSilently, loginWithRedirect, dispatch]);
 
     useEffect(() => {
         const fetchAndStoreToken = async () => {
@@ -29,7 +35,6 @@ export const App = () => {
                         picture: user?.picture || '',
                     }
                     ));
-                    console.log(user);
                 } catch (e) {
                     console.error("Token konnte nicht geladen werden", e);
                 }
@@ -37,7 +42,7 @@ export const App = () => {
         };
 
         fetchAndStoreToken();
-    }, [isAuthenticated]);
+    }, [isAuthenticated, user, getAccessTokenSilently, dispatch]);
 
     return (
         <Router>
