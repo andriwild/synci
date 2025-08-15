@@ -43,6 +43,12 @@ NATIONAL_LEAGUE_ID=$(get_competition_id "hockey/nla")
 SWISS_LEAGUE_ID=$(get_competition_id "hockey/nlb")
 NHL_ID=$(get_competition_id "hockey/nhl")
 
+# Floorball IDs
+UPL_MEN_ID=$(get_competition_id "unihockey/nla")
+UPL_WOMEN_ID=$(get_competition_id "unihockey/nla-women")
+WM_MEN_ID=$(get_competition_id "unihockey/wm")
+WM_WOMEN_ID=$(get_competition_id "unihockey/wm-women")
+
 echo "✅ Found league IDs:"
 echo "   Bundesliga: $BUNDESLIGA_ID"
 echo "   Premier League: $PREMIER_LEAGUE_ID"
@@ -55,6 +61,12 @@ echo "✅ Found ice hockey league IDs:"
 echo "   National League: $NATIONAL_LEAGUE_ID"
 echo "   Swiss League: $SWISS_LEAGUE_ID"
 echo "   NHL: $NHL_ID"
+echo ""
+echo "🥍 Found floorball league IDs:"
+echo "   UPL Men: $UPL_MEN_ID"
+echo "   UPL Women: $UPL_WOMEN_ID"
+echo "   WM Men: $WM_MEN_ID"
+echo "   WM Women: $WM_WOMEN_ID"
 
 # Get Champions League IDs
 echo "📡 Fetching Champions League phase IDs..."
@@ -120,6 +132,13 @@ update_league_id "SWISS_LEAGUE_QUALIFICATION" "$SWISS_LEAGUE_ID"
 
 echo "   Updating NHL Qualification ID..."
 update_league_id "NHL_QUALIFICATION" "$NHL_ID"
+
+# Update Floorball IDs
+echo "   Updating UPL Men Qualification ID..."
+update_league_id "UPL_MEN_QUALIFICATION" "$UPL_MEN_ID"
+
+echo "   Updating UPL Women Qualification ID..."
+update_league_id "UPL_WOMEN_QUALIFICATION" "$UPL_WOMEN_ID"
 
 # Update Champions League IDs
 echo "   Updating Champions League phase IDs..."
@@ -244,6 +263,12 @@ echo "🏒 Updated Ice Hockey IDs:"
 echo "   National League: $NATIONAL_LEAGUE_ID"
 echo "   Swiss League: $SWISS_LEAGUE_ID"
 echo "   NHL: $NHL_ID"
+echo ""
+echo "🥍 Updated Floorball IDs:"
+echo "   UPL Men: $UPL_MEN_ID"
+echo "   UPL Women: $UPL_WOMEN_ID"
+echo "   WM Men: $WM_MEN_ID"
+echo "   WM Women: $WM_WOMEN_ID"
 echo ""
 echo "Champions League phases updated with current round IDs."
 echo ""

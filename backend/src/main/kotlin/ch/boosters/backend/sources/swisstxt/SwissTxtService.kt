@@ -35,15 +35,25 @@ class SwissTxtService(
         val sourceId = swissTxtConfig.id
         ensure(sourceId != null) { ElementNotFound("Missing source ID in SwissTxt configuration") }
 
+        swissTxtRepository.deleteSwissTxtData()
+
         swissTxtConfig.sport.forEach {
             println("Fetching ${it.leagues.size} leagues from SwissTxt ${it.key}")
             val leagueEvents = mutableMapOf<SwissTxtLeague, List<SwissTxtTeamEvent>>()
             it.leagues.forEach { league ->
                 val events = fetchEventsFromApi(league.id).block()
                 ensure(events != null) { ElementNotFound("") }
-                leagueEvents[league] = events
+                
+                val now = LocalDateTime.now()
+                val futureEvents = events.filter { event -> event.startsOn.isAfter(now) }
+                
+                if (futureEvents.isNotEmpty()) {
+                    leagueEvents[league] = futureEvents
+                    println("Filtered ${futureEvents.size} future events for ${league.name} (${events.size} total, ${events.size - futureEvents.size} past events filtered out)")
+                } else {
+                    println("No future events found for ${league.name} (${league.id}) - ${events.size} past events filtered out")
+                }
             }
-            swissTxtRepository.deleteSwissTxtData()
             leagueEvents.forEach{(league, events) -> updateRepositories(sourceId, league, events)}
             println("\nDone!")
         }
@@ -55,7 +65,6 @@ class SwissTxtService(
         league: SwissTxtLeague,
         events: List<SwissTxtTeamEvent>
     ): SynciEither<Pair<IntArray, IntArray>> = either {
-        // Retrieve all teams involved in the events (assuming each team appears at least once as the home team)
         val teams = events.map { team -> Team(team.homeId, sourceId, team.homeName) }.distinct()
         val sportId = getSportId(league.name).bind()
 
@@ -67,7 +76,7 @@ class SwissTxtService(
 
     private fun getSportId(leagueName: String): SynciEither<UUID> = either {
         val sportId = sportsRepository.sportIdByName(leagueName).bind()
-        ensure(sportId != null) { ElementNotFound("While updating SwissTxt $sportId not found") }
+        ensure(sportId != null) { ElementNotFound("While updating SwissTxt sport '$leagueName' not found") }
         sportId
     }
 

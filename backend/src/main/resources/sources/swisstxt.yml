@@ -15,7 +15,7 @@ swisstxt:
         id: "5224-85"
       - name: LIGUE_1
         id: "5235"
-      - name: LA_LIGA
+      - name: LAlIGA
         id: "5237-87"
       - name: EUROPA_LEAGUE
         id: "5229"
@@ -58,8 +58,42 @@ swisstxt:
     - key: "ICE_HOCKEY"
       leagues:
       - name: NATIONAL_LEAGUE_QUALIFICATION
-        id: "5225"
+        id: "5225-6"
       - name: SWISS_LEAGUE_QUALIFICATION
         id: "5238"
       - name: NHL_QUALIFICATION
         id: "5233"
+    - key: "FLOORBALL"
+      leagues:
+      - name: UPL_MEN_QUALIFICATION
+        id: "5222"
+      - name: UPL_WOMEN_QUALIFICATION
+        id: "5223"
+      - name: WM_MEN_GROUPSTAGE
+        id: "5091-619"
+      - name: WM_MEN_GROUPSTAGE
+        id: "5091-620"
+      - name: WM_MEN_FINALS
+        id: "5091-545"
+      - name: WM_MEN_FINALS
+        id: "5091-511"
+      - name: WM_MEN_FINALS
+        id: "5091-512"
+      - name: WM_MEN_FINALS
+        id: "5091-623"
+      - name: WM_MEN_FINALS
+        id: "5091-513"
+      - name: WM_WOMEN_GROUPSTAGE
+        id: "4981-619"
+      - name: WM_WOMEN_GROUPSTAGE
+        id: "4981-620"
+      - name: WM_WOMEN_FINALS
+        id: "4981-545"
+      - name: WM_WOMEN_FINALS
+        id: "4981-511"
+      - name: WM_WOMEN_FINALS
+        id: "4981-512"
+      - name: WM_WOMEN_FINALS
+        id: "4981-623"
+      - name: WM_WOMEN_FINALS
+        id: "4981-513"
