@@ -129,7 +129,7 @@ export const TutorialStepperComponent = () => {
             justifyContent: 'start',
             alignItems: 'center',
             paddingTop: '60px',
-            backgroundColor: token.colorBgBase,
+            backgroundColor: '#FFF',
             padding: '40px 0',
         }}>
             <Typography.Title level={2} style={{marginBottom: 70}}>

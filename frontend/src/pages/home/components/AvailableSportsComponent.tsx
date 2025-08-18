@@ -1,18 +1,24 @@
 import {Button, Flex, theme, Typography} from "antd";
-import {IconLaurelWreath} from "@tabler/icons-react";
+import {IconCalendarWeek, IconLaurelWreath} from "@tabler/icons-react";
 import useBreakpoint from "antd/es/grid/hooks/useBreakpoint";
 import {sportApi} from "../../../services/sport/sportApi.ts";
 import {useNavigate} from "react-router-dom";
 
-export const AvailableSpotsComponent = () => {
+export const AvailableSportsComponent = () => {
     const screens = useBreakpoint();
     const sports = sportApi.useGetAllQuery();
     const {token} = theme.useToken();
     const navigate = useNavigate();
 
     return (
-        <Flex vertical style={{justifyContent: 'start', alignItems: 'center', margin: 'auto', padding: '60px 0'}}>
-            <Typography.Title level={2} style={{marginBottom: 70}}>
+
+       <div style={{
+            background: token.colorBgBase,
+            padding: '40px 0',
+        }}>
+       <div className={"container"}>
+        <Flex vertical style={{alignItems: 'center'}}>
+            <Typography.Title level={2} style={{marginBottom: 70, fontWeight: 400}}>
                 Verfügbare Sportarten
             </Typography.Title>
             <Flex
@@ -30,7 +36,7 @@ export const AvailableSpotsComponent = () => {
                         vertical
                         key={sport.id}
                         style={{
-                            background: token.colorBgContainer,
+                            background: '#fff',
                             alignItems: 'center',
                             width: '360px',
                         }}
@@ -43,10 +49,11 @@ export const AvailableSpotsComponent = () => {
 
             <Button
                 type={'primary'}
-                size={'large'}
+                size={'middle'}
                 style={{
                     marginTop: '60px',
                 }}
+                icon={<IconCalendarWeek size={15}/>}
                 onClick={() => {
                     navigate('/sport');
                 }}
@@ -54,5 +61,7 @@ export const AvailableSpotsComponent = () => {
                 Jetzt Kalender konfigurieren
             </Button>
         </Flex>
+         </div>
+         </div>
     )
 }

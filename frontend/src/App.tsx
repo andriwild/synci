@@ -56,7 +56,14 @@ export const App = () => {
                         borderRadius: 20,
                         colorBgContainer: '#EBF0F6',
                         colorBgBase: '#F4F4F4',
-                    }
+                        fontFamily: "'Montserrat', system-ui, Avenir, Helvetica, Arial, sans-serif",
+                    },
+                    components: {
+                        Button: {
+                            colorPrimary: '#3D5A80',
+                            borderRadius: 8,
+                        },
+                    },
                 }}
             >
                 <Routes>
