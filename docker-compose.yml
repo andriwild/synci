@@ -49,8 +49,8 @@ services:
       - "--http-enabled=true"
       - "--import-realm"
     environment:
-      KC_HOSTNAME_URL: https://auth.synci.awild.ch
-      KC_HOSTNAME: https://auth.synci.awild.ch
+      KC_HOSTNAME_URL: https://auth.synci.ch
+      KC_HOSTNAME: https://auth.synci.ch
       KC_PROXY: edge
       KC_HOSTNAME_STRICT: false
       KC_HOSTNAME_STRICT_HTTPS: true

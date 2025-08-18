@@ -18,4 +18,4 @@ spring:
             scope:
               - openid
 cors:
-  allowedOrigins: https://synci.awild.ch
+  allowedOrigins: https://synci.ch

@@ -24,8 +24,8 @@ env:
   POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
   POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
 
-  VITE_BACKEND_URL: https://synci.awild.ch
-  VITE_BACKEND_HOST: synci.awild.ch
+  VITE_BACKEND_URL: https://synci.ch
+  VITE_BACKEND_HOST: synci.ch
   STAGE: prod
 
 jobs:

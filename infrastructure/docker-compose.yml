@@ -36,7 +36,7 @@ services:
       - prometheus
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=synci-observer
-      - GF_SERVER_ROOT_URL=https://synci.awild.ch/dashboard/
+      - GF_SERVER_ROOT_URL=https://synci.ch/dashboard/
       - GF_SERVER_SERVE_FROM_SUBPATH=true
     networks:
       monitoring-net:

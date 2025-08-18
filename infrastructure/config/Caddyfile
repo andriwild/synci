@@ -7,7 +7,7 @@
 
 }
 
-synci.awild.ch {
+synci.ch {
 	handle /api* {
 		reverse_proxy synci-backend-prod:8080
 	}
