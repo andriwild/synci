@@ -1,5 +1,9 @@
+* {
+  font-family: 'Montserrat', system-ui, Avenir, Helvetica, Arial, sans-serif !important;
+}
+
 #root {
-  font-family: Poppins, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Montserrat', system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
   color: rgba(255, 255, 255, 0.87);
@@ -35,4 +39,11 @@ html {
 
 body::-webkit-scrollbar {
   display: none;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 36px;
+  box-sizing: border-box;
 }
