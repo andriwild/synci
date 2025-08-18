@@ -26,6 +26,9 @@ env:
 
   VITE_BACKEND_URL: https://synci.ch
   VITE_BACKEND_HOST: synci.ch
+  VITE_AUTH0_DOMAIN: ${{ secrets.VITE_AUTH0_DOMAIN }}
+  VITE_AUTH0_CLIENT_ID: ${{ secrets.VITE_AUTH0_CLIENT_ID }}
+  
   STAGE: prod
 
 jobs:

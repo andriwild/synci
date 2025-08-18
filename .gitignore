@@ -39,3 +39,5 @@ frontend/package-lock.json
 frontend/yarn.lock
 frontend/dist/
 /keycloak/
+/CLAUDE.md
+/backend/bruno_api
