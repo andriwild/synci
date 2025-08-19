@@ -111,7 +111,7 @@ export const SyncConfigComponent = () => {
             currentSyncConfig?.events?.length === 0 &&
             currentSyncConfig?.teams?.length === 0 &&
                 <>
-                    <Typography.Text>Keine Abos vorhanden</Typography.Text>
+                    <Typography.Text>Keine Teams / Ligen / Events vorhanden</Typography.Text>
                     <CreateConfigModal refetch={() => syncConfigList.refetch()}/>
                 </>
             }

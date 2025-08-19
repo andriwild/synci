@@ -16,7 +16,6 @@ export const FirstImpressionComponent = () => {
                               justifyContent: 'center',
                               alignItems: 'start',
                               alignContent: 'center',
-                              padding: '40px'
                           }}>
                         <Typography.Title
                             level={1}
@@ -43,7 +42,7 @@ export const FirstImpressionComponent = () => {
                                     }
                                     }
                             >
-                                Jetzt abbonieren
+                                Jetzt starten
                             </Button>
                             <Button type={"default"} size={"middle"} icon={<IconPlayerPlayFilled size={15}/>}
                                     onClick={() => {
