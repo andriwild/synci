@@ -13,8 +13,6 @@ on:
         - warning
         - debug
   push:
-    branches:
-      - main
     tags: [ 'v*.*.*' ]
 
 env:
