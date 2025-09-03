@@ -6,19 +6,16 @@ This repository contains the repo for the synci application.
 
 The app consists of 3 parts:
 
-+ Database
-+ Backend
-+ Frontend
++ Database (postgres)
++ Backend (spring & kotlin)
++ Frontend (vite & react)
 
 For development, you need to start each of them individually. Do the following:
 
-### General setup
-
-### Database/Keycloak
+### Database
 
 - Copy the `.env.sample` to `.env`
 - fill the missing environment variables
-  - get all the keycloak stuff from [Secure Safe](https://app.securesafe.com/) using our `synci`-Account
 - Execute the following command from the project root:
 
 ```bash
@@ -43,7 +40,6 @@ Access the backend via [http://localhost:8080](http://localhost:8080)
 ### Frontend
 
 - Copy the `./frontend/.env.sample` to `./frontend/.env`
-  - Get all the keycloak stuff from [Secure Safe](https://app.securesafe.com/) using our `synci`-Account
 - Execute the following commands from the project root:
 
 ```bash
@@ -53,3 +49,12 @@ npm run dev
 ```
 
 Access the Frontend via [http://localhost:5173](http://localhost:5173)
+
+
+## CI/CD Pipeline
+
+To trigger the dev deployment, create a git tag with the schema `v0.0.0`.
+This will create and deploy frontend and backend containers with the corresponding tag.
+
+To deploy to prod, manually triggering the pipeline is required.
+This will pull and launch the containers with the version defined in `docker-compose.prod.yml`.
