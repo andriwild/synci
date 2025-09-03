@@ -55,8 +55,7 @@ jobs:
         REGISTRY:             ${{ env.REGISTRY }}
         REPOSITORY:           ${{ github.repository }}
       run: |
-          docker compose -p prod -f docker-compose.yml -f docker-compose.prod.yml stop
-          docker compose -p prod -f docker-compose.yml -f docker-compose.prod.yml rm -f
+          docker compose -p prod -f docker-compose.yml -f docker-compose.prod.yml down
           docker compose -p prod -f docker-compose.yml -f docker-compose.prod.yml pull
-          docker compose -p prod -f docker-compose.yml -f docker-compose.prod.yml up -d --force-recreate
+          docker compose -p prod -f docker-compose.yml -f docker-compose.prod.yml up -d
 
