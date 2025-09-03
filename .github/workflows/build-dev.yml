@@ -14,38 +14,16 @@ on:
         - debug
   push:
     branches:
-      - dev 
+      - main
+    tags: [ 'v*.*.*' ]
 
 env:
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
-
-  POSTGRES_DB_NAME: ${{ secrets.POSTGRES_DB_NAME }}
-  POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-  POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-  KEYCLOAK_CLIENT_ID: ${{secrets.KEYCLOAK_CLIENT_ID}}
-  KEYCLOAK_CLIENT_SECRET: ${{secrets.KEYCLOAK_CLIENT_SECRET}}
-  KEYCLOAK_GITHUB_SECRET: ${{secrets.KEYCLOAK_GITHUB_SECRET}}
-  KEYCLOAK_GOOGLE_SECRET: ${{secrets.KEYCLOAK_GOOGLE_SECRET}}
-  KEYCLOAK_ADMIN: ${{secrets.KEYCLOAK_ADMIN}}
-  KEYCLOAK_ADMIN_PASSWORD: ${{secrets.KEYCLOAK_ADMIN_PASSWORD}}
-  POSTGRES_KEYCLOAK_USER: ${{secrets.POSTGRES_KEYCLOAK_USER}}
-  POSTGRES_KEYCLOAK_PASSWORD: ${{secrets.POSTGRES_KEYCLOAK_PASSWORD}}
-  KEYCLOAK_URL: ${{secrets.KEYCLOAK_URL}}
-  VITE_BACKEND_URL: ${{secrets.VITE_BACKEND_URL}}
-  VITE_BACKEND_HOST: ${{secrets.VITE_BACKEND_HOST}}
-  VITE_AUTH0_DOMAIN: ${{secrets.VITE_AUTH0_DOMAIN}}
-  VITE_AUTH0_CLIENT_ID: ${{secrets.VITE_AUTH0_CLIENT_ID}}
-  VITE_STAGE: ${{secrets.VITE_STAGE}}
-  
-  BACKEND_PORT: 8081
-  FRONTEND_PORT: 5174
-
-  STAGE: dev
+  VERSION: ${{ github.ref_name }}
 
 jobs:
-
   build_backend:
     name: Build backend
     runs-on: ubuntu-latest
@@ -67,7 +45,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          ref: dev
+          ref: main
 
       - name: Log into registry
         uses: docker/login-action@v3
@@ -78,11 +56,11 @@ jobs:
 
       - name: Build backend image 
         run: |
-          docker build --network="host" --build-arg KEYCLOAK_URL -t ${{ env.REGISTRY }}/${{ github.repository }}/backend-${{ env.STAGE }}:latest ./backend
+          docker build --network="host" -t ${{ env.REGISTRY }}/${{ github.repository }}/backend:${{ env.VERSION }} ./backend
 
       - name: Push backend image
         run: |
-          docker push ${{ env.REGISTRY }}/${{ github.repository }}/backend-${{ env.STAGE }}:latest
+          docker push ${{ env.REGISTRY }}/${{ github.repository }}/backend:${{ env.VERSION }}
      
 
   build_frontend:
@@ -93,7 +71,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          ref: dev
+          ref: main
 
       - name: Log into registry
         uses: docker/login-action@v3
@@ -104,23 +82,23 @@ jobs:
 
       - name: Build frontend image
         run: |
-          docker build --build-arg VITE_STAGE --build-arg VITE_BACKEND_URL --build-arg VITE_BACKEND_HOST --build-arg VITE_AUTH0_CLIENT_ID --build-arg VITE_AUTH0_DOMAIN -t ${{ env.REGISTRY }}/${{ github.repository }}/frontend-${{ env.STAGE }}:latest ./frontend
+          docker build -t ${{ env.REGISTRY }}/${{ github.repository }}/frontend:${{ env.VERSION }} ./frontend
 
       - name: Push frontend image
         run: |
-          docker push ${{ env.REGISTRY }}/${{ github.repository }}/frontend-${{ env.STAGE }}:latest
+          docker push ${{ env.REGISTRY }}/${{ github.repository }}/frontend:${{ env.VERSION }}
           
-
   deploy:
     name: Deploy frontend and backend
     needs: [build_backend, build_frontend]
     runs-on: ubuntu-latest
+    environment: dev
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          ref: dev
+          ref: main
 
       - name: Setup SSH
         run: |
@@ -138,8 +116,23 @@ jobs:
             docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_TOKEN }} ${{ env.REGISTRY }}
 
       - name: Deploy to remote server
+        env:
+          STAGE:                ${{ vars.STAGE }}
+          POSTGRES_DB_NAME:     ${{ vars.POSTGRES_DB_NAME }}
+          POSTGRES_USER:        ${{ vars.POSTGRES_USER }}
+          POSTGRES_PASSWORD:    ${{ secrets.POSTGRES_PASSWORD }}
+          VITE_STAGE:           ${{ vars.STAGE }}
+          VITE_BACKEND_URL:     ${{ vars.VITE_BACKEND_URL }}
+          VITE_BACKEND_HOST:    ${{ vars.VITE_BACKEND_HOST }}
+          VITE_AUTH0_DOMAIN:    ${{ vars.VITE_AUTH0_DOMAIN }}
+          VITE_AUTH0_CLIENT_ID: ${{ vars.VITE_AUTH0_CLIENT_ID }}
+          BACKEND_PORT:         ${{ vars.BACKEND_PORT }}
+          FRONTEND_PORT:        ${{ vars.FRONTEND_PORT }}
+          VERSION:              ${{ env.VERSION }}
+          REGISTRY:             ${{ env.REGISTRY }}
+          REPOSITORY:           ${{ github.repository }}
         run: |
-            docker compose -p dev stop
-            docker compose -p dev rm -f
-            docker compose -p dev pull
-            docker compose -p dev up -d --force-recreate
+            docker compose -p dev -f docker-compose.yml stop
+            docker compose -p dev -f docker-compose.yml rm -f
+            docker compose -p dev -f docker-compose.yml pull
+            docker compose -p dev -f docker-compose.yml up -d --force-recreate

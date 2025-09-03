@@ -1,21 +1,5 @@
 FROM node:20-alpine AS dependencies
 
-ARG VITE_BACKEND_URL
-ENV VITE_BACKEND_URL=$VITE_BACKEND_URL
-
-ARG VITE_BACKEND_HOST
-ENV VITE_BACKEND_HOST=$VITE_BACKEND_HOST
-
-ARG VITE_AUTH0_CLIENT_ID
-ENV VITE_AUTH0_CLIENT_ID=$VITE_AUTH0_CLIENT_ID
-
-ARG VITE_AUTH0_DOMAIN
-ENV VITE_AUTH0_DOMAIN=$VITE_AUTH0_DOMAIN
-
-ARG STAGE=prod
-ENV VITE_STAGE=$STAGE
-
-
 WORKDIR /app
 COPY package.json /
 RUN npm install --legacy-peer-deps
@@ -29,5 +13,8 @@ RUN npm run build
 
 FROM nginx:1.26-alpine
 COPY ./default.conf /etc/nginx/conf.d/default.conf
-EXPOSE 5173
+COPY ./init-config.sh /docker-entrypoint.d/90-init-config.sh
+RUN chmod +x /docker-entrypoint.d/90-init-config.sh
+
+EXPOSE 80
 COPY --from=builder /app/dist /usr/share/nginx/html

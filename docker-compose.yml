@@ -4,10 +4,10 @@ services:
   frontend:
     container_name: "synci-frontend-${STAGE:-local}"
     platform: linux/amd64
-    image: ghcr.io/andriwild/synci/frontend-${STAGE:-dev}:latest
+    image: ${REGISTRY}/${REPOSITORY}/frontend:${VERSION}
     environment:
-      - VITE_STAGE=${STAGE}
-      - VITE_BACKEND_URL=${VITE_BACKEND_URL}
+      - VITE_STAGE=test-stage
+      - VITE_BACKEND_URL=${VITE_BACKEND_URL:-synci.ch}
       - VITE_BACKEND_HOST=${VITE_BACKEND_HOST}
       - VITE_AUTH0_CLIENT_ID=${VITE_AUTH0_CLIENT_ID}
       - VITE_AUTH0_DOMAIN=${VITE_AUTH0_DOMAIN}
@@ -21,7 +21,7 @@ services:
   backend:
     container_name: "synci-backend-${STAGE:-local}"
     platform: linux/amd64 # adding a plattform causes gradle build to timeout with no error
-    image: ghcr.io/andriwild/synci/backend-${STAGE:-dev}:latest
+    image: ${REGISTRY}/${REPOSITORY}/backend:${VERSION}
     restart: always
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
@@ -58,8 +58,6 @@ services:
         database:
           aliases:
             - database-net-db-${STAGE:-local}
-
-
 
 volumes:
   db.data:
