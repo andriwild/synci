@@ -2,98 +2,280 @@ swisstxt:
   name: SWISSTXT
   url: https://sport.api.swisstxt.ch/v1
   id: 3
-  sport:
-    - key: "SOCCER"
+  events:
+    - name: MOTORSPORT
+      id: motorsport
+      disciplines:
+#        - name: F1 fetched from another API (at the moment)
+#          id: f1
+#          leagues:
+#            - name: FORMULA_ONE
+#              id: wm
+        - name: MOTO
+          id: moto
+          leagues:
+            - name: MOTO-2
+              id: moto-2
+            - name: MOTO-3
+              id: moto-3
+            - name: MOTO-GP
+              id: moto-gp
+        - name: CYCLING
+          id: cycling
+          leagues:
+            - name: CYCLING_MTB_WORLDCUP
+              id: mtb-worldcup
+            - name: CYCLING_MTB_WORLDCUP_WOMEN
+              id: mtb-worldcup-women
+        - name: TENNIS
+          id: tennis
+          leagues:
+            - name: TENNIS_ATP_TOUR
+              id: atp-tour
+            - name: TENNIS_WTA_TOUR
+              id: wta-tour
+        - name: SCHWINGEN
+          id: schwingen
+          leagues:
+            - name: SCHWINGEN_KRANZSCHWINGFESTE
+              id: kranzschwingfeste
+        - name: CROSS-COUNTRY
+          id: cross-country
+          leagues:
+            - name: CROSS-COUNTRY_TOUR_DE_SKI
+              id: tour-de-ski
+            - name: CROSS-COUNTRY_TOUR_DE_SKI_WOMEN
+              id: tourdeski-women
+        - name: SKI-JUMPING
+          id: ski-jumping
+          leagues:
+            - name: SKI-JUMPING_VIERSCHANZEN
+              id: vierschanzen
+
+  team_sport:
+    - name: SOCCER
+      id: football
       leagues:
-      - name: SUPER_LEAGUE
-        id: "5232-171"
-      - name: BUNDESLIGA
-        id: "5226"
-      - name: PREMIER_LEAGUE
-        id: "5231-86"
-      - name: SERIE_A
-        id: "5224-85"
-      - name: LIGUE_1
-        id: "5235"
-      - name: LAlIGA
-        id: "5237-87"
-      - name: EUROPA_LEAGUE
-        id: "5229"
-      - name: CL_QUALIFICATION_1
-        id: "5228-461-770"
-      - name: CL_QUALIFICATION_1
-        id: "5228-461-771"
-      - name: CL_QUALIFICATION_2
-        id: "5228-463-770"
-      - name: CL_QUALIFICATION_2
-        id: "5228-463-771"
-      - name: CL_QUALIFICATION_3
-        id: "5228-464-770"
-      - name: CL_QUALIFICATION_3
-        id: "5228-464-771"
-      - name: CL_PLAYOFF_ROUND
-        id: "5228-558-770"
-      - name: CL_PLAYOFF_ROUND
-        id: "5228-558-771"
-      - name: CL_MAIN_ROUND
-        id: "5061-970-160"
-      - name: CL_MAIN_ROUND
-        id: "5061-970-161"
-      - name: CL_MAIN_ROUND
-        id: "5061-970-162"
-      - name: CL_MAIN_ROUND
-        id: "5061-970-163"
-      - name: CL_MAIN_ROUND
-        id: "5061-970-164"
-      - name: CL_MAIN_ROUND
-        id: "5061-970-165"
-      - name: CL_MAIN_ROUND
-        id: "5061-970-166"
-      - name: CL_MAIN_ROUND
-        id: "5061-970-167"
-      - name: CL_KO_ROUND
-        id: "5061-103"
-      - name: CL_KO_ROUND
-        id: "5061-891"
-    - key: "ICE_HOCKEY"
+        - name: SOCCER_SUPER_LEAGUE
+          id: super-league
+        - name: SOCCER_CHALLENGE_LEAGUE
+          id: challenge-league
+        - name: SOCCER_CUP
+          id: cup
+          include_all: true
+        - name: SOCCER_1_LIGA
+          id: 1-liga
+        - name: SOCCER_SUPER_LEAGUE_WOMEN
+          id: nla-women
+        - name: SOCCER_CHAMPIONS_LEAGUE
+          id: champions-league
+          phases:
+            - SOCCER_CL_QUALIFICATION_1
+            - SOCCER_CL_QUALIFICATION_2
+            - SOCCER_CL_QUALIFICATION_3
+            - SOCCER_CL_PLAYOFF_ROUND
+            - SOCCER_CL_MAIN_ROUND
+        - name: SOCCER_EUROPA_LEAGUE
+          id: europa-league
+          phases:
+              - SOCCER_EUROPA_LEAGUE_QUALIFICATION_1
+              - SOCCER_EUROPA_LEAGUE_QUALIFICATION_2
+              - SOCCER_EUROPA_LEAGUE_QUALIFICATION_3
+              - SOCCER_EUROPA_LEAGUE_PLAYOFF_ROUND
+              - SOCCER_EUROPA_LEAGUE_MAIN_ROUND
+        - name: SOCCER_CONFERENCE_LEAGUE
+          id: conference-league
+          phases:
+              - SOCCER_CONFERENCE_LEAGUE_QUALIFICATION_1
+              - SOCCER_CONFERENCE_LEAGUE_QUALIFICATION_2
+              - SOCCER_CONFERENCE_LEAGUE_QUALIFICATION_3
+              - SOCCER_CONFERENCE_LEAGUE_PLAYOFF_ROUND
+              - SOCCER_CONFERENCE_LEAGUE_MAIN_ROUND
+        - name: SOCCER_BUNDESLIGA
+          id: bundesliga
+        - name: SOCCER_DFB_POKAL
+          id: dfb-pokal
+        - name: SOCCER_PREMIER_LEAGUE
+          id: premier-league
+        - name: SOCCER_FA_CUP
+          id: fa-cup
+        - name: SOCCER_PRIMERA_DIVISION
+          id: primera-division
+        - name: SOCCER_COPA_DEL_REY
+          id: copa-del-rey
+        - name: SOCCER_SERIE_A
+          id: serie-a
+        - name: SOCCER_COPPA_ITALIA
+          id: coppa-italia
+        - name: SOCCER_LIGUE_1
+          id: ligue-1
+        - name: SOCCER_COUPE_DE_FRANCE
+          id: coupe-de-france
+        - name: SOCCER_EURO
+          id: euro
+        - name: SOCCER_EURO_QUALI
+          id: euro-quali
+        - name: SOCCER_WM
+          id: wm
+        - name: SOCCER_WM_QUALI
+          id: wm-quali
+        - name: SOCCER_TESTGAMES
+          id: testgames
+        - name: SOCCER_NATIONS_LEAGUE
+          id: nations-league
+          phases:
+            - FINALS
+            - GROUP_PHASE
+        - name: SOCCER_AFRICA_CUP
+          id: africa-cup
+        - name: SOCCER_COPA_AMERICA
+          id: copa-america
+        - name: SOCCER_U21_EURO
+          id: u21-euro
+        - name: SOCCER_U21_EURO_QUALI
+          id: u21-euro-quali
+        - name: SOCCER_EURO_WOMEN
+          id: euro-women
+        - name: SOCCER_EURO_QUALI_WOMEN
+          id: euro-quali-women
+          phases:
+            - FINALS
+            - GROUP_PHASE
+        - name: SOCCER_WM_WOMEN
+          id: wm-women
+        - name: SOCCER_NATIONS_LEAGUE_WOMEN
+          id: nations-league-women
+          phases:
+            - FINALS
+            - GROUP_PHASE
+        - name: SOCCER_TESTGAMES_WOMEN
+          id: testgames-women
+    - name: HOCKEY
+      id: hockey
       leagues:
-      - name: NATIONAL_LEAGUE_QUALIFICATION
-        id: "5225-6"
-      - name: SWISS_LEAGUE_QUALIFICATION
-        id: "5238"
-      - name: NHL_QUALIFICATION
-        id: "5233"
-    - key: "FLOORBALL"
+        - name: HOCKEY_NLA
+          id: nla
+          phases:
+            - HOCKEY_NLA_QUALIFICATION
+            - HOCKEY_NLA_PLAYOFF
+        - name: HOCKEY_NLB
+          id: nlb
+          phases:
+            - HOCKEY_NLB_QUALIFICATION
+            - HOCKEY_NLB_PLAYOFF
+        - name: HOCKEY_MYSPORTS
+          id: mysports
+          phases:
+            - HOCKEY_MYSPORTS_QUALIFICATION
+            - HOCKEY_MYSPORTS_PLAYOFF
+        - name: HOCKEY_NLA_WOMEN
+          id: nla-women
+          phases:
+            - HOCKEY_NLA_WOMEN_QUALIFICATION
+            - HOCKEY_NLA_WOMEN_PLAYOFF
+        - name: HOCKEY_NHL
+          id: nhl
+          phases:
+            - HOCKEY_NHL_QUALIFICATION
+            - HOCKEY_NHL_PLAYOFF
+        - name: HOCKEY_CHL
+          id: chl
+          phases:
+            - HOCKEY_CHL_QUALIFICATION
+            - HOCKEY_CHL_PLAYOFF
+        - name: HOCKEY_SPENGLER_CUP
+          id: spengler-cup
+        - name: HOCKEY_WM
+          id: wm
+        - name: HOCKEY_WM_WOMEN
+          id: wm-women
+        - name: HOCKEY_EHT
+          id: eht
+        - name: HOCKEY_TESTGAMES
+          id: testgames
+        - name: HOCKEY_TESTGAMES_WOMEN
+          id: testgames-women
+    - name: CURLING
+      id: curling
       leagues:
-      - name: UPL_MEN_QUALIFICATION
-        id: "5222"
-      - name: UPL_WOMEN_QUALIFICATION
-        id: "5223"
-      - name: WM_MEN_GROUPSTAGE
-        id: "5091-619"
-      - name: WM_MEN_GROUPSTAGE
-        id: "5091-620"
-      - name: WM_MEN_FINALS
-        id: "5091-545"
-      - name: WM_MEN_FINALS
-        id: "5091-511"
-      - name: WM_MEN_FINALS
-        id: "5091-512"
-      - name: WM_MEN_FINALS
-        id: "5091-623"
-      - name: WM_MEN_FINALS
-        id: "5091-513"
-      - name: WM_WOMEN_GROUPSTAGE
-        id: "4981-619"
-      - name: WM_WOMEN_GROUPSTAGE
-        id: "4981-620"
-      - name: WM_WOMEN_FINALS
-        id: "4981-545"
-      - name: WM_WOMEN_FINALS
-        id: "4981-511"
-      - name: WM_WOMEN_FINALS
-        id: "4981-512"
-      - name: WM_WOMEN_FINALS
-        id: "4981-623"
-      - name: WM_WOMEN_FINALS
-        id: "4981-513"
+        - name: CURLING_WM
+          id: wm
+        - name: CURLING_EM
+          id: em
+        - name: CURLING_WM_WOMEN
+          id: wm-women
+        - name: CURLING_EM_WOMEN
+          id: em-women
+    - name: HANDBALL
+      id: handball
+      leagues:
+        - name: HANDBALL_NLA
+          id: nla
+          phases:
+            - HANDBALL_NLA_QUALIFICATION
+            - HANDBALL_NLA_PLAYOFF
+        - name: HANDBALL_WM
+          id: wm
+        - name: HANDBALL_EM
+          id: em
+        - name: HANDBALL_NLA_WOMEN
+          id: nla-women
+          phases:
+            - HANDBALL_NLA_WOMEN_QUALIFICATION
+            - HANDBALL_NLA_WOMEN_PLAYOFF
+        - name: HANDBALL_WM_WOMEN
+          id: wm-women
+        - name: HANDBALL_EM_WOMEN
+          id: em-women
+    - name: VOLLEYBALL
+      id: volleyball
+      leagues:
+        - name: VOLLEYBALL_NLA
+          id: nla
+          phases:
+            - VOLLEYBALL_NLA_QUALIFICATION
+            - VOLLEYBALL_NLA_PLAYOFF
+        - name: VOLLEYBALL_NLA_WOMEN
+          id: nla-women
+          phases:
+            - VOLLEYBALL_NLA_WOMEN_QUALIFICATION
+            - VOLLEYBALL_NLA_WOMEN_PLAYOFF
+        - name: VOLLEYBALL_EM
+          id: em
+        - name: VOLLEYBALL_EM_WOMEN
+          id: em-women
+    - name: BASKETBALL
+      id: basketball
+      leagues:
+        - name: BASKETBALL_NLA
+          id: nla
+          phases:
+            - BASKETBALL_NLA_QUALIFICATION
+            - BASKETBALL_NLA_PLAYOFF
+        - name: BASKETBALL_NBA
+          id: nba
+          phases:
+            - BASKETBALL_NBA_QUALIFICATION
+            - BASKETBALL_NBA_PLAYOFF
+        - name: BASKETBALL_NLA_WOMEN
+          id: nla-women
+          phases:
+            - BASKETBALL_NLA_WOMEN_QUALIFICATION
+            - BASKETBALL_NLA_WOMEN_PLAYOFF
+    - name: UNIHOCKEY
+      id: unihockey
+      leagues:
+        - name: UNIHOCKEY_NLA
+          id: nla
+          phases:
+            - UNIHOCKEY_NLA_QUALIFICATION
+            - UNIHOCKEY_NLA_PLAYOFF
+        - name: UNIHOCKEY_NLA_WOMEN
+          id: nla-women
+          phases:
+            - UNIHOCKEY_NLA_WOMEN_QUALIFICATION
+            - UNIHOCKEY_NLA_WOMEN_PLAYOFF
+        - name: UNIHOCKEY_WM
+          id: wm
+        - name: UNIHOCKEY_WM_WOMEN
+          id: wm-women
