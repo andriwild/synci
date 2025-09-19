@@ -4,12 +4,14 @@ import arrow.core.Either
 import arrow.core.raise.either
 import arrow.core.raise.ensure
 import ch.boosters.backend.data.configuration.JooqEitherDsl
+import ch.boosters.backend.data.event.model.Event
+import ch.boosters.backend.data.event.model.TeamEvent
 import ch.boosters.backend.data.team.Team
 import ch.boosters.backend.errorhandling.DatabaseError
 import ch.boosters.backend.errorhandling.SynciEither
+import ch.boosters.backend.errorhandling.SynciError
 import ch.boosters.backend.sources.common.deleteDataBySource
 import ch.boosters.backend.sources.common.lastSyncTimeQuery
-import ch.boosters.backend.sources.swisstxt.model.SwissTxtTeamEvent
 import ch.boosters.data.tables.EventsTable.Companion.EVENTS_TABLE
 import ch.boosters.data.tables.EventsTeamsTable
 import ch.boosters.data.tables.SourcesTable.Companion.SOURCES_TABLE
@@ -46,12 +48,11 @@ class SwissTxtRepository(
                 .onConflict()
                 .doNothing()
         }
-
         return dsl { it.batch(queries).execute() }
     }
 
 
-    fun storeEvents(sportKey: String, events: List<SwissTxtTeamEvent>): SynciEither<List<String>> = either {
+    fun storeEvents(sportKey: String, events: List<TeamEvent>): SynciEither<List<String>> = either {
         val sportId = getSportId(sportKey).bind()
         val srcId = sourceId.bind()
 
@@ -87,7 +88,20 @@ class SwissTxtRepository(
             }
             jooq.select(EVENTS_TABLE.ID).from(EVENTS_TABLE).fetchInto(String::class.java)
         }.bind()
+    }
 
+    fun storeEvents(id: Int, sportId: UUID, events: List<Event>): Either<SynciError, Unit> = either {
+        dsl { it: DSLContext ->
+            events.forEach { event ->
+                it.newRecord(EVENTS_TABLE).apply {
+                    this.id = UUID.randomUUID().toString()
+                    name = event.name
+                    sourceId = id
+                    startsOn = event.startsOn
+                    this.sportId = sportId
+                }.store()
+            }
+        }.bind()
     }
 
     fun storeSyncTime() = either {
