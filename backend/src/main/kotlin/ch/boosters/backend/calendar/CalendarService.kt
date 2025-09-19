@@ -26,16 +26,16 @@ class CalendarService(
 ) {
 
     fun createCalendar(configId: UUID): SynciEither<Calendar> = either {
-        val teamEvents = eventRepository.eventsOfTeams(configId).bind()
         val sportEvents = eventsBySport(configId).bind()
-        val events = eventRepository.eventsByConfig(configId).bind()
+        val teamEvents  = eventRepository.eventsOfTeams(configId).bind()
+        val events      = eventRepository.eventsByConfig(configId).bind()
         toCalendar(teamEvents + sportEvents + events)
     }
 
     private fun eventsBySport(configId: UUID): SynciEither<List<EventsTable>> = either {
         val sportsIdsInConfig = eventRepository.sportsByConfig(configId).bind()
         val includingSubSports = sportsIdsInConfig
-            .map { it -> sportsService.findSportsByParent(it) }
+            .map { sportsService.findSportsByParent(it) }
             .bindAll()
             .flatMap { it.flatten() }
             .distinct()
