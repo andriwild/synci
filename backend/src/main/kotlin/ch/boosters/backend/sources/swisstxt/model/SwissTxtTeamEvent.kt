@@ -1,8 +1,7 @@
 package ch.boosters.backend.sources.swisstxt.model
 
-import kotlinx.serialization.Contextual
+import ch.boosters.backend.data.event.model.TeamEvent
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor
@@ -15,26 +14,16 @@ import kotlinx.serialization.json.jsonPrimitive
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-@Serializable(with = SwissTxtEventSerializer::class)
-data class SwissTxtTeamEvent(
-    val id: Int,
-    @Contextual val startsOn: LocalDateTime,
-    @Contextual val endsOn: LocalDateTime,
-    val homeId: String,
-    val homeName: String,
-    val awayId: String,
-    val awayName: String,
-)
 
-object SwissTxtEventSerializer : KSerializer<SwissTxtTeamEvent> {
-    override val descriptor: SerialDescriptor = buildClassSerialDescriptor("Event") {
+object SwissTxtTeamEventSerializer : KSerializer<TeamEvent> {
+    override val descriptor: SerialDescriptor = buildClassSerialDescriptor("TeamEvent") {
         element<String>("name")
         element<Int>("id")
         element<String>("startsOn")
         element<String>("endsOn")
     }
 
-    override fun deserialize(decoder: Decoder): SwissTxtTeamEvent {
+    override fun deserialize(decoder: Decoder): TeamEvent {
         val jsonInput =
             decoder as? JsonDecoder ?: throw SerializationException("This serializer can be used only with JSON")
 
@@ -43,7 +32,7 @@ object SwissTxtEventSerializer : KSerializer<SwissTxtTeamEvent> {
         val homeId     = jsonObject["competitor1"]?.jsonObject?.get("id")  ?.jsonPrimitive?.content ?: ""
         val awayName   = jsonObject["competitor2"]?.jsonObject?.get("name")?.jsonPrimitive?.content ?: ""
         val awayId     = jsonObject["competitor2"]?.jsonObject?.get("id")  ?.jsonPrimitive?.content ?: ""
-        val id         = jsonObject["id"]?.jsonPrimitive?.content?.toIntOrNull() ?: throw SerializationException("Invalid id")
+        val id         = jsonObject["id"]?.jsonPrimitive?.content ?: throw SerializationException("Invalid id")
 
         val utcTime = jsonObject["dateTimeInfo"]?.jsonObject?.get("fullDateTime")?.jsonPrimitive?.content
             ?: throw SerializationException("Missing utcTime")
@@ -52,10 +41,10 @@ object SwissTxtEventSerializer : KSerializer<SwissTxtTeamEvent> {
         val startsOn  = LocalDateTime.parse(utcTime, formatter)
         val endsOn    = startsOn.plusHours(2)
 
-        return SwissTxtTeamEvent(id, startsOn, endsOn, homeId, homeName, awayId, awayName)
+        return TeamEvent(id, startsOn, endsOn, homeId, homeName, awayId, awayName)
     }
 
-    override fun serialize(encoder: Encoder, value: SwissTxtTeamEvent) {
+    override fun serialize(encoder: Encoder, value: TeamEvent) {
         // Implement if needed
         throw NotImplementedError("Serialization is not implemented")
     }
