@@ -9,7 +9,7 @@ import ch.boosters.data.tables.EventsTeamsTable.Companion.EVENTS_TEAMS_TABLE
 import ch.boosters.data.tables.SportsTable.Companion.SPORTS_TABLE
 import ch.boosters.data.tables.SyncConfigsEventsTable.Companion.SYNC_CONFIGS_EVENTS_TABLE
 import ch.boosters.data.tables.SyncConfigsSportsTable.Companion.SYNC_CONFIGS_SPORTS_TABLE
-import ch.boosters.data.tables.SyncConfigsTable.Companion.SYNC_CONFIGS_TABLE
+import ch.boosters.data.tables.SyncConfigsTeamsTable.Companion.SYNC_CONFIGS_TEAMS_TABLE
 import ch.boosters.data.tables.pojos.EventsTable
 import org.jooq.DSLContext
 import org.springframework.stereotype.Repository
@@ -36,11 +36,13 @@ class EventRepository(private val dsl: JooqEitherDsl) {
     fun eventsOfTeams(configID: UUID): SynciEither<List<EventsTable>> =
         dsl {
             it.select(EVENTS_TABLE.asterisk()).from(EVENTS_TABLE)
-                .join(SYNC_CONFIGS_EVENTS_TABLE)
-                .on(SYNC_CONFIGS_EVENTS_TABLE.EVENT_ID.eq(EVENTS_TABLE.ID))
-                .join(SYNC_CONFIGS_TABLE)
-                .on(SYNC_CONFIGS_TABLE.ID.eq(SYNC_CONFIGS_EVENTS_TABLE.SYNC_CONFIG_ID))
-                .where(SYNC_CONFIGS_TABLE.ID.eq(configID))
+                .whereExists(
+                    it.selectOne().from(EVENTS_TEAMS_TABLE)
+                        .join(SYNC_CONFIGS_TEAMS_TABLE)
+                        .on(SYNC_CONFIGS_TEAMS_TABLE.TEAM_ID.eq(EVENTS_TEAMS_TABLE.TEAM_ID))
+                        .where(EVENTS_TEAMS_TABLE.EVENT_ID.eq(EVENTS_TABLE.ID))
+                        .and(SYNC_CONFIGS_TEAMS_TABLE.SYNC_CONFIG_ID.eq(configID))
+                )
                 .fetch()
                 .into(EventsTable::class.java)
         }
