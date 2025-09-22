@@ -59,7 +59,5 @@ DO $$
         UPDATE SPORTS_TABLE SET name = 'SOCCER_CL_QUALIFICATION_3',     parent_id = soccer_champions_id, label='Qualifikation 3'    WHERE id = cl_quali_3_id;
         UPDATE SPORTS_TABLE SET name = 'SOCCER_CL_PLAYOFF_ROUND',       parent_id = soccer_champions_id, label='Playoff'            WHERE id = cl_playoff_id;
         UPDATE SPORTS_TABLE SET name = 'SOCCER_CL_MAIN_ROUND',          parent_id = soccer_champions_id, label='Hauptrunde'         WHERE id = cl_main_id;
-
-        DELETE FROM SPORTS_TABLE WHERE name = 'CL_KO_ROUND';
     END
 $$;
