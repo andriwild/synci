@@ -1,7 +1,7 @@
 DO $$
     DECLARE
         soccer_ch_parent_id UUID;
-        soccer_eruopacup_parent_id UUID;
+        soccer_europacup_parent_id UUID;
         soccer_euro_parent_id UUID;
         soccer_nati_m_parent_id UUID;
         soccer_nati_w_parent_id UUID;
@@ -22,7 +22,7 @@ DO $$
         cl_ko_round UUID;
     BEGIN
         SELECT id INTO soccer_ch_parent_id          FROM SPORTS_TABLE WHERE name = 'SOCCER_CH_LEAGUES';
-        SELECT id INTO soccer_eruopacup_parent_id   FROM SPORTS_TABLE WHERE name = 'SOCCER_EUROPA_CUP';
+        SELECT id INTO soccer_europacup_parent_id   FROM SPORTS_TABLE WHERE name = 'SOCCER_EUROPA_CUP';
         SELECT id INTO soccer_euro_parent_id        FROM SPORTS_TABLE WHERE name = 'SOCCER_EURO_LEAGUES';
         SELECT id INTO soccer_nati_m_parent_id      FROM SPORTS_TABLE WHERE name = 'SOCCER_NATI_MEN';
         SELECT id INTO soccer_nati_w_parent_id      FROM SPORTS_TABLE WHERE name = 'SOCCER_NATI_WOMEN';
@@ -42,9 +42,11 @@ DO $$
         SELECT id INTO cl_main_id           FROM SPORTS_TABLE WHERE name = 'CL_MAIN_ROUND';
         SELECT id INTO cl_ko_round          FROM SPORTS_TABLE WHERE name = 'CL_KO_ROUND';
 
-        UPDATE SPORTS_TABLE SET name = 'SOCCER_CHAMPIONS_LEAGUE',       parent_id = soccer_eruopacup_parent_id  WHERE id = champions_id;
+        UPDATE SPORTS_TABLE SET name = 'SOCCER_PRIMERA_DIVISION', parent_id = soccer_euro_parent_id, label='Primera División' WHERE id = laliga_id;
+
+        UPDATE SPORTS_TABLE SET name = 'SOCCER_CHAMPIONS_LEAGUE',       parent_id = soccer_europacup_parent_id  WHERE id = champions_id;
         UPDATE SPORTS_TABLE SET name = 'SOCCER_BUNDESLIGA',             parent_id = soccer_euro_parent_id       WHERE id = bundesliga_id;
-        UPDATE SPORTS_TABLE SET name = 'SOCCER_EUROPA_LEAGUE',          parent_id = soccer_eruopacup_parent_id  WHERE id = europa_league_id;
+        UPDATE SPORTS_TABLE SET name = 'SOCCER_EUROPA_LEAGUE',          parent_id = soccer_europacup_parent_id  WHERE id = europa_league_id;
         UPDATE SPORTS_TABLE SET name = 'SOCCER_LIGUE_1',                parent_id = soccer_euro_parent_id       WHERE id = ligue_1_id;
         UPDATE SPORTS_TABLE SET name = 'SOCCER_PREMIER_LEAGUE',         parent_id = soccer_euro_parent_id       WHERE id = premier_league_id;
         UPDATE SPORTS_TABLE SET name = 'SOCCER_SERIE_A',                parent_id = soccer_euro_parent_id       WHERE id = serie_a_id;
@@ -59,6 +61,5 @@ DO $$
         UPDATE SPORTS_TABLE SET name = 'SOCCER_CL_MAIN_ROUND',          parent_id = soccer_champions_id, label='Hauptrunde'         WHERE id = cl_main_id;
 
         DELETE FROM SPORTS_TABLE WHERE name = 'CL_KO_ROUND';
-        DELETE FROM SPORTS_TABLE WHERE name = 'LAlIGA';
     END
 $$;

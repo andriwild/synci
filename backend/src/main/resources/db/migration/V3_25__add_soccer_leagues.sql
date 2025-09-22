@@ -1,7 +1,7 @@
 DO $$
     DECLARE
         soccer_ch_parent_id UUID;
-        soccer_eruopa_cup_parent_id UUID;
+        soccer_europa_cup_parent_id UUID;
         soccer_euro_league_parent_id UUID;
         soccer_euro_parent_id UUID;
         soccer_conference_parent_id UUID;
@@ -10,7 +10,7 @@ DO $$
     BEGIN
         SELECT id INTO soccer_ch_parent_id          FROM SPORTS_TABLE WHERE name = 'SOCCER_CH_LEAGUES';
         SELECT id INTO soccer_euro_parent_id        FROM SPORTS_TABLE WHERE name = 'SOCCER_EURO_LEAGUES';
-        SELECT id INTO soccer_eruopa_cup_parent_id  FROM SPORTS_TABLE WHERE name = 'SOCCER_EUROPA_CUP';
+        SELECT id INTO soccer_europa_cup_parent_id  FROM SPORTS_TABLE WHERE name = 'SOCCER_EUROPA_CUP';
         SELECT id INTO soccer_euro_league_parent_id FROM SPORTS_TABLE WHERE name = 'EUROPA_LEAGUE';
         SELECT id INTO soccer_conference_parent_id  FROM SPORTS_TABLE WHERE name = 'SOCCER_CONFERENCE_LEAGUE';
         SELECT id INTO soccer_nati_m_parent_id      FROM SPORTS_TABLE WHERE name = 'SOCCER_NATI_MEN';
@@ -27,7 +27,6 @@ DO $$
             -- euro leagues
             (gen_random_uuid(), 'SOCCER_DFB_POKAL',         soccer_euro_parent_id, 'DFB Pokal'),
             (gen_random_uuid(), 'SOCCER_FA_CUP',            soccer_euro_parent_id, 'FA Cup'),
-            (gen_random_uuid(), 'SOCCER_PRIMERA_DIVISION',  soccer_euro_parent_id, 'Primera División'),
             (gen_random_uuid(), 'SOCCER_COPA_DEL_REY',      soccer_euro_parent_id, 'Copa del Rey'),
             (gen_random_uuid(), 'SOCCER_COPPA_ITALIA',      soccer_euro_parent_id, 'Coppa Italia'),
             (gen_random_uuid(), 'SOCCER_COUPE_DE_FRANCE',   soccer_euro_parent_id, 'Coupe de France'),
