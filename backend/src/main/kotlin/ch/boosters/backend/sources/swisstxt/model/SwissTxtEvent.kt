@@ -54,7 +54,7 @@ object SwissTxtEventSerializer : KSerializer<SwissTxtEvent> {
                 if(!location.isNullOrBlank()) {
                     displayName = "$displayName - $location"
                 }
-               Event(id, displayName, startsOn)
+               Event(id, "$name: $displayName", startsOn)
             } ?: emptyList()
         return SwissTxtEvent(id, name, events)
     }
