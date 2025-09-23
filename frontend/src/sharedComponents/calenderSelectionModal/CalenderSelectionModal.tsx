@@ -68,7 +68,7 @@ export const CalendarSelectionModal = ({url, buttonText, buttonType, buttonIcon}
                                 icon={<IconCalendarPlus size={20}/>}
                                 type="primary"
                                 onClick={() => {
-                                    window.open("https://calendar.google.com/calendar/u/0/r?cid=webcal://" + url)
+                                    window.open("https://calendar.google.com/calendar/r?cid=" + encodeURIComponent("webcal://" + url))
                                 }
                                 }
                             >Einfügen</Button>
