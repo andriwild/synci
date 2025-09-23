@@ -15,6 +15,7 @@ import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.ProdId
 import net.fortuna.ical4j.model.property.Uid
 import net.fortuna.ical4j.model.property.immutable.ImmutableCalScale
+import net.fortuna.ical4j.model.property.immutable.ImmutableVersion
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -50,6 +51,7 @@ class CalendarService(
         val distinctEvents = events.distinctBy { it.id }
         val icsCalendar = Calendar()
         icsCalendar.add<PropertyContainer>(ProdId(PROD_ID))
+        icsCalendar.add<PropertyContainer>(ImmutableVersion.VERSION_2_0)
         icsCalendar.add<PropertyContainer>(ImmutableCalScale.GREGORIAN)
         icsCalendar.add<ComponentContainer<CalendarComponent>>(timeZone.vTimeZone)
         distinctEvents.forEach {
@@ -59,8 +61,7 @@ class CalendarService(
             } else {
                 VEvent(it.startsOn, it.endsOn, it.name)
             }
-            val uid = it.id
-            event.add<PropertyContainer>(Uid(uid))
+            event.add<PropertyContainer>(Uid("${it.id}@synci.ch"))
 
             icsCalendar.add<ComponentContainer<CalendarComponent>>(event)
         }
