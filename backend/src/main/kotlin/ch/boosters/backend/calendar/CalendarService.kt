@@ -9,6 +9,7 @@ import ch.boosters.data.tables.pojos.EventsTable
 import net.fortuna.ical4j.model.Calendar
 import net.fortuna.ical4j.model.ComponentContainer
 import net.fortuna.ical4j.model.PropertyContainer
+import net.fortuna.ical4j.model.TimeZoneRegistryFactory
 import net.fortuna.ical4j.model.component.CalendarComponent
 import net.fortuna.ical4j.model.component.VEvent
 import net.fortuna.ical4j.model.property.ProdId
@@ -44,10 +45,13 @@ class CalendarService(
     }
 
     private fun toCalendar(events: List<EventsTable>): Calendar {
+        val timeZoneRegistry = TimeZoneRegistryFactory.getInstance().createRegistry()
+        val timeZone = timeZoneRegistry.getTimeZone("Europe/Zurich")
         val distinctEvents = events.distinctBy { it.id }
         val icsCalendar = Calendar()
         icsCalendar.add<PropertyContainer>(ProdId(PROD_ID))
         icsCalendar.add<PropertyContainer>(ImmutableCalScale.GREGORIAN)
+        icsCalendar.add<ComponentContainer<CalendarComponent>>(timeZone.vTimeZone)
         distinctEvents.forEach {
             val event: VEvent = if (it.endsOn == null) {
                 // TODO: #12 meaningful name for ski events
