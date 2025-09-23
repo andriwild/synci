@@ -3,4 +3,4 @@ ch:
     db:
       jdbcUrl: jdbc:postgresql://database-net-db-dev:5432/synci-db
 cors:
-  allowedOrigins: https://dev.synci.awild.ch
+  allowedOrigins: https://dev.synci.ch
