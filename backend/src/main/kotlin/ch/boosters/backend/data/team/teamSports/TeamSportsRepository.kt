@@ -12,7 +12,7 @@ import java.util.*
 @Repository
 class TeamSportsRepository(private val dsl: JooqEitherDsl) {
 
-    fun storeTeams(teams: List<Team>, sportID: UUID): SynciEither<IntArray> = either {
+    fun upsertTeams(teams: List<Team>, sportID: UUID): SynciEither<IntArray> = either {
         val queries = teams.map {
             val id = UUID.randomUUID()
             DSL.insertInto(TEAMS_SPORTS_TABLE).columns(
@@ -21,6 +21,7 @@ class TeamSportsRepository(private val dsl: JooqEitherDsl) {
                 TEAMS_SPORTS_TABLE.SOURCE_TEAM_ID,
                 TEAMS_SPORTS_TABLE.SPORT_ID
             ).values(id, it.id, it.source, sportID)
+                .onDuplicateKeyIgnore()
         }
         dsl { it.batch(queries).execute() }.bind()
     }

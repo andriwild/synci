@@ -1,6 +1,7 @@
 package ch.boosters.backend.sources.swisstxt
 
 import arrow.core.Either
+import arrow.core.raise.Raise
 import arrow.core.raise.either
 import arrow.core.raise.ensure
 import ch.boosters.backend.data.event.model.BaseEvent
@@ -11,6 +12,7 @@ import ch.boosters.backend.data.team.Team
 import ch.boosters.backend.data.team.teamSports.TeamSportsRepository
 import ch.boosters.backend.errorhandling.ElementNotFound
 import ch.boosters.backend.errorhandling.SynciEither
+import ch.boosters.backend.errorhandling.SynciError
 import ch.boosters.backend.sources.swisstxt.model.SwissTxtEvent
 import ch.boosters.backend.sources.swisstxt.model.SwissTxtLeagueConfig
 import ch.boosters.backend.sources.swisstxt.serializers.EventSerializer
@@ -53,33 +55,39 @@ class SwissTxtService(
         val sourceId = swissTxtConfig.id
         ensure(sourceId != null) { ElementNotFound("Missing source ID in SwissTxt configuration") }
 
-        swissTxtRepository.deleteSwissTxtData()
 
         updateTeamEvents(swissTxtConfig.teamSport, sourceId)
         updateEvents(swissTxtConfig.events, sourceId)
         swissTxtRepository.storeSyncTime()
     }
 
-    fun updateTeamEvents(teamSports: MutableList<SwissTxtTeamSport>, sourceId: Int): SynciEither<Unit> = either  {
-        val leagueEvents = mutableMapOf<String, List<TeamEvent>>()
-
-        teamSports.forEach { teamSport ->
-            teamSport.leagues.forEach { league ->
-                val leagueConfig = fetchLeagueConfigFromApi(teamSport.id, league.id).block()
-                ensure(leagueConfig != null) { ElementNotFound("") }
-
-                if (leagueConfig.competitorType == "Team") {
-
-                    collectLeaguesToFetch(leagueConfig, league).map { (key, id) ->
-                        val events = fetchEventsFromApi(id).block()
-                        ensure(events != null) { ElementNotFound("Events of ${teamSport.name} - ${league.name} not found") }
-                        leagueEvents[key] = filterPastEvents(events)
-                    }
-                }
-            }
-        }
-        leagueEvents.forEach{(league, events) -> updateRepositoriesForTeamEvents(sourceId, league, events)}
+    fun updateTeamEvents(teamSports: MutableList<SwissTxtTeamSport>, sourceId: Int): SynciEither<Unit> = either {
+        val leagueEvents = teamSports.flatMap { teamSport -> fetchAllEventForLeague(teamSport) }
+        leagueEvents.forEach { (league, events) -> updateRepositoriesForTeamEvents(sourceId, league, events) }
         println("\nDone!")
+    }
+
+    private fun Raise<SynciError>.fetchAllEventForLeague(teamSport: SwissTxtTeamSport): List<Pair<String, List<TeamEvent>>> =
+        teamSport.leagues.flatMap { league ->
+            val leagueConfig = fetchLeagueConfigFromApi(teamSport.id, league.id).block()
+            ensure(leagueConfig != null) { ElementNotFound("") }
+
+            if (leagueConfig.competitorType == "Team") {
+                collectLeaguesToFetch(leagueConfig, league).map { (leagueKey, id) ->
+                    eventsForLeague(id, teamSport, league, leagueKey).bind()
+                }
+            } else listOf()
+        }
+
+    private fun eventsForLeague(
+        id: String,
+        teamSport: SwissTxtTeamSport,
+        league: SwissTxtSportLeague,
+        leagueKey: String
+    ): SynciEither<Pair<String, List<TeamEvent>>> = either {
+        val events = fetchEventsFromApi(id).block()
+        ensure(events != null) { ElementNotFound("Events of ${teamSport.name} - ${league.name} not found") }
+        Pair(leagueKey, filterPastEvents(events))
     }
 
     fun updateEvents(eventSports: List<SwissTxtEventSport>, sourceId: Int): SynciEither<Unit> = either {
@@ -87,13 +95,13 @@ class SwissTxtService(
         eventSports.forEach { teamSport ->
             teamSport.disciplines.forEach { discipline ->
                 discipline.leagues.forEach { eventLeague ->
-                    val event = fetchEventConfigFromApi(discipline.id, eventLeague. id).block()
+                    val event = fetchEventConfigFromApi(discipline.id, eventLeague.id).block()
                     ensure(event != null) { ElementNotFound("Events of ${teamSport.name} - ${eventLeague.name} not found") }
                     leagueEvents[eventLeague] = filterPastEvents(event.events)
                 }
             }
         }
-        leagueEvents.forEach{ (cat, events) -> updateRepositoriesForEvents(sourceId, cat, events) }
+        leagueEvents.forEach { (cat, events) -> updateRepositoriesForEvents(sourceId, cat, events) }
         println("\nDone!")
     }
 
@@ -103,7 +111,7 @@ class SwissTxtService(
         events: List<Event>
     ): SynciEither<Unit> = either {
         val sportId = getSportId(cat.name).bind()
-        swissTxtRepository.storeEvents(sourceId, sportId, events).bind()
+        swissTxtRepository.upsertEvents(sourceId, sportId, events).bind()
     }
 
     private fun updateRepositoriesForTeamEvents(
@@ -114,9 +122,9 @@ class SwissTxtService(
         val teams = events.map { team -> Team(team.homeId, sourceId, team.homeName) }.distinct()
         val sportId = getSportId(leagueName).bind()
 
-        val teamIds = swissTxtRepository.storeTeams(teams).bind()
-        val teamSportIds = teamSportsRepository.storeTeams(teams, sportId).bind()
-        swissTxtRepository.storeEvents(leagueName, events).bind()
+        val teamIds = swissTxtRepository.upsertTeams(teams).bind()
+        val teamSportIds = teamSportsRepository.upsertTeams(teams, sportId).bind()
+        swissTxtRepository.upsertEvents(leagueName, events).bind()
         Pair(teamIds, teamSportIds)
     }
 
@@ -150,7 +158,10 @@ class SwissTxtService(
         return fetchFromApi(url, eventSerializer::parseResponse)
     }
 
-    private fun collectLeaguesToFetch(leagueConfig: SwissTxtLeagueConfig, league: SwissTxtSportLeague): List<Pair<String, String>> {
+    private fun collectLeaguesToFetch(
+        leagueConfig: SwissTxtLeagueConfig,
+        league: SwissTxtSportLeague
+    ): List<Pair<String, String>> {
         // mapping phase key -> phase id to fetch (e.g. CL_QUALIFICATION_1 -> 1234-123)
         return when {
             league.includeAll -> listOf(Pair(league.name, leagueConfig.phases.joinToString(",")))

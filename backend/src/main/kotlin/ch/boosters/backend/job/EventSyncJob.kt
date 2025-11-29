@@ -27,7 +27,7 @@ class EventSyncJob : Job {
         )
         updates.map {
             when (it) {
-                is Either.Left -> println("Something went wrong when inserting races: ${it.value.message}")
+                is Either.Left -> println("Something went wrong on updating events: ${it.value.message}")
                 is Either.Right -> println("Successfully inserted data")
             }
         }
