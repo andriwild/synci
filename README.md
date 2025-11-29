@@ -56,7 +56,6 @@ npm run dev
 
 Access the Frontend via [http://localhost:5173](http://localhost:5173)
 
-
 ## CI/CD Pipeline
 
 To trigger the dev deployment, create a git tag with the schema `v0.0.0`.
