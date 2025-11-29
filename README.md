@@ -37,8 +37,14 @@ This will apply all db migrations, initialize jOOQ and start the backend.
 
 Access the backend via [http://localhost:8080](http://localhost:8080)
 
+#### Why can't I build the backend docker container locally?
+
+The backend needs access to the running database during build. Since build and runtime are completely separated in
+Docker Compose, we cannot build the backend container using `docker compose build`.
+
 ### Frontend
 
+- It is automatically started when running `./startDependencies.sh`
 - Copy the `./frontend/.env.sample` to `./frontend/.env`
 - Execute the following commands from the project root:
 

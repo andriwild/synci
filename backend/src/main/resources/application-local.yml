@@ -1,6 +1,6 @@
 ch:
   boosters:
     db:
-      jdbcUrl: jdbc:postgresql://localhost:5432/synci-db
+      jdbcUrl: jdbc:postgresql://${DB_HOST:localhost}:5432/${POSTGRES_DB:synci-db}
 cors:
   allowedOrigins: http://localhost:5173

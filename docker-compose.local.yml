@@ -1,6 +1,10 @@
-version: '3.8'
 services:
   db:
     ports:
       - '5432:5432'
-
+  frontend:
+    image: synci-frontend-local
+    build:
+      context: ./frontend
+    container_name: "synci-frontend-${STAGE:-local}"
+    platform: linux/amd64
