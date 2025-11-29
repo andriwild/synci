@@ -23,11 +23,13 @@
 ### get a single syncconfig
 
 GET {{backendUrl}}/syncconfig/fd9582d2-99a2-4ed4-bb95-754f425b42dd
+Authorization: Bearer {{$auth.token("auth0-oauth")}}
 
 ### create a new sync config
 
 POST {{backendUrl}}/syncconfig
 Content-Type: application/json
+Authorization: Bearer {{$auth.token("auth0-oauth")}}
 
 {
   "id": "e2b7a8f0-9f3e-11eb-a8b3-0242ac830003",
@@ -45,9 +47,11 @@ Content-Type: application/json
 ### subscribe calendar
 
 GET {{backendUrl}}/calendars/fd9582d2-99a2-4ed4-bb95-754f425b42dd/subscribe
+Authorization: Bearer {{$auth.token("auth0-oauth")}}
 
 
 ### sports by id
 
 
 GET {{backendUrl}}/sports/65b90a0d-2859-4aee-90bb-d5cc0210dc99/teams
+Authorization: Bearer {{$auth.token("auth0-oauth")}}
