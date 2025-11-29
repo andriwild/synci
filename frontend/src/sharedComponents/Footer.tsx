@@ -1,8 +1,11 @@
 import { FC } from "react";
-import {Flex, Typography} from "antd";
+import { Button, Flex} from "antd";
+import { useNavigate } from "react-router-dom";
 
 // TODO: Footer should be at the bottom of the page - always
 export const Footer: FC = () => {
+
+    const navigate = useNavigate();
 
     return (
         <Flex style={{
@@ -12,9 +15,14 @@ export const Footer: FC = () => {
             padding: '10px  24px',
             height: "auto",
             backgroundColor: '#3D5A80' }}>
-            <Typography.Text style={{color: 'white', padding: '0 1rem'}}>Datenschutz</Typography.Text>
-            <Typography.Text style={{color: 'white', padding: '0 1rem'}}>Impressum</Typography.Text>
-            <Typography.Text style={{color: 'white', padding: '0 1rem'}}>FAQ</Typography.Text>
+            <Button type="link" style={{color: 'white'}}
+                onClick={() => { navigate("/impressum"); }} >
+                Impressum & Datenschutz
+            </Button>
+            <Button type="link" style={{color: 'white'}}
+                onClick={() => { navigate("/faq"); }} >
+                FAQ
+            </Button>
         </Flex>
     )
 }

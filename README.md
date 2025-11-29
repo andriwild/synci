@@ -50,12 +50,11 @@ Docker Compose, we cannot build the backend container using `docker compose buil
 
 ```bash
 cd frontend 
-npm install
-npm run dev
+pnpm install
+pnpm dev
 ```
 
 Access the Frontend via [http://localhost:5173](http://localhost:5173)
-
 
 ## CI/CD Pipeline
 
