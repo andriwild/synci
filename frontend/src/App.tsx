@@ -7,6 +7,8 @@ import {SportPage} from "./pages/sport/SportPage.tsx";
 import './index.css';
 import {AppLayout} from "./sharedComponents/AppLayout.tsx";
 import {FaqPage} from "./pages/faq/FaqPage.tsx";
+import {ImpressumPage} from "./pages/impressum/ImpressumPage.tsx";
+import {PrivacyPolicyPage} from "./pages/privacyPolicy/PrivacyPolicyPage.tsx";
 import {SyncConfigPage} from "./pages/syncConfig/SyncConfigPage.tsx";
 import {useAuth0} from "@auth0/auth0-react";
 import {useAppDispatch} from "./app/hooks.ts";
@@ -75,6 +77,7 @@ export const App = () => {
                         <Route path="/sport" element={<SportPage />} />
                         <Route path="/syncConfig" element={<SyncConfigPage/>} />
                         <Route path="/faq" element={<FaqPage />} />
+                        <Route path="/impressum" element={<ImpressumPage />} />
                     </Route>
                 </Routes>
             </ConfigProvider>
