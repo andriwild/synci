@@ -41,3 +41,6 @@ frontend/dist/
 /keycloak/
 /CLAUDE.md
 /backend/bruno_api
+
+#python
+.venv
