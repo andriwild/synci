@@ -34,13 +34,12 @@ replay_pid*
 /backend/.DS_Store
 /frontend/node_modules/
 /frontend/src/config/.env
-/node_modules/
-frontend/package-lock.json
 frontend/yarn.lock
 frontend/dist/
 /keycloak/
 /CLAUDE.md
 /backend/bruno_api
+frontend/pnpm-lock.yaml
 
 #python
 .venv

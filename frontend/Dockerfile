@@ -1,15 +1,22 @@
-FROM node:20-alpine AS dependencies
+FROM node:20-alpine AS base
+
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
 
 WORKDIR /app
-COPY package.json /
-RUN npm install --legacy-peer-deps
 
-FROM dependencies AS builder
+FROM base AS dependencies
+COPY package.json pnpm-lock.yaml ./
+
+RUN pnpm install --frozen-lockfile
+
+FROM base AS builder
 WORKDIR /app
-ADD . .
-RUN npm --version
-COPY --from=dependencies /node_modules /node_modules
-RUN npm run build
+COPY . .
+COPY --from=dependencies /app/node_modules ./node_modules
+
+RUN pnpm exec vite build
 
 FROM nginx:1.26-alpine
 COPY ./default.conf /etc/nginx/conf.d/default.conf
