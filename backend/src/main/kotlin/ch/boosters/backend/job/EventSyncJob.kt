@@ -11,19 +11,11 @@ import org.springframework.stereotype.Component
 class EventSyncJob : Job {
 
     @Autowired
-    lateinit var swissSkiService: SwissSkiService
-
-    @Autowired
     lateinit var swissTxtService: SwissTxtService
-
-    @Autowired
-    lateinit var formulaOneService: FormulaOneService
 
     override fun execute(context: JobExecutionContext) {
         val updates = listOf(
-            swissSkiService.update(),
             swissTxtService.update(),
-            formulaOneService.update()
         )
         updates.map {
             when (it) {

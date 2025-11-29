@@ -6,11 +6,11 @@ swisstxt:
     - name: MOTORSPORT
       id: motorsport
       disciplines:
-#        - name: F1 fetched from another API (at the moment)
-#          id: f1
-#          leagues:
-#            - name: FORMULA_ONE
-#              id: wm
+        - name: FORMULA_ONE
+          id: f1
+          leagues:
+            - name: WM
+              id: wm
         - name: MOTO
           id: moto
           leagues:
@@ -51,6 +51,13 @@ swisstxt:
           leagues:
             - name: SKI-JUMPING_VIERSCHANZEN
               id: vierschanzen
+        - name: SKI
+          id: ski
+          leagues:
+            - name: WC_M
+              id: men
+            - name: WC_W
+              id: women
 
   team_sport:
     - name: SOCCER
