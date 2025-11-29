@@ -39,7 +39,6 @@ frontend/dist/
 /keycloak/
 /CLAUDE.md
 /backend/bruno_api
-frontend/pnpm-lock.yaml
 
 #python
 .venv
