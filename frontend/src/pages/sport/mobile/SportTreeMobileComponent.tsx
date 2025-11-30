@@ -5,6 +5,7 @@ import {sportApi} from "../../../services/sport/sportApi.ts";
 import {Alert, Button, Flex, Spin, theme} from "antd";
 import {CaretRight} from "@phosphor-icons/react";
 import {SportDetailMobileComponent} from "./SportDetailMobileComponent.tsx";
+import {ShowCalendarsButton} from "./ShowCalendarsButton.tsx";
 
 export const SportTreeMobileComponent = () => {
     const {data, isLoading, isError, error} = sportApi.useGetAllQuery();
@@ -101,6 +102,7 @@ export const SportTreeMobileComponent = () => {
                     {data && data.length > 0 ? renderTree(data) : <p>Keine Sportarten gefunden</p>}
                 </Flex>
             )}
+            <ShowCalendarsButton />
         </div>
     );
 }
