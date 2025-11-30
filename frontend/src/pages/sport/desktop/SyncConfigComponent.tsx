@@ -5,30 +5,32 @@ import {useEffect, useState} from "react";
 import {useDispatch} from "react-redux";
 import {NotificationPlacement} from "antd/es/notification/interface";
 import {syncConfigActions, useSyncConfig} from "../../../services/syncConfig/syncCofigSlice.ts";
-import { syncConfigApi } from "../../../services/syncConfig/syncConfigApi";
-import { useUser } from "../../../services/user/UserSlice";
+import {syncConfigApi} from "../../../services/syncConfig/syncConfigApi";
+import {useUser} from "../../../services/user/UserSlice";
 import {SportConfigCard} from "../../../sharedComponents/config/SportConfigCard.tsx";
 import {TeamConfigCard} from "../../../sharedComponents/config/TeamConfigCard.tsx";
-import { CalendarSelectionModal } from "../../../sharedComponents/calenderSelectionModal/CalenderSelectionModal.tsx";
+import {CalendarSelectionModal} from "../../../sharedComponents/calenderSelectionModal/CalenderSelectionModal.tsx";
 import {VITE_BACKEND_HOST} from "../../../../env.ts";
 import {EventConfigCard} from "../../../sharedComponents/config/EventConfigCard.tsx";
 
 
 export const SyncConfigComponent = () => {
-    const syncConfigList = syncConfigApi.useGetAllQuery();
-    const [open, setOpen] = useState(false);
     const user = useUser();
+    const syncConfigList = syncConfigApi.useGetAllQuery(undefined, {
+        skip: !user, // Skip the API call if user is not logged in
+    });
+    const token = theme.useToken().token;
+    const [open, setOpen] = useState(false);
 
 
     const currentSyncConfig = useSyncConfig();
     const dispatch = useDispatch();
 
     useEffect(() => {
-        syncConfigList.refetch();
-        if (syncConfigList.data && !currentSyncConfig) {
+        if (user && syncConfigList.data) {
             dispatch(syncConfigActions.setSyncConfig(syncConfigList.data[0]));
         }
-    }, [user]);
+    }, [user, syncConfigList.data, dispatch]);
 
     if (!user) {
         return (
@@ -54,7 +56,7 @@ export const SyncConfigComponent = () => {
         return (
             <Flex vertical style={{gap: 20, padding: "20px 20px", width:"100%"}} align={"center"}>
                 <Typography.Title level={5}>Keine Abos vorhanden</Typography.Title>
-             <CreateConfigModal refetch={syncConfigList.refetch}/>
+                <CreateConfigModal refetch={syncConfigList.refetch}/>
             </Flex>
         );
     }

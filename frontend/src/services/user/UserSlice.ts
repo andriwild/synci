@@ -42,6 +42,4 @@ export const userActions = {
     ...slice.actions,
 };
 
-export const userSlice = slice;
-
 export const useUser = () => useAppSelector(userSelectors.user);
