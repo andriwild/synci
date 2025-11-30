@@ -219,25 +219,85 @@ const CreateConfigCard = ({refetch}: { refetch: () => void }) => {
             {contextHolder}
             <Flex
                 vertical
-                align="center"
-                justify="center"
                 gap={10}
                 style={{
                     background: token.colorBgBase,
                     borderRadius: "20px",
                     maxWidth: "300px",
-                    minHeight: "200px",
                     padding: "20px",
                     cursor: "pointer",
-                    border: `2px dashed ${token.colorPrimary}`,
-                    transition: "all 0.3s ease"
+                    position: "relative",
+                    overflow: "hidden"
                 }}
                 onClick={() => setOpen(true)}
             >
-                <IconPlus size={60} color={token.colorPrimary}/>
-                <Typography.Text style={{color: token.colorPrimary, fontWeight: 500}}>
-                    Neues Abo erstellen
-                </Typography.Text>
+                {/* Blurred Content */}
+                <Flex vertical gap={10} style={{filter: "blur(8px)", pointerEvents: "none"}}>
+                    <Typography.Title level={3} style={{margin: 0}}>Mein Abo</Typography.Title>
+
+                    {/* Dummy Event 1 */}
+                    <Flex gap={20} align={"center"} justify={"space-between"}
+                          style={{borderRadius: 20, background: token.colorBgContainer, padding: 20}}>
+                        <Flex gap={20} align={"center"}>
+                            <IconFileSad size={40} color={token.colorPrimary}/>
+                            <Flex vertical gap={5}>
+                                <Typography.Title level={5} style={{margin: 0}}>Boosters in Adelboden</Typography.Title>
+                                <Typography.Text>30.11.2025</Typography.Text>
+                            </Flex>
+                        </Flex>
+                        <Button type={"default"} icon={<IconFileSad size={20}/>}/>
+                    </Flex>
+
+                    {/* Dummy Event 2 */}
+                    <Flex gap={20} align={"center"} justify={"space-between"}
+                          style={{borderRadius: 20, background: token.colorBgContainer, padding: 20}}>
+                        <Flex gap={20} align={"center"}>
+                            <IconFileSad size={40} color={token.colorPrimary}/>
+                            <Flex vertical gap={5}>
+                                <Typography.Title level={5} style={{margin: 0}}>Booster Event</Typography.Title>
+                                <Typography.Text>01.01.2024</Typography.Text>
+                            </Flex>
+                        </Flex>
+                        <Button type={"default"} icon={<IconFileSad size={20}/>}/>
+                    </Flex>
+
+                    {/* Dummy Buttons */}
+                    <Button type="default" icon={<IconPlus size={20}/>}>Sportarten hinzufügen</Button>
+                    <Button type="primary">Zu Kalender hinzufügen</Button>
+                    <Button danger type="primary">Abo löschen</Button>
+                </Flex>
+
+                {/* Plus Icon Overlay */}
+                <Flex
+                    vertical
+                    align="center"
+                    justify="center"
+                    gap={10}
+                    style={{
+                        position: "absolute",
+                        top: "25%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                        pointerEvents: "none"
+                    }}
+                >
+                    <Flex
+                        align="center"
+                        justify="center"
+                        style={{
+                            width: "80px",
+                            height: "80px",
+                            borderRadius: "50%",
+                            background: "white",
+                            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)"
+                        }}
+                    >
+                        <IconPlus size={60} color={token.colorPrimary}/>
+                    </Flex>
+                    <Typography.Text style={{color: token.colorPrimary, fontWeight: 500, fontSize: 16, textAlign: "center"}}>
+                        Neues Abo erstellen
+                    </Typography.Text>
+                </Flex>
             </Flex>
 
             <Modal
