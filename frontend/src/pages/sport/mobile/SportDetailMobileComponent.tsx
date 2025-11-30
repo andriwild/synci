@@ -30,7 +30,7 @@ export const SportDetailMobileComponent = ({callback, id, title}: { callback: Di
 
     useEffect(() => {
         if (eventQuery.data) {
-            setEventList(eventList.concat(eventQuery.data.elements));
+            setEventList(evs => evs.concat(eventQuery.data?.elements ?? []));
         }
     }, [eventQuery.data]);
 
