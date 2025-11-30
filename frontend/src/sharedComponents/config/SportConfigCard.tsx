@@ -1,5 +1,5 @@
 import {Sport} from "../../services/sport/entities/sport.ts";
-import {Button, Flex, Tag, theme, Typography} from "antd";
+import {Badge, Button, Flex, Tag, theme, Typography} from "antd";
 import {IconSitemap, IconTrash} from "@tabler/icons-react";
 import {syncConfigApi} from "../../services/syncConfig/syncConfigApi.ts";
 import {syncConfigActions, useSyncConfig} from "../../services/syncConfig/syncCofigSlice.ts";
@@ -15,38 +15,57 @@ export const SportConfigCard = ({sport, config}: { sport: Sport, config?: SyncCo
     const dispatch = useDispatch();
 
     return (
-        <Flex
-            gap={20}
-            align={"center"}
-            justify={"space-between"}
-            style={{borderRadius: 20, background: token.colorBgContainer, padding: 20}}>
-            <Flex gap={20} align={"center"}>
-                <Flex gap={10}
-                      align={"start"}>
-                    <Typography.Title level={5}
-                    style={{margin: "0"}}
-                    >{sport.label}</Typography.Title>
-                    <Tag color={token.colorPrimary}>Sportart</Tag>
-                </Flex>
-            </Flex>
-            <Button
-                type={"default"}
-                icon={<IconTrash size={20}/>}
-                loading={updateSyncConfigStatus.isLoading}
-                onClick={async () => {
-                    if (!syncConfig || !syncConfig.id) {
-                        return;
-                    }
-                    const dto = syncConfigDtoMapper(syncConfig);
-                    dto.sports = dto.sports?.filter((s) => s !== sport.id);
-                    const newSyncConfig = await updateSyncConfig(dto);
-                    if (syncConfig.id === currentSyncConfig?.id) {
-                        dispatch(syncConfigActions.setSyncConfig(newSyncConfig.data));
-                    }
-                }
-                }
-            />
+    <Flex
+        align={"center"}
+        justify={"stretch"}
+        >
 
-        </Flex>
+        <div style={{ margin: "10px 10px 0 0", flex: 1 }}>
+            <Badge.Ribbon
+                color={token.colorPrimary}
+                text={"Sportart"}
+                style={{zIndex: 10}}
+            >
+            <Flex
+                gap={20}
+                align={"stretch"}
+                justify={"space-between"}
+                style={{borderRadius: 20, background: token.colorBgContainer,
+
+                    padding: 20}}>
+
+                <Flex gap={20} align={"flex-start"}>
+                    <Flex gap={10}
+                          align={"start"}>
+                        <Typography.Title level={5}
+                        style={{margin: "0"}}
+                        >{sport.label}</Typography.Title>
+                    </Flex>
+                </Flex>
+
+            </Flex>
+            </Badge.Ribbon>
+        </div>
+    <Button
+        type={"text"}
+        icon={<IconTrash size={16}/>}
+        size={"middle"}
+        loading={updateSyncConfigStatus.isLoading}
+        onClick={async () => {
+            if (!syncConfig || !syncConfig.id) {
+                return;
+            }
+            const dto = syncConfigDtoMapper(syncConfig);
+            dto.sports = dto.sports?.filter((s) => s !== sport.id);
+            const newSyncConfig = await updateSyncConfig(dto);
+            if (syncConfig.id === currentSyncConfig?.id) {
+                dispatch(syncConfigActions.setSyncConfig(newSyncConfig.data));
+            }
+        }
+        }
+    >
+
+    </Button>
+    </Flex>
     )
 }
