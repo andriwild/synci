@@ -57,7 +57,7 @@ export const DeleteConfigModal = ({list, refetch, id, name, compact = false}: {
                 icon={<IconTrash size={compact ? 15 : 20}/>}
                 onClick={() => setOpen(true)}
             >
-                {!compact && "Kalender löschen"}
+                {!compact && "Abo löschen"}
             </Button>
             <Modal
                 title={`Abo ${name} löschen`}

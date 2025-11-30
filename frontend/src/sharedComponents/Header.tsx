@@ -21,7 +21,7 @@ export const Header: FC = () => {
         },
         {
             key: "/syncConfig",
-            label: "Meine Kalender",
+            label: "Meine Abos",
             icon: <CalendarBlank />,
         }
     ];
