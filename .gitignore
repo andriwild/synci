@@ -42,3 +42,7 @@ frontend/dist/
 
 #python
 .venv
+
+### HTTP_CLIENT_INTELLIJ ###
+/backend/http-client.env.json
+

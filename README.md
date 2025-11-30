@@ -37,6 +37,10 @@ This will apply all db migrations, initialize jOOQ and start the backend.
 
 Access the backend via [http://localhost:8080](http://localhost:8080)
 
+#### To use the Intellij IDEA HTTP Client to test the backend API
+- Copy the `./backend/http-client-sample.json` to `./backend/http-client.json`
+- Fill in the missing variables (e.g. auth token)
+
 #### Why can't I build the backend docker container locally?
 
 The backend needs access to the running database during build. Since build and runtime are completely separated in

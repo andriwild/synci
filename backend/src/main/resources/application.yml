@@ -4,7 +4,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: https://${VITE_AUTH0_DOMAIN:dev-j45i1nkuf82sla5r.us.auth0.com/} # TODO: can we remove this
+          issuer-uri: https://${VITE_AUTH0_DOMAIN:account.synci.ch}
   flyway:
     locations: db/migration/
     url: ${ch.boosters.db.jdbcUrl}
