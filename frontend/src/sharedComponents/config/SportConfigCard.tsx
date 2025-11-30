@@ -5,10 +5,12 @@ import {syncConfigApi} from "../../services/syncConfig/syncConfigApi.ts";
 import {syncConfigActions, useSyncConfig} from "../../services/syncConfig/syncCofigSlice.ts";
 import {syncConfigDtoMapper} from "../../services/syncConfig/helpers/syncConfigHelper.ts";
 import {useDispatch} from "react-redux";
+import {SyncConfig} from "../../services/syncConfig/entities/syncConfig.ts";
 
-export const SportConfigCard = ({sport}: { sport: Sport }) => {
+export const SportConfigCard = ({sport, config}: { sport: Sport, config?: SyncConfig }) => {
     const [updateSyncConfig, updateSyncConfigStatus] = syncConfigApi.useUpdateMutation();
-    const syncConfig = useSyncConfig();
+    const currentSyncConfig = useSyncConfig();
+    const syncConfig = config || currentSyncConfig;
     const token = theme.useToken().token;
     const dispatch = useDispatch();
 
@@ -38,7 +40,9 @@ export const SportConfigCard = ({sport}: { sport: Sport }) => {
                     const dto = syncConfigDtoMapper(syncConfig);
                     dto.sports = dto.sports?.filter((s) => s !== sport.id);
                     const newSyncConfig = await updateSyncConfig(dto);
-                    dispatch(syncConfigActions.setSyncConfig(newSyncConfig.data));
+                    if (syncConfig.id === currentSyncConfig?.id) {
+                        dispatch(syncConfigActions.setSyncConfig(newSyncConfig.data));
+                    }
                 }
                 }
             />

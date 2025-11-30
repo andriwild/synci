@@ -83,7 +83,7 @@ return (
                             }
                             }
                             type={'text'} style={{textAlign: 'start'}}>
-                        Meine Kalender
+                        Meine Abos
                     </Button>
                     {/*<Button icon={<UserCircle/>} type={'text'} style={{textAlign: 'start'}}>*/}
                     {/*    Profil bearbeiten*/}

@@ -6,10 +6,12 @@ import {syncConfigDtoMapper} from "../../services/syncConfig/helpers/syncConfigH
 import {useDispatch} from "react-redux";
 import {SportEvent} from "../../services/event/entities/event.ts";
 import {convertToSwissDate} from "../../services/common/dateUtil.ts";
+import {SyncConfig} from "../../services/syncConfig/entities/syncConfig.ts";
 
-export const EventConfigCard = ({event}: { event: SportEvent }) => {
+export const EventConfigCard = ({event, config}: { event: SportEvent, config?: SyncConfig }) => {
     const [updateSyncConfig, updateSyncConfigStatus] = syncConfigApi.useUpdateMutation();
-    const syncConfig = useSyncConfig();
+    const currentSyncConfig = useSyncConfig();
+    const syncConfig = config || currentSyncConfig;
     const token = theme.useToken().token;
     const dispatch = useDispatch();
 
@@ -42,7 +44,9 @@ export const EventConfigCard = ({event}: { event: SportEvent }) => {
                     const dto = syncConfigDtoMapper(syncConfig);
                     dto.events = dto.events?.filter((e) => e.id !== event.id);
                     const newSyncConfig = await updateSyncConfig(dto);
-                    dispatch(syncConfigActions.setSyncConfig(newSyncConfig.data));
+                    if (syncConfig.id === currentSyncConfig?.id) {
+                        dispatch(syncConfigActions.setSyncConfig(newSyncConfig.data));
+                    }
                 }
                 }
             />
