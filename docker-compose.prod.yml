@@ -1,6 +1,0 @@
-services:
-  frontend:
-    image: ${REGISTRY}/${REPOSITORY}/frontend:v0.0.19
-    
-  backend:
-    image: ${REGISTRY}/${REPOSITORY}/backend:v0.0.19
