@@ -33,7 +33,7 @@ object SwissTxtTeamEventSerializer : KSerializer<TeamEvent> {
         val homeId     = jsonObject["competitor1"]?.jsonObject?.get("id")  ?.jsonPrimitive?.content ?: ""
         val awayName   = jsonObject["competitor2"]?.jsonObject?.get("name")?.jsonPrimitive?.content ?: ""
         val awayId     = jsonObject["competitor2"]?.jsonObject?.get("id")  ?.jsonPrimitive?.content ?: ""
-        val genderStr  = jsonObject["gender"]?.jsonPrimitive?.content ?: throw SerializationException("Invalid gender info")
+        val genderStr  = jsonObject["gender"]?.jsonPrimitive?.content ?: ""
         val id         = jsonObject["id"]?.jsonPrimitive?.content ?: throw SerializationException("Invalid id")
 
         val utcTime = jsonObject["dateTimeInfo"]?.jsonObject?.get("fullDateTime")?.jsonPrimitive?.content
