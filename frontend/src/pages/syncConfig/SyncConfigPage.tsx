@@ -32,7 +32,7 @@ export const SyncConfigPage = () => {
                 <Flex vertical key={config.id} gap={10} style={{
                     background: token.colorBgBase,
                     borderRadius: "20px",
-                    maxWidth: "300px",
+                    flexBasis: "300px",
                     padding: "20px"
                 }}>
                     <Flex align="center" justify="space-between" style={{width: "100%"}}>
