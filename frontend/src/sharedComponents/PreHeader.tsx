@@ -8,7 +8,7 @@ export const PreHeader: FC = () => {
    const screens = useBreakpoint();
     return (
         <Layout.Header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '5px  24px',height: "auto", backgroundColor: '#3D5A80' }}>
-            <Typography style={{color: 'white'}}>Ab sofort auch Skirennen verfügbar!  - Jetzt abonieren</Typography>
+            <Typography style={{color: 'white'}}>Ab sofort auch Skirennen verfügbar!  - Jetzt abonnieren</Typography>
             { screens.md && <DonationModal buttonStyle={"text"} buttonText={"Projekt unterstützen - hier twinten"} textColor={"white"}/>}
         </Layout.Header>
 

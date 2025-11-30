@@ -1,5 +1,5 @@
 import {useState} from "react";
-import {Button, Modal} from "antd";
+import {Button, Modal, Typography} from "antd";
 import {IconCalendar} from "@tabler/icons-react";
 import {SyncConfigComponent} from "../desktop/SyncConfigComponent.tsx";
 import {useSyncConfig} from "../../../services/syncConfig/syncCofigSlice.ts";
@@ -25,23 +25,25 @@ export const ShowCalendarsButton = () => {
 
     return (
         <>
-            <div style={{position: "absolute", bottom: "55px", left: "20px", right: "20px"}}
+            <div style={{position: "absolute", bottom: "10px", width: "90%", padding: "10px 0px"}}
             >
-                <Button onClick={showModal} type="primary" icon={<IconCalendar/>} size="large" block
-                        style={{border: "1px solid white"}}>
+                <Button onClick={showModal} type="primary" icon={<IconCalendar/>} size="large" block>
                         <span style={{
                             position: "absolute",
                             right: "-10px",
                             top: "-10px",
                             backgroundColor: "red",
-                            borderRadius: "100%",
-                            width: "25px",
+                            borderRadius: "50%",
                             height: "25px",
-                            border: "1px solid white"
+                            fontSize: "12px",
+                            fontWeight: "bold",
+                            padding: "3px 8px",
                         }}>
                             {subscriptionsLength(syncConfig)}
                         </span>
-                    Deine Kalender
+                    <Typography.Text style={{color: 'white'}}>
+                        Kalender anzeigen
+                    </Typography.Text>
                 </Button>
             </div>
 
@@ -50,8 +52,7 @@ export const ShowCalendarsButton = () => {
                 open={isModalOpen}
                 onCancel={handleClose}
                 footer={null}
-                closable={true}
-                styles={{body: {padding: 0}, content: {padding: 0}}}
+                closable={false}
             >
                 <SyncConfigComponent/>
             </Modal>
