@@ -5,30 +5,31 @@ import {useEffect, useState} from "react";
 import {useDispatch} from "react-redux";
 import {NotificationPlacement} from "antd/es/notification/interface";
 import {syncConfigActions, useSyncConfig} from "../../../services/syncConfig/syncCofigSlice.ts";
-import { syncConfigApi } from "../../../services/syncConfig/syncConfigApi";
-import { useUser } from "../../../services/user/UserSlice";
+import {syncConfigApi} from "../../../services/syncConfig/syncConfigApi";
+import {useUser} from "../../../services/user/UserSlice";
 import {SportConfigCard} from "../../../sharedComponents/config/SportConfigCard.tsx";
 import {TeamConfigCard} from "../../../sharedComponents/config/TeamConfigCard.tsx";
-import { CalendarSelectionModal } from "../../../sharedComponents/calenderSelectionModal/CalenderSelectionModal.tsx";
+import {CalendarSelectionModal} from "../../../sharedComponents/calenderSelectionModal/CalenderSelectionModal.tsx";
 import {VITE_BACKEND_HOST} from "../../../../env.ts";
 import {EventConfigCard} from "../../../sharedComponents/config/EventConfigCard.tsx";
 
 
 export const SyncConfigComponent = () => {
-    const syncConfigList = syncConfigApi.useGetAllQuery();
+    const user = useUser();
+    const syncConfigList = syncConfigApi.useGetAllQuery(undefined, {
+        skip: !user, // Skip the API call if user is not logged in
+    });
     const token = theme.useToken().token;
     const [open, setOpen] = useState(false);
-    const user = useUser();
 
     const currentSyncConfig = useSyncConfig();
     const dispatch = useDispatch();
 
     useEffect(() => {
-        syncConfigList.refetch();
-        if (syncConfigList.data && !currentSyncConfig) {
+        if (user && syncConfigList.data) {
             dispatch(syncConfigActions.setSyncConfig(syncConfigList.data[0]));
         }
-    }, [user]);
+    }, [user, syncConfigList.data, dispatch]);
 
     if (!user) {
         return (
@@ -54,7 +55,7 @@ export const SyncConfigComponent = () => {
         return (
             <Flex vertical style={{gap: 20, padding: "20px 20px", width: "100%"}} align={"center"}>
                 <Typography.Title level={5}>Keine Abos vorhanden</Typography.Title>
-             <CreateConfigModal refetch={syncConfigList.refetch}/>
+                <CreateConfigModal refetch={syncConfigList.refetch}/>
             </Flex>
         );
     }
@@ -67,64 +68,65 @@ export const SyncConfigComponent = () => {
                          title={"Wähle dein Abo aus"}
                          open={open}
                          onOpenChange={(open) => setOpen(open)}
-                         styles={{body: {background: "white", padding: "20px", minWidth: "300px"}}} content={
-                    <Flex vertical gap={20}>
-                        {syncConfigList.data?.map((syncConfig) => (
-                            <Flex justify={"space-between"} align={"center"}
-                                  style={{
-                                      background: token.colorBgContainer,
-                                      padding: "10px",
-                                      borderRadius: 10,
-                                      cursor: "pointer",
-                                      transition: "all 0.2s ease",
-                                      border: "1px solid transparent"
-                                  }}
-                                  onMouseEnter={(e) => {
-                                      e.currentTarget.style.background = token.colorPrimaryBg;
-                                      e.currentTarget.style.borderColor = token.colorPrimary;
-                                  }}
-                                  onMouseLeave={(e) => {
-                                      e.currentTarget.style.background = token.colorBgContainer;
-                                      e.currentTarget.style.borderColor = "transparent";
-                                  }}
-                                  onClick={() => {
-                                      dispatch(syncConfigActions.setSyncConfig(syncConfig));
-                                      setOpen(false);
-                                  }}
-                                  gap={20} key={syncConfig.id}>
-                                <Typography.Text>{syncConfig.name}</Typography.Text>
-                            </Flex>
+                         styles={{body: {background: "white", padding: "20px", minWidth: "300px"}}}
+                         content={
+                             <Flex vertical gap={20}>
+                                 {syncConfigList.data?.map((syncConfig) => (
+                                     <Flex justify={"space-between"} align={"center"}
+                                           style={{
+                                               background: token.colorBgContainer,
+                                               padding: "10px",
+                                               borderRadius: 10,
+                                               cursor: "pointer",
+                                               transition: "all 0.2s ease",
+                                               border: "1px solid transparent"
+                                           }}
+                                           onMouseEnter={(e) => {
+                                               e.currentTarget.style.background = token.colorPrimaryBg;
+                                               e.currentTarget.style.borderColor = token.colorPrimary;
+                                           }}
+                                           onMouseLeave={(e) => {
+                                               e.currentTarget.style.background = token.colorBgContainer;
+                                               e.currentTarget.style.borderColor = "transparent";
+                                           }}
+                                           onClick={() => {
+                                               dispatch(syncConfigActions.setSyncConfig(syncConfig));
+                                               setOpen(false);
+                                           }}
+                                           gap={20} key={syncConfig.id}>
+                                         <Typography.Text>{syncConfig.name}</Typography.Text>
+                                     </Flex>
 
-                        ))}
-                        <CreateConfigModal refetch={() => syncConfigList.refetch()}/>
-                    </Flex>
-                }>
+                                 ))}
+                                 <CreateConfigModal refetch={() => syncConfigList.refetch()}/>
+                             </Flex>
+                         }>
                     <Button icon={<IconReplace size={20}/>} type={"default"}></Button>
                 </Popover>
             </Flex>
-            <Flex vertical style={{gap:20, width: "100%", overflowY: "scroll"}}>
-            {(currentSyncConfig?.sports &&
-                currentSyncConfig?.sports?.map((sport) => (
-                    <SportConfigCard key={sport.id} sport={sport}/>
-                ))
-            )}
-            {currentSyncConfig?.events &&
-            currentSyncConfig?.events.map((event) => (
-                <EventConfigCard key={event.id} event={event}/>
-            ))}
-            {currentSyncConfig?.teams &&
-            currentSyncConfig?.teams.map((team) => (
-                <TeamConfigCard key={team.id} team={team}/>
-            ))}
-            {currentSyncConfig?.sports?.length === 0 &&
-            currentSyncConfig?.events?.length === 0 &&
-            currentSyncConfig?.teams?.length === 0 &&
-                <Typography.Text>Keine Teams / Ligen / Events vorhanden</Typography.Text>
-            }
+            <Flex vertical style={{gap: 20, width: "100%", overflowY: "scroll"}}>
+                {(currentSyncConfig?.sports &&
+                    currentSyncConfig?.sports?.map((sport) => (
+                        <SportConfigCard key={sport.id} sport={sport}/>
+                    ))
+                )}
+                {currentSyncConfig?.events &&
+                    currentSyncConfig?.events.map((event) => (
+                        <EventConfigCard key={event.id} event={event}/>
+                    ))}
+                {currentSyncConfig?.teams &&
+                    currentSyncConfig?.teams.map((team) => (
+                        <TeamConfigCard key={team.id} team={team}/>
+                    ))}
+                {currentSyncConfig?.sports?.length === 0 &&
+                    currentSyncConfig?.events?.length === 0 &&
+                    currentSyncConfig?.teams?.length === 0 &&
+                    <Typography.Text>Keine Teams / Ligen / Events vorhanden</Typography.Text>
+                }
             </Flex>
 
             <CalendarSelectionModal
-                url={ `${VITE_BACKEND_HOST}/api/calendars/${currentSyncConfig?.id}/subscribe`}
+                url={`${VITE_BACKEND_HOST}/api/calendars/${currentSyncConfig?.id}/subscribe`}
                 buttonText="Zu Kalender hinzufügen"
                 buttonIcon={<i className="fas fa-calendar-plus"></i>}
                 buttonType="primary"

@@ -30,7 +30,7 @@ export const SportDetailComponent = ({id, title}: { id: string, title: string })
 
     useEffect(() => {
         if (eventQuery.data) {
-            setEventList(eventList.concat(eventQuery.data.elements));
+            setEventList(evs => evs.concat(eventQuery.data?.elements || []));
         }
     }, [eventQuery.data]);
 
