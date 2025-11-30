@@ -12,10 +12,7 @@ spring:
     user: ${ch.boosters.db.username}
   config:
     import:
-#    - "classpath:sources/swissski.yml"
     - "classpath:sources/swisstxt.yml"
-#    - "classpath:sources/formulaone.yml"
-    #- "classpath:sources/fotmob.yml"
 
 ch:
   boosters:
