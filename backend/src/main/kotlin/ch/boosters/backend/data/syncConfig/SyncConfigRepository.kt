@@ -1,8 +1,10 @@
 package ch.boosters.backend.data.syncConfig
 
+import arrow.core.firstOrNone
 import arrow.core.raise.either
 import ch.boosters.backend.data.configuration.JooqEitherDsl
 import ch.boosters.backend.data.syncConfig.model.SyncConfigDto
+import ch.boosters.backend.errorhandling.ElementNotFound
 import ch.boosters.backend.errorhandling.SynciEither
 import ch.boosters.data.tables.SyncConfigsTable.Companion.SYNC_CONFIGS_TABLE
 import ch.boosters.data.tables.SyncConfigsUsersTable.Companion.SYNC_CONFIGS_USERS_TABLE
@@ -64,4 +66,16 @@ class SyncConfigRepository(private val dsl: JooqEitherDsl) {
                 .where(SYNC_CONFIGS_USERS_TABLE.USER_ID.eq(userId))
                 .fetchInto(SyncConfigsTable::class.java)
         }
+
+    fun findSyncConfig(configId: UUID): SynciEither<SyncConfigsTable> = either {
+        val x = dsl {
+            it
+                .select(SYNC_CONFIGS_TABLE.asterisk()).from(SYNC_CONFIGS_TABLE)
+                .where(SYNC_CONFIGS_TABLE.ID.eq(configId))
+                .fetchInto(SyncConfigsTable::class.java)
+                .firstOrNone()
+        }.bind()
+
+        x.toEither { ElementNotFound("Could not find sync config with id $configId") }.bind()
+    }
 }
