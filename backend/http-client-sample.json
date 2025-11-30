@@ -1,0 +1,27 @@
+{
+  "local": {
+    "backendUrl": "http://localhost:8080/api",
+
+    "Security": {
+      "Auth": {
+        "auth0-oauth": {
+          "Type": "OAuth2",
+          "Grant Type": "Authorization Code",
+          "Client ID": "7IR0B1DB8fAwI6HE7nF3gPiyFUm7VVRr",
+          "Client Secret": "SECRET_HERE",
+          "Auth URL": "https://dev-j45i1nkuf82sla5r.us.auth0.com/authorize",
+          "Token URL": "https://dev-j45i1nkuf82sla5r.us.auth0.com/oauth/token",
+          "Redirect URL": "http://localhost:5173/",
+          "Scope": "openid profile email",
+          "PKCE": true,
+          "Custom Request Parameters": {
+            "audience": {
+              "Value": "https://synci.awild.ch",
+              "Use": "In Auth Request"
+            }
+          }
+        }
+      }
+    }
+  }
+}

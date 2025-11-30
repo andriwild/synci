@@ -38,3 +38,6 @@ out/
 
 ### Kotlin ###
 .kotlin
+
+### HTTP_CLIENT_INTELLIJ ###
+http-client.env.json
