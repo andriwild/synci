@@ -1,11 +1,12 @@
 package ch.boosters.backend.data.event.model
 
+import ch.boosters.backend.data.team.Gender
 import ch.boosters.backend.sources.swisstxt.model.SwissTxtTeamEventSerializer
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import java.time.LocalDateTime
 
-interface BaseEvent {
+sealed interface BaseEvent {
     val id: String
     val startsOn: LocalDateTime
     val endsOn: LocalDateTime?
@@ -28,4 +29,5 @@ data class TeamEvent(
     val homeName: String,
     val awayId: String,
     val awayName: String,
-): BaseEvent
+    val gender: Gender
+    ): BaseEvent
