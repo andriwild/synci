@@ -4,7 +4,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: https://${VITE_AUTH0_DOMAIN:account.synci.ch}
+          issuer-uri: https://${AUTH0_DOMAIN:account.synci.ch/}
   flyway:
     locations: db/migration/
     url: ${ch.boosters.db.jdbcUrl}
