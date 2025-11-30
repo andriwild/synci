@@ -1,5 +1,5 @@
 import {Button, Flex, Tag, theme, Typography} from "antd";
-import {IconCalendarEvent, IconTrash} from "@tabler/icons-react";
+import {IconTrash} from "@tabler/icons-react";
 import {syncConfigApi} from "../../services/syncConfig/syncConfigApi.ts";
 import {syncConfigActions, useSyncConfig} from "../../services/syncConfig/syncCofigSlice.ts";
 import {syncConfigDtoMapper} from "../../services/syncConfig/helpers/syncConfigHelper.ts";

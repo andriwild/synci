@@ -19,7 +19,6 @@ export const SyncConfigComponent = () => {
     const syncConfigList = syncConfigApi.useGetAllQuery(undefined, {
         skip: !user, // Skip the API call if user is not logged in
     });
-    const token = theme.useToken().token;
     const [open, setOpen] = useState(false);
 
 
