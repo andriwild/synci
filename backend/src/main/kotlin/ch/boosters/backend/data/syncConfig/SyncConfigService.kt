@@ -24,10 +24,11 @@ class SyncConfigService(
 ) {
 
     fun createSyncConfig(syncConfig: SyncConfigDto, userId: UUID): SynciEither<SyncConfig> = either {
-        val id = syncConfigRepository.createSyncConfig(syncConfig, userId).bind()
-        syncConfigTeamRepository.addTeams(id, syncConfig.teams).bind()
-        syncConfigSportsRepository.addSports(id, syncConfig.sports).bind()
-        syncConfigEventsRepository.addEvents(id, syncConfig.events).bind()
+        val cleanedConfig = removeDuplicates(syncConfig)
+        val id = syncConfigRepository.createSyncConfig(cleanedConfig, userId).bind()
+        syncConfigTeamRepository.addTeams(id, cleanedConfig.teams).bind()
+        syncConfigSportsRepository.addSports(id, cleanedConfig.sports).bind()
+        syncConfigEventsRepository.addEvents(id, cleanedConfig.events).bind()
         syncConfigById(id, userId).bind()
     }
 
@@ -52,11 +53,19 @@ class SyncConfigService(
     }
 
     fun updateSyncConfig(id: UUID, syncConfig: SyncConfigDto, userId: UUID): SynciEither<SyncConfig> = either {
-        syncConfigRepository.updateSyncConfig(id, syncConfig).bind()
-        syncConfigTeamRepository.updateTeams(id, syncConfig.teams).bind()
-        syncConfigEventsRepository.updateEvents(id, syncConfig.events).bind()
-        syncConfigSportsRepository.updateSports(id, syncConfig.sports).bind()
+        val cleanedConfig = removeDuplicates(syncConfig)
+        syncConfigRepository.updateSyncConfig(id, cleanedConfig).bind()
+        syncConfigTeamRepository.updateTeams(id, cleanedConfig.teams).bind()
+        syncConfigEventsRepository.updateEvents(id, cleanedConfig.events).bind()
+        syncConfigSportsRepository.updateSports(id, cleanedConfig.sports).bind()
         syncConfigById(id, userId).bind()
+    }
+
+    private fun removeDuplicates(syncConfig: SyncConfigDto): SyncConfigDto {
+        val events = syncConfig.events.distinctBy { it.id }
+        val teams = syncConfig.teams.distinctBy { it.id }
+        val sports = syncConfig.sports.distinct()
+        return syncConfig.copy(events = events, teams = teams, sports = sports)
     }
 
     fun deleteSyncConfig(id: UUID, userId: UUID): SynciEither<Int> =
