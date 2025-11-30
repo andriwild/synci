@@ -5,6 +5,7 @@ import {sportApi} from "../../../services/sport/sportApi.ts";
 import {Alert, Button, Flex, Spin, theme} from "antd";
 import {CaretRight} from "@phosphor-icons/react";
 import {SportDetailMobileComponent} from "./SportDetailMobileComponent.tsx";
+import {ShowCalendarsButton} from "./ShowCalendarsButton.tsx";
 
 export const SportTreeMobileComponent = () => {
     const {data, isLoading, isError, error} = sportApi.useGetAllQuery();
@@ -25,8 +26,7 @@ export const SportTreeMobileComponent = () => {
     };
 
 
-    const columnColors = ["#3D5A80", "#C5CDD9", "#D8DEE6", "#E9EDF0", "#F2F4F6"];
-
+    const columnColors = ["#b2bdcf", "#C5CDD9", "#D8DEE6", "#E9EDF0", "#F2F4F6"];
     const renderTree = (sports: Sport[], level = 0) => {
         return sports.map((sport) => (
             <div key={sport.id}>
@@ -45,7 +45,7 @@ export const SportTreeMobileComponent = () => {
                         backgroundColor: columnColors[level % columnColors.length],
                     }}
                 >
-                    <span style={level === 0 ? {color: "white"} : {}}>{sport.label}</span>
+                    <span>{sport.label}</span>
                     {sport.subSports.length > 0 &&
                         <Button type={"primary"} style={{padding: 0, margin: 0, background: token.colorBgContainer}} icon={
                         <CaretRight
@@ -101,6 +101,7 @@ export const SportTreeMobileComponent = () => {
                     {data && data.length > 0 ? renderTree(data) : <p>Keine Sportarten gefunden</p>}
                 </Flex>
             )}
+            <ShowCalendarsButton />
         </div>
     );
 }

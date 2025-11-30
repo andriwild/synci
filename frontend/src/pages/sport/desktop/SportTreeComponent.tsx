@@ -67,7 +67,7 @@ export const SportTreeComponent = () => {
     };
 
 
-    const columnColors = ["#3D5A80", "#C5CDD9", "#D8DEE6", "#E9EDF0", "#F2F4F6"];
+    const columnColors = ["#b2bdcf", "#C5CDD9", "#D8DEE6", "#E9EDF0", "#F2F4F6"];
     return (
         <Flex id="tree-container">
             {treeColumns.map((categories: Sport[], index) => (

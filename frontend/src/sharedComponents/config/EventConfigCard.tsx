@@ -1,5 +1,5 @@
-import {Button, Flex, Tag, theme, Typography} from "antd";
-import {IconCalendarEvent, IconTrash} from "@tabler/icons-react";
+import {Badge, Button, Flex, theme, Typography} from "antd";
+import {IconTrash} from "@tabler/icons-react";
 import {syncConfigApi} from "../../services/syncConfig/syncConfigApi.ts";
 import {syncConfigActions, useSyncConfig} from "../../services/syncConfig/syncCofigSlice.ts";
 import {syncConfigDtoMapper} from "../../services/syncConfig/helpers/syncConfigHelper.ts";
@@ -16,42 +16,59 @@ export const EventConfigCard = ({event, config}: { event: SportEvent, config?: S
     const dispatch = useDispatch();
 
     return (
-        <Flex
-            gap={20}
-            align={"center"}
-            justify={"space-between"}
-            style={{borderRadius: 20, background: token.colorBgContainer, padding: 20}}>
-            <Flex gap={20} align={"center"}>
-            <IconCalendarEvent size={40} color={token.colorPrimary}/>
-                <Flex vertical gap={5}
-                      align={"start"}>
-                    <Typography.Title level={5}
-                    style={{margin: "0"}}
-                    >{event.name}</Typography.Title>
-                    <Typography.Text
-                        style={{margin: "0"}}
-                    >{convertToSwissDate(event.startsOn)}</Typography.Text>
-                    <Tag color={token.colorPrimary}>Event</Tag>
-                </Flex>
-            </Flex>
-            <Button
-                type={"default"}
-                icon={<IconTrash size={20}/>}
-                loading={updateSyncConfigStatus.isLoading}
-                onClick={async () => {
-                    if (!syncConfig || !syncConfig.id) {
-                        return;
-                    }
-                    const dto = syncConfigDtoMapper(syncConfig);
-                    dto.events = dto.events?.filter((e) => e.id !== event.id);
-                    const newSyncConfig = await updateSyncConfig(dto);
-                    if (syncConfig.id === currentSyncConfig?.id) {
-                        dispatch(syncConfigActions.setSyncConfig(newSyncConfig.data));
-                    }
-                }
-                }
-            />
+    <Flex
+        align={"center"}
+        justify={"stretch"}
+        >
 
-        </Flex>
+        <div style={{ margin: "10px 10px 0 0", flex: 1 }}>
+            <Badge.Ribbon
+                color={token.colorPrimary}
+                text={"Event"}
+                style={{zIndex: 10}}
+            >
+            <Flex
+                gap={20}
+                align={"stretch"}
+                justify={"space-between"}
+                style={{borderRadius: 20, background: token.colorBgContainer,
+                    padding: 20}}>
+
+                <Flex gap={20} align={"flex-start"}>
+                    <Flex gap={10} vertical
+                          align={"start"}>
+                        <Typography.Title level={5}
+                        style={{margin: "0"}}
+                        >{event.name}</Typography.Title>
+                        <Typography.Text
+                            style={{margin: "0"}}
+                        >{convertToSwissDate(event.startsOn)}</Typography.Text>
+                    </Flex>
+                </Flex>
+
+            </Flex>
+            </Badge.Ribbon>
+        </div>
+    <Button
+        type={"text"}
+        icon={<IconTrash size={16}/>}
+        size={"middle"}
+        loading={updateSyncConfigStatus.isLoading}
+        onClick={async () => {
+            if (!syncConfig || !syncConfig.id) {
+                return;
+            }
+            const dto = syncConfigDtoMapper(syncConfig);
+            dto.events = dto.events?.filter((e) => e.id !== event.id);
+            const newSyncConfig = await updateSyncConfig(dto);
+            if (syncConfig.id === currentSyncConfig?.id) {
+                dispatch(syncConfigActions.setSyncConfig(newSyncConfig.data));
+            }
+        }
+        }
+    >
+
+    </Button>
+    </Flex>
     )
 }

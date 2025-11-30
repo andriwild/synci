@@ -1,4 +1,4 @@
-import {Alert, Button, Flex, Form, Input, Modal, notification, Popover, theme, Typography} from "antd";
+import {Alert, Button, Flex, Form, Input, Modal, notification, Popover, Typography} from "antd";
 import {IconPlus, IconReplace} from "@tabler/icons-react";
 import {useEffect, useState} from "react";
 
@@ -19,8 +19,8 @@ export const SyncConfigComponent = () => {
     const syncConfigList = syncConfigApi.useGetAllQuery(undefined, {
         skip: !user, // Skip the API call if user is not logged in
     });
-    const token = theme.useToken().token;
     const [open, setOpen] = useState(false);
+
 
     const currentSyncConfig = useSyncConfig();
     const dispatch = useDispatch();
@@ -53,86 +53,106 @@ export const SyncConfigComponent = () => {
 
     if (syncConfigList.data?.length === 0) {
         return (
-            <Flex vertical style={{gap: 20, padding: "20px 20px", width: "100%"}} align={"center"}>
+            <Flex vertical style={{gap: 20, padding: "20px 20px", width:"100%"}} align={"center"}>
                 <Typography.Title level={5}>Keine Abos vorhanden</Typography.Title>
                 <CreateConfigModal refetch={syncConfigList.refetch}/>
             </Flex>
         );
     }
     return (
-        <Flex vertical style={{gap: 20, padding: "20px 20px", width: "100%"}}>
-            <Flex justify={"space-between"} style={{width: "100%"}} gap={10}>
-                {/*TODO Edit field*/}
-                <Typography.Title level={4} style={{margin: 0}}>{currentSyncConfig?.name}</Typography.Title>
-                <Popover placement="bottomRight"
-                         title={"Wähle dein Abo aus"}
-                         open={open}
-                         onOpenChange={(open) => setOpen(open)}
-                         styles={{body: {background: "white", padding: "20px", minWidth: "300px"}}}
-                         content={
-                             <Flex vertical gap={20}>
-                                 {syncConfigList.data?.map((syncConfig) => (
-                                     <Flex justify={"space-between"} align={"center"}
-                                           style={{
-                                               background: token.colorBgContainer,
-                                               padding: "10px",
-                                               borderRadius: 10,
-                                               cursor: "pointer",
-                                               transition: "all 0.2s ease",
-                                               border: "1px solid transparent"
-                                           }}
-                                           onMouseEnter={(e) => {
-                                               e.currentTarget.style.background = token.colorPrimaryBg;
-                                               e.currentTarget.style.borderColor = token.colorPrimary;
-                                           }}
-                                           onMouseLeave={(e) => {
-                                               e.currentTarget.style.background = token.colorBgContainer;
-                                               e.currentTarget.style.borderColor = "transparent";
-                                           }}
-                                           onClick={() => {
-                                               dispatch(syncConfigActions.setSyncConfig(syncConfig));
-                                               setOpen(false);
-                                           }}
-                                           gap={20} key={syncConfig.id}>
-                                         <Typography.Text>{syncConfig.name}</Typography.Text>
-                                     </Flex>
+        <Flex
+            vertical
+            style={{
+                gap: 20,
+                padding: "20px 20px",
+                height: "100%",
+                maxHeight: "100%",
+                width: "100%",
+            }}
+        >
+            <Flex justify={"space-between"} style={{ width: "100%" }} gap={10}>
+                <Typography.Title level={4} style={{ margin: 0 }}>
+                    {currentSyncConfig?.name}
+                </Typography.Title>
 
-                                 ))}
-                                 <CreateConfigModal refetch={() => syncConfigList.refetch()}/>
-                             </Flex>
-                         }>
-                    <Button icon={<IconReplace size={20}/>} type={"default"}></Button>
+                <Popover
+                    placement="bottomRight"
+                    title={"Alle verfügbaren Abos"}
+                    open={open}
+                    onOpenChange={(open) => setOpen(open)}
+                    styles={{
+                        body: { background: "white", padding: "20px", minWidth: "300px" },
+                    }}
+                    content={
+                        <Flex vertical gap={10}>
+                            {syncConfigList.data?.map((syncConfig) => (
+                                <Button
+                                    key={syncConfig.id}
+                                    type={"default"}
+                                    style={{ width: "100%", textAlign: "left" }}
+                                    onClick={() => {
+                                        dispatch(syncConfigActions.setSyncConfig(syncConfig));
+                                        setOpen(false);
+                                    }}
+                                >
+                                    {syncConfig.name}
+                                </Button>
+                            ))}
+                            <CreateConfigModal refetch={() => syncConfigList.refetch()} />
+                        </Flex>
+                    }
+                >
+                    <Button icon={<IconReplace size={20} />} type={"default"} >
+                        Abo wechseln
+                    </Button>
                 </Popover>
             </Flex>
-            <Flex vertical style={{gap: 20, width: "100%", overflowY: "scroll"}}>
-                {(currentSyncConfig?.sports &&
+
+            <Flex
+                vertical
+                style={{
+                    gap: 20,
+                    width: "100%",
+                    flex: 1,          // nimmt den restlichen Platz ein
+                    minHeight: 0,     // wichtig fuer korrektes Flex-Scrolling
+                    overflowY: "auto" // hier wird gescrolled
+                }}
+            >
+                {currentSyncConfig?.sports &&
                     currentSyncConfig?.sports?.map((sport) => (
-                        <SportConfigCard key={sport.id} sport={sport}/>
-                    ))
-                )}
+                        <SportConfigCard key={sport.id} sport={sport} />
+                    ))}
+
                 {currentSyncConfig?.events &&
                     currentSyncConfig?.events.map((event) => (
-                        <EventConfigCard key={event.id} event={event}/>
+                        <EventConfigCard key={event.id} event={event} />
                     ))}
+
                 {currentSyncConfig?.teams &&
                     currentSyncConfig?.teams.map((team) => (
-                        <TeamConfigCard key={team.id} team={team}/>
+                        <TeamConfigCard key={team.id} team={team} />
                     ))}
+
                 {currentSyncConfig?.sports?.length === 0 &&
                     currentSyncConfig?.events?.length === 0 &&
-                    currentSyncConfig?.teams?.length === 0 &&
-                    <Typography.Text>Keine Teams / Ligen / Events vorhanden</Typography.Text>
-                }
+                    currentSyncConfig?.teams?.length === 0 && (
+                        <>
+                            <Typography.Text>
+                                Keine Teams / Ligen / Events vorhanden
+                            </Typography.Text>
+                        </>
+                    )}
             </Flex>
 
-            <CalendarSelectionModal
-                url={`${VITE_BACKEND_HOST}/api/calendars/${currentSyncConfig?.id}/subscribe`}
-                buttonText="Zu Kalender hinzufügen"
-                buttonIcon={<i className="fas fa-calendar-plus"></i>}
-                buttonType="primary"
-            />
+                <CalendarSelectionModal
+                    url={`${VITE_BACKEND_HOST}/api/calendars/${currentSyncConfig?.id}/subscribe`}
+                    buttonText="Zu Kalender hinzufuegen"
+                    buttonIcon={<i className="fas fa-calendar-plus"></i>}
+                    buttonType="primary"
 
+                />
         </Flex>
+
     )
         ;
 }
