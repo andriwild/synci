@@ -1,5 +1,5 @@
 import {Alert, Button, Flex, Form, Input, Modal, notification, Popover, theme, Typography} from "antd";
-import {IconEdit, IconPlus, IconReplace, IconTrash,} from "@tabler/icons-react";
+import {IconPlus, IconReplace} from "@tabler/icons-react";
 import {useEffect, useState} from "react";
 
 import {useDispatch} from "react-redux";
@@ -11,7 +11,6 @@ import {SportConfigCard} from "../../../sharedComponents/config/SportConfigCard.
 import {TeamConfigCard} from "../../../sharedComponents/config/TeamConfigCard.tsx";
 import { CalendarSelectionModal } from "../../../sharedComponents/calenderSelectionModal/CalenderSelectionModal.tsx";
 import {VITE_BACKEND_HOST} from "../../../../env.ts";
-import {SyncConfig} from "../../../services/syncConfig/entities/syncConfig.ts";
 import {EventConfigCard} from "../../../sharedComponents/config/EventConfigCard.tsx";
 
 
@@ -26,7 +25,7 @@ export const SyncConfigComponent = () => {
 
     useEffect(() => {
         syncConfigList.refetch();
-        if (syncConfigList.data) {
+        if (syncConfigList.data && !currentSyncConfig) {
             dispatch(syncConfigActions.setSyncConfig(syncConfigList.data[0]));
         }
     }, [user]);
@@ -65,25 +64,35 @@ export const SyncConfigComponent = () => {
                 {/*TODO Edit field*/}
                 <Typography.Title level={4} style={{margin: 0}}>{currentSyncConfig?.name}</Typography.Title>
                 <Popover placement="bottomRight"
-                         title={"Alle verfügbaren Abos"}
+                         title={"Wähle dein Abo aus"}
                          open={open}
                          onOpenChange={(open) => setOpen(open)}
                          styles={{body: {background: "white", padding: "20px", minWidth: "300px"}}} content={
                     <Flex vertical gap={20}>
                         {syncConfigList.data?.map((syncConfig) => (
                             <Flex justify={"space-between"} align={"center"}
-                                  style={{background: token.colorBgContainer, padding: "10px", borderRadius: 10}}
+                                  style={{
+                                      background: token.colorBgContainer,
+                                      padding: "10px",
+                                      borderRadius: 10,
+                                      cursor: "pointer",
+                                      transition: "all 0.2s ease",
+                                      border: "1px solid transparent"
+                                  }}
+                                  onMouseEnter={(e) => {
+                                      e.currentTarget.style.background = token.colorPrimaryBg;
+                                      e.currentTarget.style.borderColor = token.colorPrimary;
+                                  }}
+                                  onMouseLeave={(e) => {
+                                      e.currentTarget.style.background = token.colorBgContainer;
+                                      e.currentTarget.style.borderColor = "transparent";
+                                  }}
+                                  onClick={() => {
+                                      dispatch(syncConfigActions.setSyncConfig(syncConfig));
+                                      setOpen(false);
+                                  }}
                                   gap={20} key={syncConfig.id}>
                                 <Typography.Text>{syncConfig.name}</Typography.Text>
-                                <Flex gap={10} align={"center"}>
-                                    <Button type={"primary"} size={"small"} onClick={() => {
-                                        dispatch(syncConfigActions.setSyncConfig(syncConfig));
-                                        setOpen(false)
-                                    }
-                                    } icon={<IconEdit size={15}/>}></Button>
-                                    <DeleteConfigModal list={syncConfigList.data || []} refetch={syncConfigList.refetch} id={syncConfig.id}
-                                                       name={syncConfig.name}/>
-                                </Flex>
                             </Flex>
 
                         ))}
@@ -110,10 +119,7 @@ export const SyncConfigComponent = () => {
             {currentSyncConfig?.sports?.length === 0 &&
             currentSyncConfig?.events?.length === 0 &&
             currentSyncConfig?.teams?.length === 0 &&
-                <>
-                    <Typography.Text>Keine Teams / Ligen / Events vorhanden</Typography.Text>
-                    <CreateConfigModal refetch={() => syncConfigList.refetch()}/>
-                </>
+                <Typography.Text>Keine Teams / Ligen / Events vorhanden</Typography.Text>
             }
             </Flex>
 
@@ -127,70 +133,6 @@ export const SyncConfigComponent = () => {
         </Flex>
     )
         ;
-}
-
-const DeleteConfigModal = ({list, refetch, id, name}: {
-    list: SyncConfig[],
-    refetch: () => void,
-    id: string,
-    name: string }) => {
-    const [open, setOpen] = useState(false);
-    const [form] = Form.useForm();
-    const [api, contextHolder] = notification.useNotification();
-    const dispatch = useDispatch();
-    const syncConfig = useSyncConfig();
-
-    const openNotification = (placement: NotificationPlacement) => {
-        api.info({
-            message: "Abo gelöscht",
-            description: "Das Abo wurde erfolgreich gelöscht",
-            placement,
-        });
-    };
-
-    const [deleteSyncConfig, deleteSyncConfigStatus] = syncConfigApi.useDeleteMutation();
-
-    const handleSubmit = async () => {
-        try {
-            await deleteSyncConfig(id);
-            openNotification("bottomRight");
-            if (id == syncConfig?.id) {
-                list.filter((config) => config.id !== id);
-            dispatch(syncConfigActions.setSyncConfig(list.filter((config) => config.id !== id)[0]));
-            }
-            refetch();
-        } catch (e) {
-            console.error(e);
-        }
-    };
-
-    return (
-        <>
-            {contextHolder}
-            <Button type="default" size="small"
-                    icon={<IconTrash size={15}/>}
-                    onClick={() => setOpen(true)}
-            >
-            </Button>
-            <Modal
-                title={`Abo ${name} löschen`}
-                open={open}
-                onCancel={() => setOpen(false)}
-                footer={null}
-            >
-                <Flex vertical gap={10}>
-                    <Typography.Text>Willst du das Abo wirklich löschen?</Typography.Text>
-                    <Form form={form} layout="vertical" onFinish={handleSubmit}>
-                        <Form.Item>
-                            <Button type="primary" htmlType="submit" loading={deleteSyncConfigStatus.isLoading}>
-                                Löschen
-                            </Button>
-                        </Form.Item>
-                    </Form>
-                </Flex>
-            </Modal>
-        </>
-    );
 }
 
 const CreateConfigModal = ({refetch}: { refetch: () => void }) => {

@@ -5,10 +5,12 @@ import {syncConfigActions, useSyncConfig} from "../../services/syncConfig/syncCo
 import {syncConfigDtoMapper} from "../../services/syncConfig/helpers/syncConfigHelper.ts";
 import {useDispatch} from "react-redux";
 import {Team} from "../../services/team/entities/team.ts";
+import {SyncConfig} from "../../services/syncConfig/entities/syncConfig.ts";
 
-export const TeamConfigCard = ({team}: { team: Team }) => {
+export const TeamConfigCard = ({team, config}: { team: Team, config?: SyncConfig }) => {
     const [updateSyncConfig, updateSyncConfigStatus] = syncConfigApi.useUpdateMutation();
-    const syncConfig = useSyncConfig();
+    const currentSyncConfig = useSyncConfig();
+    const syncConfig = config || currentSyncConfig;
     const token = theme.useToken().token;
     const dispatch = useDispatch();
 
@@ -39,7 +41,9 @@ export const TeamConfigCard = ({team}: { team: Team }) => {
                     const dto = syncConfigDtoMapper(syncConfig);
                     dto.teams = dto.teams?.filter((s) => s.id !== team.id);
                     const newSyncConfig = await updateSyncConfig(dto);
-                    dispatch(syncConfigActions.setSyncConfig(newSyncConfig.data));
+                    if (syncConfig.id === currentSyncConfig?.id) {
+                        dispatch(syncConfigActions.setSyncConfig(newSyncConfig.data));
+                    }
                 }
                 }
             />
