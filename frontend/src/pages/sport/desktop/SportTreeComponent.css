@@ -2,6 +2,7 @@
   flex-grow: 1;
   min-width: 200px;
   cursor: pointer;
+  overflow-y: scroll;
 }
 
 .tree-column h3 {
@@ -24,6 +25,7 @@
   display: flex;
   height: 100%;
   width: 100%;
+  overflow: hidden;
 }
 
 #tree-container .tree-column:first-child {

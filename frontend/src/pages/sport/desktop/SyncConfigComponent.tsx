@@ -93,7 +93,7 @@ export const SyncConfigComponent = () => {
                     <Button icon={<IconReplace size={20}/>} type={"default"}></Button>
                 </Popover>
             </Flex>
-
+            <Flex vertical style={{gap:20, width: "100%", overflowY: "scroll"}}>
             {(currentSyncConfig?.sports &&
                 currentSyncConfig?.sports?.map((sport) => (
                     <SportConfigCard key={sport.id} sport={sport}/>
@@ -115,6 +115,7 @@ export const SyncConfigComponent = () => {
                     <CreateConfigModal refetch={() => syncConfigList.refetch()}/>
                 </>
             }
+            </Flex>
 
             <CalendarSelectionModal
                 url={ `${VITE_BACKEND_HOST}/api/calendars/${currentSyncConfig?.id}/subscribe`}
