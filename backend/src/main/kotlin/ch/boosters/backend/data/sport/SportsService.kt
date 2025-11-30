@@ -5,12 +5,13 @@ import arrow.core.raise.either
 import arrow.core.raise.ensure
 import ch.boosters.backend.data.sport.business.findSportsByParent
 import ch.boosters.backend.data.sport.business.groupByRootSports
-import ch.boosters.backend.data.sport.model.EventsBySportApi
+import ch.boosters.backend.data.sport.model.PagedResult
 import ch.boosters.backend.data.sport.model.Sport
 import ch.boosters.backend.data.sport.model.flatten
 import ch.boosters.backend.errorhandling.ElementNotFound
 import ch.boosters.backend.errorhandling.SynciEither
 import ch.boosters.backend.errorhandling.SynciError
+import ch.boosters.data.tables.pojos.EventsTable
 import ch.boosters.data.tables.pojos.SportsTable
 import ch.boosters.data.tables.pojos.TeamsTable
 import org.springframework.stereotype.Service
@@ -32,14 +33,17 @@ class SportsService(
         sports.groupByRootSports()
     }
 
-    fun getEventsBySport(sportId: UUID, pageSize: Int, pageNumber: Int): Either<SynciError, EventsBySportApi> = either {
+    fun getEventsBySport(sportId: UUID, pageSize: Int, pageNumber: Int): SynciEither<PagedResult<EventsTable>> = either {
         val allIds = findSportsByParent(sportId).bind().flatten()
         val eventsCount = sportRepository.eventsBySportsCount(allIds).bind()
-        val elements = sportRepository.eventsBySports(allIds, pageSize, pageNumber*pageSize).bind()
-        EventsBySportApi(eventsCount, pageNumber, pageSize, elements)
+        val elements = sportRepository.eventsBySports(allIds, pageSize, pageNumber * pageSize).bind()
+        PagedResult(eventsCount, pageNumber, pageSize, elements)
     }
 
-    fun getTeamsBySportId(sportId: UUID): SynciEither<List<TeamsTable>> = either {
-        sportRepository.getTeamsBySportId(sportId).bind()
+    fun getTeamsBySportId(sportId: UUID, pageSize: Int, pageNumber: Int): SynciEither<PagedResult<TeamsTable>> = either {
+        val belonging = findSportsByParent(sportId).bind().flatten()
+        val teamsCount = sportRepository.teamsBySportsCount(belonging).bind()
+        val elements = sportRepository.getTeamsBySportIds(belonging, pageSize, pageNumber * pageSize).bind()
+        PagedResult(teamsCount, pageNumber, pageSize, elements)
     }
 }

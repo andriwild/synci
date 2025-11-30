@@ -1,10 +1,8 @@
 package ch.boosters.backend.data.sport.model
 
-import ch.boosters.data.tables.pojos.EventsTable
-
-data class EventsBySportApi(
+data class PagedResult<T>(
     val amount: Int,
     val page: Int,
     val pageSize: Int,
-    val elements: List<EventsTable>
+    val elements: List<T>
 )

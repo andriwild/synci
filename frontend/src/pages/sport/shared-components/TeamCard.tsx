@@ -17,15 +17,14 @@ export const TeamCard = ({team}: { team: Team }) => {
     return (
         <Flex
             vertical
-            gap={20}
+            gap={10}
             align={"center"}
             justify={"center"}
             flex={1}
             style={{
                 background: token.colorBgContainer,
                 borderRadius: "20px",
-                padding: "20px",
-                minWidth: "200px",
+                padding: "10px",
             }}
         >
             <IconUsersGroup size={30}/>
