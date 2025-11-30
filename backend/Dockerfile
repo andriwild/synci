@@ -1,8 +1,5 @@
 FROM gradle:8.10.1-jdk21-alpine as builder
 
-ARG AUTH0_URL
-ENV AUTH0_URL=$AUTH0_URL
-
 WORKDIR /app
 
 COPY . .

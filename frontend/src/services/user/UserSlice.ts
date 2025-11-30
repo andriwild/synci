@@ -8,9 +8,8 @@ interface State {
     initialized: boolean;
 }
 
-const storedUser = localStorage.getItem("user");
 const initialState: State = {
-    user: storedUser ? JSON.parse(storedUser) : undefined,
+    user: undefined,
     initialized: false,
 };
 
@@ -25,11 +24,9 @@ const slice = createSlice({
         ...reducers,
         setUser: (state, action) => {
             state.user = action.payload;
-            localStorage.setItem("user", JSON.stringify(action.payload)); // Store in localStorage
         },
         clearUser: (state) => {
             state.user = undefined;
-            localStorage.removeItem("user"); // Remove from localStorage
         },
     },
 });

@@ -8,12 +8,11 @@ import './index.css';
 import {AppLayout} from "./sharedComponents/AppLayout.tsx";
 import {FaqPage} from "./pages/faq/FaqPage.tsx";
 import {ImpressumPage} from "./pages/impressum/ImpressumPage.tsx";
-import {PrivacyPolicyPage} from "./pages/privacyPolicy/PrivacyPolicyPage.tsx";
 import {SyncConfigPage} from "./pages/syncConfig/SyncConfigPage.tsx";
 import {useAuth0} from "@auth0/auth0-react";
 import {useAppDispatch} from "./app/hooks.ts";
 import {userActions} from "./services/user/UserSlice.ts";
-import {setAuth0Client, setStoreHelpers} from "./services/common/apiHelpers.ts";
+import {setAuth0Client} from "./services/common/apiHelpers.ts";
 
 export const App = () => {
     const { user, isAuthenticated, getAccessTokenSilently, loginWithRedirect } = useAuth0();
@@ -21,19 +20,17 @@ export const App = () => {
 
     useEffect(() => {
         setAuth0Client({ getTokenSilently: getAccessTokenSilently, loginWithRedirect });
-        setStoreHelpers(dispatch, userActions);
-    }, [getAccessTokenSilently, loginWithRedirect, dispatch]);
+    }, [getAccessTokenSilently, loginWithRedirect]);
 
     useEffect(() => {
         const fetchAndStoreToken = async () => {
             if (isAuthenticated) {
                 try {
-                    const token = await getAccessTokenSilently();
+                    await getAccessTokenSilently();
                     dispatch(userActions.setUser({
-                        id: user?.sub || '',
-                        name: user?.name || '',
+                        firstName: user?.given_name || '',
+                        lastName: user?.family_name || '',
                         email: user?.email || '',
-                        token: token,
                         picture: user?.picture || '',
                     }
                     ));
