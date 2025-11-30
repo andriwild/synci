@@ -14,6 +14,10 @@ export const TeamCard = ({team}: { team: Team }) => {
     const [updateSyncConfig, updateSyncConfigStatus] = syncConfigApi.useUpdateMutation();
     const user = useUser();
 
+    function syncConfigContainsTeam(team: Team): boolean {
+         return syncConfig?.teams.some(t => t.id == team.id) || false;
+    }
+
     return (
         <Flex
             vertical
@@ -30,7 +34,7 @@ export const TeamCard = ({team}: { team: Team }) => {
             <IconUsersGroup size={30}/>
             <Typography.Text>{team.name}</Typography.Text>
             <Button
-                disabled={!user}
+                disabled={!user || syncConfigContainsTeam(team)}
                 style={{width: "100%"}}
                 icon={<IconCalendarPlus size={20}/>}
                 onClick={async () => {

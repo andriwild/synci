@@ -55,6 +55,14 @@ export const SportDetailComponent = ({id, title}: { id: string, title: string })
         );
     }
 
+    function syncConfigContainsEvent(event: SportEvent): boolean {
+         return syncConfig?.events.some(e => e.id == event.id) || false;
+    }
+
+    function syncConfigContainsSport(sportId: string): boolean {
+         return syncConfig?.sports.some(s => s.id == sportId) || false;
+    }
+
     return (
         <Flex
             vertical
@@ -78,7 +86,7 @@ export const SportDetailComponent = ({id, title}: { id: string, title: string })
                 <Button
                     type={"primary"}
                     icon={<IconCalendarPlus size={20}/>}
-                    disabled={!user}
+                    disabled={!user || syncConfigContainsSport(id)}
                     onClick={async () => {
                         if (!syncConfig || !syncConfig.id) {
                             return;
@@ -127,7 +135,7 @@ export const SportDetailComponent = ({id, title}: { id: string, title: string })
                                 <Button
                                     icon={<IconCalendarPlus size={20}/>}
                                     type={"primary"}
-                                    disabled={!user}
+                                    disabled={!user || syncConfigContainsEvent(event) || syncConfigContainsSport(id) }
                                     loading={updateSyncConfigStatus.isLoading}
                                     onClick={async () => {
                                         if (!syncConfig || !syncConfig.id) {
