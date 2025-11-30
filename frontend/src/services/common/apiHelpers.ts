@@ -24,16 +24,9 @@ interface Auth0Client {
 }
 
 let auth0Client: Auth0Client | null = null;
-let storeDispatch: any = null;
-let userActions: any = null;
 
 export const setAuth0Client = (client: Auth0Client) => {
     auth0Client = client;
-};
-
-export const setStoreHelpers = (dispatch: any, actions: any) => {
-    storeDispatch = dispatch;
-    userActions = actions;
 };
 
 export const axiosBaseQuery = ({ baseUrl }: { baseUrl: string }) => {
@@ -43,21 +36,17 @@ export const axiosBaseQuery = ({ baseUrl }: { baseUrl: string }) => {
 
     axiosInstance.interceptors.request.use(
         async (config) => {
-            try {
-                const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user') || '{}') : null;
-                if (!user) {
-                    console.warn('Kein User im LocalStorage gefunden, Auth Header wird nicht gesetzt.');
-                    return config;
+            if (auth0Client) {
+                try {
+                    const token = await auth0Client.getTokenSilently();
+                    config.headers.Authorization = `Bearer ${token}`;
+                } catch (error) {
+                    console.warn('Token abruf fehlgeschlagen:', error);
                 }
-
-                if (user?.token) {
-                    config.headers.Authorization = `Bearer ${user.token}`;
-                }
-            } catch (error) {
-                console.warn('Fehler beim Hinzufügen des Auth Headers:', error);
             }
             return config;
         },
+
         (error) => {
             return Promise.reject(error);
         }
@@ -73,30 +62,11 @@ export const axiosBaseQuery = ({ baseUrl }: { baseUrl: string }) => {
                 
                 try {
                     const newToken = await auth0Client.getTokenSilently();
-                    const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user') || '{}') : null;
-                    
-                    if (user && newToken) {
-                        const updatedUser = { ...user, token: newToken };
-                        localStorage.setItem('user', JSON.stringify(updatedUser));
-                        
-                        if (storeDispatch && userActions) {
-                            storeDispatch(userActions.setUser(updatedUser));
-                        }
-                        
-                        originalRequest.headers.Authorization = `Bearer ${newToken}`;
-                        return axiosInstance(originalRequest);
-                    }
+                    originalRequest.headers.Authorization = `Bearer ${newToken}`;
+                    return axiosInstance(originalRequest);
                 } catch (refreshError) {
                     console.error('Token refresh fehlgeschlagen:', refreshError);
-                    
-                    if (storeDispatch && userActions) {
-                        storeDispatch(userActions.clearUser());
-                    }
-                    localStorage.removeItem('user');
-                    
-                    if (auth0Client.loginWithRedirect) {
-                        await auth0Client.loginWithRedirect();
-                    }
+                    await auth0Client.loginWithRedirect();
                 }
             }
             

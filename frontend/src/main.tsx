@@ -15,7 +15,10 @@ createRoot(document.getElementById('root')!).render(
           authorizationParams={{
               redirect_uri: window.location.origin,
               audience: 'https://synci.awild.ch',
-      }}
+          }}
+          cacheLocation="localstorage"
+          useRefreshTokens={true}
+          skipRedirectCallback={window.location.pathname === '/callback'}
       >
     <Provider store={store}>
         <App />
