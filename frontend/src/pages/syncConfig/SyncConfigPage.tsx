@@ -6,7 +6,7 @@ import {EventConfigCard} from "../../sharedComponents/config/EventConfigCard.tsx
 import {CalendarSelectionModal} from "../../sharedComponents/calenderSelectionModal/CalenderSelectionModal.tsx";
 import {VITE_BACKEND_HOST} from "../../../env.ts";
 import {syncConfigActions} from "../../services/syncConfig/syncCofigSlice.ts";
-import {IconPlus} from "@tabler/icons-react";
+import {IconPlus, IconFileSad} from "@tabler/icons-react";
 import {useDispatch} from "react-redux";
 import {useNavigate} from "react-router-dom";
 
@@ -44,6 +44,25 @@ export const SyncConfigPage = () => {
                     {config.events && config.events.map((event) => (
                         <EventConfigCard event={event} config={config} key={event.id}/>
                     ))}
+
+                    {(!config.sports || config.sports.length === 0) &&
+                     (!config.teams || config.teams.length === 0) &&
+                     (!config.events || config.events.length === 0) && (
+                        <Flex
+                            vertical
+                            align={"center"}
+                            justify={"center"}
+                            gap={10}
+                            style={{
+                                borderRadius: 20,
+                                background: token.colorBgContainer,
+                                padding: 20,
+                                minHeight: "100px"
+                            }}>
+                            <IconFileSad size={40} color={token.colorTextSecondary}/>
+                            <Typography.Text type="secondary">Keine Events</Typography.Text>
+                        </Flex>
+                    )}
 
                     <Button
                         type="default"
