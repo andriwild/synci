@@ -97,6 +97,8 @@ export const SyncConfigPage = () => {
                     />
                 </Flex>
             ))}
+
+            <CreateConfigCard refetch={syncConfig.refetch} />
         </Flex>
     );
 }
@@ -168,6 +170,95 @@ const EditConfigNameModal = ({config, refetch}: {
                         <Form.Item>
                             <Button type="primary" htmlType="submit" loading={updateSyncConfigStatus.isLoading}>
                                 Speichern
+                            </Button>
+                        </Form.Item>
+                    </Form>
+                </Flex>
+            </Modal>
+        </>
+    );
+}
+
+const CreateConfigCard = ({refetch}: { refetch: () => void }) => {
+    const [open, setOpen] = useState(false);
+    const [form] = Form.useForm();
+    const [api, contextHolder] = notification.useNotification();
+    const dispatch = useDispatch();
+    const token = theme.useToken().token;
+
+    const openNotification = (placement: NotificationPlacement) => {
+        api.success({
+            message: "Abo erstellt",
+            description: "Das neue Abo wurde erfolgreich erstellt. Du kannst jetzt deine Events hinzufügen",
+            placement,
+        });
+    };
+
+    const [createSyncConfig, createSyncConfigStatus] = syncConfigApi.useCreateMutation();
+
+    const handleSubmit = async (values: { name: string }) => {
+        try {
+            const response = await createSyncConfig({
+                name: values.name,
+                events: [],
+                teams: [],
+                sports: []
+            });
+            dispatch(syncConfigActions.setSyncConfig(response.data));
+            openNotification("bottomRight");
+            form.resetFields();
+            refetch();
+            setOpen(false);
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
+    return (
+        <>
+            {contextHolder}
+            <Flex
+                vertical
+                align="center"
+                justify="center"
+                gap={10}
+                style={{
+                    background: token.colorBgBase,
+                    borderRadius: "20px",
+                    maxWidth: "300px",
+                    minHeight: "200px",
+                    padding: "20px",
+                    cursor: "pointer",
+                    border: `2px dashed ${token.colorPrimary}`,
+                    transition: "all 0.3s ease"
+                }}
+                onClick={() => setOpen(true)}
+            >
+                <IconPlus size={60} color={token.colorPrimary}/>
+                <Typography.Text style={{color: token.colorPrimary, fontWeight: 500}}>
+                    Neues Abo erstellen
+                </Typography.Text>
+            </Flex>
+
+            <Modal
+                title="Neues Abo erstellen"
+                open={open}
+                onCancel={() => setOpen(false)}
+                footer={null}
+            >
+                <Flex vertical gap={10}>
+                    <Typography.Text>Hier kannst du ein neues Abo erstellen</Typography.Text>
+                    <Form form={form} layout="vertical" onFinish={handleSubmit}>
+                        <Form.Item
+                            label="Abo-Name"
+                            name="name"
+                            rules={[{required: true, message: "Bitte Abo-Namen eingeben"}]}
+                        >
+                            <Input placeholder="Abo-Name eingeben"/>
+                        </Form.Item>
+                        <Form.Item>
+                            <Button type="primary" htmlType="submit" loading={createSyncConfigStatus.isLoading}>
+                                Erstellen
                             </Button>
                         </Form.Item>
                     </Form>
