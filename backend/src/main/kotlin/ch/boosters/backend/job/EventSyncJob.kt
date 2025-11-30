@@ -1,6 +1,4 @@
 import arrow.core.Either
-import ch.boosters.backend.sources.formulaone.FormulaOneService
-import ch.boosters.backend.sources.swissski.SwissSkiService
 import ch.boosters.backend.sources.swisstxt.SwissTxtService
 import org.quartz.Job
 import org.quartz.JobExecutionContext
