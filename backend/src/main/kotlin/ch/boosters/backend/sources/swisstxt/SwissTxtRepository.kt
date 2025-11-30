@@ -38,8 +38,7 @@ class SwissTxtRepository(
         val queries = teams.map { team ->
             DSL
                 .insertInto(TEAMS_TABLE)
-                .columns(TEAMS_TABLE.ID, TEAMS_TABLE.SOURCE_ID, TEAMS_TABLE.NAME)
-                .values(team.id, sourceId, team.name)
+                .values(team.id, sourceId, team.name, team.gender)
                 .onDuplicateKeyUpdate()
                 .set(TEAMS_TABLE.NAME, team.name)
         }

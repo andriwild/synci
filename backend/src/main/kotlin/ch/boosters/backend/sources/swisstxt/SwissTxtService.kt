@@ -119,7 +119,7 @@ class SwissTxtService(
         leagueName: String,
         events: List<TeamEvent>
     ): SynciEither<Pair<IntArray, IntArray>> = either {
-        val teams = events.map { team -> Team(team.homeId, sourceId, team.homeName) }.distinct()
+        val teams = events.map { team -> Team(team.homeId, sourceId, team.homeName, team.gender) }.distinct()
         val sportId = getSportId(leagueName).bind()
 
         val teamIds = swissTxtRepository.upsertTeams(teams).bind()
