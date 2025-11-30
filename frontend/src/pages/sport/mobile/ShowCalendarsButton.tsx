@@ -1,5 +1,5 @@
 import {useState} from "react";
-import {Button, Drawer, Modal, Typography} from "antd";
+import {Button, Drawer, Typography} from "antd";
 import {IconCalendar} from "@tabler/icons-react";
 import {SyncConfigComponent} from "../desktop/SyncConfigComponent.tsx";
 import {useSyncConfig} from "../../../services/syncConfig/syncCofigSlice.ts";
@@ -62,7 +62,12 @@ export const ShowCalendarsButton = () => {
                 open={open}
                 styles={{ body: { padding: 0 } }}
             >
+                <div     style={{
+                    width: "90%",
+                    height: "90%",
+                }}>
                 <SyncConfigComponent/>
+                </div>
             </Drawer>
         </>
     );

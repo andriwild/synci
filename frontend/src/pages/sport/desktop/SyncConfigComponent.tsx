@@ -1,5 +1,5 @@
-import {Alert, Button, Flex, Form, Input, Modal, notification, Popover, theme, Typography} from "antd";
-import {IconEdit, IconPlus, IconReplace} from "@tabler/icons-react";
+import {Alert, Button, Flex, Form, Input, Modal, notification, Popover, Typography} from "antd";
+import {IconPlus, IconReplace} from "@tabler/icons-react";
 import {useEffect, useState} from "react";
 
 import {useDispatch} from "react-redux";
@@ -12,14 +12,13 @@ import {TeamConfigCard} from "../../../sharedComponents/config/TeamConfigCard.ts
 import { CalendarSelectionModal } from "../../../sharedComponents/calenderSelectionModal/CalenderSelectionModal.tsx";
 import {VITE_BACKEND_HOST} from "../../../../env.ts";
 import {EventConfigCard} from "../../../sharedComponents/config/EventConfigCard.tsx";
-import {DeleteConfigModal} from "../../../sharedComponents/config/DeleteConfigModal.tsx";
 
 
 export const SyncConfigComponent = () => {
     const syncConfigList = syncConfigApi.useGetAllQuery();
-    const token = theme.useToken().token;
     const [open, setOpen] = useState(false);
     const user = useUser();
+
 
     const currentSyncConfig = useSyncConfig();
     const dispatch = useDispatch();
@@ -53,7 +52,7 @@ export const SyncConfigComponent = () => {
 
     if (syncConfigList.data?.length === 0) {
         return (
-            <Flex vertical style={{gap: 20, padding: "20px 20px"}} align={"center"}>
+            <Flex vertical style={{gap: 20, padding: "20px 20px", width:"100%"}} align={"center"}>
                 <Typography.Title level={5}>Keine Abos vorhanden</Typography.Title>
              <CreateConfigModal refetch={syncConfigList.refetch}/>
             </Flex>
@@ -65,8 +64,9 @@ export const SyncConfigComponent = () => {
             style={{
                 gap: 20,
                 padding: "20px 20px",
-                height: "calc(100% - 40px)",
+                height: "100%",
                 maxHeight: "100%",
+                width: "100%",
             }}
         >
             <Flex justify={"space-between"} style={{ width: "100%" }} gap={10}>
@@ -76,51 +76,34 @@ export const SyncConfigComponent = () => {
 
                 <Popover
                     placement="bottomRight"
-                    title={"Alle verfuegbaren Abos"}
+                    title={"Alle verfügbaren Abos"}
                     open={open}
                     onOpenChange={(open) => setOpen(open)}
                     styles={{
                         body: { background: "white", padding: "20px", minWidth: "300px" },
                     }}
                     content={
-                        <Flex vertical gap={20}>
+                        <Flex vertical gap={10}>
                             {syncConfigList.data?.map((syncConfig) => (
-                                <Flex
-                                    justify={"space-between"}
-                                    align={"center"}
-                                    style={{
-                                        background: token.colorBgContainer,
-                                        padding: "10px",
-                                        borderRadius: 10,
-                                    }}
-                                    gap={20}
+                                <Button
                                     key={syncConfig.id}
+                                    type={"default"}
+                                    style={{ width: "100%", textAlign: "left" }}
+                                    onClick={() => {
+                                        dispatch(syncConfigActions.setSyncConfig(syncConfig));
+                                        setOpen(false);
+                                    }}
                                 >
-                                    <Typography.Text>{syncConfig.name}</Typography.Text>
-                                    <Flex gap={10} align={"center"}>
-                                        <Button
-                                            type={"primary"}
-                                            size={"small"}
-                                            onClick={() => {
-                                                dispatch(syncConfigActions.setSyncConfig(syncConfig));
-                                                setOpen(false);
-                                            }}
-                                            icon={<IconEdit size={15} />}
-                                        />
-                                        <DeleteConfigModal
-                                            list={syncConfigList.data || []}
-                                            refetch={syncConfigList.refetch}
-                                            id={syncConfig.id}
-                                            name={syncConfig.name}
-                                        />
-                                    </Flex>
-                                </Flex>
+                                    {syncConfig.name}
+                                </Button>
                             ))}
                             <CreateConfigModal refetch={() => syncConfigList.refetch()} />
                         </Flex>
                     }
                 >
-                    <Button icon={<IconReplace size={20} />} type={"default"} />
+                    <Button icon={<IconReplace size={20} />} type={"default"} >
+                        Abo wechseln
+                    </Button>
                 </Popover>
             </Flex>
 
@@ -156,7 +139,6 @@ export const SyncConfigComponent = () => {
                             <Typography.Text>
                                 Keine Teams / Ligen / Events vorhanden
                             </Typography.Text>
-                            <CreateConfigModal refetch={() => syncConfigList.refetch()} />
                         </>
                     )}
             </Flex>

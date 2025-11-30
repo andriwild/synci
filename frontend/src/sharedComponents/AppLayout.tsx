@@ -12,7 +12,7 @@ export const AppLayout: FC = () => (
         <PreHeader />
         <Header />
         <Content style={{ borderRadius: 20, background: 'white', margin: '20px 20px 20px 20px' }}>
-            <Outlet /> {/* This renders the child routes */}
+            <Outlet />
         </Content>
         <Footer />
     </Layout>
