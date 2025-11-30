@@ -7,41 +7,41 @@ import {Team} from "../team/entities/team.ts";
 
 
 export const sportApi = createApi({
-    reducerPath: "sportApi",
-    baseQuery: axiosBaseQuery({
-        baseUrl: "/sports"
+  reducerPath: "sportApi",
+  baseQuery: axiosBaseQuery({
+    baseUrl: "/sports"
+  }),
+  endpoints: build => ({
+    getAll: build.query<Sport[], void>({
+      query: () => ({
+        url: "",
+        method: "GET"
+      })
     }),
-    endpoints: build => ({
-        getAll: build.query<Sport[], void>({
-            query: () => ({
-                url: "",
-                method: "GET"
-            })
-        }),
-        getById: build.query<Sport, number>({
-            query: (id) => ({
-                url: `${id}`,
-                method: "GET"
-            })
-        }),
-        getEvents: build.query<PagedResult<SportEvent>, PagedRequest>({
-            query: (request) => ({
-                url: `${request.id}/events?page=${request.page}&pageSize=${request.pageSize}`,
-                method: "GET"
-            })
-        }),
-        getTeams: build.query<Team[], string>({
-            query: (sportId) => ({
-                url: `${sportId}/teams`,
-                method: "GET"
-            })
-        }),
-        update: build.mutation<Sport, Sport>({
-            query: (sport) => ({
-                url: `/${sport.id}`,
-                method: "PUT",
-                body: sport
-            })
-        }),
-})
+    getById: build.query<Sport, number>({
+      query: (id) => ({
+        url: `${id}`,
+        method: "GET"
+      })
+    }),
+    getEvents: build.query<PagedResult<SportEvent>, PagedRequest>({
+      query: (request) => ({
+        url: `${request.id}/events?page=${request.page}&pageSize=${request.pageSize}`,
+        method: "GET"
+      })
+    }),
+    getTeams: build.query<PagedResult<Team>, PagedRequest>({
+      query: (request) => ({
+        url: `${request.id}/teams?page=${request.page}&pageSize=${request.pageSize}`,
+        method: "GET"
+      })
+    }),
+    update: build.mutation<Sport, Sport>({
+      query: (sport) => ({
+        url: `/${sport.id}`,
+        method: "PUT",
+        body: sport
+      })
+    }),
+  })
 })

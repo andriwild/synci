@@ -12,6 +12,9 @@ import ch.boosters.data.tables.TeamsTable.Companion.TEAMS_TABLE
 import ch.boosters.data.tables.pojos.EventsTable
 import ch.boosters.data.tables.pojos.SportsTable
 import ch.boosters.data.tables.pojos.TeamsTable
+import org.jooq.DSLContext
+import org.jooq.Record
+import org.jooq.SelectConditionStep
 import org.springframework.stereotype.Repository
 import java.util.*
 
@@ -43,6 +46,12 @@ class SportsRepository(
                 .into(EventsTable::class.java)
         }
 
+    fun teamsBySportsCount(sportIds: List<UUID>): Either<SynciError, Int> =
+        dsl {
+            teamsBySport(it, sportIds)
+                .count()
+        }
+
     fun eventsBySportsCount(sportIds: List<UUID>): Either<SynciError, Int> =
         dsl {
             it.selectFrom(EVENTS_TABLE)
@@ -50,13 +59,21 @@ class SportsRepository(
                 .count()
         }
 
-    fun getTeamsBySportId(sportId: UUID): Either<SynciError, List<TeamsTable>> =
+    fun getTeamsBySportIds(sportIds: List<UUID>, limit: Int, offset: Int): Either<SynciError, List<TeamsTable>> =
         dsl {
-            it.select(TEAMS_TABLE.asterisk())
-                .from(TEAMS_TABLE)
-                .join(TEAMS_SPORTS_TABLE)
-                .on(TEAMS_SPORTS_TABLE.TEAM_ID.eq(TEAMS_TABLE.ID))
-                .where(TEAMS_SPORTS_TABLE.SPORT_ID.eq(sportId))
+            teamsBySport(it, sportIds)
+                .limit(offset, limit)
                 .fetchInto(TeamsTable::class.java)
         }
+
+    private fun teamsBySport(
+        dsl: DSLContext,
+        sportIds: List<UUID>
+    ): SelectConditionStep<Record> = dsl.select(TEAMS_TABLE.asterisk())
+        .from(TEAMS_TABLE)
+        .leftJoin(TEAMS_SPORTS_TABLE)
+        .on(
+            TEAMS_TABLE.ID.eq(TEAMS_SPORTS_TABLE.TEAM_ID).and(TEAMS_TABLE.SOURCE_ID.eq(TEAMS_SPORTS_TABLE.SOURCE_TEAM_ID))
+        )
+        .where(TEAMS_SPORTS_TABLE.SPORT_ID.`in`(sportIds))
 }
