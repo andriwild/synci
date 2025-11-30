@@ -1,5 +1,5 @@
 import {Avatar, Button, Flex, Image, Space, Typography} from "antd";
-import {IconCalendarWeek, IconPlayerPlayFilled, IconStarFilled} from "@tabler/icons-react";
+import {IconPlayerPlayFilled} from "@tabler/icons-react";
 import {useNavigate} from "react-router-dom";
 
 export const FirstImpressionComponent = () => {
@@ -36,21 +36,13 @@ export const FirstImpressionComponent = () => {
                         <Flex style={{gap: 20, paddingTop: "20px", width: '100%'}}
                               justify={"start"}
                         >
-                            <Button type={'primary'} size={"middle"} icon={<IconCalendarWeek size={15}/>}
+                            <Button type={'primary'} size={"middle"} icon={<IconPlayerPlayFilled size={15}/>}
                                     onClick={() => {
                                         navigate('/sport');
                                     }
                                     }
                             >
-                                Jetzt starten
-                            </Button>
-                            <Button type={"default"} size={"middle"} icon={<IconPlayerPlayFilled size={15}/>}
-                                    onClick={() => {
-                                        navigate('/sport');
-                                    }
-                                    }
-                            >
-                                Demo anschauen
+                                Verfügbare Sportarten erkunden
                             </Button>
                         </Flex>
                         <Flex style={{gap: 20, paddingTop: "20px", width: '100%'}}>
@@ -88,11 +80,6 @@ export const FirstImpressionComponent = () => {
         </span>
                                 </Space>
 
-                                {/* Bewertung */}
-                                <Space>
-                                    <IconStarFilled style={{color: "#facc15", fontSize: 20}}/>
-                                    <span style={{fontSize: 14, color: "#4b5563"}}>4.9/5 Bewertung</span>
-                                </Space>
                             </Space>
                         </Flex>
                     </Flex>
