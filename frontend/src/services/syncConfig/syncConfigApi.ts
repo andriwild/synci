@@ -8,32 +8,37 @@ export const syncConfigApi = createApi({
     baseQuery: axiosBaseQuery({
         baseUrl: "/syncconfigs"
     }),
+    tagTypes: ['SyncConfig'],
     endpoints: build => ({
         getAll: build.query<SyncConfig[], void>({
             query: () => ({
                 url: "",
                 method: "GET",
-            })
+            }),
+            providesTags: ['SyncConfig']
         }),
         create: build.mutation<SyncConfig, SyncConfigRequest>({
             query: syncConfig => ({
                 url: "",
                 method: "POST",
                 body: syncConfig
-            })
+            }),
+            invalidatesTags: ['SyncConfig']
         }),
         update: build.mutation<SyncConfig, SyncConfigRequest>({
             query: syncConfig => ({
                 url: `/${syncConfig.id}`,
                 method: "PUT",
                 body: syncConfig
-            })
+            }),
+            invalidatesTags: ['SyncConfig']
         }),
         delete: build.mutation<void, string>({
             query: id => ({
                 url: `/${id}`,
                 method: "DELETE"
-            })
+            }),
+            invalidatesTags: ['SyncConfig']
         })
 
 })

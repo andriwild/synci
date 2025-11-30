@@ -26,7 +26,7 @@ export const SyncConfigComponent = () => {
 
     useEffect(() => {
         syncConfigList.refetch();
-        if (syncConfigList.data) {
+        if (syncConfigList.data && !currentSyncConfig) {
             dispatch(syncConfigActions.setSyncConfig(syncConfigList.data[0]));
         }
     }, [user]);
