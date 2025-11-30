@@ -6,12 +6,14 @@ import { UserProfile } from "./UserProfile.tsx";
 import useBreakpoint from "antd/es/grid/hooks/useBreakpoint";
 import { IconMenu2 } from "@tabler/icons-react";
 import type { MenuProps } from "antd";
+import { useUser } from "../services/user/UserSlice.ts";
 
 export const Header: FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const screens = useBreakpoint();
     const [visible, setVisible] = useState(false);
+    const user = useUser();
 
     const items: MenuProps["items"] = [
         {
@@ -19,11 +21,11 @@ export const Header: FC = () => {
             label: "Sportarten",
             icon: <ListBullets />,
         },
-        {
+        ...(user ? [{
             key: "/syncConfig",
             label: "Meine Abos",
             icon: <CalendarBlank />,
-        }
+        }] : [])
     ];
 
     // Corrected function to match Ant Design's expected type

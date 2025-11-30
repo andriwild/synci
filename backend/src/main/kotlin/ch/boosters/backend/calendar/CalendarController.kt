@@ -14,9 +14,8 @@ class CalendarController(private val calendarService: CalendarService) {
 
     @GetMapping("/{configId}/subscribe", produces = ["text/calendar"])
     fun createCalendarFromTeam(@PathVariable configId: UUID): String {
-        val cal = calendarService.createCalendar(configId)
         // TODO: return either here, somehow this is not working right now...
-        return when (cal) {
+        return when (val cal = calendarService.createCalendar(configId)) {
             is Either.Left -> throw Exception("could not create calendar file")
             is Either.Right -> cal.value.toString()
         }

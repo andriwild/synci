@@ -24,7 +24,7 @@ export const CalendarSelectionModal = ({url, buttonText, buttonType, buttonIcon}
                 icon={buttonIcon}
                 onClick={() => setIsModalOpen(true)}
                 disabled={!user}
-                title={user ? "" : "Melde dich an, um den Kalender hinzuzufügen"}
+                title={user ? "" : "Melde dich an, um Kalender hinzuzufügen"}
             >{buttonText}</Button>
             <Modal
                 open={isModalOpen}
@@ -36,7 +36,7 @@ export const CalendarSelectionModal = ({url, buttonText, buttonType, buttonIcon}
                     gap={20}
                     vertical
                 >
-                    <Typography.Title level={4}>Kalender hinzufügen</Typography.Title>
+                    <Typography.Title level={4}>Abo zu Kalender hinzufügen</Typography.Title>
                     <Flex gap={40}>
                         <Flex vertical gap={10} align={"center"}  flex={1} justify={"space-between"}>
                             <IconMail size={50}/>
@@ -94,6 +94,7 @@ export const CalendarSelectionModal = ({url, buttonText, buttonType, buttonIcon}
                             >Einfügen</Button>
                         </Flex>
                     </Flex>
+                    <Button onClick={() => navigator.clipboard.writeText("https://" + url)}>Abo Link in die Zwischenablage kopieren</Button>
                     <Divider children={"Willst du uns unterstützen?"} />
                     <Flex gap={10} vertical
                           align={"center"}>
