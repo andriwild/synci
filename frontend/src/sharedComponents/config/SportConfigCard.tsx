@@ -19,8 +19,7 @@ export const SportConfigCard = ({sport}: { sport: Sport }) => {
             justify={"space-between"}
             style={{borderRadius: 20, background: token.colorBgContainer, padding: 20}}>
             <Flex gap={20} align={"center"}>
-            <IconSitemap size={40} color={token.colorPrimary}/>
-                <Flex vertical gap={10}
+                <Flex gap={10}
                       align={"start"}>
                     <Typography.Title level={5}
                     style={{margin: "0"}}

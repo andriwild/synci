@@ -19,7 +19,6 @@ export const TeamConfigCard = ({team}: { team: Team }) => {
             justify={"space-between"}
             style={{borderRadius: 20, background: token.colorBgContainer, padding: 20}}>
             <Flex gap={20} align={"center"}>
-            <IconUsersGroup size={40} color={token.colorPrimary}/>
                 <Flex vertical gap={10}
                       align={"start"}>
                     <Typography.Title level={5}

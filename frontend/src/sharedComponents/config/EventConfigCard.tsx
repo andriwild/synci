@@ -20,7 +20,6 @@ export const EventConfigCard = ({event}: { event: SportEvent }) => {
             justify={"space-between"}
             style={{borderRadius: 20, background: token.colorBgContainer, padding: 20}}>
             <Flex gap={20} align={"center"}>
-            <IconCalendarEvent size={40} color={token.colorPrimary}/>
                 <Flex vertical gap={5}
                       align={"start"}>
                     <Typography.Title level={5}

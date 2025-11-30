@@ -1,22 +1,23 @@
 import {useState} from "react";
-import {Button, Modal, Typography} from "antd";
+import {Button, Drawer, Modal, Typography} from "antd";
 import {IconCalendar} from "@tabler/icons-react";
 import {SyncConfigComponent} from "../desktop/SyncConfigComponent.tsx";
 import {useSyncConfig} from "../../../services/syncConfig/syncCofigSlice.ts";
 import {SyncConfig} from "../../../services/syncConfig/entities/syncConfig.ts";
 
 export const ShowCalendarsButton = () => {
-    const [isModalOpen, setIsModalOpen] = useState(false);
-
     const syncConfig = useSyncConfig();
 
-    const showModal = () => {
-        setIsModalOpen(true);
+    const [open, setOpen] = useState(false);
+
+    const showDrawer = () => {
+        setOpen(true);
     };
 
-    const handleClose = () => {
-        setIsModalOpen(false);
+    const onClose = () => {
+        setOpen(false);
     };
+
 
     function subscriptionsLength(syncConfig?: SyncConfig) {
         if (!syncConfig) return 0;
@@ -27,12 +28,13 @@ export const ShowCalendarsButton = () => {
         <>
             <div style={{position: "absolute", bottom: "10px", width: "90%", padding: "10px 0px"}}
             >
-                <Button onClick={showModal} type="primary" icon={<IconCalendar/>} size="large" block>
+                <Button onClick={showDrawer} type="primary" icon={<IconCalendar/>} size="large" block>
                         <span style={{
                             position: "absolute",
                             right: "-10px",
                             top: "-10px",
-                            backgroundColor: "red",
+                            backgroundColor: "#f8e06d",
+                            color: "black",
                             borderRadius: "50%",
                             height: "25px",
                             fontSize: "12px",
@@ -48,14 +50,20 @@ export const ShowCalendarsButton = () => {
             </div>
 
 
-            <Modal
-                open={isModalOpen}
-                onCancel={handleClose}
+            <Drawer
+                placement={"bottom"}
+                size={"default"}
+                closable={true}
                 footer={null}
-                closable={false}
+                height={"70%"}
+                headerStyle={{ display: "none" }}
+                bodyStyle={{ overflow: "hidden" }}
+                onClose={onClose}
+                open={open}
+                styles={{ body: { padding: 0 } }}
             >
                 <SyncConfigComponent/>
-            </Modal>
+            </Drawer>
         </>
     );
 };

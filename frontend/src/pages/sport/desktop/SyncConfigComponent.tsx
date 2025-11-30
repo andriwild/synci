@@ -53,78 +53,123 @@ export const SyncConfigComponent = () => {
 
     if (syncConfigList.data?.length === 0) {
         return (
-            <Flex vertical style={{gap: 20, padding: "20px 20px", width: "100%"}} align={"center"}>
+            <Flex vertical style={{gap: 20, padding: "20px 20px"}} align={"center"}>
                 <Typography.Title level={5}>Keine Abos vorhanden</Typography.Title>
              <CreateConfigModal refetch={syncConfigList.refetch}/>
             </Flex>
         );
     }
     return (
-        <Flex vertical style={{gap: 20, padding: "20px 20px", width: "100%"}}>
-            <Flex justify={"space-between"} style={{width: "100%"}} gap={10}>
-                {/*TODO Edit field*/}
-                <Typography.Title level={4} style={{margin: 0}}>{currentSyncConfig?.name}</Typography.Title>
-                <Popover placement="bottomRight"
-                         title={"Alle verfügbaren Abos"}
-                         open={open}
-                         onOpenChange={(open) => setOpen(open)}
-                         styles={{body: {background: "white", padding: "20px", minWidth: "300px"}}} content={
-                    <Flex vertical gap={20}>
-                        {syncConfigList.data?.map((syncConfig) => (
-                            <Flex justify={"space-between"} align={"center"}
-                                  style={{background: token.colorBgContainer, padding: "10px", borderRadius: 10}}
-                                  gap={20} key={syncConfig.id}>
-                                <Typography.Text>{syncConfig.name}</Typography.Text>
-                                <Flex gap={10} align={"center"}>
-                                    <Button type={"primary"} size={"small"} onClick={() => {
-                                        dispatch(syncConfigActions.setSyncConfig(syncConfig));
-                                        setOpen(false)
-                                    }
-                                    } icon={<IconEdit size={15}/>}></Button>
-                                    <DeleteConfigModal list={syncConfigList.data || []} refetch={syncConfigList.refetch} id={syncConfig.id}
-                                                       name={syncConfig.name}/>
-                                </Flex>
-                            </Flex>
+        <Flex
+            vertical
+            style={{
+                gap: 20,
+                padding: "20px 20px",
+                height: "calc(100% - 40px)",
+                maxHeight: "100%",
+            }}
+        >
+            <Flex justify={"space-between"} style={{ width: "100%" }} gap={10}>
+                <Typography.Title level={4} style={{ margin: 0 }}>
+                    {currentSyncConfig?.name}
+                </Typography.Title>
 
-                        ))}
-                        <CreateConfigModal refetch={() => syncConfigList.refetch()}/>
-                    </Flex>
-                }>
-                    <Button icon={<IconReplace size={20}/>} type={"default"}></Button>
+                <Popover
+                    placement="bottomRight"
+                    title={"Alle verfuegbaren Abos"}
+                    open={open}
+                    onOpenChange={(open) => setOpen(open)}
+                    styles={{
+                        body: { background: "white", padding: "20px", minWidth: "300px" },
+                    }}
+                    content={
+                        <Flex vertical gap={20}>
+                            {syncConfigList.data?.map((syncConfig) => (
+                                <Flex
+                                    justify={"space-between"}
+                                    align={"center"}
+                                    style={{
+                                        background: token.colorBgContainer,
+                                        padding: "10px",
+                                        borderRadius: 10,
+                                    }}
+                                    gap={20}
+                                    key={syncConfig.id}
+                                >
+                                    <Typography.Text>{syncConfig.name}</Typography.Text>
+                                    <Flex gap={10} align={"center"}>
+                                        <Button
+                                            type={"primary"}
+                                            size={"small"}
+                                            onClick={() => {
+                                                dispatch(syncConfigActions.setSyncConfig(syncConfig));
+                                                setOpen(false);
+                                            }}
+                                            icon={<IconEdit size={15} />}
+                                        />
+                                        <DeleteConfigModal
+                                            list={syncConfigList.data || []}
+                                            refetch={syncConfigList.refetch}
+                                            id={syncConfig.id}
+                                            name={syncConfig.name}
+                                        />
+                                    </Flex>
+                                </Flex>
+                            ))}
+                            <CreateConfigModal refetch={() => syncConfigList.refetch()} />
+                        </Flex>
+                    }
+                >
+                    <Button icon={<IconReplace size={20} />} type={"default"} />
                 </Popover>
             </Flex>
-            <Flex vertical style={{gap:20, width: "100%", overflowY: "scroll"}}>
-            {(currentSyncConfig?.sports &&
-                currentSyncConfig?.sports?.map((sport) => (
-                    <SportConfigCard key={sport.id} sport={sport}/>
-                ))
-            )}
-            {currentSyncConfig?.events &&
-            currentSyncConfig?.events.map((event) => (
-                <EventConfigCard key={event.id} event={event}/>
-            ))}
-            {currentSyncConfig?.teams &&
-            currentSyncConfig?.teams.map((team) => (
-                <TeamConfigCard key={team.id} team={team}/>
-            ))}
-            {currentSyncConfig?.sports?.length === 0 &&
-            currentSyncConfig?.events?.length === 0 &&
-            currentSyncConfig?.teams?.length === 0 &&
-                <>
-                    <Typography.Text>Keine Teams / Ligen / Events vorhanden</Typography.Text>
-                    <CreateConfigModal refetch={() => syncConfigList.refetch()}/>
-                </>
-            }
+
+            <Flex
+                vertical
+                style={{
+                    gap: 20,
+                    width: "100%",
+                    flex: 1,          // nimmt den restlichen Platz ein
+                    minHeight: 0,     // wichtig fuer korrektes Flex-Scrolling
+                    overflowY: "auto" // hier wird gescrolled
+                }}
+            >
+                {currentSyncConfig?.sports &&
+                    currentSyncConfig?.sports?.map((sport) => (
+                        <SportConfigCard key={sport.id} sport={sport} />
+                    ))}
+
+                {currentSyncConfig?.events &&
+                    currentSyncConfig?.events.map((event) => (
+                        <EventConfigCard key={event.id} event={event} />
+                    ))}
+
+                {currentSyncConfig?.teams &&
+                    currentSyncConfig?.teams.map((team) => (
+                        <TeamConfigCard key={team.id} team={team} />
+                    ))}
+
+                {currentSyncConfig?.sports?.length === 0 &&
+                    currentSyncConfig?.events?.length === 0 &&
+                    currentSyncConfig?.teams?.length === 0 && (
+                        <>
+                            <Typography.Text>
+                                Keine Teams / Ligen / Events vorhanden
+                            </Typography.Text>
+                            <CreateConfigModal refetch={() => syncConfigList.refetch()} />
+                        </>
+                    )}
             </Flex>
 
-            <CalendarSelectionModal
-                url={ `${VITE_BACKEND_HOST}/api/calendars/${currentSyncConfig?.id}/subscribe`}
-                buttonText="Zu Kalender hinzufügen"
-                buttonIcon={<i className="fas fa-calendar-plus"></i>}
-                buttonType="primary"
-            />
+                <CalendarSelectionModal
+                    url={`${VITE_BACKEND_HOST}/api/calendars/${currentSyncConfig?.id}/subscribe`}
+                    buttonText="Zu Kalender hinzufuegen"
+                    buttonIcon={<i className="fas fa-calendar-plus"></i>}
+                    buttonType="primary"
 
+                />
         </Flex>
+
     )
         ;
 }
