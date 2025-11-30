@@ -15,6 +15,7 @@ import ch.boosters.data.tables.pojos.EventsTable
 import ch.boosters.data.tables.pojos.SportsTable
 import ch.boosters.data.tables.pojos.TeamsTable
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
 import java.util.*
 
 @Service
@@ -33,10 +34,10 @@ class SportsService(
         sports.groupByRootSports()
     }
 
-    fun getEventsBySport(sportId: UUID, pageSize: Int, pageNumber: Int): SynciEither<PagedResult<EventsTable>> = either {
+    fun getEventsBySport(sportId: UUID, pageSize: Int, pageNumber: Int, dateTime: LocalDateTime): SynciEither<PagedResult<EventsTable>> = either {
         val allIds = findSportsByParent(sportId).bind().flatten()
-        val eventsCount = sportRepository.eventsBySportsCount(allIds).bind()
-        val elements = sportRepository.eventsBySports(allIds, pageSize, pageNumber * pageSize).bind()
+        val eventsCount = sportRepository.eventsBySportsCount(allIds, dateTime).bind()
+        val elements = sportRepository.eventsBySports(allIds, pageSize, pageNumber * pageSize, dateTime).bind()
         PagedResult(eventsCount, pageNumber, pageSize, elements)
     }
 

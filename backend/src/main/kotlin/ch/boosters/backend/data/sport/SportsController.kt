@@ -8,6 +8,7 @@ import ch.boosters.backend.errorhandling.SynciError
 import ch.boosters.data.tables.pojos.EventsTable
 import ch.boosters.data.tables.pojos.TeamsTable
 import org.springframework.web.bind.annotation.*
+import java.time.LocalDateTime
 import java.util.*
 
 @RestController
@@ -23,9 +24,10 @@ class SportsController(
     fun getEventsBySport(
         @PathVariable id: UUID,
         @RequestParam pageSize: Int,
-        @RequestParam page: Int
+        @RequestParam page: Int,
+        @RequestParam dateTime: LocalDateTime = LocalDateTime.now()
     ): Either<SynciError, PagedResult<EventsTable>> =
-        sportsService.getEventsBySport(id, pageSize, page)
+        sportsService.getEventsBySport(id, pageSize, page, dateTime)
 
     @GetMapping("/{id}/teams")
     fun getTeamsBySport(

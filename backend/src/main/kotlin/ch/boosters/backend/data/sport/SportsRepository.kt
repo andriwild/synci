@@ -16,6 +16,7 @@ import org.jooq.DSLContext
 import org.jooq.Record
 import org.jooq.SelectConditionStep
 import org.springframework.stereotype.Repository
+import java.time.LocalDateTime
 import java.util.*
 
 @Repository
@@ -37,10 +38,11 @@ class SportsRepository(
         }.bind()
     }
 
-    fun eventsBySports(sportIds: List<UUID>, limit: Int, offset: Int): Either<SynciError, List<EventsTable>> =
+    fun eventsBySports(sportIds: List<UUID>, limit: Int, offset: Int, dateTime: LocalDateTime): Either<SynciError, List<EventsTable>> =
         dsl {
             it.selectFrom(EVENTS_TABLE)
                 .where(EVENTS_TABLE.SPORT_ID.`in`(sportIds))
+                .and(EVENTS_TABLE.STARTS_ON.greaterOrEqual(dateTime))
                 .limit(offset, limit)
                 .fetch()
                 .into(EventsTable::class.java)
@@ -52,10 +54,11 @@ class SportsRepository(
                 .count()
         }
 
-    fun eventsBySportsCount(sportIds: List<UUID>): Either<SynciError, Int> =
+    fun eventsBySportsCount(sportIds: List<UUID>, dateTime: LocalDateTime): Either<SynciError, Int> =
         dsl {
             it.selectFrom(EVENTS_TABLE)
                 .where(EVENTS_TABLE.SPORT_ID.`in`(sportIds))
+                .and(EVENTS_TABLE.STARTS_ON.greaterOrEqual(dateTime))
                 .count()
         }
 
