@@ -1,5 +1,5 @@
 import {Alert, Button, Flex, Form, Input, Modal, notification, Popover, theme, Typography} from "antd";
-import {IconEdit, IconPlus, IconReplace, IconTrash,} from "@tabler/icons-react";
+import {IconEdit, IconPlus, IconReplace} from "@tabler/icons-react";
 import {useEffect, useState} from "react";
 
 import {useDispatch} from "react-redux";
@@ -10,6 +10,7 @@ import { useUser } from "../../../services/user/UserSlice";
 import {SportConfigCard} from "../../../sharedComponents/config/SportConfigCard.tsx";
 import {TeamConfigCard} from "../../../sharedComponents/config/TeamConfigCard.tsx";
 import { CalendarSelectionModal } from "../../../sharedComponents/calenderSelectionModal/CalenderSelectionModal.tsx";
+import {DeleteConfigModal} from "../../../sharedComponents/config/DeleteConfigModal.tsx";
 import {VITE_BACKEND_HOST} from "../../../../env.ts";
 import {SyncConfig} from "../../../services/syncConfig/entities/syncConfig.ts";
 import {EventConfigCard} from "../../../sharedComponents/config/EventConfigCard.tsx";
@@ -81,8 +82,13 @@ export const SyncConfigComponent = () => {
                                         setOpen(false)
                                     }
                                     } icon={<IconEdit size={15}/>}></Button>
-                                    <DeleteConfigModal list={syncConfigList.data || []} refetch={syncConfigList.refetch} id={syncConfig.id}
-                                                       name={syncConfig.name}/>
+                                    <DeleteConfigModal
+                                        list={syncConfigList.data || []}
+                                        refetch={syncConfigList.refetch}
+                                        id={syncConfig.id}
+                                        name={syncConfig.name}
+                                        compact={true}
+                                    />
                                 </Flex>
                             </Flex>
 
@@ -126,70 +132,6 @@ export const SyncConfigComponent = () => {
         </Flex>
     )
         ;
-}
-
-const DeleteConfigModal = ({list, refetch, id, name}: {
-    list: SyncConfig[],
-    refetch: () => void,
-    id: string,
-    name: string }) => {
-    const [open, setOpen] = useState(false);
-    const [form] = Form.useForm();
-    const [api, contextHolder] = notification.useNotification();
-    const dispatch = useDispatch();
-    const syncConfig = useSyncConfig();
-
-    const openNotification = (placement: NotificationPlacement) => {
-        api.info({
-            message: "Abo gelöscht",
-            description: "Das Abo wurde erfolgreich gelöscht",
-            placement,
-        });
-    };
-
-    const [deleteSyncConfig, deleteSyncConfigStatus] = syncConfigApi.useDeleteMutation();
-
-    const handleSubmit = async () => {
-        try {
-            await deleteSyncConfig(id);
-            openNotification("bottomRight");
-            if (id == syncConfig?.id) {
-                list.filter((config) => config.id !== id);
-            dispatch(syncConfigActions.setSyncConfig(list.filter((config) => config.id !== id)[0]));
-            }
-            refetch();
-        } catch (e) {
-            console.error(e);
-        }
-    };
-
-    return (
-        <>
-            {contextHolder}
-            <Button type="default" size="small"
-                    icon={<IconTrash size={15}/>}
-                    onClick={() => setOpen(true)}
-            >
-            </Button>
-            <Modal
-                title={`Abo ${name} löschen`}
-                open={open}
-                onCancel={() => setOpen(false)}
-                footer={null}
-            >
-                <Flex vertical gap={10}>
-                    <Typography.Text>Willst du das Abo wirklich löschen?</Typography.Text>
-                    <Form form={form} layout="vertical" onFinish={handleSubmit}>
-                        <Form.Item>
-                            <Button type="primary" htmlType="submit" loading={deleteSyncConfigStatus.isLoading}>
-                                Löschen
-                            </Button>
-                        </Form.Item>
-                    </Form>
-                </Flex>
-            </Modal>
-        </>
-    );
 }
 
 const CreateConfigModal = ({refetch}: { refetch: () => void }) => {

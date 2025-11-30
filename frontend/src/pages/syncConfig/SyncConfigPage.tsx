@@ -4,6 +4,7 @@ import {SportConfigCard} from "../../sharedComponents/config/SportConfigCard.tsx
 import {TeamConfigCard} from "../../sharedComponents/config/TeamConfigCard.tsx";
 import {EventConfigCard} from "../../sharedComponents/config/EventConfigCard.tsx";
 import {CalendarSelectionModal} from "../../sharedComponents/calenderSelectionModal/CalenderSelectionModal.tsx";
+import {DeleteConfigModal} from "../../sharedComponents/config/DeleteConfigModal.tsx";
 import {VITE_BACKEND_HOST} from "../../../env.ts";
 import {syncConfigActions} from "../../services/syncConfig/syncCofigSlice.ts";
 import {IconPlus, IconFileSad} from "@tabler/icons-react";
@@ -80,6 +81,13 @@ export const SyncConfigPage = () => {
                         buttonText="Zu Kalender hinzufügen"
                         buttonIcon={<i className="fas fa-calendar-plus"></i>}
                         buttonType="primary"
+                    />
+
+                    <DeleteConfigModal
+                        list={syncConfig.data || []}
+                        refetch={syncConfig.refetch}
+                        id={config.id}
+                        name={config.name}
                     />
                 </Flex>
             ))}
