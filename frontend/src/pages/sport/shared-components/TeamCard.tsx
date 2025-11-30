@@ -1,5 +1,5 @@
 import {Button, Flex, theme, Typography} from "antd";
-import {Team} from "../../../services/team/entities/team.ts";
+import {displayGender, Team} from "../../../services/team/entities/team.ts";
 import {IconCalendarPlus, IconUsersGroup} from "@tabler/icons-react";
 import {useDispatch} from "react-redux";
 import {syncConfigDtoMapper} from "../../../services/syncConfig/helpers/syncConfigHelper.ts";
@@ -32,7 +32,7 @@ export const TeamCard = ({team}: { team: Team }) => {
             }}
         >
             <IconUsersGroup size={30}/>
-            <Typography.Text>{team.name}</Typography.Text>
+            <Typography.Text>{team.name} {displayGender(team.gender)}</Typography.Text>
             <Button
                 disabled={!user || syncConfigContainsTeam(team)}
                 style={{width: "100%"}}

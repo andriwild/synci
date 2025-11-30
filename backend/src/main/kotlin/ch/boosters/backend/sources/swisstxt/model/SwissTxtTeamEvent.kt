@@ -1,6 +1,7 @@
 package ch.boosters.backend.sources.swisstxt.model
 
 import ch.boosters.backend.data.event.model.TeamEvent
+import ch.boosters.backend.data.team.Gender
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -32,6 +33,7 @@ object SwissTxtTeamEventSerializer : KSerializer<TeamEvent> {
         val homeId     = jsonObject["competitor1"]?.jsonObject?.get("id")  ?.jsonPrimitive?.content ?: ""
         val awayName   = jsonObject["competitor2"]?.jsonObject?.get("name")?.jsonPrimitive?.content ?: ""
         val awayId     = jsonObject["competitor2"]?.jsonObject?.get("id")  ?.jsonPrimitive?.content ?: ""
+        val genderStr  = jsonObject["gender"]?.jsonPrimitive?.content ?: ""
         val id         = jsonObject["id"]?.jsonPrimitive?.content ?: throw SerializationException("Invalid id")
 
         val utcTime = jsonObject["dateTimeInfo"]?.jsonObject?.get("fullDateTime")?.jsonPrimitive?.content
@@ -41,7 +43,7 @@ object SwissTxtTeamEventSerializer : KSerializer<TeamEvent> {
         val startsOn  = LocalDateTime.parse(utcTime, formatter)
         val endsOn    = startsOn.plusHours(2)
 
-        return TeamEvent(id, startsOn, endsOn, homeId, homeName, awayId, awayName)
+        return TeamEvent(id, startsOn, endsOn, homeId, homeName, awayId, awayName, Gender.fromString(genderStr))
     }
 
     override fun serialize(encoder: Encoder, value: TeamEvent) {
