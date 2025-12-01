@@ -4,6 +4,7 @@ import arrow.core.Either
 import arrow.core.raise.either
 import arrow.core.raise.ensure
 import ch.boosters.backend.data.configuration.JooqEitherDsl
+import ch.boosters.backend.data.event.model.BaseEvent
 import ch.boosters.backend.data.event.model.Event
 import ch.boosters.backend.data.event.model.TeamEvent
 import ch.boosters.backend.data.team.Team
@@ -17,7 +18,6 @@ import ch.boosters.data.tables.SportsTable.Companion.SPORTS_TABLE
 import ch.boosters.data.tables.TeamsTable.Companion.TEAMS_TABLE
 import ch.boosters.data.tables.records.EventsTableRecord
 import ch.boosters.data.tables.records.EventsTeamsTableRecord
-import org.jooq.DSLContext
 import org.jooq.InsertOnDuplicateSetMoreStep
 import org.jooq.impl.DSL
 import org.springframework.stereotype.Repository
@@ -63,18 +63,19 @@ class SwissTxtRepository(
         srcId: Int,
         sportId: UUID?
     ): Pair<InsertOnDuplicateSetMoreStep<EventsTableRecord?>, List<EventsTeamsTableRecord>> {
-        val eventRecord = createEvent(event, srcId, sportId)
-        val eventQuery = eventQuery(eventRecord)
+        val eventName = "${event.homeName} - ${event.awayName}"
+        val eventRecord = createEvent(event, srcId, sportId, eventName)
+        val eventQuery = eventUpsertQuery(eventRecord)
         val (eventTeamRecord, eventTeamRecord2) = linkTeamsToEvents(event, srcId)
         return Pair(eventQuery, listOf(eventTeamRecord, eventTeamRecord2))
     }
 
     private fun createEvent(
-        event: TeamEvent,
+        event: BaseEvent,
         srcId: Int,
-        sportId: UUID?
+        sportId: UUID?,
+        eventName: String
     ): EventsTableRecord {
-        val eventName = "${event.homeName} - ${event.awayName}"
         return EventsTableRecord(
             id = event.id,
             sourceId = srcId,
@@ -105,7 +106,7 @@ class SwissTxtRepository(
         return Pair(eventTeamRecord, eventTeamRecord2)
     }
 
-    private fun eventQuery(eventRecord: EventsTableRecord): InsertOnDuplicateSetMoreStep<EventsTableRecord?> =
+    private fun eventUpsertQuery(eventRecord: EventsTableRecord): InsertOnDuplicateSetMoreStep<EventsTableRecord?> =
         DSL
             .insertInto(EVENTS_TABLE)
             .set(eventRecord)
@@ -114,18 +115,13 @@ class SwissTxtRepository(
             .set(EVENTS_TABLE.STARTS_ON, eventRecord.startsOn)
             .set(EVENTS_TABLE.ENDS_ON, eventRecord.endsOn)
 
-    fun upsertEvents(id: Int, sportId: UUID, events: List<Event>): Either<SynciError, Unit> = either {
-        dsl { it: DSLContext ->
-            events.forEach { event ->
-                it.newRecord(EVENTS_TABLE).apply {
-                    this.id = UUID.randomUUID().toString()
-                    name = event.name
-                    sourceId = id
-                    startsOn = event.startsOn
-                    this.sportId = sportId
-                }.store()
-            }
-        }.bind()
+    fun upsertEvents(id: Int, sportId: UUID, events: List<Event>): Either<SynciError, Unit> {
+        val queries = events
+            .map { createEvent(it, id, sportId, it.name) }
+            .map { eventUpsertQuery(it) }
+        return dsl {
+            it.batch(queries).execute()
+        }
     }
 
     fun storeSyncTime() = either {

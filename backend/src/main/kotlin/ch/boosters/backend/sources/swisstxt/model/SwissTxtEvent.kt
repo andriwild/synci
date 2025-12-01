@@ -33,28 +33,33 @@ object SwissTxtEventSerializer : KSerializer<SwissTxtEvent> {
     }
 
     override fun deserialize(decoder: Decoder): SwissTxtEvent {
-        val jsonInput = decoder as? JsonDecoder ?: throw SerializationException("This serializer can be used only with JSON")
+        val jsonInput =
+            decoder as? JsonDecoder ?: throw SerializationException("This serializer can be used only with JSON")
         val formatter = DateTimeFormatter.ISO_DATE_TIME
 
         val jsonObject = jsonInput.decodeJsonElement().jsonObject
-        val id         = jsonObject["id"]?.jsonPrimitive?.content?.toIntOrNull() ?: throw SerializationException("Invalid id")
-        val name       = jsonObject["displayName"]?.jsonPrimitive?.content ?: throw SerializationException("Invalid name")
-        val events     = jsonObject["phases"]
+        val id = jsonObject["id"]?.jsonPrimitive?.content?.toIntOrNull() ?: throw SerializationException("Invalid id")
+        val name = jsonObject["displayName"]?.jsonPrimitive?.content ?: throw SerializationException("Invalid name")
+        val events = jsonObject["phases"]
             ?.jsonArray?.mapNotNull { phaseElement ->
-                var displayName = phaseElement.jsonObject["displayName"]?.jsonPrimitive?.content  ?: throw SerializationException("Invalid name")
-                val id          = phaseElement.jsonObject["id"]?.jsonPrimitive?.content  ?: throw SerializationException("Invalid id")
-                val location    = phaseElement.jsonObject["event"]?.jsonObject?.get("name")?.jsonPrimitive?.content
-                val utcTime     = phaseElement.jsonObject["dateInfo"]
+                var displayName = phaseElement.jsonObject["displayName"]?.jsonPrimitive?.content
+                    ?: throw SerializationException("Invalid name")
+                val id =
+                    phaseElement.jsonObject["id"]?.jsonPrimitive?.content ?: throw SerializationException("Invalid id")
+                val location = phaseElement.jsonObject["event"]?.jsonObject?.get("name")?.jsonPrimitive?.content
+                val utcTime = phaseElement.jsonObject["dateInfo"]
                     ?.jsonObject?.get("startDate")
                     ?.jsonObject?.get("fullDateTime")?.jsonPrimitive?.contentOrNull
                     ?: throw SerializationException("Invalid date info")
-                val startsOn  = LocalDateTime.parse(utcTime, formatter)
+                val startsOn = LocalDateTime.parse(utcTime, formatter)
+                // we handle events which start at 00:00 as whole day events (add no endTime)
+                val endsOn = if (startsOn.hour == 0) null else startsOn.plusHours(2)
 
                 // Some sports have a dedicated location property
-                if(!location.isNullOrBlank()) {
+                if (!location.isNullOrBlank()) {
                     displayName = "$displayName - $location"
                 }
-               Event(id, "$name: $displayName", startsOn)
+                Event(id, "$name: $displayName", startsOn, endsOn)
             } ?: emptyList()
         return SwissTxtEvent(id, name, events)
     }
