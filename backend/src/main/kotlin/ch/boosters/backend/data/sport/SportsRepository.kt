@@ -26,7 +26,9 @@ class SportsRepository(
     private val sports = SPORTS_TABLE
 
     fun allSports(): Either<SynciError, List<SportsTable>> =
-        dsl { it.selectFrom(sports).fetch().into(SportsTable::class.java) }
+        dsl { it.selectFrom(sports)
+            .orderBy(SPORTS_TABLE.LABEL)
+            .fetch().into(SportsTable::class.java) }
 
     fun sportIdByName(name: String): SynciEither<UUID?> = either {
         dsl {
@@ -43,6 +45,7 @@ class SportsRepository(
             it.selectFrom(EVENTS_TABLE)
                 .where(EVENTS_TABLE.SPORT_ID.`in`(sportIds))
                 .and(EVENTS_TABLE.STARTS_ON.greaterOrEqual(dateTime))
+                .orderBy(EVENTS_TABLE.STARTS_ON)
                 .limit(offset, limit)
                 .fetch()
                 .into(EventsTable::class.java)
@@ -65,6 +68,7 @@ class SportsRepository(
     fun getTeamsBySportIds(sportIds: List<UUID>, limit: Int, offset: Int): Either<SynciError, List<TeamsTable>> =
         dsl {
             teamsBySport(it, sportIds)
+                .orderBy(TEAMS_TABLE.NAME)
                 .limit(offset, limit)
                 .fetchInto(TeamsTable::class.java)
         }
