@@ -1,33 +1,25 @@
-###
+### get all syncconfigs - store the first returnd config id in mySyncId
 
-# curl -X POST "http://example.com/api/sync-config"
-#  -H "Content-Type: application/json"
-#  -d '{
-#    "id": "e2b7a8f0-9f3d-11eb-a8b3-0242ac130003",
-#    "name": "SampleConfig",
-#    "events": [
-#      {"id": "event1", "sourceId": 100},
-#      {"id": "event2", "sourceId": 101}
-#    ],
-#    "teams": [
-#      {"id": "team1", "sourceId": 200},
-#      {"id": "team2", "sourceId": 201}
-#    ],
-#    "sports": [
-#      "b8f8f9e2-1101-4ef7-9ef5-1234567890ab",
-#      "c9d9e9f3-1123-4f12-9efa-1234567890bc"
-#    ]
-#  }'
+GET {{backendUrl}}/syncconfigs
+Content-Type: application/json
+Authorization: Bearer {{$auth.token("auth0-oauth")}}
+
+> {%
+    const id = response.body.body[0].id;
+    client.global.set("mySyncId", id);
+    client.log("ID: " + id);
+%}
 
 
 ### get a single syncconfig
 
-GET {{backendUrl}}/syncconfig/fd9582d2-99a2-4ed4-bb95-754f425b42dd
+GET {{backendUrl}}/syncconfigs/{{mySyncId}}
 Authorization: Bearer {{$auth.token("auth0-oauth")}}
+
 
 ### create a new sync config
 
-POST {{backendUrl}}/syncconfig
+POST {{backendUrl}}/syncconfigs
 Content-Type: application/json
 Authorization: Bearer {{$auth.token("auth0-oauth")}}
 
@@ -44,14 +36,26 @@ Authorization: Bearer {{$auth.token("auth0-oauth")}}
   "sports": [ "225ffb58-e4ae-4c50-804a-843d9bf5d098" ]
 }
 
+
 ### subscribe calendar
 
-GET {{backendUrl}}/calendars/fd9582d2-99a2-4ed4-bb95-754f425b42dd/subscribe
+GET {{backendUrl}}/calendars/{{mySyncId}}/subscribe
 Authorization: Bearer {{$auth.token("auth0-oauth")}}
+
+
+### get sport id
+
+GET {{backendUrl}}/sports
+Authorization: Bearer {{$auth.token("auth0-oauth")}}
+
+> {%
+    const sportId = response.body.body[2].id;
+    client.global.set("sportId", sportId);
+    client.log("ID: " + sportId);
+%}
 
 
 ### sports by id
 
-
-GET {{backendUrl}}/sports/65b90a0d-2859-4aee-90bb-d5cc0210dc99/teams
+GET {{backendUrl}}/sports/{{sportId}}/teams?pageSize=5&page=0
 Authorization: Bearer {{$auth.token("auth0-oauth")}}
