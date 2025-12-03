@@ -54,7 +54,6 @@ class SportsRepository(
     fun teamsBySportsCount(sportIds: List<UUID>): Either<SynciError, Int> =
         dsl {
             teamsBySport(it, sportIds)
-                .distinct()
                 .count()
         }
 
@@ -72,13 +71,12 @@ class SportsRepository(
                 .orderBy(TEAMS_TABLE.NAME)
                 .limit(offset, limit)
                 .fetchInto(TeamsTable::class.java)
-                .distinct()
         }
 
     private fun teamsBySport(
         dsl: DSLContext,
         sportIds: List<UUID>
-    ): SelectConditionStep<Record> = dsl.select(TEAMS_TABLE.asterisk())
+    ): SelectConditionStep<Record> = dsl.selectDistinct(TEAMS_TABLE.asterisk())
         .from(TEAMS_TABLE)
         .leftJoin(TEAMS_SPORTS_TABLE)
         .on(
