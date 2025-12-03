@@ -76,7 +76,7 @@ class SportsRepository(
     private fun teamsBySport(
         dsl: DSLContext,
         sportIds: List<UUID>
-    ): SelectConditionStep<Record> = dsl.select(TEAMS_TABLE.asterisk())
+    ): SelectConditionStep<Record> = dsl.selectDistinct(TEAMS_TABLE.asterisk())
         .from(TEAMS_TABLE)
         .leftJoin(TEAMS_SPORTS_TABLE)
         .on(
