@@ -54,6 +54,7 @@ class SportsRepository(
     fun teamsBySportsCount(sportIds: List<UUID>): Either<SynciError, Int> =
         dsl {
             teamsBySport(it, sportIds)
+                .distinct()
                 .count()
         }
 
@@ -71,6 +72,7 @@ class SportsRepository(
                 .orderBy(TEAMS_TABLE.NAME)
                 .limit(offset, limit)
                 .fetchInto(TeamsTable::class.java)
+                .distinct()
         }
 
     private fun teamsBySport(
