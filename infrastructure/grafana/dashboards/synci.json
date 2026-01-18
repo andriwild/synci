@@ -518,7 +518,7 @@
       },
       "targets": [
         {
-          "expr": "synci_users_total{instance=~\"$instance\"}",
+          "expr": "synci_users",
           "legendFormat": "",
           "refId": "A"
         }
