@@ -14,7 +14,11 @@ synci.ch {
         	}
 	}
 	handle /dashboard* {
-		reverse_proxy localhost:3000
+		uri strip_prefix /dashboard
+		reverse_proxy localhost:3000 {
+            header_up Host {host}
+            header_up X-Forwarded-Proto "https"
+        }
 	}
 	handle {
 		reverse_proxy localhost:5173
