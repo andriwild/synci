@@ -7,5 +7,5 @@ scrape_configs:
       - targets: ['host.docker.internal:2019']
   - job_name: spring
     static_configs:
-      - targets: ["synci-backend-dev:8080", "synci-backend-prod:8080"]
+      - targets: ["host.docker.internal:8080", "host.docker.internal:8081"]
     metrics_path: '/api/actuator/prometheus'
