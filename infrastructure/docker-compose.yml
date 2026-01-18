@@ -25,7 +25,8 @@ services:
       monitoring-net:
     volumes:
       - grafana-data:/var/lib/grafana
-      - ./grafana:/etc/grafana/provisioning
+      - ./grafana/dashboard.yml:/etc/grafana/provisioning/dashboards/dashboard.yaml
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
     ports:
       - "127.0.0.1:3000:3000"
 
