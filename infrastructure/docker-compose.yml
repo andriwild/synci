@@ -18,7 +18,7 @@ services:
     depends_on:
       - prometheus
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=synci-observer
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
       - GF_SERVER_ROOT_URL=https://synci.ch/dashboard/
       - GF_SERVER_SERVE_FROM_SUBPATH=true
     networks:
@@ -28,6 +28,21 @@ services:
       - ./grafana:/etc/grafana/provisioning
     ports:
       - "127.0.0.1:3000:3000"
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    networks:
+      monitoring-net:
 
 volumes:
   grafana-data:
