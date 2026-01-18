@@ -1,28 +1,11 @@
 services:
-  caddy:
-    container_name: caddy
-    image: caddy:latest
-    ports:
-      - 443:443
-    volumes:
-      - /home/admin/synci/config/Caddyfile:/etc/caddy/Caddyfile
-      - caddy-config:/config
-      - caddy-data:/data
-    networks:
-      synci-net-dev:
-        aliases:
-          - synci-net-caddy-dev
-      synci-net-prod:
-        aliases:
-          - synci-net-caddy-prod
-      monitoring-net:
-
-
   prometheus:
     container_name: prometheus
     image: prom/prometheus:latest
     volumes:
-      - /home/admin/synci/config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       monitoring-net:
       synci-net-dev:
@@ -42,10 +25,11 @@ services:
       monitoring-net:
     volumes:
       - grafana-data:/var/lib/grafana
+      - ./grafana:/etc/grafana/provisioning
+    ports:
+      - "127.0.0.1:3000:3000"
 
 volumes:
-  caddy-config:
-  caddy-data:
   grafana-data:
 
 networks:
