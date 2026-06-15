@@ -11,4 +11,5 @@ export interface Team {
     name: string;
     sourceId: number;
     gender: "WOMAN" | "MAN"| "BOTH" | "UNKNOWN";
+    rootSport?: string;
 }

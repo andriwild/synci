@@ -37,9 +37,15 @@ export const EventConfigCard = ({event, config}: { event: SportEvent, config?: S
                 <Flex gap={20} align={"flex-start"}>
                     <Flex gap={10} vertical
                           align={"start"}>
-                        <Typography.Title level={5}
-                        style={{margin: "0"}}
-                        >{event.name}</Typography.Title>
+                        <Flex gap={2} vertical align={"start"}>
+                            {event.rootSport &&
+                                <Typography.Text type={"secondary"}
+                                    style={{fontSize: 12, fontWeight: 300, margin: 0, lineHeight: 1.2}}
+                                >{event.rootSport}</Typography.Text>}
+                            <Typography.Title level={5}
+                            style={{margin: "0"}}
+                            >{event.name}</Typography.Title>
+                        </Flex>
                         <Typography.Text
                             style={{margin: "0"}}
                         >{convertToSwissDate(event.startsOn)}</Typography.Text>

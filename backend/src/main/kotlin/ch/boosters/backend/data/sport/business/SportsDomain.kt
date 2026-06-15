@@ -20,6 +20,15 @@ fun List<SportsTable>.findSportsByParent(parentUUID: UUID?): Sport? {
     )
 }
 
+fun List<SportsTable>.rootSportOf(sportId: UUID?): SportsTable? {
+    val byId = associateBy { it.id }
+    var current = sportId?.let { byId[it] } ?: return null
+    while (current.parentId != null) {
+        current = byId[current.parentId] ?: break
+    }
+    return current
+}
+
 fun List<SportsTable>.groupByRootSports(): List<Sport> {
     val grouped = this.groupBy { it.parentId}
 

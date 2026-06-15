@@ -3,4 +3,5 @@ export interface Sport {
     name: string;
     label: string;
     subSports: Sport[] | [];
+    rootSport?: string;
 }

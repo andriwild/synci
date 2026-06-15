@@ -4,6 +4,8 @@ import arrow.core.Either
 import arrow.core.flatMap
 import arrow.core.raise.either
 import arrow.core.raise.ensure
+import ch.boosters.backend.data.sport.SportsRepository
+import ch.boosters.backend.data.sport.business.rootSportOf
 import ch.boosters.backend.data.syncConfig.model.SyncConfigDto
 import ch.boosters.backend.data.syncConfig.syncConfigEvents.SyncConfigEventsRepository
 import ch.boosters.backend.data.syncConfig.syncConfigSports.SyncConfigSportsRepository
@@ -20,7 +22,8 @@ class SyncConfigService(
     private val syncConfigRepository: SyncConfigRepository,
     private val syncConfigTeamRepository: SyncConfigTeamRepository,
     private val syncConfigSportsRepository: SyncConfigSportsRepository,
-    private val syncConfigEventsRepository: SyncConfigEventsRepository
+    private val syncConfigEventsRepository: SyncConfigEventsRepository,
+    private val sportsRepository: SportsRepository
 ) {
 
     fun createSyncConfig(syncConfig: SyncConfigDto, userId: UUID): SynciEither<SyncConfig> = either {
@@ -43,12 +46,19 @@ class SyncConfigService(
         val teamsOfConfig = syncConfigTeamRepository.getTeamBySyncConfigId(id).bind()
         val eventIdsInConfig = syncConfigEventsRepository.getEventsIdsBySyncConfigId(id).bind()
 
+        val allSports = sportsRepository.allSports().bind()
+        val teamSportMap = syncConfigTeamRepository.getTeamSportPairsBySyncConfigId(id).bind()
+            .groupBy({ it.first }, { it.second })
+
+        fun rootLabel(sportId: UUID?): String? =
+            allSports.rootSportOf(sportId)?.let { it.label ?: it.name }
+
         SyncConfig(
             id = id,
             name = syncConfig.name,
-            teams = teamsOfConfig,
-            sports = sportsOfConfig,
-            events = eventIdsInConfig,
+            teams = teamsOfConfig.map { WithRootSport(it, rootLabel(teamSportMap[it.id]?.firstOrNull())) },
+            sports = sportsOfConfig.map { WithRootSport(it, rootLabel(it.id)) },
+            events = eventIdsInConfig.map { WithRootSport(it, rootLabel(it.sportId)) },
         )
     }
 
