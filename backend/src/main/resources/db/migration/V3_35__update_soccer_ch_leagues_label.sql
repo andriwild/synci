@@ -1,0 +1,1 @@
+UPDATE SPORTS_TABLE SET label = 'Schweizer Ligen' WHERE name = 'SOCCER_CH_LEAGUES';
