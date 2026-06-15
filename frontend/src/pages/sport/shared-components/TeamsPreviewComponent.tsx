@@ -11,6 +11,9 @@ export const TeamsPreviewComponent = ({ sportId } : { sportId: string }) => {
     if (!teamQuery.data || teamQuery.data.length === 0) {
         return null;
     }
+    const uniqueTeams = Array.from(
+        new Map(teamQuery.data.map((team) => [team.id, team])).values()
+    );
     return (
         <>
         <Typography.Title level={4} style={{marginBottom: 0}}>Teams</Typography.Title>
@@ -18,7 +21,7 @@ export const TeamsPreviewComponent = ({ sportId } : { sportId: string }) => {
             gap={10}
             wrap
         >
-            {teamQuery.data.map((team) => (
+            {uniqueTeams.map((team) => (
                 <TeamCard team={team} key={team.id}/>
             ))}
         </Flex>

@@ -1,7 +1,7 @@
 import { FC, useState } from "react";
-import {Button, Divider, Drawer, Flex, Image, Layout, Menu, theme, Typography} from "antd";
+import {Button, Drawer, Flex, Image, Layout, Menu, theme, Typography} from "antd";
 import { useLocation, useNavigate } from "react-router-dom";
-import { CalendarBlank, ListBullets } from "@phosphor-icons/react";
+import { CalendarBlank, Coffee, ListBullets } from "@phosphor-icons/react";
 import { UserProfile } from "./UserProfile.tsx";
 import useBreakpoint from "antd/es/grid/hooks/useBreakpoint";
 import { IconMenu2 } from "@tabler/icons-react";
@@ -77,51 +77,49 @@ export const Header: FC = () => {
                             onClick={() => setVisible(true)}
                             icon={<IconMenu2 size={24} />}
                         />
-                        <Drawer title="Menu"
+                        <Drawer title="Menü"
                                 placement="left"
-                                width={"300px"}
+                                width={300}
                                 onClose={() => setVisible(false)}
-                                open={visible}>
+                                open={visible}
+                                styles={{ body: { display: "flex", flexDirection: "column", padding: 0 } }}>
                             <Menu
                                 mode="vertical"
                                 items={items}
-                                style={{ flex: 1, minWidth: 0, backgroundColor: "transparent" }}
+                                style={{
+                                    flex: "0 0 auto",
+                                    minWidth: 0,
+                                    border: "none",
+                                    backgroundColor: "transparent",
+                                    paddingTop: 8,
+                                }}
                                 onClick={handleMenuClick}
                                 selectedKeys={[location.pathname]}
                             />
-                            <Divider style={{
-                                borderColor: token.colorPrimary,
-                                padding: "20px 0",
-                            }} />
-                            <Flex vertical={true} style={{ alignItems: "center", gap: 10 }}>
-
-                            <Image
-                                src={"./assets/Logo_synci.png"}
-                                preview={false}
+                            <Flex
+                                vertical
+                                align="center"
+                                gap={12}
                                 style={{
-                                    cursor: "pointer",
-                                    maxHeight: 60,
+                                    marginTop: "auto",
+                                    padding: 24,
+                                    borderTop: `1px solid ${token.colorSplit}`,
                                 }}
-                                onClick={() => {
-                                    close();
-                                    navigate("/");
-                                }}
-                            />
-                            <Typography.Title level={4}>
-                                Version 1.0
-                            </Typography.Title>
-                            <Typography.Title level={5}>
-                                © 2021 Synci
-                            </Typography.Title>
+                            >
                                 <Button
-                                    type="default"
-                                    style={{ width: "100%" }}
+                                    type="primary"
+                                    block
+                                    icon={<Coffee size={18} weight="fill" />}
+                                    style={{ height: 48, fontWeight: 600 }}
                                     onClick={() => {
                                         window.open("https://buymeacoffee.com/boostershack", "_blank");
                                     }}
                                 >
-                                    Synci unterstützen
+                                    Team unterstützen
                                 </Button>
+                                <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                                    Version {__APP_VERSION__} · © 2026 Synci
+                                </Typography.Text>
                             </Flex>
                         </Drawer>
                     </>
