@@ -30,11 +30,20 @@ export const sportApi = createApi({
         method: "GET"
       })
     }),
-    getTeams: build.query<PagedResult<Team>, PagedRequest>({
-      query: (request) => ({
-        url: `${request.id}/teams?page=${request.page}&pageSize=${request.pageSize}`,
-        method: "GET"
-      })
+    getTeams: build.query<PagedResult<Team>, PagedRequest & { searchTerm?: string }>({
+      query: (request) => {
+        const params = new URLSearchParams({
+          page: String(request.page),
+          pageSize: String(request.pageSize),
+        });
+        if (request.searchTerm) {
+          params.append("searchTerm", request.searchTerm);
+        }
+        return {
+          url: `${request.id}/teams?${params.toString()}`,
+          method: "GET"
+        };
+      }
     }),
     update: build.mutation<Sport, Sport>({
       query: (sport) => ({
