@@ -41,10 +41,10 @@ class SportsService(
         PagedResult(eventsCount, pageNumber, pageSize, elements)
     }
 
-    fun getTeamsBySportId(sportId: UUID, pageSize: Int, pageNumber: Int): SynciEither<PagedResult<TeamsTable>> = either {
+    fun getTeamsBySportId(sportId: UUID, pageSize: Int, pageNumber: Int, searchTerm: String? = null): SynciEither<PagedResult<TeamsTable>> = either {
         val belonging = findSportsByParent(sportId).bind().flatten()
-        val teamsCount = sportRepository.teamsBySportsCount(belonging).bind()
-        val elements = sportRepository.getTeamsBySportIds(belonging, pageSize, pageNumber * pageSize).bind()
+        val teamsCount = sportRepository.teamsBySportsCount(belonging, searchTerm).bind()
+        val elements = sportRepository.getTeamsBySportIds(belonging, pageSize, pageNumber * pageSize, searchTerm).bind()
         PagedResult(teamsCount, pageNumber, pageSize, elements)
     }
 }

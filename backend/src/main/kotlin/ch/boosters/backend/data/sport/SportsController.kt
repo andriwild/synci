@@ -33,7 +33,8 @@ class SportsController(
     fun getTeamsBySport(
         @PathVariable id: UUID,
         @RequestParam pageSize: Int,
-        @RequestParam page: Int
+        @RequestParam page: Int,
+        @RequestParam(required = false) searchTerm: String?
     ): SynciEither<PagedResult<TeamsTable>> =
-        sportsService.getTeamsBySportId(id, pageSize, page)
+        sportsService.getTeamsBySportId(id, pageSize, page, searchTerm)
 }

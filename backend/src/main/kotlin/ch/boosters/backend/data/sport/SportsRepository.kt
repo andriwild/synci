@@ -51,9 +51,9 @@ class SportsRepository(
                 .into(EventsTable::class.java)
         }
 
-    fun teamsBySportsCount(sportIds: List<UUID>): Either<SynciError, Int> =
+    fun teamsBySportsCount(sportIds: List<UUID>, searchTerm: String? = null): Either<SynciError, Int> =
         dsl {
-            teamsBySport(it, sportIds)
+            teamsBySport(it, sportIds, searchTerm)
                 .count()
         }
 
@@ -65,9 +65,9 @@ class SportsRepository(
                 .count()
         }
 
-    fun getTeamsBySportIds(sportIds: List<UUID>, limit: Int, offset: Int): Either<SynciError, List<TeamsTable>> =
+    fun getTeamsBySportIds(sportIds: List<UUID>, limit: Int, offset: Int, searchTerm: String? = null): Either<SynciError, List<TeamsTable>> =
         dsl {
-            teamsBySport(it, sportIds)
+            teamsBySport(it, sportIds, searchTerm)
                 .orderBy(TEAMS_TABLE.NAME)
                 .limit(offset, limit)
                 .fetchInto(TeamsTable::class.java)
@@ -75,12 +75,20 @@ class SportsRepository(
 
     private fun teamsBySport(
         dsl: DSLContext,
-        sportIds: List<UUID>
-    ): SelectConditionStep<Record> = dsl.selectDistinct(TEAMS_TABLE.asterisk())
-        .from(TEAMS_TABLE)
-        .leftJoin(TEAMS_SPORTS_TABLE)
-        .on(
-            TEAMS_TABLE.ID.eq(TEAMS_SPORTS_TABLE.TEAM_ID).and(TEAMS_TABLE.SOURCE_ID.eq(TEAMS_SPORTS_TABLE.SOURCE_TEAM_ID))
-        )
-        .where(TEAMS_SPORTS_TABLE.SPORT_ID.`in`(sportIds))
+        sportIds: List<UUID>,
+        searchTerm: String? = null
+    ): SelectConditionStep<Record> {
+        val query = dsl.selectDistinct(TEAMS_TABLE.asterisk())
+            .from(TEAMS_TABLE)
+            .leftJoin(TEAMS_SPORTS_TABLE)
+            .on(
+                TEAMS_TABLE.ID.eq(TEAMS_SPORTS_TABLE.TEAM_ID).and(TEAMS_TABLE.SOURCE_ID.eq(TEAMS_SPORTS_TABLE.SOURCE_TEAM_ID))
+            )
+            .where(TEAMS_SPORTS_TABLE.SPORT_ID.`in`(sportIds))
+        return if (!searchTerm.isNullOrBlank()) {
+            query.and(TEAMS_TABLE.NAME.containsIgnoreCase(searchTerm))
+        } else {
+            query
+        }
+    }
 }
