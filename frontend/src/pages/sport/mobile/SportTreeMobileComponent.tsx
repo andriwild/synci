@@ -3,7 +3,7 @@ import "./SportTreeMobileComponent.css";
 import {Sport} from "../../../services/sport/entities/sport.ts";
 import {sportApi} from "../../../services/sport/sportApi.ts";
 import {Alert, Button, Flex, Spin, theme} from "antd";
-import {CaretRight} from "@phosphor-icons/react";
+import {ArrowRight, CaretDown, CaretUp} from "@phosphor-icons/react";
 import {SportDetailMobileComponent} from "./SportDetailMobileComponent.tsx";
 import {ShowCalendarsButton} from "./ShowCalendarsButton.tsx";
 
@@ -15,11 +15,7 @@ export const SportTreeMobileComponent = () => {
     const [selectedSport, setSelectedSport] = useState<Sport | null>(null);
 
     const toggleExpand = (sport: Sport) => {
-
-        if (sport && sport.subSports.length === 0) {
-            setSelectedSport(sport);
-            return;
-        }
+        if (sport.subSports.length === 0) return;
         setExpandedIds((prev) =>
             prev.includes(sport.id) ? prev.filter((i) => i !== sport.id) : [...prev, sport.id]
         );
@@ -28,41 +24,60 @@ export const SportTreeMobileComponent = () => {
 
     const columnColors = ["#b2bdcf", "#C5CDD9", "#D8DEE6", "#E9EDF0", "#F2F4F6"];
     const renderTree = (sports: Sport[], level = 0) => {
-        return sports.map((sport) => (
-            <div key={sport.id}>
-                <Flex
-                    justify={"space-between"}
-                    align={"center"}
-                    className="tree-item"
-                    onClick={() => toggleExpand(sport)}
-                    style={{
-                        display: "flex",
-                        width: "100%",
-                        padding: "15px",
-                        borderBottom: "1px solid darkgrey",
-                        justifyContent: "space-between",
-                        cursor: "pointer",
-                        backgroundColor: columnColors[level % columnColors.length],
-                    }}
-                >
-                    <span>{sport.label}</span>
-                    {sport.subSports.length > 0 &&
-                        <Button type={"primary"} style={{padding: 0, margin: 0, background: token.colorBgContainer}} icon={
-                        <CaretRight
-                        size={14}
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedSport(sport);
+        return sports.map((sport) => {
+            const hasSub = sport.subSports.length > 0;
+            const isExpanded = expandedIds.includes(sport.id);
+            return (
+                <div key={sport.id}>
+                    <Flex
+                        justify={"space-between"}
+                        align={"center"}
+                        className="tree-item"
+                        onClick={() => toggleExpand(sport)}
+                        style={{
+                            display: "flex",
+                            width: "100%",
+                            padding: "15px",
+                            borderBottom: "1px solid darkgrey",
+                            justifyContent: "space-between",
+                            cursor: hasSub ? "pointer" : "default",
+                            gap: 10,
+                            backgroundColor: columnColors[level % columnColors.length],
                         }}
-                        style={{color: "black"}}/>}>
-                        </Button>
-                    }
-                </Flex>
-                {expandedIds.includes(sport.id) &&
-                    sport.subSports.length > 0 &&
-                    renderTree(sport.subSports, level + 1)}
-            </div>
-        ));
+                    >
+                        <Flex align={"center"} gap={10} style={{minWidth: 0}}>
+                            {hasSub ? (
+                                <Button
+                                    type={"text"}
+                                    size={"small"}
+                                    style={{padding: 0, height: "auto"}}
+                                    icon={isExpanded
+                                        ? <CaretUp size={16} color={"black"}/>
+                                        : <CaretDown size={16} color={"black"}/>}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        toggleExpand(sport);
+                                    }}
+                                />
+                            ) : (
+                                <span style={{display: "inline-block", width: 16}}/>
+                            )}
+                            <span>{sport.label}</span>
+                        </Flex>
+                        <Button
+                            shape={"circle"}
+                            style={{background: token.colorBgContainer, flexShrink: 0}}
+                            icon={<ArrowRight size={16} color={token.colorPrimary}/>}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedSport(sport);
+                            }}
+                        />
+                    </Flex>
+                    {isExpanded && hasSub && renderTree(sport.subSports, level + 1)}
+                </div>
+            );
+        });
     };
 
     if (isLoading) {
