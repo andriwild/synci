@@ -3,7 +3,7 @@ import "./SportTreeMobileComponent.css";
 import {Sport} from "../../../services/sport/entities/sport.ts";
 import {sportApi} from "../../../services/sport/sportApi.ts";
 import {Alert, Button, Flex, Spin, theme} from "antd";
-import {ArrowRight, CaretDown, CaretRight} from "@phosphor-icons/react";
+import {ArrowRight, CaretDown, CaretUp} from "@phosphor-icons/react";
 import {SportDetailMobileComponent} from "./SportDetailMobileComponent.tsx";
 import {ShowCalendarsButton} from "./ShowCalendarsButton.tsx";
 
@@ -52,7 +52,7 @@ export const SportTreeMobileComponent = () => {
                                     size={"small"}
                                     style={{padding: 0, height: "auto"}}
                                     icon={isExpanded
-                                        ? <CaretRight size={16} color={"black"}/>
+                                        ? <CaretUp size={16} color={"black"}/>
                                         : <CaretDown size={16} color={"black"}/>}
                                     onClick={(e) => {
                                         e.stopPropagation();
