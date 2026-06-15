@@ -111,7 +111,7 @@ export const SportTreeMobileComponent = () => {
                 <Flex
                     vertical
                     className={`tree-container`}
-                    style={{ width: "100%" }}
+                    style={{ width: "100%", paddingBottom: "80px" }}
                 >
                     {data && data.length > 0 ? renderTree(data) : <p>Keine Sportarten gefunden</p>}
                 </Flex>
