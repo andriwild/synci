@@ -6,4 +6,5 @@ export interface SportEvent {
     endsOn: string;
     sportId: string;
     locationId: string;
+    rootSport?: string;
 }

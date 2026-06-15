@@ -1,5 +1,5 @@
 import {Badge, Button, Flex, theme, Typography} from "antd";
-import {IconTrash, IconUsersGroup} from "@tabler/icons-react";
+import {IconTrash} from "@tabler/icons-react";
 import {syncConfigApi} from "../../services/syncConfig/syncConfigApi.ts";
 import {syncConfigActions, useSyncConfig} from "../../services/syncConfig/syncCofigSlice.ts";
 import {syncConfigDtoMapper} from "../../services/syncConfig/helpers/syncConfigHelper.ts";
@@ -34,8 +34,12 @@ export const TeamConfigCard = ({team, config}: { team: Team, config?: SyncConfig
                     padding: 20}}>
 
                 <Flex gap={20} align={"flex-start"}>
-                    <Flex gap={10}
+                    <Flex gap={2} vertical
                           align={"start"}>
+                        {team.rootSport &&
+                            <Typography.Text type={"secondary"}
+                                style={{fontSize: 12, fontWeight: 300, margin: 0, lineHeight: 1.2}}
+                            >{team.rootSport}</Typography.Text>}
                         <Typography.Title level={5}
                         style={{margin: "0"}}
                         >{team.name}</Typography.Title>

@@ -1,6 +1,6 @@
 import {Sport} from "../../services/sport/entities/sport.ts";
-import {Badge, Button, Flex, Tag, theme, Typography} from "antd";
-import {IconSitemap, IconTrash} from "@tabler/icons-react";
+import {Badge, Button, Flex, theme, Typography} from "antd";
+import {IconTrash} from "@tabler/icons-react";
 import {syncConfigApi} from "../../services/syncConfig/syncConfigApi.ts";
 import {syncConfigActions, useSyncConfig} from "../../services/syncConfig/syncCofigSlice.ts";
 import {syncConfigDtoMapper} from "../../services/syncConfig/helpers/syncConfigHelper.ts";
@@ -35,8 +35,12 @@ export const SportConfigCard = ({sport, config}: { sport: Sport, config?: SyncCo
                     padding: 20}}>
 
                 <Flex gap={20} align={"flex-start"}>
-                    <Flex gap={10}
+                    <Flex gap={2} vertical
                           align={"start"}>
+                        {sport.rootSport && sport.rootSport !== sport.label &&
+                            <Typography.Text type={"secondary"}
+                                style={{fontSize: 12, fontWeight: 300, margin: 0, lineHeight: 1.2}}
+                            >{sport.rootSport}</Typography.Text>}
                         <Typography.Title level={5}
                         style={{margin: "0"}}
                         >{sport.label}</Typography.Title>
