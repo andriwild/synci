@@ -6,12 +6,14 @@ import {useAuth0} from "@auth0/auth0-react";
 import {userActions, useUser} from "../services/user/UserSlice.ts";
 import {useDispatch} from "react-redux";
 import {useState} from "react";
+import useBreakpoint from "antd/es/grid/hooks/useBreakpoint";
 
 export const UserProfile = () => {
     const {token} = theme.useToken();
     const navigate = useNavigate();
     const user = useUser();
     const dispatch = useDispatch();
+    const screens = useBreakpoint();
 
     const [opened, setOpened] = useState(false);
 
@@ -68,7 +70,7 @@ return (
                             }
                         />
                         <Flex style={{flexDirection: 'column', alignItems: 'flex-end'}}>
-                            <Title level={5} style={{margin: 0}} color={token.colorPrimary}>{user.email}</Title>
+                            <Title level={5} style={{margin: 0, wordBreak: 'break-all', maxWidth: 200}} color={token.colorPrimary}>{user.email}</Title>
                         </Flex>
                     </Flex>
                     <Divider
@@ -117,10 +119,12 @@ return (
                 {user ?
                     <>
 
+                {screens.md && (
                 <Flex style={{flexDirection: 'column', alignItems: 'flex-end'}}>
                     <Typography.Text type={'secondary'} style={{margin: 0}}>Mein Konto</Typography.Text>
                    <Title level={5} style={{margin: 0}} color={token.colorPrimary}>{user?.email}</Title>
                 </Flex>
+                )}
                 <Image
                     src={user?.picture || '../assets/Profile_sample.png'}
                     preview={false}

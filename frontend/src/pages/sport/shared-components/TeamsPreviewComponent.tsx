@@ -25,6 +25,9 @@ export const TeamsPreviewComponent = ({ sportId }: { sportId: string }) => {
   if (!teamQuery.data?.elements) {
     return null;
   }
+  const uniqueTeams = Array.from(
+    new Map(teamList.map((team) => [team.id, team])).values()
+  );
   return (
     <>
       <Typography.Title level={4} style={{ marginBottom: 0 }}>Teams ({teamQuery.data?.amount})</Typography.Title>
@@ -32,10 +35,10 @@ export const TeamsPreviewComponent = ({ sportId }: { sportId: string }) => {
         gap={10}
         wrap
       >
-        {teamList.map((team) => (
+        {uniqueTeams.map((team) => (
           <TeamCard team={team} key={team.id} />
         ))}
-        {teamList.length === 0 &&
+        {uniqueTeams.length === 0 &&
           <Typography.Text>Keine Teams vorhanden</Typography.Text>
         }
         {
