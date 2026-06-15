@@ -33,14 +33,14 @@ export const SportTreeMobileComponent = () => {
                         justify={"space-between"}
                         align={"center"}
                         className="tree-item"
-                        onClick={() => toggleExpand(sport)}
+                        onClick={() => hasSub ? toggleExpand(sport) : setSelectedSport(sport)}
                         style={{
                             display: "flex",
                             width: "100%",
                             padding: "15px",
                             borderBottom: "1px solid darkgrey",
                             justifyContent: "space-between",
-                            cursor: hasSub ? "pointer" : "default",
+                            cursor: "pointer",
                             gap: 10,
                             backgroundColor: columnColors[level % columnColors.length],
                         }}

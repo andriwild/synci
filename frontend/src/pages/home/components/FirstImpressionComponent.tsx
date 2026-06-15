@@ -1,14 +1,16 @@
 import {Avatar, Button, Flex, Image, Space, Typography} from "antd";
 import {IconPlayerPlayFilled} from "@tabler/icons-react";
 import {useNavigate} from "react-router-dom";
+import useBreakpoint from "antd/es/grid/hooks/useBreakpoint";
 
 export const FirstImpressionComponent = () => {
     const navigate = useNavigate();
+    const screens = useBreakpoint();
 
     return (
         <div id={"home-header"}>
             <div className={"container"}>
-                <Flex>
+                <Flex wrap>
                     <Flex vertical
                           flex={"1 1 400px"}
                           gap={20}
@@ -19,7 +21,7 @@ export const FirstImpressionComponent = () => {
                           }}>
                         <Typography.Title
                             level={1}
-                            style={{fontWeight: 400, lineHeight: '1.2'}}>
+                            style={{fontWeight: 400, lineHeight: '1.2', wordBreak: 'keep-all', overflowWrap: 'normal'}}>
                             Verpasse nie wieder <br/>
                             <span style={{color: '#3D5A80'}}>
                     deine Lieblingsevents
@@ -83,15 +85,17 @@ export const FirstImpressionComponent = () => {
                             </Space>
                         </Flex>
                     </Flex>
-                    <Flex
-                        flex={"1 1 400px"}
-                        justify={"center"}
-                    >
-                        <Image
-                            src={'./assets/images/fan_hero.png'}
-                            preview={false}
-                        />
-                    </Flex>
+                    {screens.md && (
+                        <Flex
+                            flex={"1 1 400px"}
+                            justify={"center"}
+                        >
+                            <Image
+                                src={'./assets/images/fan_hero.png'}
+                                preview={false}
+                            />
+                        </Flex>
+                    )}
                 </Flex>
             </div>
         </div>
