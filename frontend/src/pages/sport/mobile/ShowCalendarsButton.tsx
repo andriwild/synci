@@ -26,7 +26,7 @@ export const ShowCalendarsButton = () => {
 
     return (
         <>
-            <div style={{position: "absolute", bottom: "10px", width: "90%", padding: "10px 0px"}}
+            <div style={{position: "fixed", bottom: "10px", left: "5%", width: "90%", padding: "10px 0px", zIndex: 100}}
             >
                 <Button onClick={showDrawer} type="primary" icon={<IconCalendar/>} size="large" block>
                         <span style={{
