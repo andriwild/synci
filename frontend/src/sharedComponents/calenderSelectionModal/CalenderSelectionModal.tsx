@@ -25,7 +25,7 @@ const CALENDAR_OPTIONS: Record<"apple" | "google" | "outlook", CalendarOption> =
         key: "apple",
         label: "Apple Kalender",
         icon: <IconBrandApple size={44}/>,
-        open: (url) => window.open("webcal://" + url),
+        open: (url) => window.open("https://" + url),
     },
     google: {
         key: "google",
