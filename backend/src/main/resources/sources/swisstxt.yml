@@ -130,9 +130,7 @@ swisstxt:
           id: testgames
         - name: SOCCER_NATIONS_LEAGUE
           id: nations-league
-          phases:
-            - FINALS
-            - GROUP_PHASE
+          include_all: true
         - name: SOCCER_AFRICA_CUP
           id: africa-cup
         - name: SOCCER_COPA_AMERICA
@@ -152,9 +150,7 @@ swisstxt:
           id: wm-women
         - name: SOCCER_NATIONS_LEAGUE_WOMEN
           id: nations-league-women
-          phases:
-            - FINALS
-            - GROUP_PHASE
+          include_all: true
         - name: SOCCER_TESTGAMES_WOMEN
           id: testgames-women
     - name: HOCKEY

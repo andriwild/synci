@@ -70,9 +70,12 @@ class SwissTxtService(
     private fun Raise<SynciError>.fetchAllEventForLeague(teamSport: SwissTxtTeamSport): List<Pair<String, List<TeamEvent>>> =
         teamSport.leagues.flatMap { league ->
             val leagueConfig = fetchLeagueConfigFromApi(teamSport.id, league.id).block()
-            ensure(leagueConfig != null) { ElementNotFound("") }
+            if (leagueConfig == null) {
+                println("No league config for ${teamSport.name} - ${league.name}, skipping")
+                return@flatMap listOf()
+            }
 
-            if (leagueConfig.competitorType == "Team") {
+            if ((leagueConfig.competitorType ?: "Team") == "Team") {
                 collectLeaguesToFetch(leagueConfig, league).map { (leagueKey, id) ->
                     eventsForLeague(id, teamSport, league, leagueKey).bind()
                 }
@@ -85,8 +88,7 @@ class SwissTxtService(
         league: SwissTxtSportLeague,
         leagueKey: String
     ): SynciEither<Pair<String, List<TeamEvent>>> = either {
-        val events = fetchEventsFromApi(id).block()
-        ensure(events != null) { ElementNotFound("Events of ${teamSport.name} - ${league.name} not found") }
+        val events = fetchEventsFromApi(id).block() ?: emptyList()
         Pair(leagueKey, filterPastEvents(events))
     }
 
