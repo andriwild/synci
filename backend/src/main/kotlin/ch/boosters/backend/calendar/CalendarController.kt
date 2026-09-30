@@ -1,7 +1,7 @@
 package ch.boosters.backend.calendar
 
-import arrow.core.Either
-import ch.boosters.backend.errorhandling.SynciEither
+import ch.boosters.backend.errorhandling.ErrorHandler
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
@@ -13,11 +13,9 @@ import java.util.*
 class CalendarController(private val calendarService: CalendarService) {
 
     @GetMapping("/{configId}/subscribe", produces = ["text/calendar"])
-    fun createCalendarFromTeam(@PathVariable configId: UUID): String {
-        // TODO: return either here, somehow this is not working right now...
-        return when (val cal = calendarService.createCalendar(configId)) {
-            is Either.Left -> throw Exception("could not create calendar file")
-            is Either.Right -> cal.value.toString()
-        }
-    }
+    fun createCalendarFromTeam(@PathVariable configId: UUID): ResponseEntity<String> =
+        calendarService.createCalendar(configId).fold(
+            { ErrorHandler.handle(it) },
+            { ResponseEntity.ok(it.toString()) }
+        )
 }
