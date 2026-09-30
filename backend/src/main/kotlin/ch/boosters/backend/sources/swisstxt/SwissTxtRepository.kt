@@ -13,6 +13,7 @@ import ch.boosters.backend.errorhandling.SynciEither
 import ch.boosters.backend.errorhandling.SynciError
 import ch.boosters.backend.sources.common.lastSyncTimeQuery
 import ch.boosters.data.tables.EventsTable.Companion.EVENTS_TABLE
+import ch.boosters.data.tables.EventsTeamsTable.Companion.EVENTS_TEAMS_TABLE
 import ch.boosters.data.tables.SourcesTable.Companion.SOURCES_TABLE
 import ch.boosters.data.tables.SportsTable.Companion.SPORTS_TABLE
 import ch.boosters.data.tables.TeamsTable.Companion.TEAMS_TABLE
@@ -53,7 +54,9 @@ class SwissTxtRepository(
 
         dsl { jooq ->
             jooq.batch(queries.map { it.first }).execute()
-            jooq.batchStore(queries.flatMap { it.second }).execute()
+            jooq.batch(queries.flatMap { it.second }.map {
+                DSL.insertInto(EVENTS_TEAMS_TABLE).set(it).onDuplicateKeyIgnore()
+            }).execute()
             jooq.select(EVENTS_TABLE.ID).from(EVENTS_TABLE).fetchInto(String::class.java)
         }.bind()
     }
