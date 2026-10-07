@@ -7,6 +7,7 @@ import {userActions, useUser} from "../services/user/UserSlice.ts";
 import {useDispatch} from "react-redux";
 import {useState} from "react";
 import useBreakpoint from "antd/es/grid/hooks/useBreakpoint";
+import {track} from "../utils/analytics.ts";
 
 export const UserProfile = () => {
     const {token} = theme.useToken();
@@ -23,8 +24,10 @@ export const UserProfile = () => {
         logout: auth0Logout,
     } = useAuth0();
 
-    const signup = () =>
+    const signup = () => {
+        track("signup-click");
         login({ authorizationParams: { screen_hint: "signup" } });
+    };
 
     const logout = () => {
         auth0Logout({logoutParams: {returnTo: window.location.origin}}).then(() => {
@@ -141,7 +144,10 @@ return (
                     :
                     <>
                         <Button onClick={signup}>Konto erstellen</Button>
-                        <Button type={'primary'} onClick={() => login()}>Anmelden</Button>
+                        <Button type={'primary'} onClick={() => {
+                            track("login-click");
+                            login();
+                        }}>Anmelden</Button>
                     </>
                 }
             </Flex>

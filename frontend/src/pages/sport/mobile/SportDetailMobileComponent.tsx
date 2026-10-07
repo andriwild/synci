@@ -11,6 +11,7 @@ import {syncConfigActions, useSyncConfig} from "../../../services/syncConfig/syn
 import {syncConfigDtoMapper} from "../../../services/syncConfig/helpers/syncConfigHelper.ts";
 import { useDispatch } from "react-redux";
 import {TeamsPreviewComponent} from "../shared-components/TeamsPreviewComponent.tsx";
+import {track} from "../../../utils/analytics.ts";
 import {Sport} from "../../../services/sport/entities/sport.ts";
 
 export const SportDetailMobileComponent = ({callback, id, title}: { callback: Dispatch<SetStateAction<Sport | null>>, id: string, title: string }) => {
@@ -61,6 +62,9 @@ export const SportDetailMobileComponent = ({callback, id, title}: { callback: Di
                         dto.sports = [...(dto.sports ?? []), id];
                         const newSyncConfig = await updateSyncConfig(dto);
                         dispatch(syncConfigActions.setSyncConfig(newSyncConfig.data));
+                        if (newSyncConfig.data) {
+                            track("subscription-add", {type: "sport", name: title});
+                        }
                     }}
                 >Alle Hinzufügen</Button>
             </Flex>
@@ -124,6 +128,9 @@ export const SportDetailMobileComponent = ({callback, id, title}: { callback: Di
                                         dto.events = [...(dto.events ?? []), {id: event.id, sourceId: event.sourceId}];
                                         const response = await updateSyncConfig(dto);
                                         dispatch(syncConfigActions.setSyncConfig(response.data));
+                                        if (response.data) {
+                                            track("subscription-add", {type: "event", name: event.name, sport: title});
+                                        }
                                     }}
                                 ></Button>
                             </Col>

@@ -6,6 +6,7 @@ import {Alert, Button, Flex, Spin, theme} from "antd";
 import {ArrowRight, CaretDown, CaretUp} from "@phosphor-icons/react";
 import {SportDetailMobileComponent} from "./SportDetailMobileComponent.tsx";
 import {ShowCalendarsButton} from "./ShowCalendarsButton.tsx";
+import {track} from "../../../utils/analytics.ts";
 
 export const SportTreeMobileComponent = () => {
     const {data, isLoading, isError, error} = sportApi.useGetAllQuery();
@@ -13,6 +14,11 @@ export const SportTreeMobileComponent = () => {
     const token = theme.useToken().token;
 
     const [selectedSport, setSelectedSport] = useState<Sport | null>(null);
+
+    const selectSport = (sport: Sport, level: number) => {
+        track("sport-select", {sport: sport.label, level});
+        setSelectedSport(sport);
+    };
 
     const toggleExpand = (sport: Sport) => {
         if (sport.subSports.length === 0) return;
@@ -33,7 +39,7 @@ export const SportTreeMobileComponent = () => {
                         justify={"space-between"}
                         align={"center"}
                         className="tree-item"
-                        onClick={() => hasSub ? toggleExpand(sport) : setSelectedSport(sport)}
+                        onClick={() => hasSub ? toggleExpand(sport) : selectSport(sport, level)}
                         style={{
                             display: "flex",
                             width: "100%",
@@ -70,7 +76,7 @@ export const SportTreeMobileComponent = () => {
                             icon={<ArrowRight size={16} color={token.colorPrimary}/>}
                             onClick={(e) => {
                                 e.stopPropagation();
-                                setSelectedSport(sport);
+                                selectSport(sport, level);
                             }}
                         />
                     </Flex>

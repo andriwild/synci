@@ -5,6 +5,7 @@ import useBreakpoint from "antd/es/grid/hooks/useBreakpoint";
 import {IconBrandApple, IconBrandGoogle, IconBrandOffice} from "@tabler/icons-react";
 import {useUser} from "../../services/user/UserSlice.ts";
 import {useDeviceType} from "../../utils/useDeviceType.ts";
+import {CalendarProvider, track} from "../../utils/analytics.ts";
 
 interface CalendarSelectionProps {
     url: string;
@@ -14,7 +15,7 @@ interface CalendarSelectionProps {
 }
 
 interface CalendarOption {
-    key: string;
+    key: CalendarProvider;
     label: string;
     icon: ReactNode;
     open: (url: string) => void;
@@ -47,6 +48,11 @@ export const CalendarSelectionModal = ({url, buttonText, buttonType, buttonIcon}
     const user = useUser();
     const deviceType = useDeviceType();
 
+    const openCalendar = (option: CalendarOption) => {
+        track("calendar-add", {provider: option.key});
+        option.open(url);
+    };
+
     const renderOptionColumn = (option: CalendarOption) => (
         <Flex key={option.key} vertical gap={12} align={"center"} flex={1} justify={"space-between"}>
             {option.icon}
@@ -54,7 +60,7 @@ export const CalendarSelectionModal = ({url, buttonText, buttonType, buttonIcon}
             <Button
                 disabled={!user}
                 type="primary"
-                onClick={() => option.open(url)}
+                onClick={() => openCalendar(option)}
             >Hinzufügen</Button>
         </Flex>
     );
@@ -65,12 +71,15 @@ export const CalendarSelectionModal = ({url, buttonText, buttonType, buttonIcon}
             block
             size={"large"}
             disabled={!user}
-            onClick={() => option.open(url)}
+            onClick={() => openCalendar(option)}
         >{option.label}</Button>
     );
 
     const copyLinkButton = (
-        <Button block size={"large"} disabled={!user} onClick={() => navigator.clipboard.writeText("https://" + url)}>
+        <Button block size={"large"} disabled={!user} onClick={() => {
+            track("calendar-add", {provider: "copy"});
+            navigator.clipboard.writeText("https://" + url);
+        }}>
             Link manuell kopieren
         </Button>
     );
@@ -116,7 +125,7 @@ export const CalendarSelectionModal = ({url, buttonText, buttonType, buttonIcon}
                     size={"large"}
                     block
                     style={{height: 52}}
-                    onClick={() => primary.open(url)}
+                    onClick={() => openCalendar(primary)}
                 >Hinzufügen</Button>
                 {renderMoreOptions(
                     <>
@@ -133,7 +142,10 @@ export const CalendarSelectionModal = ({url, buttonText, buttonType, buttonIcon}
             <Button
                 type={buttonType}
                 icon={buttonIcon}
-                onClick={() => setIsModalOpen(true)}
+                onClick={() => {
+                    track("calendar-modal-open");
+                    setIsModalOpen(true);
+                }}
                 disabled={!user}
                 title={user ? "" : "Melde dich an, um Kalender hinzuzufügen"}
             >{buttonText}</Button>

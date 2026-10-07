@@ -6,6 +6,7 @@ import {Sport} from "../../../services/sport/entities/sport.ts";
 import {sportApi} from "../../../services/sport/sportApi.ts";
 import {SportDetailComponent} from "./SportDetailComponent.tsx";
 import Title from "antd/es/typography/Title";
+import {track} from "../../../utils/analytics.ts";
 
 
 export const SportTreeComponent = () => {
@@ -55,6 +56,7 @@ export const SportTreeComponent = () => {
 
     const handleCategoryClick = (sport: Sport, level: number) => {
         setSelectedId(sport.id);
+        track("sport-select", {sport: sport.label, level});
         const newTreeColumns = [...treeColumns.slice(0, level + 1)];
 
         if (sport.subSports && sport.subSports.length > 0) {

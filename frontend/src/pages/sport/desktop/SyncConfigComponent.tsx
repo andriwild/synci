@@ -12,6 +12,7 @@ import {TeamConfigCard} from "../../../sharedComponents/config/TeamConfigCard.ts
 import {CalendarSelectionModal} from "../../../sharedComponents/calenderSelectionModal/CalenderSelectionModal.tsx";
 import {VITE_BACKEND_HOST} from "../../../../env.ts";
 import {EventConfigCard} from "../../../sharedComponents/config/EventConfigCard.tsx";
+import {track} from "../../../utils/analytics.ts";
 
 
 export const SyncConfigComponent = () => {
@@ -182,6 +183,9 @@ const CreateConfigModal = ({refetch}: { refetch: () => void }) => {
                 sports: []
             });
             dispatch(syncConfigActions.setSyncConfig(response.data));
+            if (response.data) {
+                track("abo-create");
+            }
             openNotification("bottomRight");
             form.resetFields();
             refetch();

@@ -13,6 +13,7 @@ import {useNavigate} from "react-router-dom";
 import {useState} from "react";
 import {SyncConfig} from "../../services/syncConfig/entities/syncConfig.ts";
 import {NotificationPlacement} from "antd/es/notification/interface";
+import {track} from "../../utils/analytics.ts";
 
 export const SyncConfigPage = () => {
     const syncConfig = syncConfigApi.useGetAllQuery();
@@ -205,6 +206,9 @@ const CreateConfigCard = ({refetch}: { refetch: () => void }) => {
                 sports: []
             });
             dispatch(syncConfigActions.setSyncConfig(response.data));
+            if (response.data) {
+                track("abo-create");
+            }
             openNotification("bottomRight");
             form.resetFields();
             refetch();

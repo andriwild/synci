@@ -6,6 +6,7 @@ import {NotificationPlacement} from "antd/es/notification/interface";
 import {syncConfigApi} from "../../services/syncConfig/syncConfigApi.ts";
 import {syncConfigActions, useSyncConfig} from "../../services/syncConfig/syncCofigSlice.ts";
 import {SyncConfig} from "../../services/syncConfig/entities/syncConfig.ts";
+import {track} from "../../utils/analytics.ts";
 
 export const DeleteConfigModal = ({list, refetch, id, name, compact = false}: {
     list: SyncConfig[],
@@ -32,7 +33,10 @@ export const DeleteConfigModal = ({list, refetch, id, name, compact = false}: {
 
     const handleSubmit = async () => {
         try {
-            await deleteSyncConfig(id);
+            const response = await deleteSyncConfig(id);
+            if (!response.error) {
+                track("abo-delete");
+            }
             openNotification("bottomRight");
             if (id === currentSyncConfig?.id) {
                 const remainingConfigs = list.filter((config) => config.id !== id);

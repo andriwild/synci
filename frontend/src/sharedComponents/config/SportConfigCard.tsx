@@ -5,6 +5,7 @@ import {syncConfigApi} from "../../services/syncConfig/syncConfigApi.ts";
 import {syncConfigActions, useSyncConfig} from "../../services/syncConfig/syncCofigSlice.ts";
 import {syncConfigDtoMapper} from "../../services/syncConfig/helpers/syncConfigHelper.ts";
 import {useDispatch} from "react-redux";
+import {track} from "../../utils/analytics.ts";
 import {SyncConfig} from "../../services/syncConfig/entities/syncConfig.ts";
 
 export const SportConfigCard = ({sport, config}: { sport: Sport, config?: SyncConfig }) => {
@@ -62,6 +63,9 @@ export const SportConfigCard = ({sport, config}: { sport: Sport, config?: SyncCo
             const dto = syncConfigDtoMapper(syncConfig);
             dto.sports = dto.sports?.filter((s) => s !== sport.id);
             const newSyncConfig = await updateSyncConfig(dto);
+            if (newSyncConfig.data) {
+                track("subscription-remove", {type: "sport", name: sport.label, sport: sport.rootSport});
+            }
             if (syncConfig.id === currentSyncConfig?.id) {
                 dispatch(syncConfigActions.setSyncConfig(newSyncConfig.data));
             }

@@ -6,6 +6,7 @@ import {syncConfigDtoMapper} from "../../../services/syncConfig/helpers/syncConf
 import {syncConfigActions, useSyncConfig} from "../../../services/syncConfig/syncCofigSlice.ts";
 import {syncConfigApi} from "../../../services/syncConfig/syncConfigApi.ts";
 import {useUser} from "../../../services/user/UserSlice.ts";
+import {track} from "../../../utils/analytics.ts";
 
 export const TeamCard = ({team}: { team: Team }) => {
     const token = theme.useToken().token;
@@ -45,6 +46,9 @@ export const TeamCard = ({team}: { team: Team }) => {
                     dto.teams = [...(dto.teams ?? []), {id: team.id, sourceId: team.sourceId}];
                     const response = await updateSyncConfig(dto);
                     dispatch(syncConfigActions.setSyncConfig(response.data));
+                    if (response.data) {
+                        track("subscription-add", {type: "team", name: team.name, sport: team.rootSport});
+                    }
                 }}
                 loading={updateSyncConfigStatus.isLoading}
                 type="primary">Hinzufügen</Button>

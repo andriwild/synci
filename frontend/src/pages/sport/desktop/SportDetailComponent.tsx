@@ -11,6 +11,7 @@ import { syncConfigApi } from "../../../services/syncConfig/syncConfigApi.ts";
 import {useUser} from "../../../services/user/UserSlice.ts";
 import {syncConfigDtoMapper} from "../../../services/syncConfig/helpers/syncConfigHelper.ts";
 import {TeamsPreviewComponent} from "../shared-components/TeamsPreviewComponent.tsx";
+import {track} from "../../../utils/analytics.ts";
 
 
 export const SportDetailComponent = ({id, title}: { id: string, title: string }) => {
@@ -95,6 +96,9 @@ export const SportDetailComponent = ({id, title}: { id: string, title: string })
                         dto.sports = [...(dto.sports ?? []), id];
                         const newSyncConfig = await updateSyncConfig(dto);
                         dispatch(syncConfigActions.setSyncConfig(newSyncConfig.data));
+                        if (newSyncConfig.data) {
+                            track("subscription-add", {type: "sport", name: title});
+                        }
                     }}
                 >Alle Hinzufügen</Button>
         </Flex>
@@ -145,6 +149,9 @@ export const SportDetailComponent = ({id, title}: { id: string, title: string })
                                         dto.events = [...(dto.events ?? []), {id: event.id, sourceId: event.sourceId}];
                                         const response = await updateSyncConfig(dto);
                                         dispatch(syncConfigActions.setSyncConfig(response.data));
+                                        if (response.data) {
+                                            track("subscription-add", {type: "event", name: event.name, sport: title});
+                                        }
                                     }}
                                 ></Button>
                             </Col>
