@@ -4,6 +4,7 @@ import arrow.core.Either
 import arrow.core.raise.Raise
 import arrow.core.raise.either
 import arrow.core.raise.ensure
+import ch.boosters.backend.config.SYNC_INTERVAL
 import ch.boosters.backend.data.event.model.BaseEvent
 import ch.boosters.backend.data.event.model.Event
 import ch.boosters.backend.data.event.model.TeamEvent
@@ -49,7 +50,8 @@ class SwissTxtService(
     fun update(): SynciEither<Unit> = either {
         val lastSync = swissTxtRepository.lastSyncTime().bind()
 
-        if (lastSync != null && lastSync.isAfter(LocalDateTime.now().minusDays(1))) {
+        // shorter than interval, otherwise every second run is skipped
+        if (lastSync != null && lastSync.isAfter(LocalDateTime.now().minus(SYNC_INTERVAL).plusHours(1))) {
             return Either.Right(Unit)
         }
         val sourceId = swissTxtConfig.id
