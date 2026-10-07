@@ -9,7 +9,7 @@ import useBreakpoint from "antd/es/grid/hooks/useBreakpoint";
 export const TeamsPreviewComponent = ({ sportId }: { sportId: string }) => {
   const screens = useBreakpoint();
   const [page, setPage] = useState<number>(0);
-  const pageSize = 5;
+  const pageSize = 8;
   const [searchInput, setSearchInput] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
   const teamQuery = sportApi.useGetTeamsQuery({ id: sportId, page: page, pageSize: pageSize, searchTerm: searchTerm || undefined });
@@ -56,13 +56,20 @@ export const TeamsPreviewComponent = ({ sportId }: { sportId: string }) => {
       {teamQuery.isLoading ? (
         <Spin size={"default"} />
       ) : (
-        <Flex
-          gap={10}
-          wrap
-        >
-          {uniqueTeams.map((team) => (
-            <TeamCard team={team} key={team.id} />
-          ))}
+        <Flex vertical gap={10}>
+          {uniqueTeams.length > 0 &&
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))",
+                gap: 10,
+              }}
+            >
+              {uniqueTeams.map((team) => (
+                <TeamCard team={team} key={team.id} />
+              ))}
+            </div>
+          }
           {uniqueTeams.length === 0 &&
             <Typography.Text>Keine Teams vorhanden</Typography.Text>
           }
@@ -70,6 +77,7 @@ export const TeamsPreviewComponent = ({ sportId }: { sportId: string }) => {
             (teamQuery.data?.amount || 0) > teamList.length &&
             <Button
               type={"text"}
+              style={{ alignSelf: "center" }}
               icon={<IconPlus size={20} />}
               onClick={() => {
                 setPage(page + 1);

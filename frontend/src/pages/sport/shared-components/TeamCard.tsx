@@ -24,8 +24,7 @@ export const TeamCard = ({team}: { team: Team }) => {
             vertical
             gap={10}
             align={"center"}
-            justify={"center"}
-            flex={1}
+            justify={"space-between"}
             style={{
                 background: token.colorBgContainer,
                 borderRadius: "20px",
@@ -33,7 +32,9 @@ export const TeamCard = ({team}: { team: Team }) => {
             }}
         >
             <IconUsersGroup size={30}/>
-            <Typography.Text>{team.name} {displayGender(team.gender)}</Typography.Text>
+            <Flex flex={1} align={"center"}>
+                <Typography.Text style={{textAlign: "center"}}>{team.name} {displayGender(team.gender)}</Typography.Text>
+            </Flex>
             <Button
                 disabled={!user || syncConfigContainsTeam(team)}
                 style={{width: "100%"}}
