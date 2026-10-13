@@ -1,161 +1,112 @@
-import {Button, Flex, Image, message, Steps, theme, Typography} from "antd";
+import {Button, Steps, theme, Typography} from "antd";
 import Title from "antd/es/typography/Title";
 import Link from "antd/es/typography/Link";
-import {useState} from "react";
-import useBreakpoint from "antd/es/grid/hooks/useBreakpoint";
-import "./TutorialStepperComponent.css";
+import {ReactNode, useState} from "react";
+import {useNavigate} from "react-router-dom";
+import {useResponsive} from "../../../utils/useResponsive.ts";
+
+/** text on the left, screenshot on the right; stacks on narrow screens */
+const StepContent = ({title, children, image, maxHeight}: { title: string, children: ReactNode, image: string, maxHeight?: number }) => (
+    <>
+        <div style={{textAlign: "start"}}>
+            <Title level={5} className={"step-content-title"}>{title}</Title>
+            <div style={{marginTop: 8}}>{children}</div>
+        </div>
+        <div className="tutorial__image">
+            <img src={image} alt="" loading="lazy" style={maxHeight ? {maxHeight} : undefined}/>
+        </div>
+    </>
+);
 
 export const TutorialStepperComponent = () => {
     const [current, setCurrent] = useState(0);
-    const screens = useBreakpoint();
+    const {isMobile, isXs} = useResponsive();
     const {token} = theme.useToken();
+    const navigate = useNavigate();
 
     const steps = [
         {
-            title: 'Sportkategorie auswählen',
+            title: "Sportkategorie auswählen",
             content: (
-                <>
-                    <div style={{flex: "1 1 300px", whiteSpace: 'normal', textAlign: 'start', alignContent: 'start'}}>
-                        <Title level={5} className={"step-content-title"}>Sportkategorie auswählen</Title>
-                        <div>
-                            Wähle die Kategorien aus, von denen du die Einträge in deinem Kalender haben möchtest.
-                        </div>
-                    </div>
-                    <div style={{flex: "1 1 300px", whiteSpace: 'normal', marginRight: '5px', alignItems: 'center'}}>
-                        <Image
-                            src={'./assets/images/categories-screenshot.png'}
-                            preview={false}
-                            style={{height: 'auto'}}
-                        />
-                    </div>
-                </>
+                <StepContent title="Sportkategorie auswählen" image="/assets/images/categories-screenshot.png">
+                    Wähle die Kategorien aus, von denen du die Einträge in deinem Kalender haben möchtest.
+                </StepContent>
             ),
         },
         {
-            title: 'Konfiguration hinzufügen',
+            title: "Konfiguration hinzufügen",
             content: (
-                <>
-                    <div style={{flex: 1, whiteSpace: 'normal', textAlign: 'start', alignContent: 'start'}}>
-                        <Title level={5}>Konfiguration hinzufügen</Title>
-                        <div>
-                            Egal welchen Kalender du verwendest. Wir fügen deine geliebten Sportevents direkt deinem
-                            Kalender nach Wahl hinzu.
-                        </div>
-                    </div>
-                    <div style={{flex: 1, whiteSpace: 'normal', marginRight: '5px', alignItems: 'center'}}>
-                        <Image
-                            src={'./assets/images/save-category-screenshot.png'}
-                            preview={false}
-                            style={{height: 'auto'}}
-                        />
-                    </div>
-                </>
+                <StepContent title="Konfiguration hinzufügen" image="/assets/images/save-category-screenshot.png">
+                    Egal welchen Kalender du verwendest. Wir fügen deine geliebten Sportevents direkt deinem
+                    Kalender nach Wahl hinzu.
+                </StepContent>
             ),
         },
         {
-            title: 'Synci unterstützen',
+            title: "Synci unterstützen",
             content: (
-                <>
-                    <Flex vertical style={{flex: 1, textAlign: 'start', gap: 8}}>
-                        <Title level={5} style={{marginBottom: 4}}>Synci unterstützen</Title>
-                        <Typography.Text>
-                            Wenn du willst, kannst du uns unterstützen. Das ist komplett freiwillig. Vielen Dank für
-                            deine Unterstützung!
-                            <br/>
-                            Falls du kein Twint hast, kannst du uns hier unterstützen:
-                        </Typography.Text>
-                        <Link
-                            onClick={() => window.open('https://buymeacoffee.com/boostershack', '_blank')}
-                        >
-                            Buy me a coffee
-                        </Link>
-                    </Flex>
-
-
-                    <div style={{flex: 1, whiteSpace: 'normal', marginRight: '5px', alignItems: 'center'}}>
-                        <Image
-                            src={'./assets/images/support-synci-screenshot.png'}
-                            preview={false}
-                            style={{height: 'auto'}}
-                        />
-                    </div>
-                </>
+                <StepContent title="Synci unterstützen" image="/assets/images/support-synci-screenshot.png">
+                    <Typography.Text>
+                        Wenn du willst, kannst du uns unterstützen. Das ist komplett freiwillig. Vielen Dank für
+                        deine Unterstützung!
+                        <br/>
+                        Falls du kein Twint hast, kannst du uns hier unterstützen:
+                    </Typography.Text>
+                    <br/>
+                    <Link onClick={() => window.open("https://buymeacoffee.com/boostershack", "_blank")}>
+                        Buy me a coffee
+                    </Link>
+                </StepContent>
             ),
         },
         {
-            title: 'Einträge abgespeichert',
+            title: "Einträge abgespeichert",
             content: (
-                <>
-                    <div style={{flex: 1, whiteSpace: 'normal', textAlign: 'start', alignContent: 'start'}}>
-                        <Title level={5}>Einträge abgespeichert</Title>
-                        <div>
-                            Deine Events sind nun in deinem Kalender abgespeichert. Wenn du gewisse Einträge nicht mehr
-                            abonnieren möchtest, kannst du dies hier wieder ändern.
-                        </div>
-                    </div>
-                    <div style={{flex: 1, whiteSpace: 'normal', marginRight: '5px', alignItems: 'center'}}>
-                        <Image
-                            src={'./assets/images/category-entry-screenshot.png'}
-                            preview={false}
-                            style={{height: 'auto', maxHeight: '180px'}}
-                        />
-                    </div>
-                </>
+                <StepContent title="Einträge abgespeichert" image="/assets/images/category-entry-screenshot.png" maxHeight={180}>
+                    Deine Events sind nun in deinem Kalender abgespeichert. Wenn du gewisse Einträge nicht mehr
+                    abonnieren möchtest, kannst du dies hier wieder ändern.
+                </StepContent>
             ),
         },
     ];
 
-    const next = () => {
-        setCurrent(current + 1);
-    };
-
-    const prev = () => {
-        setCurrent(current - 1);
-    };
-
     const items = steps.map((item) => ({key: item.title, title: item.title}));
 
-    const contentStyle: React.CSSProperties = {
-        alignContent: 'center',
-        backgroundColor: 'white',
-        gap: '20px',
-        borderRadius: token.borderRadius,
-        padding: '40px',
-        marginTop: '40px',
-    };
     return (
-
-        <Flex vertical style={{
-            justifyContent: 'start',
-            alignItems: 'center',
-            paddingTop: '60px',
-            backgroundColor: '#FFF',
-            padding: '40px 0',
-        }}>
-            <Typography.Title level={2} style={{marginBottom: 70}}>
+        <div className="tutorial">
+            <Typography.Title level={2} className="section-title">
                 So einfach funktioniert Synci
             </Typography.Title>
-            <Flex vertical style={{width: "80%"}}>
-                <Steps current={current} items={items} direction={screens.md ? 'horizontal' : 'vertical'}/>
-                <Flex style={contentStyle} id={steps[current].title}>{steps[current].content}</Flex>
-                <div style={{marginTop: 24, display: 'flex', justifyContent: 'flex-end'}}>
+            <div className="tutorial__inner">
+                <Steps
+                    current={current}
+                    items={items}
+                    progressDot={isXs}
+                    size={isMobile ? "small" : "default"}
+                    responsive={false}
+                    onChange={setCurrent}
+                />
+                <div className="tutorial__content" style={{borderRadius: token.borderRadius}} id={steps[current].title}>
+                    {steps[current].content}
+                </div>
+                <div className="tutorial__actions">
                     {current > 0 && (
-                        <Button style={{margin: '0 8px'}} onClick={() => prev()}>
+                        <Button onClick={() => setCurrent(current - 1)}>
                             Vorheriger Schritt
                         </Button>
                     )}
                     {current < steps.length - 1 && (
-                        <Button type="primary" onClick={() => next()}>
+                        <Button type="primary" onClick={() => setCurrent(current + 1)}>
                             Nächster Schritt
                         </Button>
                     )}
                     {current === steps.length - 1 && (
-                        <Button type="primary" onClick={() => message.success('Processing complete!')}>
-                            Fertig
+                        <Button type="primary" onClick={() => navigate("/sport")}>
+                            Jetzt starten
                         </Button>
                     )}
                 </div>
-            </Flex>
-        </Flex>
+            </div>
+        </div>
     );
 }

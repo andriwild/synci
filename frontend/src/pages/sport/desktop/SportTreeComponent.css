@@ -1,47 +1,39 @@
+/* Column tree (tablet + desktop). Horizontal overflow stays inside the tree, never on the page. */
+.tree-columns {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    border-radius: var(--panel-radius);
+}
+
 .tree-column {
-  flex-grow: 1;
-  min-width: 200px;
-  cursor: pointer;
-  overflow-y: scroll;
+    flex: 1 0 auto;
+    min-width: 200px;
+    cursor: pointer;
+    color: var(--ant-primary-color);
 }
 
-.tree-column h3 {
-  margin: 0;
-  padding: 10px;
-  font-size: 1.2em;
-  font-weight: 400;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #2c2c2c;
-  border-bottom: 1px solid #3f3f3f;
+@media (max-width: 991.98px) {
+    .tree-column {
+        min-width: 160px;
+    }
 }
 
-.tree-content {
-  flex-grow: 10;
-  min-width: 300px;
-  overflow-x: auto;
+.tree-columns .tree-column:first-child {
+    color: white;
+    border-radius: var(--panel-radius) 0 0 var(--panel-radius);
 }
 
-#tree-container {
-  display: flex;
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
+.tree-columns .tree-column:first-child > .tree-item:first-child.selected {
+    border-radius: var(--panel-radius) 0 0 0;
 }
 
-#tree-container .tree-column:first-child {
-  border-radius: 20px 0 0 20px;
-}
-
-#tree-container .tree-column {
-  color: var(--ant-primary-color);
-}
 .tree-item.selected {
-  background-color: rgba(0, 0, 0, 0.1);
-}
-#tree-container .tree-column:first-child > .tree-item:first-child.selected {
-  border-radius: 20px 0 0 0;
-}
-.tree-item h4 {
-  margin: 0;
+    background-color: rgba(0, 0, 0, 0.1);
 }
 
+.tree-item h4 {
+    margin: 0;
+    overflow-wrap: anywhere;
+}

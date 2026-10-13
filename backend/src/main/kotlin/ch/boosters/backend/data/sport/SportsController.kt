@@ -7,6 +7,7 @@ import ch.boosters.backend.errorhandling.SynciEither
 import ch.boosters.backend.errorhandling.SynciError
 import ch.boosters.data.tables.pojos.EventsTable
 import ch.boosters.data.tables.pojos.TeamsTable
+import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDateTime
 import java.util.*
@@ -25,9 +26,10 @@ class SportsController(
         @PathVariable id: UUID,
         @RequestParam pageSize: Int,
         @RequestParam page: Int,
-        @RequestParam dateTime: LocalDateTime = LocalDateTime.now()
+        @RequestParam dateTime: LocalDateTime = LocalDateTime.now(),
+        authentication: Authentication?
     ): Either<SynciError, PagedResult<EventsTable>> =
-        sportsService.getEventsBySport(id, pageSize, page, dateTime)
+        sportsService.getEventsBySport(id, pageSize, page, dateTime, authentication)
 
     @GetMapping("/{id}/teams")
     fun getTeamsBySport(

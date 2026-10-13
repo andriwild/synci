@@ -1,11 +1,11 @@
 import {Button, Flex, Image, Modal, Typography} from "antd";
 import {useState} from "react";
-import useBreakpoint from "antd/es/grid/hooks/useBreakpoint";
+import {useResponsive} from "../utils/useResponsive.ts";
 
 
 export const DonationModal = ({buttonStyle, buttonText, textColor}: {buttonStyle: "link" | "text" | "default" | "primary" | "dashed" | undefined, buttonText: string, textColor: string}) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const screen = useBreakpoint();
+    const {isMobile} = useResponsive();
 
     const showModal = () => {
         setIsModalOpen(true);
@@ -26,11 +26,12 @@ export const DonationModal = ({buttonStyle, buttonText, textColor}: {buttonStyle
                    open={isModalOpen}>
                 <Flex gap={10}  vertical
                       align={"center"}>
-                    {screen.md ?
+                    {!isMobile ?
                         <Image
                             src={"./assets/twint/Synci_twint_code.png"}
                             preview={false}
-                            width={400}
+                            width="100%"
+                            style={{maxWidth: 400}}
                         />
                         :
                         <Button

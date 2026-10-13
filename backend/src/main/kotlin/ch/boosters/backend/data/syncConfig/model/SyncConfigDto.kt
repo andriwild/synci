@@ -7,6 +7,7 @@ data class SyncConfigDto(
     val name: String?,
     val events: List<EventDto>,
     val teams: List<TeamDto>,
+    /** sports, including organisations and their groups */
     val sports: List<UUID>
 )
 

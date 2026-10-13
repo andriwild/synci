@@ -1,13 +1,102 @@
-.tree-content-title {
-    margin: 0 !important;
+/* Detail panel to the right of the tree columns (desktop) or full width below the back button (mobile) */
+.tree-content {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(20px, 4vw, 40px);
+    flex: 10 1 300px;
+    min-width: 300px;
+    overflow-x: auto;
+    background: white;
+    border-radius: 0 var(--panel-radius) var(--panel-radius) 0;
+    padding: clamp(12px, 3vw, 20px);
 }
+
+.tree-content--welcome {
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0;
+    padding-top: 20px;
+}
+
+@media (max-width: 767.98px) {
+    .tree-content {
+        flex: 1 1 auto;
+        min-width: 0;
+        width: 100%;
+        border-radius: var(--panel-radius);
+    }
+}
+
 .tree-content-main-title {
     margin: 0 !important;
     font-size: 1.5rem;
     font-weight: 500;
+    overflow-wrap: anywhere;
 }
-.tree-content-sub-title {
-    margin: 0 !important;
-    font-size: 1.25rem;
-    font-weight: 400;
+
+/* Header row: [back] [title + toolbar] [add-all] – wraps on narrow screens */
+.detail-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.detail-header__title {
+    flex: 1 1 200px;
+    min-width: 0;
+}
+
+.detail-header__action {
+    flex-shrink: 0;
+}
+
+@media (max-width: 575.98px) {
+    .detail-header__action {
+        flex: 1 1 100%;
+    }
+}
+
+/* Event list rows: [date] [name] [actions]; on phones the name takes its own line */
+.event-row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas: "date name actions";
+    gap: 8px 12px;
+    align-items: center;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.event-row__date {
+    grid-area: date;
+    white-space: nowrap;
+}
+
+.event-row__name {
+    grid-area: name;
+    min-width: 0;
+}
+
+.event-row__actions {
+    grid-area: actions;
+    display: flex;
+    gap: 5px;
+    justify-content: flex-end;
+}
+
+@media (max-width: 575.98px) {
+    .event-row {
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-areas:
+            "date actions"
+            "name name";
+    }
+}
+
+/* Team cards */
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(180px, 100%), 1fr));
+    gap: 10px;
 }

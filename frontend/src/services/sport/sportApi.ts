@@ -7,50 +7,52 @@ import {Team} from "../team/entities/team.ts";
 
 
 export const sportApi = createApi({
-  reducerPath: "sportApi",
-  baseQuery: axiosBaseQuery({
-    baseUrl: "/sports"
-  }),
-  endpoints: build => ({
-    getAll: build.query<Sport[], void>({
-      query: () => ({
-        url: "",
-        method: "GET"
-      })
+    reducerPath: "sportApi",
+    baseQuery: axiosBaseQuery({
+        baseUrl: "/sports"
     }),
-    getById: build.query<Sport, number>({
-      query: (id) => ({
-        url: `${id}`,
-        method: "GET"
-      })
-    }),
-    getEvents: build.query<PagedResult<SportEvent>, PagedRequest>({
-      query: (request) => ({
-        url: `${request.id}/events?page=${request.page}&pageSize=${request.pageSize}`,
-        method: "GET"
-      })
-    }),
-    getTeams: build.query<PagedResult<Team>, PagedRequest & { searchTerm?: string }>({
-      query: (request) => {
-        const params = new URLSearchParams({
-          page: String(request.page),
-          pageSize: String(request.pageSize),
-        });
-        if (request.searchTerm) {
-          params.append("searchTerm", request.searchTerm);
-        }
-        return {
-          url: `${request.id}/teams?${params.toString()}`,
-          method: "GET"
-        };
-      }
-    }),
-    update: build.mutation<Sport, Sport>({
-      query: (sport) => ({
-        url: `/${sport.id}`,
-        method: "PUT",
-        body: sport
-      })
-    }),
-  })
+    tagTypes: ["SportEvents"],
+    endpoints: build => ({
+        getAll: build.query<Sport[], void>({
+            query: () => ({
+                url: "",
+                method: "GET"
+            })
+        }),
+        getById: build.query<Sport, number>({
+            query: (id) => ({
+                url: `${id}`,
+                method: "GET"
+            })
+        }),
+        getEvents: build.query<PagedResult<SportEvent>, PagedRequest>({
+            query: (request) => ({
+                url: `${request.id}/events?page=${request.page}&pageSize=${request.pageSize}`,
+                method: "GET"
+            }),
+            providesTags: ["SportEvents"]
+        }),
+        getTeams: build.query<PagedResult<Team>, PagedRequest & { searchTerm?: string }>({
+            query: (request) => {
+                const params = new URLSearchParams({
+                    page: String(request.page),
+                    pageSize: String(request.pageSize),
+                });
+                if (request.searchTerm) {
+                    params.append("searchTerm", request.searchTerm);
+                }
+                return {
+                    url: `${request.id}/teams?${params.toString()}`,
+                    method: "GET"
+                };
+            }
+        }),
+        update: build.mutation<Sport, Sport>({
+            query: (sport) => ({
+                url: `/${sport.id}`,
+                method: "PUT",
+                body: sport
+            })
+        }),
+})
 })

@@ -1,16 +1,19 @@
 import {FC} from "react";
 import {Layout, Typography} from "antd";
-import useBreakpoint from "antd/es/grid/hooks/useBreakpoint";
+import {useNavigate} from "react-router-dom";
 import {DonationModal} from "./DonationModal.tsx";
-
+import {useResponsive} from "../utils/useResponsive.ts";
+import "./AppShell.css";
 
 export const PreHeader: FC = () => {
-   const screens = useBreakpoint();
+    const {isMobile} = useResponsive();
+    const navigate = useNavigate();
     return (
-        <Layout.Header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '5px  24px',height: "auto", backgroundColor: '#3D5A80' }}>
-            <Typography style={{color: 'white'}}>Ab sofort auch WM Spiele verfügbar!  - Jetzt abonnieren</Typography>
-            { screens.md && <DonationModal buttonStyle={"text"} buttonText={"Projekt unterstützen - hier twinten"} textColor={"white"}/>}
+        <Layout.Header className="pre-header">
+            <Typography.Link style={{color: "white"}} onClick={() => navigate("/organisationen")}>
+                Jetzt eigene Organisationen erfassen
+            </Typography.Link>
+            {!isMobile && <DonationModal buttonStyle={"text"} buttonText={"Projekt unterstützen - hier twinten"} textColor={"white"}/>}
         </Layout.Header>
-
     );
 };
