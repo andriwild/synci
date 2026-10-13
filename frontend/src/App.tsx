@@ -10,6 +10,7 @@ import {FaqPage} from "./pages/faq/FaqPage.tsx";
 import {SyncConfigPage} from "./pages/syncConfig/SyncConfigPage.tsx";
 import {OrganisationsPage} from "./pages/organisation/OrganisationsPage.tsx";
 import {OrganisationMembersPage} from "./pages/organisation/OrganisationMembersPage.tsx";
+import {NotFoundPage} from "./pages/notFound/NotFoundPage.tsx";
 import {useAuth0} from "@auth0/auth0-react";
 import {useAppDispatch} from "./app/hooks.ts";
 import {userActions, useUser} from "./services/user/UserSlice.ts";
@@ -89,6 +90,7 @@ export const App = () => {
                         <Route path="/organisationen/:id/mitglieder" element={<OrganisationMembersPage/>} />
                         <Route path="/faq" element={<FaqPage />} />
                         <Route path="/impressum" element={<ImpressumPage />} />
+                        <Route path="*" element={<NotFoundPage />} />
                     </Route>
                 </Routes>
             </ConfigProvider>

@@ -6,6 +6,7 @@ import {organisationApi} from "../../services/organisation/organisationApi.ts";
 import {OrganisationMember, OrgRole, roleLabel} from "../../services/organisation/entities/organisation.ts";
 import {HttpError, isHttpError, stringifyApiError} from "../../services/common/apiHelpers.ts";
 import {SerializedError} from "@reduxjs/toolkit";
+import {usePageMeta} from "../../utils/usePageMeta.ts";
 import "./Organisation.css";
 
 export const OrganisationMembersPage = () => {
@@ -14,6 +15,7 @@ export const OrganisationMembersPage = () => {
     const navigate = useNavigate();
     const token = theme.useToken().token;
     const [api, contextHolder] = notification.useNotification();
+    usePageMeta({title: "Mitglieder verwalten", noindex: true});
 
     const organisation = organisationApi.useGetByIdQuery(id ?? "", {skip: !user || !id});
     const members = organisationApi.useGetMembersQuery(id ?? "", {skip: !user || !id});

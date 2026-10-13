@@ -10,12 +10,14 @@ import {syncConfigApi} from "../../services/syncConfig/syncConfigApi.ts";
 import {syncConfigActions, useSyncConfig} from "../../services/syncConfig/syncCofigSlice.ts";
 import {stringifyApiError} from "../../services/common/apiHelpers.ts";
 import {CreateOrganisationModal} from "./components/CreateOrganisationModal.tsx";
+import {usePageMeta} from "../../utils/usePageMeta.ts";
 import "./Organisation.css";
 
 /** one card per organisation: full width on phones, 2 / 3 / 4 per row on larger screens */
 const CARD_COL = {xs: 24, sm: 12, lg: 8};
 
 export const OrganisationsPage = () => {
+    usePageMeta({title: "Meine Organisationen", noindex: true});
     const user = useUser();
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -78,7 +80,7 @@ export const OrganisationsPage = () => {
         <div className="org-page">
             {contextHolder}
             <div className="org-page-header">
-                <Typography.Title level={3} style={{margin: 0}}>Meine Organisationen</Typography.Title>
+                <Typography.Title level={1} style={{margin: 0, fontSize: "1.5rem"}}>Meine Organisationen</Typography.Title>
                 <div className="org-page-header__actions">
                     <Button icon={<IconCompass size={18}/>} onClick={() => navigate("/sport")}>
                         Organisationen entdecken

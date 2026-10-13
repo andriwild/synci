@@ -1,6 +1,6 @@
 import {FC, useState} from "react";
 import {Button, Drawer, Flex, Layout, Menu, theme, Typography} from "antd";
-import {useLocation, useNavigate} from "react-router-dom";
+import {Link, useLocation} from "react-router-dom";
 import {CalendarBlank, Coffee, ListBullets, UsersThree} from "@phosphor-icons/react";
 import {UserProfile} from "./UserProfile.tsx";
 import {IconMenu2} from "@tabler/icons-react";
@@ -11,7 +11,6 @@ import {useUser} from "../services/user/UserSlice.ts";
 import "./AppShell.css";
 
 export const Header: FC = () => {
-    const navigate = useNavigate();
     const location = useLocation();
     const {isMobile} = useResponsive();
     const [visible, setVisible] = useState(false);
@@ -19,24 +18,24 @@ export const Header: FC = () => {
     const {loginWithRedirect} = useAuth0();
 
     const items: MenuProps["items"] = [
+        // real links so crawlers can follow the navigation; antd still handles the click
         {
             key: "/sport",
-            label: "Sportarten",
+            label: <Link to="/sport">Sportarten</Link>,
             icon: <ListBullets/>,
         },
         ...(user ? [{
             key: "/syncConfig",
-            label: "Meine Abos",
+            label: <Link to="/syncConfig">Meine Abos</Link>,
             icon: <CalendarBlank/>,
         }, {
             key: "/organisationen",
-            label: "Meine Organisationen",
+            label: <Link to="/organisationen">Meine Organisationen</Link>,
             icon: <UsersThree/>,
         }] : [])
     ];
 
-    const handleMenuClick: MenuProps["onClick"] = (info) => {
-        navigate(info.key);
+    const handleMenuClick: MenuProps["onClick"] = () => {
         setVisible(false);
     };
 
@@ -46,12 +45,15 @@ export const Header: FC = () => {
         .find((key) => location.pathname === key || location.pathname.startsWith(key + "/")) ?? location.pathname;
 
     const logo = (
-        <img
-            src="/assets/Logo_synci.png"
-            alt="Synci"
-            className="app-header__logo"
-            onClick={() => navigate("/")}
-        />
+        <Link to="/" aria-label="Synci Startseite">
+            <img
+                src="/assets/Logo_synci.png"
+                alt="Synci"
+                width={94}
+                height={47}
+                className="app-header__logo"
+            />
+        </Link>
     );
 
     return (

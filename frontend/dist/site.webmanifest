@@ -1,1 +1,14 @@
-{"name":"","short_name":"","icons":[{"src":"/android-chrome-192x192.png","sizes":"192x192","type":"image/png"},{"src":"/android-chrome-512x512.png","sizes":"512x512","type":"image/png"}],"theme_color":"#ffffff","background_color":"#ffffff","display":"standalone"}
+{
+  "name": "Synci – Sport-Termine im Kalender",
+  "short_name": "Synci",
+  "description": "Ligen, Teams und Events als Kalender-Abo in Google Kalender, Outlook und Apple Kalender.",
+  "lang": "de",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#3D5A80",
+  "background_color": "#EBF0F6",
+  "icons": [
+    {"src": "/android-chrome-192x192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "/android-chrome-512x512.png", "sizes": "512x512", "type": "image/png"}
+  ]
+}

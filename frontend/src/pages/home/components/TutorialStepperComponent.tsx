@@ -2,18 +2,18 @@ import {Button, Steps, theme, Typography} from "antd";
 import Title from "antd/es/typography/Title";
 import Link from "antd/es/typography/Link";
 import {ReactNode, useState} from "react";
-import {useNavigate} from "react-router-dom";
+import {Link as RouterLink} from "react-router-dom";
 import {useResponsive} from "../../../utils/useResponsive.ts";
 
 /** text on the left, screenshot on the right; stacks on narrow screens */
-const StepContent = ({title, children, image, maxHeight}: { title: string, children: ReactNode, image: string, maxHeight?: number }) => (
+const StepContent = ({title, children, image, imageAlt, maxHeight}: { title: string, children: ReactNode, image: string, imageAlt: string, maxHeight?: number }) => (
     <>
         <div style={{textAlign: "start"}}>
-            <Title level={5} className={"step-content-title"}>{title}</Title>
+            <Title level={3} className={"step-content-title"}>{title}</Title>
             <div style={{marginTop: 8}}>{children}</div>
         </div>
         <div className="tutorial__image">
-            <img src={image} alt="" loading="lazy" style={maxHeight ? {maxHeight} : undefined}/>
+            <img src={image} alt={imageAlt} loading="lazy" style={maxHeight ? {maxHeight} : undefined}/>
         </div>
     </>
 );
@@ -22,13 +22,13 @@ export const TutorialStepperComponent = () => {
     const [current, setCurrent] = useState(0);
     const {isMobile, isXs} = useResponsive();
     const {token} = theme.useToken();
-    const navigate = useNavigate();
 
     const steps = [
         {
             title: "Sportkategorie auswählen",
             content: (
-                <StepContent title="Sportkategorie auswählen" image="/assets/images/categories-screenshot.png">
+                <StepContent title="Sportkategorie auswählen" image="/assets/images/categories-screenshot.png"
+                             imageAlt="Screenshot der Sportarten-Auswahl in Synci">
                     Wähle die Kategorien aus, von denen du die Einträge in deinem Kalender haben möchtest.
                 </StepContent>
             ),
@@ -36,7 +36,8 @@ export const TutorialStepperComponent = () => {
         {
             title: "Konfiguration hinzufügen",
             content: (
-                <StepContent title="Konfiguration hinzufügen" image="/assets/images/save-category-screenshot.png">
+                <StepContent title="Konfiguration hinzufügen" image="/assets/images/save-category-screenshot.png"
+                             imageAlt="Screenshot: Sportart zum Kalender-Abo hinzufügen">
                     Egal welchen Kalender du verwendest. Wir fügen deine geliebten Sportevents direkt deinem
                     Kalender nach Wahl hinzu.
                 </StepContent>
@@ -45,7 +46,8 @@ export const TutorialStepperComponent = () => {
         {
             title: "Synci unterstützen",
             content: (
-                <StepContent title="Synci unterstützen" image="/assets/images/support-synci-screenshot.png">
+                <StepContent title="Synci unterstützen" image="/assets/images/support-synci-screenshot.png"
+                             imageAlt="Screenshot des Unterstützen-Dialogs mit Twint">
                     <Typography.Text>
                         Wenn du willst, kannst du uns unterstützen. Das ist komplett freiwillig. Vielen Dank für
                         deine Unterstützung!
@@ -53,7 +55,7 @@ export const TutorialStepperComponent = () => {
                         Falls du kein Twint hast, kannst du uns hier unterstützen:
                     </Typography.Text>
                     <br/>
-                    <Link onClick={() => window.open("https://buymeacoffee.com/boostershack", "_blank")}>
+                    <Link href="https://buymeacoffee.com/boostershack" target="_blank" rel="noopener noreferrer">
                         Buy me a coffee
                     </Link>
                 </StepContent>
@@ -62,7 +64,8 @@ export const TutorialStepperComponent = () => {
         {
             title: "Einträge abgespeichert",
             content: (
-                <StepContent title="Einträge abgespeichert" image="/assets/images/category-entry-screenshot.png" maxHeight={180}>
+                <StepContent title="Einträge abgespeichert" image="/assets/images/category-entry-screenshot.png" maxHeight={180}
+                             imageAlt="Screenshot eines abonnierten Eintrags im Kalender-Abo">
                     Deine Events sind nun in deinem Kalender abgespeichert. Wenn du gewisse Einträge nicht mehr
                     abonnieren möchtest, kannst du dies hier wieder ändern.
                 </StepContent>
@@ -101,9 +104,9 @@ export const TutorialStepperComponent = () => {
                         </Button>
                     )}
                     {current === steps.length - 1 && (
-                        <Button type="primary" onClick={() => navigate("/sport")}>
-                            Jetzt starten
-                        </Button>
+                        <RouterLink to="/sport">
+                            <Button type="primary">Jetzt starten</Button>
+                        </RouterLink>
                     )}
                 </div>
             </div>

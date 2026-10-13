@@ -1,3 +1,4 @@
+import {usePageMeta} from "../../utils/usePageMeta.ts";
 import {syncConfigApi} from "../../services/syncConfig/syncConfigApi.ts";
 import {Button, Col, Flex, Form, Input, Modal, notification, Radio, Row, theme, Typography} from "antd";
 import {IconEdit, IconFileSad, IconPlus} from "@tabler/icons-react";
@@ -18,6 +19,7 @@ import {useDispatch} from "react-redux";
 const CARD_COL = {xs: 24, sm: 12, lg: 8};
 
 export const SyncConfigPage = () => {
+    usePageMeta({title: "Meine Kalender", noindex: true});
     const syncConfig = syncConfigApi.useGetAllQuery();
     const token = theme.useToken().token;
     const currentSyncConfig = useSyncConfig();

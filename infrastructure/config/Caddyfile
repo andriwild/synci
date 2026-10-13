@@ -1,35 +1,50 @@
 {
-	admin :2019
 	servers {
 		metrics
 	}
+	admin :2019
+}
+
+(common) {
+	encode zstd gzip
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options nosniff
+		Referrer-Policy strict-origin-when-cross-origin
+	}
+}
+
+# www -> apex, so search engines see one canonical host
+www.synci.ch {
+	redir https://synci.ch{uri} permanent
 }
 
 synci.ch {
+	import common
 	handle /api* {
-		reverse_proxy localhost:8080 {
-            		header_up Host {host}
-            		header_up X-Forwarded-Proto "https"
-            		header_up X-Forwarded-For {remote}
-        	}
-	}
-	handle /dashboard* {
-		uri strip_prefix /dashboard
-		reverse_proxy localhost:3000 {
-            header_up Host {host}
-            header_up X-Forwarded-Proto "https"
-        }
+		reverse_proxy synci-backend-prod:8080
 	}
 	handle {
-		reverse_proxy localhost:5173
+		reverse_proxy synci-frontend-prod:5173
 	}
 }
 
-dev.synci.ch {
+# the dev instance serves the same content and must stay out of search results
+dev.synci.awild.ch {
+	import common
+	header X-Robots-Tag "noindex, nofollow"
 	handle /api* {
-		reverse_proxy localhost:8081
+		reverse_proxy synci-backend-dev:8080
 	}
 	handle {
-		reverse_proxy localhost:5174
+		reverse_proxy synci-frontend-dev:5173
+	}
+}
+
+dashboard.synci.awild.ch {
+	import common
+	header X-Robots-Tag "noindex, nofollow"
+	handle {
+		reverse_proxy grafana:3000
 	}
 }

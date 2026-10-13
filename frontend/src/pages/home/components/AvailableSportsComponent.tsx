@@ -1,12 +1,11 @@
 import {Button, Flex, theme, Typography} from "antd";
 import {IconCalendarWeek, IconLaurelWreath} from "@tabler/icons-react";
 import {sportApi} from "../../../services/sport/sportApi.ts";
-import {useNavigate} from "react-router-dom";
+import {Link} from "react-router-dom";
 
 export const AvailableSportsComponent = () => {
     const sports = sportApi.useGetAllQuery();
     const {token} = theme.useToken();
-    const navigate = useNavigate();
 
     return (
         <div style={{background: token.colorBgBase, padding: "40px 0"}}>
@@ -24,15 +23,11 @@ export const AvailableSportsComponent = () => {
                         ))}
                     </div>
 
-                    <Button
-                        type={"primary"}
-                        size={"middle"}
-                        style={{marginTop: "clamp(32px, 5vw, 60px)"}}
-                        icon={<IconCalendarWeek size={15}/>}
-                        onClick={() => navigate("/sport")}
-                    >
-                        Jetzt Kalender konfigurieren
-                    </Button>
+                    <Link to="/sport" style={{marginTop: "clamp(32px, 5vw, 60px)"}}>
+                        <Button type={"primary"} size={"middle"} icon={<IconCalendarWeek size={15}/>}>
+                            Jetzt Kalender konfigurieren
+                        </Button>
+                    </Link>
                 </Flex>
             </div>
         </div>

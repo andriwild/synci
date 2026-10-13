@@ -1,10 +1,8 @@
 import {Avatar, Button, Space, Typography} from "antd";
 import {IconCalendarWeek, IconPlayerPlayFilled} from "@tabler/icons-react";
-import {useNavigate} from "react-router-dom";
+import {Link} from "react-router-dom";
 
 export const FirstImpressionComponent = () => {
-    const navigate = useNavigate();
-
     return (
         <div id={"home-header"}>
             <div className={"container"}>
@@ -24,14 +22,16 @@ export const FirstImpressionComponent = () => {
                             Kalender, Outlook & Co.
                         </Typography.Text>
                         <div className="hero__actions">
-                            <Button type={"primary"} size={"middle"} icon={<IconCalendarWeek size={15}/>}
-                                    onClick={() => navigate("/sport")}>
-                                Jetzt starten
-                            </Button>
-                            <Button type={"default"} size={"middle"} icon={<IconPlayerPlayFilled size={15}/>}
-                                    onClick={() => navigate("/sport")}>
-                                Verfügbare Sportarten erkunden
-                            </Button>
+                            <Link to="/sport">
+                                <Button type={"primary"} size={"middle"} icon={<IconCalendarWeek size={15}/>}>
+                                    Jetzt starten
+                                </Button>
+                            </Link>
+                            <Link to="/sport">
+                                <Button type={"default"} size={"middle"} icon={<IconPlayerPlayFilled size={15}/>}>
+                                    Verfügbare Sportarten erkunden
+                                </Button>
+                            </Link>
                         </div>
                         <Space size={[24, 8]} wrap style={{paddingTop: 8}}>
                             <Space>
@@ -45,13 +45,17 @@ export const FirstImpressionComponent = () => {
                         </Space>
                     </div>
                     <div className="hero__image">
-                        <img
-                            src={"/assets/images/fan_hero.jpg"}
-                            alt=""
-                            width={1024}
-                            height={1024}
-                            loading="eager"
-                        />
+                        <picture>
+                            <source srcSet="/assets/images/fan_hero.webp" type="image/webp"/>
+                            <img
+                                src="/assets/images/fan_hero.jpg"
+                                alt="Jubelnde Fans im Stadion"
+                                width={1456}
+                                height={816}
+                                loading="eager"
+                                fetchPriority="high"
+                            />
+                        </picture>
                     </div>
                 </div>
             </div>
