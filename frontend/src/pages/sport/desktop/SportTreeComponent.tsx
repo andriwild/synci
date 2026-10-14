@@ -61,7 +61,9 @@ export const SportTreeComponent = () => {
     const renderDetail = () => {
         if (!selected) return <SportDetailComponent id={""} title={""}/>;
         if (selected.kind === "discover") return <DiscoverOrganisationsPanel/>;
-        return <SportDetailComponent id={selected.id} title={selected.label} organisation={selected.organisation} key={selected.id}/>;
+        const breadcrumb = livePath.slice(0, -1).map((node) => node.label);
+        return <SportDetailComponent id={selected.id} title={selected.label} breadcrumb={breadcrumb}
+                                     organisation={selected.organisation} key={selected.id}/>;
     };
 
     return (

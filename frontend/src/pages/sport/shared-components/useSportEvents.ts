@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import {sportApi} from "../../../services/sport/sportApi.ts";
 
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 10;
 
 /**
  * Events of a sport (or organisation node) with a "load more" that grows the page size.
