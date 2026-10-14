@@ -12,7 +12,7 @@ flutter test
 ```
 
 `config/<stage>.json` holds the runtime config (`BACKEND_URL`, `AUTH0_*`, `UMAMI_*`), see `lib/config/env.dart`.
-Login only works once `AUTH0_CLIENT_ID` of the native Auth0 application is set.
+`AUTH0_CLIENT_ID` is the client ID of the native Auth0 application "Synci App".
 
 ## Conventions
 

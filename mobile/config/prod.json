@@ -1,7 +1,7 @@
 {
   "BACKEND_URL": "https://synci.ch/",
   "AUTH0_DOMAIN": "account.synci.ch",
-  "AUTH0_CLIENT_ID": "",
+  "AUTH0_CLIENT_ID": "4K1lkahnM0aAvFPD0JMGqi3hmfItxlD7",
   "AUTH0_AUDIENCE": "https://synci.ch/api",
   "UMAMI_URL": "https://analytics.klikkr.ch",
   "UMAMI_WEBSITE_ID": "8c44756b-50b4-484e-9294-23380fa14059"
