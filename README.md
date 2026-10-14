@@ -4,11 +4,12 @@ This repository contains the repo for the synci application.
 
 ## Local setup
 
-The app consists of 3 parts:
+The app consists of 4 parts:
 
 + Database (postgres)
 + Backend (spring & kotlin)
 + Frontend (vite & react)
++ Mobile app for iOS and Android (flutter), see [mobile/README.md](mobile/README.md)
 
 For development, you need to start each of them individually. Do the following:
 

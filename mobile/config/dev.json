@@ -1,0 +1,8 @@
+{
+  "BACKEND_URL": "https://dev.synci.ch/",
+  "AUTH0_DOMAIN": "account.synci.ch",
+  "AUTH0_CLIENT_ID": "",
+  "AUTH0_AUDIENCE": "https://synci.ch/api",
+  "UMAMI_URL": "",
+  "UMAMI_WEBSITE_ID": ""
+}

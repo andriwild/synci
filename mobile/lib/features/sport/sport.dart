@@ -1,0 +1,99 @@
+class Sport {
+  const Sport({required this.id, required this.label, this.subSports = const [], this.rootSport});
+
+  factory Sport.fromJson(Map<String, dynamic> json) => Sport(
+    id: json['id'] as String,
+    label: (json['label'] ?? json['name'] ?? '') as String,
+    subSports: [
+      for (final sub in (json['subSports'] as List<dynamic>? ?? const [])) Sport.fromJson(sub as Map<String, dynamic>),
+    ],
+    rootSport: json['rootSport'] as String?,
+  );
+
+  final String id;
+  final String label;
+  final List<Sport> subSports;
+
+  /// Only set in sync config responses.
+  final String? rootSport;
+
+  bool get hasSubSports => subSports.isNotEmpty;
+}
+
+typedef SportNode = ({Sport sport, int level});
+
+SportNode? findSport(List<Sport> sports, String id, [int level = 0]) {
+  for (final sport in sports) {
+    if (sport.id == id) return (sport: sport, level: level);
+    final found = findSport(sport.subSports, id, level + 1);
+    if (found != null) return found;
+  }
+  return null;
+}
+
+class Team {
+  const Team({required this.id, required this.sourceId, required this.name, this.gender, this.rootSport});
+
+  factory Team.fromJson(Map<String, dynamic> json) => Team(
+    id: json['id'].toString(),
+    sourceId: (json['sourceId'] as num).toInt(),
+    name: json['name'] as String? ?? '',
+    gender: json['gender'] as String?,
+    rootSport: json['rootSport'] as String?,
+  );
+
+  final String id;
+  final int sourceId;
+  final String name;
+
+  /// `WOMAN`, `MAN`, `BOTH` or `UNKNOWN`.
+  final String? gender;
+  final String? rootSport;
+
+  String get displayName => switch (gender) {
+    'WOMAN' => '$name (W)',
+    'BOTH' => '$name (W/M)',
+    _ => name,
+  };
+}
+
+class SportEvent {
+  const SportEvent({
+    required this.id,
+    required this.sourceId,
+    required this.name,
+    this.startsOn,
+    this.sportId,
+    this.rootSport,
+  });
+
+  factory SportEvent.fromJson(Map<String, dynamic> json) => SportEvent(
+    id: json['id'].toString(),
+    sourceId: (json['sourceId'] as num).toInt(),
+    name: json['name'] as String? ?? '',
+    // No time zone: local time, as on the website
+    startsOn: DateTime.tryParse(json['startsOn'] as String? ?? ''),
+    sportId: json['sportId'] as String?,
+    rootSport: json['rootSport'] as String?,
+  );
+
+  final String id;
+  final int sourceId;
+  final String name;
+  final DateTime? startsOn;
+  final String? sportId;
+  final String? rootSport;
+}
+
+class PagedResult<T> {
+  const PagedResult({required this.amount, required this.elements});
+
+  factory PagedResult.fromJson(Map<String, dynamic> json, T Function(Map<String, dynamic>) fromJson) => PagedResult(
+    amount: (json['amount'] as num).toInt(),
+    elements: [for (final e in json['elements'] as List<dynamic>) fromJson(e as Map<String, dynamic>)],
+  );
+
+  /// Total across all pages.
+  final int amount;
+  final List<T> elements;
+}

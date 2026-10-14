@@ -1,0 +1,6 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Needed by the Flutter tool for hot reload and debugging -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Local backend via http://10.0.2.2:8080 on the emulator -->
+    <application android:usesCleartextTraffic="true"/>
+</manifest>
