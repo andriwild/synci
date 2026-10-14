@@ -23,7 +23,7 @@
   {
     "id": 1210003, "name": "Week 3: ABC vs XYZ", "scheduled_at": "2026-11-01T18:00:00Z", "status": "not_started",
     "number_of_games": 1,
-    "league": {"id": 5555, "name": "Small League"},
+    "league": {"id": 5555, "name": "Small League", "slug": "small-league"},
     "tournament": {"id": 18000, "name": "Regular", "tier": "c"},
     "opponents": [
       {"type": "Team", "opponent": {"id": 1, "name": "ABC"}},

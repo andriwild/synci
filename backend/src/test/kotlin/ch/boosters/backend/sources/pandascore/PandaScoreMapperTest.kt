@@ -70,10 +70,24 @@ class PandaScoreMapperTest {
 
     @Test
     fun `only configured tournament tiers are relevant`() {
-        assertTrue(PandaScoreMapper.isRelevantTier(match(1210001), config))
-        assertFalse(PandaScoreMapper.isRelevantTier(match(1210003), config))
-        val withC = PandaScoreConfig().apply { tiers = mutableListOf("s", "a", "c") }
-        assertTrue(PandaScoreMapper.isRelevantTier(match(1210003), withC))
+        assertTrue(PandaScoreMapper.isRelevant(match(1210001), lol, config))
+        assertFalse(PandaScoreMapper.isRelevant(match(1210003), lol, config))
+    }
+
+    @Test
+    fun `game tiers override the default tiers`() {
+        val withC = PandaScoreGame().apply { slug = "league-of-legends"; sport = "ESPORTS_LOL"; tiers = mutableListOf("s", "c") }
+        assertTrue(PandaScoreMapper.isRelevant(match(1210003), withC, config))
+        val onlyA = PandaScoreGame().apply { slug = "league-of-legends"; sport = "ESPORTS_LOL"; tiers = mutableListOf("a") }
+        assertFalse(PandaScoreMapper.isRelevant(match(1210001), onlyA, config))
+    }
+
+    @Test
+    fun `included leagues are shown regardless of tier`() {
+        val game = PandaScoreGame().apply {
+            slug = "league-of-legends"; sport = "ESPORTS_LOL"; includeLeagues = mutableListOf("small-league")
+        }
+        assertTrue(PandaScoreMapper.isRelevant(match(1210003), game, config))
     }
 
     @Test

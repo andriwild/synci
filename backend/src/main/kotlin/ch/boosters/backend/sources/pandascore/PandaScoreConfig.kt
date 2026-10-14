@@ -23,4 +23,8 @@ class PandaScoreGame {
     /** sports_table.name of the game node, e.g. ESPORTS_LOL */
     lateinit var sport: String
     var minutesPerGame: Long = 45
+    /** overrides the default tiers for this game; null = use PandaScoreConfig.tiers */
+    var tiers: MutableList<String>? = null
+    /** league slugs that are always shown, independent of their tier (e.g. regional leagues with Swiss teams) */
+    var includeLeagues: MutableList<String> = mutableListOf()
 }

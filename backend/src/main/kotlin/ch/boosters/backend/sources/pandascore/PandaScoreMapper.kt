@@ -30,10 +30,15 @@ object PandaScoreMapper {
 
     fun isCanceled(match: PandaScoreMatch) = match.status in CANCELED
 
-    /** Only matches of tournaments in the configured tiers; matches without tier count as unranked. */
-    fun isRelevantTier(match: PandaScoreMatch, config: PandaScoreConfig): Boolean {
+    /**
+     * A match is shown when its league is explicitly included for the game, or its tournament tier is
+     * in the game's tiers (falling back to the default tiers). Matches without tier count as unranked.
+     */
+    fun isRelevant(match: PandaScoreMatch, game: PandaScoreGame, config: PandaScoreConfig): Boolean {
+        val slug = match.league.slug?.lowercase()
+        if (slug != null && game.includeLeagues.any { it.lowercase() == slug }) return true
         val tier = (match.tournament?.tier ?: "unranked").lowercase()
-        return config.tiers.any { it.lowercase() == tier }
+        return (game.tiers ?: config.tiers).any { it.lowercase() == tier }
     }
 
     fun startsOn(match: PandaScoreMatch, config: PandaScoreConfig): LocalDateTime? =

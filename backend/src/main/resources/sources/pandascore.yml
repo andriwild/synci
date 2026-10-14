@@ -5,19 +5,38 @@ pandascore:
   url: https://api.pandascore.co
   token: ${PANDASCORE_TOKEN:}
   page-size: 100
-  # only leagues with matches in tournaments of these tiers get a node in the tree (s, a, b, c, d, unranked)
+  # default tournament tiers whose leagues are shown in the tree (s, a, b, c, d, unranked);
+  # a game can override them with its own "tiers"
   tiers: [s, a]
   timezone: Europe/Zurich
   games:
     - slug: league-of-legends
       sport: ESPORTS_LOL
       minutes-per-game: 40
+      tiers: [s, a, b]
+      # always shown, whatever tier PandaScore assigns (league slugs from /leagues)
+      include-leagues:
+        - league-of-legends-emea-masters
+        - league-of-legends-prime-league-pro-division
+        - league-of-legends-prime-league-super-cup
     - slug: cs-go
       sport: ESPORTS_CS2
       minutes-per-game: 60
+      tiers: [s, a, b]
+      include-leagues:
+        - cs-go-dach-cs-masters
     - slug: valorant
       sport: ESPORTS_VALORANT
       minutes-per-game: 50
     - slug: dota-2
       sport: ESPORTS_DOTA2
       minutes-per-game: 45
+    - slug: r6-siege
+      sport: ESPORTS_R6
+      minutes-per-game: 40
+    - slug: ow
+      sport: ESPORTS_OVERWATCH
+      minutes-per-game: 20
+    - slug: rl
+      sport: ESPORTS_ROCKET_LEAGUE
+      minutes-per-game: 10

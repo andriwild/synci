@@ -50,9 +50,9 @@ class PandaScoreService(
     private fun storeGame(sourceId: Int, game: PandaScoreGame, matches: List<PandaScoreMatch>): SynciEither<Unit> = either {
         syncRepository.deleteEvents(sourceId, matches.filter(PandaScoreMapper::isCanceled).map { it.id.toString() }).bind()
 
-        val relevant = matches.filter { PandaScoreMapper.isRelevantTier(it, config) }
+        val relevant = matches.filter { PandaScoreMapper.isRelevant(it, game, config) }
         val leagues = relevant.map { it.league }.distinctBy { it.id }
-        println("PandaScore: ${game.slug} -> ${matches.size} upcoming matches, ${relevant.size} in tiers ${config.tiers}, ${leagues.size} leagues")
+        println("PandaScore: ${game.slug} -> ${matches.size} upcoming matches, ${relevant.size} in tiers ${game.tiers ?: config.tiers} or included leagues, ${leagues.size} leagues")
 
         val leagueIds = leagues.associate { league ->
             val node = PandaScoreMapper.leagueNodeName(league)
