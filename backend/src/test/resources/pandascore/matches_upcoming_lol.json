@@ -1,0 +1,47 @@
+[
+  {
+    "id": 1210001, "name": "Swiss stage: C9 vs KC", "scheduled_at": "2026-10-15T18:00:00Z", "begin_at": null,
+    "original_scheduled_at": "2026-10-15T18:00:00Z", "rescheduled": false, "status": "not_started",
+    "match_type": "best_of", "number_of_games": 5, "live": {"supported": true}, "draw": false, "forfeit": false,
+    "league": {"id": 297, "name": "Worlds", "slug": "league-of-legends-world-championship", "image_url": null},
+    "serie": {"id": 9001, "full_name": "2026", "year": 2026},
+    "tournament": {"id": 17001, "name": "Swiss stage", "tier": "s", "region": "WW"},
+    "videogame": {"id": 1, "name": "LoL", "slug": "league-of-legends"},
+    "opponents": [
+      {"type": "Team", "opponent": {"id": 1097, "name": "Cloud9", "acronym": "C9", "location": "US"}},
+      {"type": "Team", "opponent": {"id": 128268, "name": "Karmine Corp", "acronym": "KC", "location": "FR"}}
+    ],
+    "streams_list": [{"raw_url": "https://www.twitch.tv/riotgames", "main": true, "official": true, "language": "en"}]
+  },
+  {
+    "id": 1210002, "name": "Swiss stage: TBD vs TBD", "scheduled_at": "2026-10-16T18:00:00Z", "status": "not_started",
+    "number_of_games": 3,
+    "league": {"id": 297, "name": "Worlds"},
+    "tournament": {"id": 17001, "name": "Swiss stage", "tier": "s"},
+    "opponents": []
+  },
+  {
+    "id": 1210003, "name": "Week 3: ABC vs XYZ", "scheduled_at": "2026-11-01T18:00:00Z", "status": "not_started",
+    "number_of_games": 1,
+    "league": {"id": 5555, "name": "Small League"},
+    "tournament": {"id": 18000, "name": "Regular", "tier": "c"},
+    "opponents": [
+      {"type": "Team", "opponent": {"id": 1, "name": "ABC"}},
+      {"type": "Team", "opponent": {"id": 2, "name": "XYZ"}}
+    ]
+  },
+  {
+    "id": 1210004, "name": "Canceled match", "scheduled_at": "2026-10-17T18:00:00Z", "status": "canceled",
+    "number_of_games": 1,
+    "league": {"id": 297, "name": "Worlds"},
+    "tournament": {"id": 17001, "name": "Swiss stage", "tier": "s"},
+    "opponents": []
+  },
+  {
+    "id": 1210005, "name": "Final: TBD vs TBD", "scheduled_at": null, "status": "not_started",
+    "number_of_games": 5,
+    "league": {"id": 297, "name": "Worlds"},
+    "tournament": {"id": 17002, "name": "Playoffs", "tier": "s"},
+    "opponents": []
+  }
+]

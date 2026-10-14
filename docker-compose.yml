@@ -30,6 +30,7 @@ services:
       - DB_HOST=database-net-db-${STAGE:-local}
       - SPRING_PROFILES_ACTIVE=${STAGE:-local}
       - AUTH0_DOMAIN=${VITE_AUTH0_DOMAIN}
+      - PANDASCORE_TOKEN=${PANDASCORE_TOKEN:-}
     depends_on:
       - db
     ports:

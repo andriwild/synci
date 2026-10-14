@@ -1,0 +1,23 @@
+# E-Sport schedules from PandaScore (free "Schedules, Results & Context" plan, 1000 requests/hour).
+# Create a token on https://app.pandascore.co and set PANDASCORE_TOKEN; without it the sync is skipped.
+pandascore:
+  name: PANDASCORE
+  url: https://api.pandascore.co
+  token: ${PANDASCORE_TOKEN:}
+  page-size: 100
+  # only leagues with matches in tournaments of these tiers get a node in the tree (s, a, b, c, d, unranked)
+  tiers: [s, a]
+  timezone: Europe/Zurich
+  games:
+    - slug: league-of-legends
+      sport: ESPORTS_LOL
+      minutes-per-game: 40
+    - slug: cs-go
+      sport: ESPORTS_CS2
+      minutes-per-game: 60
+    - slug: valorant
+      sport: ESPORTS_VALORANT
+      minutes-per-game: 50
+    - slug: dota-2
+      sport: ESPORTS_DOTA2
+      minutes-per-game: 45
