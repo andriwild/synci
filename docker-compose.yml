@@ -11,6 +11,7 @@ services:
       - VITE_BACKEND_HOST=${VITE_BACKEND_HOST}
       - VITE_AUTH0_CLIENT_ID=${VITE_AUTH0_CLIENT_ID}
       - VITE_AUTH0_DOMAIN=${VITE_AUTH0_DOMAIN}
+      - VITE_AUTH0_AUDIENCE=${VITE_AUTH0_AUDIENCE:-https://synci.ch/api}
     ports:
       - ${FRONTEND_PORT:-5173}:5173
     networks:
@@ -30,6 +31,10 @@ services:
       - DB_HOST=database-net-db-${STAGE:-local}
       - SPRING_PROFILES_ACTIVE=${STAGE:-local}
       - AUTH0_DOMAIN=${VITE_AUTH0_DOMAIN}
+      - AUTH0_AUDIENCES=${AUTH0_AUDIENCES:-https://synci.ch/api,https://synci.awild.ch}
+      - AUTH0_MGMT_DOMAIN=${AUTH0_MGMT_DOMAIN}
+      - AUTH0_MGMT_CLIENT_ID=${AUTH0_MGMT_CLIENT_ID}
+      - AUTH0_MGMT_CLIENT_SECRET=${AUTH0_MGMT_CLIENT_SECRET}
     depends_on:
       - db
     ports:

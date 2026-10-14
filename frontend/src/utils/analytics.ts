@@ -21,7 +21,7 @@ type AnalyticsEvents = {
     "signup-click": undefined;
 };
 
-// Keine personenbezogenen Daten mitschicken (E-Mail, User-ID, Abo-Namen), damit das Tracking anonym bleibt.
+// No personal data (email, user ID, sync config names)
 export const track = <E extends keyof AnalyticsEvents>(
     event: E,
     ...[data]: AnalyticsEvents[E] extends undefined ? [] : [AnalyticsEvents[E]]
@@ -32,6 +32,6 @@ export const track = <E extends keyof AnalyticsEvents>(
             : undefined;
         window.umami?.track(event, cleaned);
     } catch {
-        // Tracking darf die App nie kaputt machen (z.B. Adblocker)
+        // Tracking must never break the app (e.g. ad blockers)
     }
 };

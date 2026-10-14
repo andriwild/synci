@@ -36,7 +36,7 @@ class SyncConfigRepository(private val dsl: JooqEitherDsl) {
                     .values(UUID.randomUUID(), userId, syncConfigId)
                     .execute()
             }
-        }
+        }.bind()
         syncConfigId
     }
 

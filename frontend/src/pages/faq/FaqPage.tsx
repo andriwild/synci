@@ -44,6 +44,19 @@ export const FaqPage: FC = () => {
                 </Paragraph>
             ),
         },
+        {
+            key: '4',
+            label: 'Wie kann ich mein Konto löschen?',
+            children: (
+                <Paragraph>
+                    Melden Sie sich an und öffnen Sie oben rechts Ihr Konto. Mit "Konto löschen" werden Ihr Konto
+                    und alle Ihre Abos endgültig gelöscht; abonnierte Kalender werden danach nicht mehr aktualisiert.
+                    In der Synci-App finden Sie dieselbe Funktion im Bereich "Konto".
+                    Falls Sie sich nicht mehr anmelden können, kontaktieren Sie uns über die Angaben im Impressum,
+                    dann löschen wir Ihr Konto für Sie.
+                </Paragraph>
+            ),
+        },
     ];
 
     return (

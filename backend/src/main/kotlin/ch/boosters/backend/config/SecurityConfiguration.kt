@@ -1,7 +1,6 @@
 package ch.boosters.backend.config
 
 import ch.boosters.backend.auth.UserProvisioningFilter
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
@@ -9,7 +8,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
-import org.springframework.security.oauth2.jwt.JwtDecoders
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.web.cors.CorsConfiguration
@@ -21,9 +19,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 @EnableMethodSecurity
 class SecurityConfiguration(
     private val corsProperties: CorsProperties,
-    @Value("\${spring.security.oauth2.resourceserver.jwt.issuer-uri}")
-    private val issuerUri: String
-
 ){
 
     @Bean
@@ -41,10 +36,9 @@ class SecurityConfiguration(
                     .requestMatchers("/actuator/**").permitAll()
                     .anyRequest().authenticated()
             }
+            // Issuer and audience are validated via spring.security.oauth2.resourceserver.jwt.*
             .oauth2ResourceServer {
-                it.jwt { jwt ->
-                    jwt.decoder(JwtDecoders.fromIssuerLocation(issuerUri))
-                }
+                it.jwt { }
             }
             .sessionManagement {
                 it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)

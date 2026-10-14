@@ -3,6 +3,7 @@ interface RuntimeConfig {
   BACKEND_HOST: string;
   AUTH0_DOMAIN: string;
   AUTH0_CLIENT_ID: string;
+  AUTH0_AUDIENCE: string;
 }
 
 declare global {
@@ -24,6 +25,7 @@ export const VITE_BACKEND_URL = getConfigValue('BACKEND_URL');
 export const VITE_BACKEND_HOST = getConfigValue('BACKEND_HOST');
 export const VITE_AUTH0_DOMAIN = getConfigValue('AUTH0_DOMAIN');
 export const VITE_AUTH0_CLIENT_ID = getConfigValue('AUTH0_CLIENT_ID');
+export const VITE_AUTH0_AUDIENCE = getConfigValue('AUTH0_AUDIENCE');
 
 // for debugging
 if (import.meta.env.DEV) {
@@ -32,5 +34,6 @@ if (import.meta.env.DEV) {
     BACKEND_HOST: VITE_BACKEND_HOST,
     AUTH0_DOMAIN: VITE_AUTH0_DOMAIN,
     AUTH0_CLIENT_ID: VITE_AUTH0_CLIENT_ID,
+    AUTH0_AUDIENCE: VITE_AUTH0_AUDIENCE,
   });
 }

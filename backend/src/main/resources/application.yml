@@ -5,6 +5,7 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: https://${AUTH0_DOMAIN:account.synci.ch}/
+          audiences: ${AUTH0_AUDIENCES:https://synci.ch/api,https://synci.awild.ch}
   flyway:
     locations: db/migration/
     url: ${ch.boosters.db.jdbcUrl}
@@ -26,6 +27,12 @@ ch:
       validationTimeout: 2000
       connectionTestQuery: "SELECT 1"
       initializationFailTimeout: -1
+
+auth0:
+  management:
+    domain: ${AUTH0_MGMT_DOMAIN:}
+    client-id: ${AUTH0_MGMT_CLIENT_ID:}
+    client-secret: ${AUTH0_MGMT_CLIENT_SECRET:}
 
 server:
   servlet:

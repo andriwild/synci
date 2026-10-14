@@ -8,6 +8,7 @@ import {useDispatch} from "react-redux";
 import {useState} from "react";
 import useBreakpoint from "antd/es/grid/hooks/useBreakpoint";
 import {track} from "../utils/analytics.ts";
+import {DeleteAccountModal} from "./DeleteAccountModal.tsx";
 
 export const UserProfile = () => {
     const {token} = theme.useToken();
@@ -115,6 +116,7 @@ return (
                         >
                             Abmelden
                         </Button>
+                        <DeleteAccountModal/>
                 </Flex>
                     }
         >

@@ -49,7 +49,6 @@ export const FirstImpressionComponent = () => {
                         </Flex>
                         <Flex style={{gap: 20, paddingTop: "20px", width: '100%'}}>
                             <Space size="large" className="mt-8">
-                                {/* Gruppe mit Avataren + Text */}
                                 <Space>
                                     <Avatar.Group maxCount={3} maxStyle={{color: "#fff"}}>
                                         <Avatar

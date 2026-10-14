@@ -114,9 +114,9 @@ export const SyncConfigComponent = () => {
                 style={{
                     gap: 20,
                     width: "100%",
-                    flex: 1,          // nimmt den restlichen Platz ein
-                    minHeight: 0,     // wichtig fuer korrektes Flex-Scrolling
-                    overflowY: "auto" // hier wird gescrolled
+                    flex: 1,
+                    minHeight: 0,     // needed for flex scrolling
+                    overflowY: "auto"
                 }}
             >
                 {currentSyncConfig?.sports &&

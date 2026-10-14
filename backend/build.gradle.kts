@@ -41,6 +41,9 @@ repositories {
 	mavenCentral()
 }
 
+// Docker Engine 29 needs Testcontainers 1.21.4 or newer
+extra["testcontainers.version"] = "1.21.4"
+
 buildscript {
     // TODO: try to remove version duplications
     val flywayVersion = "10.17.3"
@@ -79,6 +82,8 @@ dependencies {
     jooqGenerator("org.postgresql:postgresql:$postgresVersion")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation("org.testcontainers:postgresql")
+	testImplementation("org.testcontainers:junit-jupiter")
 	testImplementation("io.projectreactor:reactor-test")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
