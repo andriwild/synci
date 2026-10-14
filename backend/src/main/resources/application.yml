@@ -13,6 +13,7 @@ spring:
   config:
     import:
     - "classpath:sources/swisstxt.yml"
+    - "classpath:sources/nflverse.yml"
 
 ch:
   boosters:

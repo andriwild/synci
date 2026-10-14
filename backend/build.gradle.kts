@@ -2,6 +2,7 @@ import org.jooq.meta.jaxb.Logging
 
 
 val postgresHost = System.getenv("DB_HOST") ?: "localhost"
+val postgresPort = System.getenv("DB_PORT") ?: "5432"
 val postgresDbName= System.getenv("POSTGRES_DB_NAME") ?: "synci-db"
 val postgresUser = System.getenv("POSTGRES_USER") ?: "postgres"
 val postgresPassword = System.getenv("POSTGRES_PASSWORD") ?: "postgres"
@@ -9,7 +10,7 @@ val postgresPassword = System.getenv("POSTGRES_PASSWORD") ?: "postgres"
 val javaVersion = 21
 val jooqVersion = "3.19.11"
 val postgresVersion = "42.7.4"
-val postgresJdbcUrl = "jdbc:postgresql://${postgresHost}:5432/${postgresDbName}"
+val postgresJdbcUrl = "jdbc:postgresql://${postgresHost}:${postgresPort}/${postgresDbName}"
 val hikariCPVersion = "5.1.0"
 val kotlinJvmVersion = "1.9.25"
 val flywayVersion = "10.17.3"
@@ -75,6 +76,7 @@ dependencies {
     implementation("io.micrometer:micrometer-registry-prometheus")
     implementation("io.arrow-kt:arrow-core:1.2.4")
     implementation("io.arrow-kt:arrow-fx-coroutines:1.2.4")
+    implementation("org.apache.commons:commons-csv:1.10.0")
     "flywayMigration"("org.postgresql:postgresql:$postgresVersion")
     jooqGenerator("org.postgresql:postgresql:$postgresVersion")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")

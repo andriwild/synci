@@ -1,4 +1,5 @@
 import arrow.core.Either
+import ch.boosters.backend.sources.nflverse.NflverseService
 import ch.boosters.backend.sources.swisstxt.SwissTxtService
 import org.quartz.Job
 import org.quartz.JobExecutionContext
@@ -11,9 +12,13 @@ class EventSyncJob : Job {
     @Autowired
     lateinit var swissTxtService: SwissTxtService
 
+    @Autowired
+    lateinit var nflverseService: NflverseService
+
     override fun execute(context: JobExecutionContext) {
         val updates = listOf(
             swissTxtService.update(),
+            nflverseService.update(),
         )
         updates.map {
             when (it) {

@@ -18,5 +18,9 @@ object ErrorHandler {
         }
         is InvalidUser ->
             ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Could not find the requested resource for the given user. ${error.message}")
+        is ExternalSourceError -> {
+            logger.error("External source error: {}", error.message)
+            ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("An external data source is not available")
+        }
     }
 }

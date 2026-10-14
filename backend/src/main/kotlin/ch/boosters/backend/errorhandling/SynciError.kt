@@ -7,5 +7,7 @@ sealed class SynciError(val message: String)
 class DatabaseError(message: String): SynciError(message)
 class ElementNotFound(message: String): SynciError(message)
 class InvalidUser(message: String): SynciError(message)
+/** a remote data source could not be fetched or parsed */
+class ExternalSourceError(message: String): SynciError(message)
 
 typealias SynciEither<A> = Either<SynciError, A>

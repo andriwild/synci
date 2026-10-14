@@ -1,0 +1,55 @@
+# NFL schedules from the nflverse project (https://github.com/nflverse/nflverse-data, CC-BY-4.0).
+# One CSV with every game since 1999; the current season is kept up to date automatically.
+nflverse:
+  name: NFLVERSE
+  url: https://github.com/nflverse/nflverse-data/releases/download/schedules/games.csv
+  fallback-urls:
+    - https://github.com/nflverse/nflverse-data/releases/download/schedules/games.csv.gz
+    - https://raw.githubusercontent.com/nflverse/nfldata/master/data/games.csv
+  # empty = the newest season found in the file
+  season:
+  # kickoff times in the file are US Eastern Time, events are stored in Swiss local time
+  source-timezone: America/New_York
+  target-timezone: Europe/Zurich
+  game-duration-minutes: 195
+  # game_type column -> sports_table.name (keys are matched case-insensitively)
+  game-types:
+    reg: NFL_REGULAR_SEASON
+    wc: NFL_PLAYOFFS
+    div: NFL_PLAYOFFS
+    con: NFL_PLAYOFFS
+    sb: NFL_PLAYOFFS
+  # team abbreviation used by nflverse -> display name (keys are matched case-insensitively)
+  teams:
+    ari: Arizona Cardinals
+    atl: Atlanta Falcons
+    bal: Baltimore Ravens
+    buf: Buffalo Bills
+    car: Carolina Panthers
+    chi: Chicago Bears
+    cin: Cincinnati Bengals
+    cle: Cleveland Browns
+    dal: Dallas Cowboys
+    den: Denver Broncos
+    det: Detroit Lions
+    gb: Green Bay Packers
+    hou: Houston Texans
+    ind: Indianapolis Colts
+    jax: Jacksonville Jaguars
+    kc: Kansas City Chiefs
+    la: Los Angeles Rams
+    lac: Los Angeles Chargers
+    lv: Las Vegas Raiders
+    mia: Miami Dolphins
+    min: Minnesota Vikings
+    ne: New England Patriots
+    "no": New Orleans Saints
+    nyg: New York Giants
+    nyj: New York Jets
+    phi: Philadelphia Eagles
+    pit: Pittsburgh Steelers
+    sea: Seattle Seahawks
+    sf: San Francisco 49ers
+    tb: Tampa Bay Buccaneers
+    ten: Tennessee Titans
+    was: Washington Commanders
