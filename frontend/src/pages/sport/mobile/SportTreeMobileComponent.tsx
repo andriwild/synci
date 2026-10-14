@@ -21,6 +21,8 @@ export const SportTreeMobileComponent = () => {
     const myOrganisations = organisationApi.useGetMineQuery(undefined, {skip: !user});
     const [expandedIds, setExpandedIds] = useState<string[]>([]);
     const [selected, setSelected] = useState<TreeNode | null>(null);
+    /** labels of the ancestors of the selected node, shown as breadcrumb in the detail view */
+    const [selectedPath, setSelectedPath] = useState<string[]>([]);
     const token = theme.useToken().token;
 
     const organisations = useMemo(() => activeOrganisations(myOrganisations.data), [myOrganisations.data]);
@@ -91,7 +93,7 @@ export const SportTreeMobileComponent = () => {
     };
 
     /** Sports and organisation subtrees share the same rendering; the organisation is carried along for the detail view. */
-    const renderTree = (sports: Sport[], level = 0, organisation?: MyOrganisation): React.ReactNode[] => {
+    const renderTree = (sports: Sport[], level = 0, organisation?: MyOrganisation, ancestors: string[] = []): React.ReactNode[] => {
         return sports.map((sport) => {
             const hasSub = sport.subSports.length > 0;
             const isExpanded = expandedIds.includes(sport.id);
@@ -100,13 +102,14 @@ export const SportTreeMobileComponent = () => {
                     {renderRow(sport.id, sport.label, level, {
                         onOpen: () => {
                             if (!organisation) track("sport-select", {sport: sport.label, level});
+                            setSelectedPath(ancestors);
                             setSelected(sportNode(sport, organisation));
                         },
                         onToggle: hasSub ? () => toggleExpand(sport.id) : undefined,
                         expanded: isExpanded,
                         icon: organisation && level === 0 ? <UsersThree size={16} color={"white"}/> : undefined,
                     })}
-                    {isExpanded && hasSub && renderTree(sport.subSports, level + 1, organisation)}
+                    {isExpanded && hasSub && renderTree(sport.subSports, level + 1, organisation, [...ancestors, sport.label])}
                 </div>
             );
         });
@@ -122,7 +125,8 @@ export const SportTreeMobileComponent = () => {
 
     const renderSelected = (node: TreeNode) => {
         if (node.kind === "sport") {
-            return <SportDetailComponent onBack={() => setSelected(null)} id={node.id} title={node.label} organisation={node.organisation}/>;
+            return <SportDetailComponent onBack={() => setSelected(null)} id={node.id} title={node.label}
+                                         breadcrumb={selectedPath} organisation={node.organisation} key={node.id}/>;
         }
         return <DiscoverOrganisationsPanel onBack={() => setSelected(null)}/>;
     };

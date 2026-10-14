@@ -1,19 +1,16 @@
-import {FC, useState} from "react";
+import {FC} from "react";
 import {SportTreeComponent} from "./desktop/SportTreeComponent.tsx";
-import {SyncConfigComponent} from "./desktop/SyncConfigComponent.tsx";
 import "./SportPage.css";
 import {SportTreeMobileComponent} from "./mobile/SportTreeMobileComponent.tsx";
 import {useResponsive} from "../../utils/useResponsive.ts";
-import {SyncConfigBar, SyncConfigDrawer} from "./mobile/SyncConfigDrawer.tsx";
+import {SyncConfigFab} from "./shared-components/SyncConfigFab.tsx";
 
 /**
- * < md : accordion tree, subscription in a bottom drawer
- * md-lg: column tree, subscription in a bottom drawer
- * >= lg: column tree with the subscription side panel
+ * Tree and detail use the full width (accordion below md, column tree above).
+ * The subscription lives behind a floating button in the bottom right corner.
  */
 export const SportPage: FC = () => {
-    const {ready, isMobile, isDesktop} = useResponsive();
-    const [drawerOpen, setDrawerOpen] = useState(false);
+    const {ready, isMobile} = useResponsive();
 
     if (!ready) {
         return <div className="sport-layout"/>;
@@ -21,15 +18,10 @@ export const SportPage: FC = () => {
 
     return (
         <div className="sport-layout">
-            <div className="sport-main">
-                <div className="sport-tree-panel">
-                    {isMobile ? <SportTreeMobileComponent/> : <SportTreeComponent/>}
-                </div>
-                {!isDesktop && <SyncConfigBar onOpen={() => setDrawerOpen(true)}/>}
+            <div className="sport-tree-panel">
+                {isMobile ? <SportTreeMobileComponent/> : <SportTreeComponent/>}
             </div>
-            {isDesktop
-                ? <aside className="sport-sidebar"><SyncConfigComponent/></aside>
-                : <SyncConfigDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)}/>}
+            <SyncConfigFab/>
         </div>
     );
 };

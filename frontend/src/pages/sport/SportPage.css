@@ -1,19 +1,11 @@
-/* Sport page: tree panel (+ sticky subscription bar below lg) and, on desktop, the subscription side panel */
+/* Sport page: tree + detail across the full width; subscription behind the floating button */
 .sport-layout {
     display: flex;
-    gap: var(--page-gutter);
     flex: 1 1 auto;
     width: 100%;
     min-width: 0;
     background: var(--ant-bgcontainer-color);
     border-radius: var(--panel-radius);
-}
-
-.sport-main {
-    flex: 1 1 auto;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
 }
 
 .sport-tree-panel {
@@ -22,36 +14,104 @@
     display: flex;
     background: white;
     border-radius: var(--panel-radius);
+    /* keep the last rows reachable below the floating button */
+    padding-bottom: 88px;
 }
 
-.sport-sidebar {
-    flex: 0 1 33%;
-    max-width: 400px;
-    min-width: 0;
+/* ---------- Floating subscription button ---------- */
+.sync-fab__badge {
+    position: fixed !important;
+    right: max(24px, env(safe-area-inset-right));
+    bottom: calc(24px + env(safe-area-inset-bottom));
+    z-index: 900;
+}
+
+.sync-fab.ant-btn {
+    width: 60px;
+    height: 60px;
+    box-shadow: 0 8px 24px rgba(61, 90, 128, 0.35);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.sync-fab.ant-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(61, 90, 128, 0.45);
+}
+
+@media (max-width: 767.98px) {
+    .sync-fab__badge {
+        right: 16px;
+        bottom: calc(16px + env(safe-area-inset-bottom));
+    }
+}
+
+/* played whenever an entry is added to the subscription */
+.sync-fab--bump.ant-btn {
+    animation: sync-fab-bump 0.7s ease;
+}
+
+.sync-fab__badge--bump .ant-badge-count {
+    animation: sync-fab-badge-pop 0.7s ease;
+}
+
+@keyframes sync-fab-bump {
+    0% { transform: scale(1); }
+    25% { transform: scale(1.15) rotate(-8deg); }
+    50% { transform: scale(0.96) rotate(6deg); }
+    75% { transform: scale(1.04) rotate(-2deg); }
+    100% { transform: scale(1) rotate(0); }
+}
+
+@keyframes sync-fab-badge-pop {
+    0% { transform: translate(50%, -50%) scale(1); }
+    40% { transform: translate(50%, -50%) scale(1.5); }
+    100% { transform: translate(50%, -50%) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sync-fab--bump.ant-btn,
+    .sync-fab__badge--bump .ant-badge-count {
+        animation: none;
+    }
+}
+
+/* ---------- Overlay panel (tablet + desktop) ---------- */
+.sync-overlay {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 950;
+    width: min(420px, calc(100vw - 48px));
+    max-height: min(720px, calc(100vh - 48px));
     display: flex;
+    flex-direction: column;
     background: white;
     border-radius: var(--panel-radius);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.18);
+    outline: none;
+    animation: sync-overlay-in 0.18s ease-out;
 }
 
-/* Sticky bar that opens the subscription drawer on phones and tablets */
-.sync-config-bar {
-    position: sticky;
-    bottom: 0;
-    z-index: 5;
+.sync-overlay__header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
-    padding: 10px var(--page-gutter);
-    padding-bottom: calc(10px + env(safe-area-inset-bottom));
-    background: white;
-    border-top: 1px solid rgba(0, 0, 0, 0.06);
-    border-radius: 0 0 var(--panel-radius) var(--panel-radius);
-    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.06);
+    padding: 12px 12px 8px 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
 
-.sync-config-bar__text {
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
+.sync-overlay__body {
+    overflow-y: auto;
+    min-height: 0;
+}
+
+@keyframes sync-overlay-in {
+    from { opacity: 0; transform: translateY(12px) scale(0.98); }
+    to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sync-overlay {
+        animation: none;
+    }
 }
