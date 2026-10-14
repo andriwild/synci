@@ -40,3 +40,12 @@ pandascore:
     - slug: rl
       sport: ESPORTS_ROCKET_LEAGUE
       minutes-per-game: 10
+    # EA Sports FC is still called "fifa" at PandaScore
+    - slug: fifa
+      sport: ESPORTS_EA_FC
+      minutes-per-game: 15
+      include-leagues:
+        - fifa-fc-pro-5229664d-111d-4058-a27f-7158057153ff   # FC Pro World Championship
+        - fifa-fc-pro                                         # FC Pro Open
+        - fifa-echampions-league
+        - fifa-esports-world-cup
