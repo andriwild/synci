@@ -43,6 +43,18 @@ On the Android emulator, `localhost` is mapped to `10.0.2.2` automatically (`lib
 3. **Sign in with Apple** (required by App Store guideline 4.8 because Google login is offered): in the Apple Developer account create the App ID `ch.synci.app`, a Services ID with the return URLs `https://account.synci.ch/login/callback` and `https://<tenant>.<region>.auth0.com/login/callback`, and a Sign in with Apple key. Enter Team ID, Services ID, Key ID and the `.p8` key in the Auth0 Apple connection (not the Auth0 dev keys, so Auth0 revokes Apple tokens when an account is deleted).
 4. **Machine-to-machine application "Synci Backend"** with only the `delete:users` scope on the Auth0 Management API. The backend needs `AUTH0_MGMT_DOMAIN` (the original `<tenant>.<region>.auth0.com` domain), `AUTH0_MGMT_CLIENT_ID` and `AUTH0_MGMT_CLIENT_SECRET` for `DELETE /api/users/me`.
 
+## Icon and splash screen
+
+The sources in `assets/icon/` are made from the website logo (`frontend/public/android-chrome-512x512.png`) without the text.
+After changing them, regenerate the native files:
+
+```bash
+dart run flutter_launcher_icons
+dart run flutter_native_splash:create
+```
+
+Both tools rewrite `ios/Runner/Info.plist` and `ios/Runner.xcodeproj/project.pbxproj`; revert those changes (`git checkout`), they are not needed.
+
 ## Release
 
 ```bash
