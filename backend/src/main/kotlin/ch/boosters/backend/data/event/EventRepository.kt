@@ -65,4 +65,12 @@ class EventRepository(private val dsl: JooqEitherDsl) {
                 .where(EVENTS_TABLE.SPORT_ID.`in`(ids))
                 .fetchInto(EventsTable::class.java)
         }
+
+    fun findEvent(id: String, sourceId: Int): SynciEither<EventsTable?> =
+        dsl {
+            it.selectFrom(EVENTS_TABLE)
+                .where(EVENTS_TABLE.ID.eq(id))
+                .and(EVENTS_TABLE.SOURCE_ID.eq(sourceId))
+                .fetchOneInto(EventsTable::class.java)
+        }
 }

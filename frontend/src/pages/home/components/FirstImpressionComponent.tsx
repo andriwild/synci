@@ -1,102 +1,59 @@
-import {Avatar, Button, Flex, Image, Space, Typography} from "antd";
-import {IconPlayerPlayFilled} from "@tabler/icons-react";
+import {Avatar, Button, Space, Typography} from "antd";
+import {IconCalendarWeek, IconPlayerPlayFilled} from "@tabler/icons-react";
 import {useNavigate} from "react-router-dom";
-import useBreakpoint from "antd/es/grid/hooks/useBreakpoint";
 
 export const FirstImpressionComponent = () => {
     const navigate = useNavigate();
-    const screens = useBreakpoint();
 
     return (
         <div id={"home-header"}>
             <div className={"container"}>
-                <Flex wrap>
-                    <Flex vertical
-                          flex={"1 1 400px"}
-                          gap={20}
-                          style={{
-                              justifyContent: 'center',
-                              alignItems: 'start',
-                              alignContent: 'center',
-                          }}>
+                <div className="hero">
+                    <div className="hero__text">
                         <Typography.Title
                             level={1}
-                            style={{fontWeight: 400, lineHeight: '1.2', wordBreak: 'keep-all', overflowWrap: 'normal'}}>
-                            Verpasse nie wieder <br/>
-                            <span style={{color: '#3D5A80'}}>
-                    deine Lieblingsevents
-                    </span>
+                            style={{fontWeight: 400, lineHeight: "1.2", margin: 0}}>
+                            Verpasse nie wieder <br className="hero-break"/>
+                            <span style={{color: "#3D5A80"}}>deine Lieblingsevents</span>
                         </Typography.Title>
 
-                        <Typography.Text
-                            style={{maxWidth: "600px"}}>
+                        <Typography.Text style={{maxWidth: "600px"}}>
                             Hast du den Überblick über deine Sportevents verloren?<br/>
                             Abonniere deine Lieblings-Sportligen, Teams und Events und sieh alle Spiele automatisch in
                             deinem persönlichen Kalender. NFL, NBA, Bundesliga und mehr - immer synchron mit Google
                             Kalender, Outlook & Co.
                         </Typography.Text>
-                        <Flex style={{gap: 20, paddingTop: "20px", width: '100%'}}
-                              justify={"start"}
-                        >
-                            <Button type={'primary'} size={"middle"} icon={<IconPlayerPlayFilled size={15}/>}
-                                    onClick={() => {
-                                        navigate('/sport');
-                                    }
-                                    }
-                            >
+                        <div className="hero__actions">
+                            <Button type={"primary"} size={"middle"} icon={<IconCalendarWeek size={15}/>}
+                                    onClick={() => navigate("/sport")}>
+                                Jetzt starten
+                            </Button>
+                            <Button type={"default"} size={"middle"} icon={<IconPlayerPlayFilled size={15}/>}
+                                    onClick={() => navigate("/sport")}>
                                 Verfügbare Sportarten erkunden
                             </Button>
-                        </Flex>
-                        <Flex style={{gap: 20, paddingTop: "20px", width: '100%'}}>
-                            <Space size="large" className="mt-8">
-                                {/* Gruppe mit Avataren + Text */}
-                                <Space>
-                                    <Avatar.Group maxCount={3} maxStyle={{color: "#fff"}}>
-                                        <Avatar
-                                            style={{
-                                                backgroundColor: "#3b82f6", // blue-500
-                                                border: "2px solid white",
-                                            }}
-                                        >
-                                            🏈
-                                        </Avatar>
-                                        <Avatar
-                                            style={{
-                                                backgroundColor: "#22c55e", // green-500
-                                                border: "2px solid white",
-                                            }}
-                                        >
-                                            ⚽
-                                        </Avatar>
-                                        <Avatar
-                                            style={{
-                                                backgroundColor: "#a855f7", // purple-500
-                                                border: "2px solid white",
-                                            }}
-                                        >
-                                            🏀
-                                        </Avatar>
-                                    </Avatar.Group>
-                                    <span style={{fontSize: 14, color: "#4b5563"}}>
-          50+ Sportligen verfügbar
-        </span>
-                                </Space>
-
+                        </div>
+                        <Space size={[24, 8]} wrap style={{paddingTop: 8}}>
+                            <Space>
+                                <Avatar.Group max={{count: 3, style: {color: "#fff"}}}>
+                                    <Avatar style={{backgroundColor: "#3b82f6", border: "2px solid white"}}>🏈</Avatar>
+                                    <Avatar style={{backgroundColor: "#22c55e", border: "2px solid white"}}>⚽</Avatar>
+                                    <Avatar style={{backgroundColor: "#a855f7", border: "2px solid white"}}>🏀</Avatar>
+                                </Avatar.Group>
+                                <span style={{fontSize: 14, color: "#4b5563"}}>50+ Sportligen verfügbar</span>
                             </Space>
-                        </Flex>
-                    </Flex>
-                    {screens.md && (
-                        <Flex
-                            flex={"1 1 400px"}
-                            justify={"center"}
-                        >
-                            <Image
-                                src={'./assets/images/fan_hero.png'}
-                                preview={false}
-                            />
-                        </Flex>
-                    )}
-                </Flex>
+                        </Space>
+                    </div>
+                    <div className="hero__image">
+                        <img
+                            src={"/assets/images/fan_hero.jpg"}
+                            alt=""
+                            width={1024}
+                            height={1024}
+                            loading="eager"
+                        />
+                    </div>
+                </div>
             </div>
         </div>
     );

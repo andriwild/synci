@@ -101,8 +101,10 @@ export const axiosBaseQuery = ({ baseUrl }: { baseUrl: string }) => {
 
 export interface HttpError {
     status: number;
-    data: {
-        message: string;
+    /** the backend answers errors with a plain text body, a serialised ResponseEntity ({body}) or a JSON object ({message}) */
+    data: string | {
+        message?: string;
+        body?: string;
         errors?: Record<string, string>;
     };
 }
@@ -112,12 +114,13 @@ export const isHttpError = (error: any): error is HttpError => {
     return error.status && error.data;
 }
 
-export const stringifyApiError = (error: HttpError|SerializedError) => {
+export const stringifyApiError = (error?: HttpError|SerializedError) => {
     if (!error) {
         return "Unbekannter Fehler";
     }
     if (isHttpError(error)) {
-        return "Ein Fehler ist aufgetreten: " + error.data.message;
+        const message = typeof error.data === "string" ? error.data : (error.data.body ?? error.data.message ?? JSON.stringify(error.data));
+        return "Ein Fehler ist aufgetreten: " + message;
     }
     return "Ein Fehler ist aufgetreten: " + JSON.stringify(error);
 }

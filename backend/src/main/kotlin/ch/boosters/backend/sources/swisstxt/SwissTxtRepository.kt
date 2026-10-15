@@ -57,9 +57,24 @@ class SwissTxtRepository(
             jooq.batch(queries.flatMap { it.second }.map {
                 DSL.insertInto(EVENTS_TEAMS_TABLE).set(it).onDuplicateKeyIgnore()
             }).execute()
+            if (sportId != null) deleteStaleEventsQuery(srcId, sportId, events)?.let { jooq.execute(it) }
             jooq.select(EVENTS_TABLE.ID).from(EVENTS_TABLE).fetchInto(String::class.java)
         }.bind()
     }
+
+    /**
+     * SwissTxt assigns a new id when a game is rescheduled, so the old event has to be removed.
+     * Deletes future events of a sport that are no longer delivered by the source. Skipped for an
+     * empty response so an outage of the source does not wipe the whole schedule.
+     */
+    private fun deleteStaleEventsQuery(srcId: Int, sportId: UUID, events: List<BaseEvent>) =
+        if (events.isEmpty()) null
+        else DSL
+            .deleteFrom(EVENTS_TABLE)
+            .where(EVENTS_TABLE.SOURCE_ID.eq(srcId))
+            .and(EVENTS_TABLE.SPORT_ID.eq(sportId))
+            .and(EVENTS_TABLE.STARTS_ON.gt(LocalDateTime.now()))
+            .and(EVENTS_TABLE.ID.notIn(events.map { it.id }))
 
     private fun createEventQueries(
         event: TeamEvent,
@@ -122,8 +137,10 @@ class SwissTxtRepository(
         val queries = events
             .map { createEvent(it, id, sportId, it.name) }
             .map { eventUpsertQuery(it) }
-        return dsl {
-            it.batch(queries).execute()
+        return dsl { jooq ->
+            jooq.batch(queries).execute()
+            deleteStaleEventsQuery(id, sportId, events)?.let { jooq.execute(it) }
+            Unit
         }
     }
 

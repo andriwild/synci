@@ -1,184 +1,143 @@
 import {syncConfigApi} from "../../services/syncConfig/syncConfigApi.ts";
-import {Button, Flex, Form, Input, Modal, notification, theme, Typography} from "antd";
+import {Button, Col, Flex, Form, Input, Modal, notification, Radio, Row, theme, Typography} from "antd";
+import {IconEdit, IconFileSad, IconPlus} from "@tabler/icons-react";
+import {useState} from "react";
+import {useNavigate} from "react-router-dom";
+import {DeleteConfigModal} from "../../sharedComponents/config/DeleteConfigModal.tsx";
+import {SyncConfig} from "../../services/syncConfig/entities/syncConfig.ts";
+import {track} from "../../utils/analytics.ts";
 import {SportConfigCard} from "../../sharedComponents/config/SportConfigCard.tsx";
 import {TeamConfigCard} from "../../sharedComponents/config/TeamConfigCard.tsx";
 import {EventConfigCard} from "../../sharedComponents/config/EventConfigCard.tsx";
 import {CalendarSelectionModal} from "../../sharedComponents/calenderSelectionModal/CalenderSelectionModal.tsx";
-import {DeleteConfigModal} from "../../sharedComponents/config/DeleteConfigModal.tsx";
 import {VITE_BACKEND_HOST} from "../../../env.ts";
-import {syncConfigActions} from "../../services/syncConfig/syncCofigSlice.ts";
-import {IconPlus, IconFileSad, IconEdit} from "@tabler/icons-react";
+import {syncConfigActions, useSyncConfig} from "../../services/syncConfig/syncCofigSlice.ts";
 import {useDispatch} from "react-redux";
-import {useNavigate} from "react-router-dom";
-import {useState} from "react";
-import {SyncConfig} from "../../services/syncConfig/entities/syncConfig.ts";
-import {NotificationPlacement} from "antd/es/notification/interface";
-import {track} from "../../utils/analytics.ts";
+
+/** one card per subscription: full width on phones, 2 / 3 / 4 per row on larger screens */
+const CARD_COL = {xs: 24, sm: 12, lg: 8};
 
 export const SyncConfigPage = () => {
     const syncConfig = syncConfigApi.useGetAllQuery();
     const token = theme.useToken().token;
+    const currentSyncConfig = useSyncConfig();
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     return (
-        <Flex wrap
-              gap={20}
-              style={{
-                  padding: "20px",
-                  height: "100%",
-                  overflow: "auto",
-              }}>
-            {syncConfig?.data?.map((config) => (
-                <Flex vertical key={config.id} gap={10} style={{
-                    background: token.colorBgBase,
-                    borderRadius: "20px",
-                    flexBasis: "300px",
-                    padding: "20px"
-                }}>
-                    <Flex align="center" justify="space-between" style={{width: "100%"}}>
-                        <Typography.Title level={3} style={{margin: 0}}>{config.name}</Typography.Title>
-                        <EditConfigNameModal config={config} refetch={syncConfig.refetch} />
-                    </Flex>
-
-                    {config.sports && config.sports.map((sport) => (
-                        <SportConfigCard sport={sport} config={config} key={sport.id}/>
-                    ))}
-
-                    {config.teams && config.teams.map((team) => (
-                        <TeamConfigCard team={team} config={config} key={team.id}/>
-                    ))}
-
-                    {config.events && config.events.map((event) => (
-                        <EventConfigCard event={event} config={config} key={event.id}/>
-                    ))}
-
-                    {(!config.sports || config.sports.length === 0) &&
-                     (!config.teams || config.teams.length === 0) &&
-                     (!config.events || config.events.length === 0) && (
-                        <Flex
-                            vertical
-                            align={"center"}
-                            justify={"center"}
-                            gap={10}
-                            style={{
-                                borderRadius: 20,
-                                background: token.colorBgContainer,
-                                padding: 20,
-                                minHeight: "100px"
+        <div style={{padding: "var(--page-gutter)", width: "100%", minWidth: 0}}>
+            <Row gutter={[20, 20]}>
+                {syncConfig?.data?.map((config) => {
+                    const active = currentSyncConfig?.id == config.id;
+                    return (
+                        <Col key={config.id} {...CARD_COL}>
+                            <Flex vertical gap={10} style={{
+                                background: token.colorBgBase,
+                                borderRadius: "20px",
+                                padding: "20px",
+                                height: "100%",
+                                minWidth: 0,
                             }}>
-                            <IconFileSad size={40} color={token.colorTextSecondary}/>
-                            <Typography.Text type="secondary">Keine Events</Typography.Text>
-                        </Flex>
-                    )}
-
-                    <Button
-                        type="default"
-                        icon={<IconPlus size={20}/>}
-                        onClick={() => {
-                            dispatch(syncConfigActions.setSyncConfig(config));
-                            navigate('/sport');
-                        }}
-                    >
-                        Sportarten hinzufügen
-                    </Button>
-
-                    <CalendarSelectionModal
-                        url={`${VITE_BACKEND_HOST}/api/calendars/${config.id}/subscribe`}
-                        buttonText="Zu Kalender hinzufügen"
-                        buttonIcon={<i className="fas fa-calendar-plus"></i>}
-                        buttonType="primary"
-                    />
-
-                    <DeleteConfigModal
-                        list={syncConfig.data || []}
-                        refetch={syncConfig.refetch}
-                        id={config.id}
-                        name={config.name}
-                    />
-                </Flex>
-            ))}
-
-            <CreateConfigCard refetch={syncConfig.refetch} />
-        </Flex>
+                                <Flex justify={"space-between"} align={"center"} gap={10} style={{minWidth: 0}}>
+                                    <Typography.Title level={3} style={{margin: 0, minWidth: 0, overflowWrap: "anywhere"}}>
+                                        {config.name}
+                                    </Typography.Title>
+                                    {/* 44px tall tap target: label + radio */}
+                                    <label style={{display: "inline-flex", alignItems: "center", gap: 6, minHeight: 44, cursor: "pointer", flexShrink: 0}}>
+                                        <Radio
+                                            checked={active}
+                                            onChange={() => dispatch(syncConfigActions.setSyncConfig(config))}
+                                        />
+                                        <Typography.Text type={active ? undefined : "secondary"}>{active ? "Aktiv" : "Aktivieren"}</Typography.Text>
+                                    </label>
+                                    <EditConfigNameModal config={config} refetch={syncConfig.refetch}/>
+                                </Flex>
+                                {config.sports && config.sports.map((sport) => (
+                                    <SportConfigCard sport={sport} config={config} key={sport.id}/>
+                                ))}
+                                {config.teams && config.teams.map((team) => (
+                                    <TeamConfigCard team={team} config={config} key={team.id}/>
+                                ))}
+                                {config.events && config.events.map((event) => (
+                                    <EventConfigCard event={event} config={config} key={event.id}/>
+                                ))}
+                                {(config.sports?.length ?? 0) === 0 && (config.teams?.length ?? 0) === 0 && (config.events?.length ?? 0) === 0 && (
+                                    <Flex vertical align={"center"} justify={"center"} gap={10}
+                                          style={{borderRadius: 20, background: token.colorBgContainer, padding: 20, minHeight: 100}}>
+                                        <IconFileSad size={40} color={token.colorTextSecondary}/>
+                                        <Typography.Text type="secondary">Keine Events</Typography.Text>
+                                    </Flex>
+                                )}
+                                <Flex vertical gap={10} style={{marginTop: "auto"}}>
+                                    <Button type="default" icon={<IconPlus size={20}/>} onClick={() => {
+                                        dispatch(syncConfigActions.setSyncConfig(config));
+                                        navigate("/sport");
+                                    }}>
+                                        Sportarten hinzufügen
+                                    </Button>
+                                    <CalendarSelectionModal
+                                        url={`${VITE_BACKEND_HOST}/api/calendars/${config.id}/subscribe`}
+                                        buttonText="Zu Kalender hinzufügen"
+                                        buttonIcon={<i className="fas fa-calendar-plus"></i>}
+                                        buttonType="primary"
+                                    />
+                                    <DeleteConfigModal list={syncConfig.data || []} refetch={syncConfig.refetch} id={config.id} name={config.name}/>
+                                </Flex>
+                            </Flex>
+                        </Col>
+                    );
+                })}
+                <Col {...CARD_COL}>
+                    <CreateConfigCard refetch={syncConfig.refetch}/>
+                </Col>
+            </Row>
+        </div>
     );
-}
+};
 
-const EditConfigNameModal = ({config, refetch}: {
-    config: SyncConfig,
-    refetch: () => void
-}) => {
+const EditConfigNameModal = ({config, refetch}: { config: SyncConfig, refetch: () => void }) => {
     const [open, setOpen] = useState(false);
     const [form] = Form.useForm();
     const [api, contextHolder] = notification.useNotification();
     const dispatch = useDispatch();
-
-    const openNotification = (placement: NotificationPlacement) => {
-        api.success({
-            message: "Abo umbenannt",
-            description: "Der Abo-Name wurde erfolgreich geändert",
-            placement,
-        });
-    };
-
     const [updateSyncConfig, updateSyncConfigStatus] = syncConfigApi.useUpdateMutation();
 
     const handleSubmit = async (values: { name: string }) => {
-        try {
-            const updatedConfig = await updateSyncConfig({
-                id: config.id,
-                name: values.name,
-                sports: config.sports?.map(s => s.id) || [],
-                teams: config.teams || [],
-                events: config.events || []
-            });
+        const updatedConfig = await updateSyncConfig({
+            id: config.id,
+            name: values.name,
+            sports: config.sports?.map(s => s.id) || [],
+            teams: config.teams || [],
+            events: config.events || []
+        });
+        if (updatedConfig.data) {
             dispatch(syncConfigActions.setSyncConfig(updatedConfig.data));
-            openNotification("bottomRight");
+            api.success({message: "Abo umbenannt", description: "Der Abo-Name wurde erfolgreich geändert", placement: "bottomRight"});
             refetch();
             setOpen(false);
-        } catch (e) {
-            console.error(e);
         }
     };
 
     return (
         <>
             {contextHolder}
-            <Button
-                type="text"
-                size="small"
-                icon={<IconEdit size={18}/>}
-                onClick={() => {
-                    setOpen(true);
-                    form.setFieldsValue({name: config.name});
-                }}
-            />
-            <Modal
-                title="Abo umbenennen"
-                open={open}
-                onCancel={() => setOpen(false)}
-                footer={null}
-            >
-                <Flex vertical gap={10}>
-                    <Form form={form} layout="vertical" onFinish={handleSubmit}>
-                        <Form.Item
-                            label="Abo-Name"
-                            name="name"
-                            rules={[{required: true, message: "Bitte Abo-Namen eingeben"}]}
-                        >
-                            <Input placeholder="Abo-Name eingeben"/>
-                        </Form.Item>
-                        <Form.Item>
-                            <Button type="primary" htmlType="submit" loading={updateSyncConfigStatus.isLoading}>
-                                Speichern
-                            </Button>
-                        </Form.Item>
-                    </Form>
-                </Flex>
+            <Button type="text" size="small" aria-label="Abo umbenennen" icon={<IconEdit size={18}/>} onClick={() => {
+                setOpen(true);
+                form.setFieldsValue({name: config.name});
+            }}/>
+            <Modal title="Abo umbenennen" open={open} onCancel={() => setOpen(false)} footer={null}>
+                <Form form={form} layout="vertical" onFinish={handleSubmit}>
+                    <Form.Item label="Abo-Name" name="name" rules={[{required: true, message: "Bitte Abo-Namen eingeben"}]}>
+                        <Input placeholder="Abo-Name eingeben"/>
+                    </Form.Item>
+                    <Form.Item style={{marginBottom: 0}}>
+                        <Button type="primary" htmlType="submit" loading={updateSyncConfigStatus.isLoading}>Speichern</Button>
+                    </Form.Item>
+                </Form>
             </Modal>
         </>
     );
-}
+};
 
 const CreateConfigCard = ({refetch}: { refetch: () => void }) => {
     const [open, setOpen] = useState(false);
@@ -186,148 +145,47 @@ const CreateConfigCard = ({refetch}: { refetch: () => void }) => {
     const [api, contextHolder] = notification.useNotification();
     const dispatch = useDispatch();
     const token = theme.useToken().token;
-
-    const openNotification = (placement: NotificationPlacement) => {
-        api.success({
-            message: "Abo erstellt",
-            description: "Das neue Abo wurde erfolgreich erstellt. Du kannst jetzt deine Events hinzufügen",
-            placement,
-        });
-    };
-
     const [createSyncConfig, createSyncConfigStatus] = syncConfigApi.useCreateMutation();
 
     const handleSubmit = async (values: { name: string }) => {
-        try {
-            const response = await createSyncConfig({
-                name: values.name,
-                events: [],
-                teams: [],
-                sports: []
-            });
+        const response = await createSyncConfig({name: values.name, events: [], teams: [], sports: []});
+        if (response.data) {
             dispatch(syncConfigActions.setSyncConfig(response.data));
-            if (response.data) {
-                track("abo-create");
-            }
-            openNotification("bottomRight");
+            track("abo-create");
+            api.success({message: "Abo erstellt", description: "Das neue Abo wurde erstellt. Du kannst jetzt deine Events hinzufügen", placement: "bottomRight"});
             form.resetFields();
             refetch();
             setOpen(false);
-        } catch (e) {
-            console.error(e);
         }
     };
 
     return (
         <>
             {contextHolder}
-            <Flex
-                vertical
-                gap={10}
-                style={{
-                    background: token.colorBgBase,
-                    borderRadius: "20px",
-                    maxWidth: "300px",
-                    padding: "20px",
-                    cursor: "pointer",
-                    position: "relative",
-                    overflow: "hidden"
-                }}
-                onClick={() => setOpen(true)}
-            >
-                {/* Blurred Content */}
-                <Flex vertical gap={10} style={{filter: "blur(8px)", pointerEvents: "none"}}>
-                    <Typography.Title level={3} style={{margin: 0}}>Mein Abo</Typography.Title>
-
-                    {/* Dummy Event 1 */}
-                    <Flex gap={20} align={"center"} justify={"space-between"}
-                          style={{borderRadius: 20, background: token.colorBgContainer, padding: 20}}>
-                        <Flex gap={20} align={"center"}>
-                            <IconFileSad size={40} color={token.colorPrimary}/>
-                            <Flex vertical gap={5}>
-                                <Typography.Title level={5} style={{margin: 0}}>Boosters in Adelboden</Typography.Title>
-                                <Typography.Text>30.11.2025</Typography.Text>
-                            </Flex>
-                        </Flex>
-                        <Button type={"default"} icon={<IconFileSad size={20}/>}/>
-                    </Flex>
-
-                    {/* Dummy Event 2 */}
-                    <Flex gap={20} align={"center"} justify={"space-between"}
-                          style={{borderRadius: 20, background: token.colorBgContainer, padding: 20}}>
-                        <Flex gap={20} align={"center"}>
-                            <IconFileSad size={40} color={token.colorPrimary}/>
-                            <Flex vertical gap={5}>
-                                <Typography.Title level={5} style={{margin: 0}}>Booster Event</Typography.Title>
-                                <Typography.Text>01.01.2024</Typography.Text>
-                            </Flex>
-                        </Flex>
-                        <Button type={"default"} icon={<IconFileSad size={20}/>}/>
-                    </Flex>
-
-                    {/* Dummy Buttons */}
-                    <Button type="default" icon={<IconPlus size={20}/>}>Sportarten hinzufügen</Button>
-                    <Button type="primary">Zu Kalender hinzufügen</Button>
-                    <Button danger type="primary">Abo löschen</Button>
-                </Flex>
-
-                {/* Plus Icon Overlay */}
-                <Flex
-                    vertical
-                    align="center"
-                    justify="center"
-                    gap={10}
-                    style={{
-                        position: "absolute",
-                        top: "25%",
-                        left: "50%",
-                        transform: "translate(-50%, -50%)",
-                        pointerEvents: "none"
-                    }}
-                >
-                    <Flex
-                        align="center"
-                        justify="center"
-                        style={{
-                            width: "80px",
-                            height: "80px",
-                            borderRadius: "50%",
-                            background: "white",
-                            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)"
-                        }}
-                    >
-                        <IconPlus size={60} color={token.colorPrimary}/>
-                    </Flex>
-                    <Typography.Text style={{color: token.colorPrimary, fontWeight: 500, fontSize: 16, textAlign: "center"}}>
-                        Neues Abo erstellen
-                    </Typography.Text>
-                </Flex>
+            <Flex vertical align={"center"} justify={"center"} gap={10}
+                  onClick={() => setOpen(true)}
+                  style={{
+                      border: `2px dashed ${token.colorPrimary}`,
+                      borderRadius: 20,
+                      minHeight: 180,
+                      height: "100%",
+                      padding: 20,
+                      cursor: "pointer",
+                      color: token.colorPrimary
+                  }}>
+                <IconPlus size={40}/>
+                <Typography.Text strong style={{color: token.colorPrimary}}>Neues Abo erstellen</Typography.Text>
             </Flex>
-
-            <Modal
-                title="Neues Abo erstellen"
-                open={open}
-                onCancel={() => setOpen(false)}
-                footer={null}
-            >
-                <Flex vertical gap={10}>
-                    <Typography.Text>Hier kannst du ein neues Abo erstellen</Typography.Text>
-                    <Form form={form} layout="vertical" onFinish={handleSubmit}>
-                        <Form.Item
-                            label="Abo-Name"
-                            name="name"
-                            rules={[{required: true, message: "Bitte Abo-Namen eingeben"}]}
-                        >
-                            <Input placeholder="Abo-Name eingeben"/>
-                        </Form.Item>
-                        <Form.Item>
-                            <Button type="primary" htmlType="submit" loading={createSyncConfigStatus.isLoading}>
-                                Erstellen
-                            </Button>
-                        </Form.Item>
-                    </Form>
-                </Flex>
+            <Modal title="Neues Abo erstellen" open={open} onCancel={() => setOpen(false)} footer={null}>
+                <Form form={form} layout="vertical" onFinish={handleSubmit}>
+                    <Form.Item label="Abo-Name" name="name" rules={[{required: true, message: "Bitte Abo-Namen eingeben"}]}>
+                        <Input placeholder="Abo-Name eingeben"/>
+                    </Form.Item>
+                    <Form.Item style={{marginBottom: 0}}>
+                        <Button type="primary" htmlType="submit" loading={createSyncConfigStatus.isLoading}>Erstellen</Button>
+                    </Form.Item>
+                </Form>
             </Modal>
         </>
     );
-}
+};

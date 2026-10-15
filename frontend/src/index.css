@@ -1,49 +1,119 @@
+/*
+ * Breakpoints follow antd's grid: xs < 576, sm >= 576, md >= 768, lg >= 992, xl >= 1200.
+ * Media queries in this project use the same thresholds:
+ *   mobile  : (max-width: 767.98px)
+ *   tablet  : (min-width: 768px) and (max-width: 991.98px)
+ *   desktop : (min-width: 992px)
+ * Structural switches (different components) live in useResponsive(); pure layout lives in CSS.
+ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 * {
   font-family: 'Montserrat', system-ui, Avenir, Helvetica, Arial, sans-serif !important;
+}
+
+:root {
+  --page-gutter: 20px;
+  --panel-radius: 20px;
+
+  --ant-primary-color: #3D5A80;
+  --ant-highlight-color: #FFEE77;
+  --ant-bgcontainer-color: #EBF0F6;
+  --ant-bgBase-color: #F4F4F4;
+
+  --ant-background-color-light: #f5f5f5;
+  --ant-background-color-base: #f0f0f0;
+}
+
+@media (max-width: 767.98px) {
+  :root {
+    --page-gutter: 12px;
+  }
+}
+
+@media (max-width: 575.98px) {
+  :root {
+    --page-gutter: 8px;
+  }
+}
+
+html {
+  scrollbar-width: none;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body::-webkit-scrollbar {
+  display: none;
 }
 
 #root {
   font-family: 'Montserrat', system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  width: 100vw;
+  width: 100%;
   margin: 0;
-
-    --ant-primary-color: #3D5A80;
-    --ant-highlight-color: #FFEE77;
-    --ant-bgcontainer-color: #EBF0F6;
-    --ant-bgBase-color: #F4F4F4;
-
-    --ant-background-color-light: #f5f5f5;
-    --ant-background-color-base: #f0f0f0;
 }
 
-
-body {
-  margin: 0;
-  min-width: 100%;
-  min-height: 100%
-}
-
-
-html {
-  scrollbar-width: none;
-}
-
-
-body::-webkit-scrollbar {
-  display: none;
+img, video {
+  max-width: 100%;
+  height: auto;
 }
 
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 36px;
-  box-sizing: border-box;
+  padding: clamp(16px, 4vw, 36px);
+}
+
+/* Responsive headings: antd defaults are 38 / 30 / 24 px */
+h1.ant-typography {
+  font-size: clamp(28px, 6vw, 38px);
+}
+
+h2.ant-typography {
+  font-size: clamp(24px, 5vw, 30px);
+}
+
+h3.ant-typography {
+  font-size: clamp(20px, 4vw, 24px);
+}
+
+/* App shell */
+.app-layout {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: #EBF0F6;
+}
+
+.app-content {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  margin: var(--page-gutter);
+  border-radius: var(--panel-radius);
+  background: white;
+}
+
+/* Modals: antd positions them 100px from the top, which wastes most of a phone screen */
+@media (max-width: 767.98px) {
+  .ant-modal {
+    top: 16px;
+    padding-bottom: 16px;
+  }
 }

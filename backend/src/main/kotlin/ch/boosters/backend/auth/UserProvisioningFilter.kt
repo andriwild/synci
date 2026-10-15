@@ -38,12 +38,19 @@ class UserProvisioningFilter(
 
             if (!exists) {
                 val userId = UUID.randomUUID()
-                dsl.insertInto(USERS_TABLE)
+                // two parallel first requests of a new user both reach this point; the unique auth0_id decides
+                val inserted = dsl.insertInto(USERS_TABLE)
                     .set(USERS_TABLE.ID, userId)
                     .set(USERS_TABLE.AUTH0_ID, auth0Id)
                     .set(USERS_TABLE.EMAIL, email)
                     .set(USERS_TABLE.NAME, name)
+                    .onConflict(USERS_TABLE.AUTH0_ID)
+                    .doNothing()
                     .execute()
+                if (inserted == 0) {
+                    filterChain.doFilter(request, response)
+                    return
+                }
                 logger.info("Neuer Benutzer angelegt: $auth0Id ($email)")
                 
                 val defaultSyncConfig = SyncConfigDto(

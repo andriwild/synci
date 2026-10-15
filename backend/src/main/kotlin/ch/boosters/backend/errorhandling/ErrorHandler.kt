@@ -22,5 +22,9 @@ object ErrorHandler {
             logger.error("External source error: {}", error.message)
             ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("An external data source is not available")
         }
+        is Forbidden ->
+            ResponseEntity.status(HttpStatus.FORBIDDEN).body(error.message)
+        is InvalidRequest ->
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error.message)
     }
 }

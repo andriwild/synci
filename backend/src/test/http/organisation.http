@@ -1,0 +1,110 @@
+### Organisationen (Vereine) – manuelle API-Tests
+### Variablen: backendUrl z.B. http://localhost:8080/api, token = Auth0 Access Token (siehe http-client.env.json)
+
+### Eigene Organisationen (aktiv und ausstehend), jede mit ihrem Sport-Unterbaum (Wurzel + Gruppen)
+GET {{backendUrl}}/organisations
+Authorization: Bearer {{token}}
+
+### Organisation erstellen (Ersteller wird Admin, Wurzelknoten im Sport-Tree wird angelegt)
+POST {{backendUrl}}/organisations
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "FC Test",
+  "description": "Testorganisation"
+}
+
+### Organisationen entdecken
+GET {{backendUrl}}/organisations/discover?searchTerm=FC&page=0&pageSize=20
+Authorization: Bearer {{token}}
+
+### Detail (nur aktive Mitglieder, sonst 403)
+GET {{backendUrl}}/organisations/{{organisationId}}
+Authorization: Bearer {{token}}
+
+### Beitritt anfragen (als zweiter User)
+POST {{backendUrl}}/organisations/{{organisationId}}/join-requests
+Authorization: Bearer {{token}}
+
+### Mitglieder (Admins sehen auch ausstehende Anfragen)
+GET {{backendUrl}}/organisations/{{organisationId}}/members
+Authorization: Bearer {{token}}
+
+### Anfrage freigeben
+PUT {{backendUrl}}/organisations/{{organisationId}}/members/{{memberId}}/approve
+Authorization: Bearer {{token}}
+
+### Rolle ändern (letzter Admin -> 400)
+PUT {{backendUrl}}/organisations/{{organisationId}}/members/{{memberId}}/role
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "role": "ADMIN" }
+
+### Mitglied entfernen / Anfrage ablehnen
+DELETE {{backendUrl}}/organisations/{{organisationId}}/members/{{memberId}}
+Authorization: Bearer {{token}}
+
+### Organisation verlassen (letzter Admin -> 400)
+DELETE {{backendUrl}}/organisations/{{organisationId}}/members/me
+Authorization: Bearer {{token}}
+
+### Gruppe erstellen (Kindknoten der Organisation im Sport-Tree; Antwort ist ein Sport)
+POST {{backendUrl}}/organisations/{{organisationId}}/groups
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "name": "1. Mannschaft" }
+
+### Gruppe löschen (Events wandern auf die Wurzel, Gruppen-Abos fallen weg)
+DELETE {{backendUrl}}/organisations/{{organisationId}}/groups/{{groupId}}
+Authorization: Bearer {{token}}
+
+### Events einer Organisation oder Gruppe (nur aktive Mitglieder, sonst 403)
+GET {{backendUrl}}/sports/{{rootSportId}}/events?page=0&pageSize=5
+Authorization: Bearer {{token}}
+
+### Event erfassen (sportId = Wurzel der Organisation oder eine Gruppe)
+POST {{backendUrl}}/organisations/{{organisationId}}/events
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Generalversammlung",
+  "description": "Bitte pünktlich",
+  "location": "Clubhaus",
+  "startsOn": "2026-11-20T19:00:00",
+  "endsOn": "2026-11-20T21:00:00",
+  "sportId": "{{rootSportId}}"
+}
+
+### Ganztägiges Event in einer Gruppe (kein endsOn)
+POST {{backendUrl}}/organisations/{{organisationId}}/events
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Trainingslager",
+  "startsOn": "2026-12-05T00:00:00",
+  "sportId": "{{groupId}}"
+}
+
+### Event löschen
+DELETE {{backendUrl}}/organisations/{{organisationId}}/events/{{eventId}}
+Authorization: Bearer {{token}}
+
+### Abo auf die ganze Organisation (Wurzel, inkl. Gruppen) oder eine Gruppe: wie Sportarten (nur als aktives Mitglied)
+PUT {{backendUrl}}/syncconfigs/{{syncConfigId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Standard-Abo",
+  "events": [],
+  "teams": [],
+  "sports": ["{{rootSportId}}"]
+}
+
+### Kalender-Feed (öffentlich): enthält Organisations-Events mit LOCATION/DESCRIPTION, solange der Owner aktives Mitglied ist
+GET {{backendUrl}}/calendars/{{syncConfigId}}/subscribe

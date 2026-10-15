@@ -38,7 +38,7 @@ Die Integration folgt dem bestehenden Quellen-Muster (`backend/src/main/kotlin/c
 ## Dateien
 
 **Datenbank**
-- `backend/src/main/resources/db/migration/V3_37__add_nfl.sql`
+- `backend/src/main/resources/db/migration/V4_1__add_nfl.sql`
   - `INSERT INTO SOURCES_TABLE (name) VALUES ('NFLVERSE');`
   - `AMERICAN_FOOTBALL` (label «American Football») → `NFL` («NFL») → `NFL_REGULAR_SEASON` («Regular Season»), `NFL_PLAYOFFS` («Playoffs»); Muster `V3_27__add_and_update_hockey.sql` (DO-Block mit `SELECT id INTO`).
 
@@ -96,7 +96,7 @@ Die Integration folgt dem bestehenden Quellen-Muster (`backend/src/main/kotlin/c
 ## Verifikation
 
 1. `cd backend && ./gradlew test` (Parser-/Mapper-Tests, bestehender `SportDomainTest`).
-2. Lokale DB gemäss Memory: Postgres auf Port 5434, `set -a; source .env; set +a`, dann `DB_PORT=5434 ./gradlew bootRun --args='--spring.profiles.active=local --ch.boosters.db.jdbcUrl=jdbc:postgresql://localhost:5434/synci-db'`. Flyway muss `V3_37` anwenden.
+2. Lokale DB gemäss Memory: Postgres auf Port 5434, `set -a; source .env; set +a`, dann `DB_PORT=5434 ./gradlew bootRun --args='--spring.profiles.active=local --ch.boosters.db.jdbcUrl=jdbc:postgresql://localhost:5434/synci-db'`. Flyway muss `V4_1` anwenden.
 3. Der Quartz-Job startet 3 s nach Boot: Log zeigt «Fetching …games.csv» und «Successfully inserted data»; `SELECT count(*) FROM events_table e JOIN sources_table s ON s.id=e.source_id WHERE s.name='NFLVERSE'` = Anzahl zukünftiger 2026-Spiele (Stand 13.10.: Woche 7 bis 18, rund 180); 32 Teams in `teams_table` mit `source_id` NFLVERSE; `teams_sports_table` verlinkt sie mit `NFL_REGULAR_SEASON`.
 4. `GET /api/sports` enthält `AMERICAN_FOOTBALL → NFL → Regular Season/Playoffs`; im Frontend erscheint der Baum ohne Änderung, Team-Preview zeigt 32 Teams.
 5. Sync-Config mit `NFL` anlegen, `GET /api/calendars/{id}/subscribe` (siehe `src/test/http/calendar.http`): ICS enthält «Chicago Bears - New England Patriots» mit `DTSTART;TZID=Europe/Zurich:20261023T021500` (Gegenprobe ESPN: `2026-10-23T00:15Z`).

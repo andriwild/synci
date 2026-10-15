@@ -1,112 +1,103 @@
-import {useEffect, useState} from "react";
-import {Alert, Flex, Spin} from "antd";
+import {useMemo, useState} from "react";
+import {Flex} from "antd";
 import "./SportTreeComponent.css";
-import {CaretRight} from "@phosphor-icons/react";
-import {Sport} from "../../../services/sport/entities/sport.ts";
+import {CaretRight, Compass, UsersThree} from "@phosphor-icons/react";
 import {sportApi} from "../../../services/sport/sportApi.ts";
-import {SportDetailComponent} from "./SportDetailComponent.tsx";
-import Title from "antd/es/typography/Title";
+import {SportDetailComponent} from "../shared-components/SportDetailComponent.tsx";
+import {ErrorState, LoadingState} from "../shared-components/TreeStates.tsx";
+import {useUser} from "../../../services/user/UserSlice.ts";
+import {organisationApi} from "../../../services/organisation/organisationApi.ts";
+import {activeOrganisations, childNodes, firstColumn, hasChildren, TreeNode, withLiveOrganisation} from "../shared-components/treeNodes.ts";
+import {DiscoverOrganisationsPanel} from "../../organisation/components/DiscoverOrganisationsPanel.tsx";
 import {track} from "../../../utils/analytics.ts";
 
+type TreeColumn = { nodes: TreeNode[] };
+
+const columnColors = ["#3D5A80", "#C5CDD9", "#D8DEE6", "#E9EDF0", "#F2F4F6"];
 
 export const SportTreeComponent = () => {
-    const [selectedId, setSelectedId] = useState("");
+    const user = useUser();
     const sportTree = sportApi.useGetAllQuery();
-    const [treeColumns, setTreeColumns] = useState<Sport[][]>([sportTree.data || []]);
+    const myOrganisations = organisationApi.useGetMineQuery(undefined, {skip: !user});
 
-    const [selectedSport, setSelectedSport] = useState<Sport | null>(null);
+    /** selected node per column level; the columns are derived from it */
+    const [path, setPath] = useState<TreeNode[]>([]);
 
-    useEffect(() => {
-        if (sportTree.data) {
-            setTreeColumns([sportTree.data]);
+    const organisations = useMemo(() => activeOrganisations(myOrganisations.data), [myOrganisations.data]);
+
+    // drop the selection as soon as an organisation or group in it disappeared, otherwise refresh its data
+    const livePath = useMemo(() => {
+        const result: TreeNode[] = [];
+        for (const node of path) {
+            const live = withLiveOrganisation(node, organisations);
+            if (!live) break;
+            result.push(live);
         }
-    }, [sportTree.data]);
-
+        return result;
+    }, [path, organisations]);
 
     if (sportTree.isLoading) {
-        return (
-            <Flex justify={"center"} vertical align={"center"} style={{
-                height: "100%",
-                width: "100%",
-            }}>
-                <Spin size={"large"}/>
-                <Title level={4}>
-                    Lade Sportarten...
-                </Title>
-            </Flex>
-        )
+        return <LoadingState/>;
     }
     if (sportTree.isError) {
-        return <Flex
-            style={{
-                justifyContent: "center",
-                alignItems: "center",
-                height: "100%",
-                width: "100%",
-            }}
-        >
-            <Alert
-                message="Ups, es ist ein Fehler aufgetreten"
-                description={sportTree.error?.toString()}
-                type="error"
-                showIcon
-            />
-        </Flex>;
+        return <ErrorState error={sportTree.error}/>;
     }
 
-    const handleCategoryClick = (sport: Sport, level: number) => {
-        setSelectedId(sport.id);
-        track("sport-select", {sport: sport.label, level});
-        const newTreeColumns = [...treeColumns.slice(0, level + 1)];
+    // "Organisationen entdecken" opens no column; its content lives in the detail area
+    const columns: TreeColumn[] = [{nodes: firstColumn(sportTree.data ?? [], organisations, !!user)}];
+    livePath.forEach((node) => {
+        const children = childNodes(node);
+        if (children.length > 0) columns.push({nodes: children});
+    });
+    const selected = livePath[livePath.length - 1] ?? null;
 
-        if (sport.subSports && sport.subSports.length > 0) {
-            newTreeColumns[level + 1] = sport.subSports;
-        } else {
-            newTreeColumns.length = level + 1;
+    const handleClick = (node: TreeNode, level: number) => {
+        setPath([...livePath.slice(0, level), node]);
+        if (node.kind === "sport" && !node.organisation) {
+            track("sport-select", {sport: node.label, level});
         }
-
-        setTreeColumns(newTreeColumns);
     };
 
+    const renderDetail = () => {
+        if (!selected) return <SportDetailComponent id={""} title={""}/>;
+        if (selected.kind === "discover") return <DiscoverOrganisationsPanel/>;
+        const breadcrumb = livePath.slice(0, -1).map((node) => node.label);
+        return <SportDetailComponent id={selected.id} title={selected.label} breadcrumb={breadcrumb}
+                                     organisation={selected.organisation} key={selected.id}/>;
+    };
 
-    const columnColors = ["#b2bdcf", "#C5CDD9", "#D8DEE6", "#E9EDF0", "#F2F4F6"];
     return (
-        <Flex id="tree-container">
-            {treeColumns.map((categories: Sport[], index) => (
+        <div className="tree-columns">
+            {columns.map((column, index) => (
                 <div
                     key={index}
                     className="tree-column"
-                    style={{
-                        background: columnColors[index] || "gray",
-                    }}
+                    style={{background: columnColors[index] || "gray"}}
                 >
-                    {categories.map((category: Sport) => (
-                        <div
-                            key={category.id}
-                            className={`tree-item ${selectedId === category.id ? "selected" : ""}`}
-                            onClick={() => {
-                                setSelectedSport(category);
-                                handleCategoryClick(category, index);
-                            }
-                            }
-                        >
-                            <Flex
-                                style={{
-                                    justifyContent: "space-between",
-                                    alignItems: "center",
-                                    padding: "1rem",
-                                    width: "100%",
-                                }}
-                            >
-                                <h4>{category.label}</h4>
-                                {category.subSports.length > 0 && <CaretRight size={10}/>}
-                            </Flex>
-                        </div>
-                    ))}
+                    {column.nodes.map((node) => {
+                            const isOrganisationRoot = node.kind === "sport" && !!node.organisation && index === 0;
+                            return (
+                                <div
+                                    key={node.id}
+                                    className={`tree-item ${livePath[index]?.id === node.id ? "selected" : ""}`}
+                                    onClick={() => handleClick(node, index)}
+                                    style={node.kind === "discover" ? {borderBottom: "1px solid rgba(255,255,255,0.35)"} : undefined}
+                                >
+                                    <Flex style={{justifyContent: "space-between", alignItems: "center", padding: "1rem", width: "100%"}}>
+                                        <Flex align={"center"} gap={8} style={{minWidth: 0}}>
+                                            {isOrganisationRoot && <UsersThree size={16}/>}
+                                            {node.kind === "discover" && <Compass size={16}/>}
+                                            <h4 style={{fontStyle: node.kind === "discover" ? "italic" : undefined}}>{node.label}</h4>
+                                        </Flex>
+                                        {hasChildren(node) && <CaretRight size={10}/>}
+                                    </Flex>
+                                </div>
+                            );
+                        })}
                 </div>
             ))}
 
-            <SportDetailComponent id={selectedId} title={selectedSport?.label || ""} key={selectedId}/>
-        </Flex>
+            {renderDetail()}
+        </div>
     );
 }

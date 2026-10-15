@@ -1,4 +1,3 @@
-
 export type SyncConfigRequest = {
     id?: string
     name?: string
