@@ -46,6 +46,7 @@ jobs:
         POSTGRES_DB_NAME:     ${{ vars.POSTGRES_DB_NAME }}
         POSTGRES_USER:        ${{ vars.POSTGRES_USER }}
         POSTGRES_PASSWORD:    ${{ secrets.POSTGRES_PASSWORD }}
+        PANDASCORE_TOKEN:     ${{ secrets.PANDASCORE_TOKEN }}
         VITE_STAGE:           ${{ vars.STAGE }}
         VITE_BACKEND_URL:     ${{ vars.VITE_BACKEND_URL }}
         VITE_BACKEND_HOST:    ${{ vars.VITE_BACKEND_HOST }}

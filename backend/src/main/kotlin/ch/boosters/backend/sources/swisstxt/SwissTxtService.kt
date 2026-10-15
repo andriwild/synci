@@ -19,6 +19,7 @@ import ch.boosters.backend.sources.swisstxt.model.SwissTxtLeagueConfig
 import ch.boosters.backend.sources.swisstxt.serializers.EventSerializer
 import ch.boosters.backend.sources.swisstxt.serializers.LeagueSerializer
 import ch.boosters.backend.sources.swisstxt.serializers.TeamEventSerializer
+import ch.boosters.backend.sources.common.futureOnly
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.ExchangeStrategies
 import org.springframework.web.reactive.function.client.WebClient
@@ -175,8 +176,7 @@ class SwissTxtService(
     }
 
     private fun <T : BaseEvent> filterPastEvents(events: List<T>): List<T> {
-        val now = LocalDateTime.now()
-        val futureEvents = events.filter { event -> event.startsOn.isAfter(now) }
+        val futureEvents = events.futureOnly()
         if (futureEvents.isNotEmpty()) {
             println("Filtered ${futureEvents.size} future events (${events.size} total, ${events.size - futureEvents.size} past events filtered out)")
         } else {
