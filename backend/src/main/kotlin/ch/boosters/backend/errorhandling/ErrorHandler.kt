@@ -18,5 +18,9 @@ object ErrorHandler {
         }
         is InvalidUser ->
             ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Could not find the requested resource for the given user. ${error.message}")
+        is Forbidden ->
+            ResponseEntity.status(HttpStatus.FORBIDDEN).body(error.message)
+        is InvalidRequest ->
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error.message)
     }
 }

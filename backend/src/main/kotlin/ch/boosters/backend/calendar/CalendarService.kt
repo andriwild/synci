@@ -2,33 +2,24 @@ package ch.boosters.backend.calendar
 
 import arrow.core.raise.either
 import ch.boosters.backend.data.event.EventRepository
+import ch.boosters.backend.data.organisation.OrganisationMemberRepository
+import ch.boosters.backend.data.sport.SportsRepository
 import ch.boosters.backend.data.sport.SportsService
 import ch.boosters.backend.data.sport.model.flatten
 import ch.boosters.backend.data.syncConfig.SyncConfigRepository
 import ch.boosters.backend.errorhandling.SynciEither
 import ch.boosters.data.tables.pojos.EventsTable
-import ch.boosters.data.tables.pojos.SyncConfigsTable
 import net.fortuna.ical4j.model.Calendar
-import net.fortuna.ical4j.model.ComponentContainer
-import net.fortuna.ical4j.model.PropertyContainer
-import net.fortuna.ical4j.model.TimeZoneRegistryFactory
-import net.fortuna.ical4j.model.component.CalendarComponent
-import net.fortuna.ical4j.model.component.VEvent
-import net.fortuna.ical4j.model.property.Name
-import net.fortuna.ical4j.model.property.ProdId
-import net.fortuna.ical4j.model.property.Uid
-import net.fortuna.ical4j.model.property.immutable.ImmutableCalScale
-import net.fortuna.ical4j.model.property.immutable.ImmutableVersion
 import org.springframework.stereotype.Service
 import java.util.*
-
-const val PROD_ID = "-//Events Calendar//iCal4j 1.0//EN"
 
 @Service
 class CalendarService(
     private val eventRepository: EventRepository,
     private val syncConfigRepository: SyncConfigRepository,
-    private val sportsService: SportsService
+    private val sportsService: SportsService,
+    private val sportsRepository: SportsRepository,
+    private val organisationMemberRepository: OrganisationMemberRepository
 ) {
 
     fun createCalendar(configId: UUID): SynciEither<Calendar> = either {
@@ -36,7 +27,20 @@ class CalendarService(
         val sportEvents = eventsBySport(configId).bind()
         val teamEvents = eventRepository.eventsOfTeams(configId).bind()
         val events = eventRepository.eventsByConfig(configId).bind()
-        toCalendar(teamEvents + sportEvents + events, config)
+
+        // organisation events only reach the feed while the config owner is an active member;
+        // this is checked at read time so leaving an organisation needs no cleanup of the config
+        val allowedOrganisations = organisationMemberRepository.activeOrganisationIdsOfConfigOwner(configId).bind().toSet()
+        val organisationOfSport = sportsRepository.allSports().bind()
+            .filter { it.organisationId != null }
+            .associate { it.id to it.organisationId!! }
+        fun visible(event: EventsTable): Boolean =
+            organisationOfSport[event.sportId]?.let { it in allowedOrganisations } ?: true
+
+        val calendarEvents = (teamEvents + sportEvents + events)
+            .filter(::visible)
+            .map { it.toCalendarEvent() }
+        CalendarBuilder.build(calendarEvents, config.name)
     }
 
     private fun eventsBySport(configId: UUID): SynciEither<List<EventsTable>> = either {
@@ -46,30 +50,6 @@ class CalendarService(
             .bindAll()
             .flatMap { it.flatten() }
             .distinct()
-        val eventsBySport = eventRepository.eventsBySports(includingSubSports).bind()
-        eventsBySport
-    }
-
-    private fun toCalendar(events: List<EventsTable>, config: SyncConfigsTable): Calendar {
-        val timeZoneRegistry = TimeZoneRegistryFactory.getInstance().createRegistry()
-        val timeZone = timeZoneRegistry.getTimeZone("Europe/Zurich")
-        val distinctEvents = events.distinctBy { it.id }
-        val icsCalendar = Calendar()
-        icsCalendar.add<PropertyContainer>(Name("Synci - ${config.name}"))
-        icsCalendar.add<PropertyContainer>(ProdId(PROD_ID))
-        icsCalendar.add<PropertyContainer>(ImmutableVersion.VERSION_2_0)
-        icsCalendar.add<PropertyContainer>(ImmutableCalScale.GREGORIAN)
-        icsCalendar.add<ComponentContainer<CalendarComponent>>(timeZone.vTimeZone)
-        distinctEvents.forEach {
-            val event: VEvent = if (it.endsOn == null) {
-                VEvent(it.startsOn.toLocalDate(), it.name)
-            } else {
-                VEvent(it.startsOn, it.endsOn, it.name)
-            }
-            event.add<PropertyContainer>(Uid("${it.id}@synci.ch"))
-
-            icsCalendar.add<ComponentContainer<CalendarComponent>>(event)
-        }
-        return icsCalendar
+        eventRepository.eventsBySports(includingSubSports).bind()
     }
 }

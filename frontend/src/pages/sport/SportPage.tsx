@@ -1,36 +1,27 @@
-import { FC } from "react";
-import {Flex, theme} from "antd";
+import {FC} from "react";
 import {SportTreeComponent} from "./desktop/SportTreeComponent.tsx";
-import {SyncConfigComponent} from "./desktop/SyncConfigComponent.tsx";
-import useBreakpoint from "antd/es/grid/hooks/useBreakpoint";
-import './SportPage.css';
+import "./SportPage.css";
 import {SportTreeMobileComponent} from "./mobile/SportTreeMobileComponent.tsx";
+import {useResponsive} from "../../utils/useResponsive.ts";
+import {SyncConfigFab} from "./shared-components/SyncConfigFab.tsx";
 
-
+/**
+ * Tree and detail use the full width (accordion below md, column tree above).
+ * The subscription lives behind a floating button in the bottom right corner.
+ */
 export const SportPage: FC = () => {
-    const screens = useBreakpoint();
+    const {ready, isMobile} = useResponsive();
+
+    if (!ready) {
+        return <div className="sport-layout"/>;
+    }
+
     return (
-        <Flex id={"sport-container"} style={{
-            backgroundColor: theme.useToken().token.colorBgContainer,
-        }}>
-            <Flex id={'tree-container'} style={{
-                backgroundColor: 'white',
-                borderRadius: 20,
-                flex: 1}}>
-                {screens.md && <SportTreeComponent />}
-                {!screens.md && <SportTreeMobileComponent />}
-
-            </Flex>
-            {screens.md &&
-            <Flex id={'calender-container'} style={{
-                backgroundColor: 'white',
-                borderRadius: 20,
-                flex: '0 1 33%',
-                maxWidth: '400px'}}>
-               <SyncConfigComponent />
-            </Flex>
-            }
-
-        </Flex>
+        <div className="sport-layout">
+            <div className="sport-tree-panel">
+                {isMobile ? <SportTreeMobileComponent/> : <SportTreeComponent/>}
+            </div>
+            <SyncConfigFab/>
+        </div>
     );
 };

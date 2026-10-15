@@ -26,4 +26,18 @@ class SportDomainTest {
         assertEquals(grouped?.subSports?.map { it.id }?.sorted(), listOf(sport3.id, sport4.id).sorted()  )
     }
 
+
+    @Test
+    fun organisationIdIsKeptInTheTree() {
+        val organisationId = UUID.randomUUID()
+        val root = SportsTable(UUID.randomUUID(), "ORG_x", null, "FC Test", organisationId)
+        val group = SportsTable(UUID.randomUUID(), "GRP_y", root.id, "1. Mannschaft", organisationId)
+        val publicSport = SportsTable(UUID.randomUUID(), "SOCCER", null, "Fussball", null)
+
+        val tree = listOf(root, group, publicSport).findSportsByParent(root.id)
+
+        assertEquals(organisationId, tree?.organisationId)
+        assertEquals(listOf(organisationId), tree?.subSports?.map { it.organisationId })
+        assertEquals("1. Mannschaft", tree?.subSports?.first()?.label)
+    }
 }

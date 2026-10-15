@@ -25,10 +25,30 @@ class SportsRepository(
 ) {
     private val sports = SPORTS_TABLE
 
+    /** Every row, including organisations and their groups. */
     fun allSports(): Either<SynciError, List<SportsTable>> =
         dsl { it.selectFrom(sports)
             .orderBy(SPORTS_TABLE.LABEL)
             .fetch().into(SportsTable::class.java) }
+
+    /** The public tree: sports without an organisation. */
+    fun publicSports(): Either<SynciError, List<SportsTable>> =
+        dsl { it.selectFrom(sports)
+            .where(sports.ORGANISATION_ID.isNull)
+            .orderBy(SPORTS_TABLE.LABEL)
+            .fetch().into(SportsTable::class.java) }
+
+    fun sportById(id: UUID): SynciEither<SportsTable?> =
+        dsl { it.selectFrom(sports).where(sports.ID.eq(id)).fetchOneInto(SportsTable::class.java) }
+
+    fun sportsOfOrganisations(organisationIds: Collection<UUID>): SynciEither<List<SportsTable>> =
+        if (organisationIds.isEmpty()) either { emptyList() }
+        else dsl {
+            it.selectFrom(sports)
+                .where(sports.ORGANISATION_ID.`in`(organisationIds))
+                .orderBy(sports.LABEL)
+                .fetch().into(SportsTable::class.java)
+        }
 
     fun sportIdByName(name: String): SynciEither<UUID?> = either {
         dsl {

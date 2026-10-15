@@ -4,6 +4,8 @@ import arrow.core.Either
 import arrow.core.flatMap
 import arrow.core.raise.either
 import arrow.core.raise.ensure
+import ch.boosters.backend.data.event.EventRepository
+import ch.boosters.backend.data.organisation.OrganisationAccess
 import ch.boosters.backend.data.sport.SportsRepository
 import ch.boosters.backend.data.sport.business.rootSportOf
 import ch.boosters.backend.data.syncConfig.model.SyncConfigDto
@@ -23,11 +25,14 @@ class SyncConfigService(
     private val syncConfigTeamRepository: SyncConfigTeamRepository,
     private val syncConfigSportsRepository: SyncConfigSportsRepository,
     private val syncConfigEventsRepository: SyncConfigEventsRepository,
-    private val sportsRepository: SportsRepository
+    private val sportsRepository: SportsRepository,
+    private val eventRepository: EventRepository,
+    private val organisationAccess: OrganisationAccess
 ) {
 
     fun createSyncConfig(syncConfig: SyncConfigDto, userId: UUID): SynciEither<SyncConfig> = either {
         val cleanedConfig = removeDuplicates(syncConfig)
+        validateOrganisationAccess(cleanedConfig, userId).bind()
         val id = syncConfigRepository.createSyncConfig(cleanedConfig, userId).bind()
         syncConfigTeamRepository.addTeams(id, cleanedConfig.teams).bind()
         syncConfigSportsRepository.addSports(id, cleanedConfig.sports).bind()
@@ -63,7 +68,10 @@ class SyncConfigService(
     }
 
     fun updateSyncConfig(id: UUID, syncConfig: SyncConfigDto, userId: UUID): SynciEither<SyncConfig> = either {
+        // check ownership before writing anything; previously only the final read was checked
+        syncConfigBelongsToUser(id, userId).bind()
         val cleanedConfig = removeDuplicates(syncConfig)
+        validateOrganisationAccess(cleanedConfig, userId).bind()
         syncConfigRepository.updateSyncConfig(id, cleanedConfig).bind()
         syncConfigTeamRepository.updateTeams(id, cleanedConfig.teams).bind()
         syncConfigEventsRepository.updateEvents(id, cleanedConfig.events).bind()
@@ -82,6 +90,21 @@ class SyncConfigService(
         syncConfigBelongsToUser(id, userId).flatMap { syncConfig ->
             syncConfigRepository.deleteById(syncConfig.id)
         }
+
+    /** Sports and events that belong to an organisation may only be subscribed by its active members. */
+    private fun validateOrganisationAccess(syncConfig: SyncConfigDto, userId: UUID): SynciEither<Unit> = either {
+        val organisationOfSport = sportsRepository.allSports().bind()
+            .filter { it.organisationId != null }
+            .associate { it.id to it.organisationId!! }
+
+        val organisationIds = mutableSetOf<UUID>()
+        syncConfig.sports.forEach { sportId -> organisationOfSport[sportId]?.let { organisationIds.add(it) } }
+        syncConfig.events.forEach { eventDto ->
+            val event = eventRepository.findEvent(eventDto.id, eventDto.sourceId).bind()
+            if (event != null) organisationOfSport[event.sportId]?.let { organisationIds.add(it) }
+        }
+        organisationIds.forEach { organisationAccess.requireActiveMember(it, userId).bind() }
+    }
 
     private fun syncConfigBelongsToUser(syncConfigId: UUID, userId: UUID): Either<SynciError, SyncConfigsTable> =
         either {
