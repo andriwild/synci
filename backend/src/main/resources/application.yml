@@ -16,6 +16,7 @@ spring:
     - "classpath:sources/swisstxt.yml"
     - "classpath:sources/nflverse.yml"
     - "classpath:sources/pandascore.yml"
+    - "classpath:sources/cfbd.yml"
 
 ch:
   boosters:

@@ -1,4 +1,5 @@
 import arrow.core.Either
+import ch.boosters.backend.sources.cfbd.CfbdService
 import ch.boosters.backend.sources.nflverse.NflverseService
 import ch.boosters.backend.sources.pandascore.PandaScoreService
 import ch.boosters.backend.sources.swisstxt.SwissTxtService
@@ -19,11 +20,15 @@ class EventSyncJob : Job {
     @Autowired
     lateinit var pandaScoreService: PandaScoreService
 
+    @Autowired
+    lateinit var cfbdService: CfbdService
+
     override fun execute(context: JobExecutionContext) {
         val updates = listOf(
             swissTxtService.update(),
             nflverseService.update(),
             pandaScoreService.update(),
+            cfbdService.update(),
         )
         updates.map {
             when (it) {

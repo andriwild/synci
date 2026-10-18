@@ -161,6 +161,18 @@ Alternative zu ICS: `/api/games?mode=list` (JSON, aber Spieltag-weise über `sli
 
 **Mapping in Synci:** `AMERICAN_FOOTBALL` → `NFL` (→ optional `NFL_REGULAR_SEASON` / `NFL_PLAYOFFS` analog zu `HOCKEY_*_QUALIFICATION/PLAYOFF`) → 32 Teams (`teams_table.id` = nflverse-Kürzel `NE`, `KC` …, `source_id` neu `NFLVERSE`), Events `id` = nflverse `game_id`, Name «Patriots at Bears», `starts_on` = `gameday` + `gametime` in `America/New_York` → `LocalDateTime` Europe/Zurich (bestehender Kalender nutzt statische Zeitzone), `ends_on` = +3 h 15 min, Location = `stadium`. Bye-Weeks aus ESPN `week.teamsOnBye` optional als ganztägiger Hinweis. Sync täglich: CSV laden, Zeilen `season == aktuelle Saison` upserten, `espn`-ID mitspeichern, um später ESPN-Details zu joinen.
 
+### College Football (NCAA) – nicht in nflverse; geprüft 18.10.2026
+
+nflverse enthält nur NFL (Spielplan mit 32 Teams, keine College-Releases). Umgesetzt ist **CollegeFootballData (CFBD)**:
+
+| Quelle | Zugang & Limits | Was es liefert | Eignung |
+|---|---|---|---|
+| **CollegeFootballData** (`https://api.collegefootballdata.com`, OpenAPI v5.32.1) | Gratis-Key (collegefootballdata.com/key) als Bearer-Token, ohne Key 401; Free-Tier 1'000 Calls/Monat, Patreon ab 1 $/Mt 5'000 (Blog CFBD, Stand Saison 2025) | `GET /games?year=&seasonType=both&classification=fbs`: ganze Saison in **einem** Call; `id`, `startDate` (UTC), `startTimeTBD`, `seasonType`, Heim/Gast mit ID, Conference, Classification, `notes` (Bowl-Name), Venue, Resultate | **Primärquelle** (1 Call pro Sync ≈ 60/Monat) |
+| API-Sports «API-American-Football» | siehe NFL oben, deckt NCAA ab | | Plan B |
+| ESPN «hidden» API (`.../football/college-football/...`) | inoffiziell | | Fallback |
+
+**Umsetzung in Synci:** Quelle `CFBD`, nur FBS. Baum `AMERICAN_FOOTBALL → NCAA_FOOTBALL («College Football») → NCAA_CONF_<Conference>` (im Sync erzeugt) und `NCAA_POSTSEASON` («Bowls & Playoff»). Reguläre Spiele hängen an der Conference des Heimteams (FCS-Gastgeber → Conference des FBS-Gasts, ohne Conference → «FBS Independents»); jedes FBS-Team ist an seine Conference gebunden, damit ein Team-Abo auch Auswärts- und Bowl-Spiele findet. Spiele mit `startTimeTBD` werden erst übernommen, wenn die Anstosszeit feststeht. Key über `CFBD_TOKEN`; ohne Key wird der Sync übersprungen.
+
 ## 5. Feiertage, Schulferien
 
 | Quelle | Zugang | Abdeckung | Lizenz | Eignung |
@@ -204,4 +216,5 @@ Alternative zu ICS: `/api/games?mode=list` (JSON, aber Spieltag-weise über `sli
 - Releases/Space: https://thespacedevs.com/llapi , https://api-docs.igdb.com/ , https://rawg.io/apidocs , https://docs.anilist.co/reference/object/airingschedule , https://apideposu.com/en/blog/best-free-movie-tv-apis , https://pypi.org/project/motorsport-calendar/
 - Schweiz Open Data: https://opendata.swiss/de/dataset?res_format=API , https://opendatazurich.github.io/ , https://data.bs.ch/explore/dataset/100057/api/ , https://developer.srgssr.ch/api-catalog , https://www.openeventdata.ch/en/
 - Ticketing CH: https://blog.ticketino.com/kostenlose-rest-api-schnittstelle-fuer-veranstalter , https://www.ticketcorner.ch/campaign/ticketcheck
+- College Football: https://apinext.collegefootballdata.com , https://blog.collegefootballdata.com/api-v2-is-now-in-general-availability/
 - UFC-Feed (ESPN): https://www.smartcalendars.ai/en/feeds/ufc-schedule ; Laufen: https://www.ahotu.com/calendar/running/switzerland

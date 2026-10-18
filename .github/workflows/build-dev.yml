@@ -120,6 +120,7 @@ jobs:
           POSTGRES_USER:        ${{ vars.POSTGRES_USER }}
           POSTGRES_PASSWORD:    ${{ secrets.POSTGRES_PASSWORD }}
           PANDASCORE_TOKEN:     ${{ secrets.PANDASCORE_TOKEN }}
+          CFBD_TOKEN:           ${{ secrets.CFBD_TOKEN }}
           VITE_STAGE:           ${{ vars.STAGE }}
           VITE_BACKEND_URL:     ${{ vars.VITE_BACKEND_URL }}
           VITE_BACKEND_HOST:    ${{ vars.VITE_BACKEND_HOST }}
