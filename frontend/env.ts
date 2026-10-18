@@ -25,7 +25,8 @@ export const VITE_BACKEND_URL = getConfigValue('BACKEND_URL');
 export const VITE_BACKEND_HOST = getConfigValue('BACKEND_HOST');
 export const VITE_AUTH0_DOMAIN = getConfigValue('AUTH0_DOMAIN');
 export const VITE_AUTH0_CLIENT_ID = getConfigValue('AUTH0_CLIENT_ID');
-export const VITE_AUTH0_AUDIENCE = getConfigValue('AUTH0_AUDIENCE');
+// Without an audience Auth0 issues an encrypted token the backend rejects, e.g. with a stale config.js
+export const VITE_AUTH0_AUDIENCE = getConfigValue('AUTH0_AUDIENCE') || 'https://synci.ch/api';
 
 // for debugging
 if (import.meta.env.DEV) {
