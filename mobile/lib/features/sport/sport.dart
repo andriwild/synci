@@ -1,5 +1,5 @@
 class Sport {
-  const Sport({required this.id, required this.label, this.subSports = const [], this.rootSport});
+  const Sport({required this.id, required this.label, this.subSports = const [], this.rootSport, this.organisationId});
 
   factory Sport.fromJson(Map<String, dynamic> json) => Sport(
     id: json['id'] as String,
@@ -8,6 +8,7 @@ class Sport {
       for (final sub in (json['subSports'] as List<dynamic>? ?? const [])) Sport.fromJson(sub as Map<String, dynamic>),
     ],
     rootSport: json['rootSport'] as String?,
+    organisationId: json['organisationId'] as String?,
   );
 
   final String id;
@@ -16,6 +17,11 @@ class Sport {
 
   /// Only set in sync config responses.
   final String? rootSport;
+
+  /// Set on organisation roots and their groups.
+  final String? organisationId;
+
+  bool get isOrganisation => organisationId != null;
 
   bool get hasSubSports => subSports.isNotEmpty;
 }
@@ -63,8 +69,11 @@ class SportEvent {
     required this.sourceId,
     required this.name,
     this.startsOn,
+    this.endsOn,
     this.sportId,
     this.rootSport,
+    this.location,
+    this.description,
   });
 
   factory SportEvent.fromJson(Map<String, dynamic> json) => SportEvent(
@@ -73,16 +82,24 @@ class SportEvent {
     name: json['name'] as String? ?? '',
     // No time zone: local time, as on the website
     startsOn: DateTime.tryParse(json['startsOn'] as String? ?? ''),
+    endsOn: DateTime.tryParse(json['endsOn'] as String? ?? ''),
     sportId: json['sportId'] as String?,
     rootSport: json['rootSport'] as String?,
+    location: json['location'] as String?,
+    description: json['description'] as String?,
   );
 
   final String id;
   final int sourceId;
   final String name;
   final DateTime? startsOn;
+
+  /// `null` for all-day organisation events.
+  final DateTime? endsOn;
   final String? sportId;
   final String? rootSport;
+  final String? location;
+  final String? description;
 }
 
 class PagedResult<T> {

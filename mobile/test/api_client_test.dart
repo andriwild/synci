@@ -73,6 +73,25 @@ void main() {
 
       expect(api.get('syncconfigs'), throwsA(isA<SessionExpiredException>()));
     });
+
+    test('Fehlerstatus liefert die Meldung des Backends', () async {
+      final api = client(token: 'abc');
+      adapter.respond(400, {
+        'headers': {},
+        'body': 'Der letzte Admin kann den Verein nicht verlassen oder herabgestuft werden',
+        'statusCode': 'BAD_REQUEST',
+        'statusCodeValue': 400,
+      });
+
+      expect(
+        api.delete('organisations/1/members/me'),
+        throwsA(
+          isA<ApiException>()
+              .having((e) => e.statusCode, 'statusCode', 'BAD_REQUEST')
+              .having((e) => e.message, 'message', startsWith('Der letzte Admin')),
+        ),
+      );
+    });
   });
 }
 

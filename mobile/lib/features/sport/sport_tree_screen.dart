@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/analytics/analytics.dart';
+import '../../core/auth/auth_controller.dart';
 import '../../core/widgets/feedback.dart';
+import '../organisation/organisation_providers.dart';
 import '../sync_config/active_abo_bar.dart';
 import 'sport.dart';
 import 'sport_providers.dart';
@@ -21,8 +23,18 @@ class _SportTreeScreenState extends ConsumerState<SportTreeScreen> {
   final _expanded = <String>{};
 
   void _openDetail(SportNode node) {
-    ref.read(analyticsProvider).event('sport-select', {'sport': node.sport.label, 'level': node.level});
+    if (!node.sport.isOrganisation) {
+      ref.read(analyticsProvider).event('sport-select', {'sport': node.sport.label, 'level': node.level});
+    }
     context.go('/sport/${node.sport.id}');
+  }
+
+  /// Tree rows; `null` stands for the "Organisationen entdecken" row below my organisations.
+  List<SportNode?> _rows(List<Sport> sports, {required bool loggedIn}) {
+    final nodes = _visibleNodes(sports);
+    if (!loggedIn) return nodes;
+    final firstPublic = nodes.indexWhere((node) => node.level == 0 && !node.sport.isOrganisation);
+    return [...nodes]..insert(firstPublic < 0 ? nodes.length : firstPublic, null);
   }
 
   List<SportNode> _visibleNodes(List<Sport> sports, [int level = 0]) => [
@@ -34,7 +46,8 @@ class _SportTreeScreenState extends ConsumerState<SportTreeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final sports = ref.watch(sportsProvider);
+    final sports = ref.watch(sportTreeProvider);
+    final loggedIn = ref.watch(authControllerProvider).value != null;
 
     return Scaffold(
       appBar: AppBar(
@@ -47,9 +60,10 @@ class _SportTreeScreenState extends ConsumerState<SportTreeScreen> {
         error: (error, _) => ErrorView(error: error, onRetry: () => ref.invalidate(sportsProvider)),
         data: (list) {
           if (list.isEmpty) return const EmptyView(icon: Icons.search_off, message: 'Keine Sportarten gefunden');
-          final nodes = _visibleNodes(list);
+          final nodes = _rows(list, loggedIn: loggedIn);
           return RefreshIndicator(
-            onRefresh: () => ref.refresh(sportsProvider.future),
+            onRefresh: () =>
+                Future.wait([ref.refresh(sportsProvider.future), ref.refresh(myOrganisationsProvider.future)]),
             child: ListView.builder(
               padding: const EdgeInsets.fromLTRB(12, 12, 12, 24),
               itemCount: nodes.length + 1,
@@ -64,6 +78,7 @@ class _SportTreeScreenState extends ConsumerState<SportTreeScreen> {
                   );
                 }
                 final node = nodes[index - 1];
+                if (node == null) return const _DiscoverRow();
                 return _SportRow(
                   node: node,
                   expanded: _expanded.contains(node.sport.id),
@@ -116,6 +131,10 @@ class _SportRow extends StatelessWidget {
                         )
                       : null,
                 ),
+                if (sport.isOrganisation && node.level == 0) ...[
+                  const Icon(Icons.apartment, size: 20),
+                  const SizedBox(width: 8),
+                ],
                 Expanded(
                   child: Text(
                     sport.label,
@@ -135,4 +154,25 @@ class _SportRow extends StatelessWidget {
       ),
     );
   }
+}
+
+class _DiscoverRow extends StatelessWidget {
+  const _DiscoverRow();
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(bottom: 6),
+    child: Material(
+      color: levelColors.last,
+      borderRadius: BorderRadius.circular(12),
+      clipBehavior: Clip.antiAlias,
+      child: ListTile(
+        dense: true,
+        leading: const Icon(Icons.explore_outlined),
+        title: const Text('Organisationen entdecken', style: TextStyle(fontStyle: FontStyle.italic)),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: () => context.go('/organisationen/entdecken'),
+      ),
+    ),
+  );
 }

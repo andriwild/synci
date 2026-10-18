@@ -90,14 +90,45 @@ Future<String?> showNameDialog(
   required String title,
   required String confirmLabel,
   String initialName = '',
-}) => showDialog<String>(context: context, builder: (_) => _NameDialog(title, confirmLabel, initialName));
+  String label = 'Abo-Name',
+  String emptyError = 'Bitte Abo-Namen eingeben',
+  String? hint,
+  String? message,
+  int? maxLength,
+}) => showDialog<String>(
+  context: context,
+  builder: (_) => _NameDialog(
+    title: title,
+    confirmLabel: confirmLabel,
+    initialName: initialName,
+    label: label,
+    emptyError: emptyError,
+    hint: hint,
+    message: message,
+    maxLength: maxLength,
+  ),
+);
 
 class _NameDialog extends StatefulWidget {
-  const _NameDialog(this.title, this.confirmLabel, this.initialName);
+  const _NameDialog({
+    required this.title,
+    required this.confirmLabel,
+    required this.initialName,
+    required this.label,
+    required this.emptyError,
+    this.hint,
+    this.message,
+    this.maxLength,
+  });
 
   final String title;
   final String confirmLabel;
   final String initialName;
+  final String label;
+  final String emptyError;
+  final String? hint;
+  final String? message;
+  final int? maxLength;
 
   @override
   State<_NameDialog> createState() => _NameDialogState();
@@ -122,13 +153,26 @@ class _NameDialogState extends State<_NameDialog> {
     title: Text(widget.title),
     content: Form(
       key: _formKey,
-      child: TextFormField(
-        controller: _controller,
-        autofocus: true,
-        textCapitalization: TextCapitalization.sentences,
-        decoration: const InputDecoration(labelText: 'Abo-Name'),
-        validator: (value) => (value == null || value.trim().isEmpty) ? 'Bitte Abo-Namen eingeben' : null,
-        onFieldSubmitted: (_) => _submit(),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (widget.message != null) ...[Text(widget.message!), const SizedBox(height: 12)],
+          TextFormField(
+            controller: _controller,
+            autofocus: true,
+            textCapitalization: TextCapitalization.sentences,
+            decoration: InputDecoration(labelText: widget.label, hintText: widget.hint),
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) return widget.emptyError;
+              if (widget.maxLength != null && value.trim().length > widget.maxLength!) {
+                return 'Höchstens ${widget.maxLength} Zeichen';
+              }
+              return null;
+            },
+            onFieldSubmitted: (_) => _submit(),
+          ),
+        ],
       ),
     ),
     actions: [

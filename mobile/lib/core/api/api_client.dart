@@ -15,7 +15,7 @@ class SessionExpiredException extends ApiException {
   const SessionExpiredException() : super('Deine Anmeldung ist abgelaufen. Bitte melde dich erneut an.');
 }
 
-/// The backend wraps every response in a serialized `ResponseEntity` and reports errors with HTTP 200.
+/// The backend wraps every response in a serialized `ResponseEntity`, errors too.
 Object? unwrapEnvelope(Object? data) {
   if (data is! Map<String, dynamic> || !data.containsKey('statusCode')) {
     throw const ApiException('Unerwartete Antwort vom Server.');
@@ -72,6 +72,10 @@ class ApiClient {
     final cause = e.error;
     if (cause is ApiException) return cause;
     if (e.response?.statusCode == 401) return const SessionExpiredException();
+    final data = e.response?.data;
+    if (data is Map<String, dynamic> && data['body'] is String) {
+      return ApiException(data['body'] as String, statusCode: data['statusCode']?.toString());
+    }
     return switch (e.type) {
       DioExceptionType.connectionError ||
       DioExceptionType.connectionTimeout ||

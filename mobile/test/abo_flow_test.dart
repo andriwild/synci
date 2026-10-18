@@ -4,6 +4,8 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:synci/app.dart';
 import 'package:synci/core/auth/auth_controller.dart';
 import 'package:synci/core/auth/auth_service.dart';
+import 'package:synci/features/organisation/organisation.dart';
+import 'package:synci/features/organisation/organisation_repository.dart';
 import 'package:synci/features/sport/sport.dart';
 import 'package:synci/features/sport/sport_repository.dart';
 import 'package:synci/features/sync_config/sync_config.dart';
@@ -23,6 +25,7 @@ void main() {
         overrides: [
           authControllerProvider.overrideWith(_LoggedIn.new),
           sportRepositoryProvider.overrideWithValue(_FakeSportRepository()),
+          organisationRepositoryProvider.overrideWithValue(_NoOrganisations()),
           syncConfigRepositoryProvider.overrideWithValue(syncConfigs),
           activeSyncConfigIdProvider.overrideWith(_InMemorySelection.new),
         ],
@@ -132,4 +135,9 @@ class _FakeSportRepository implements SportRepository {
   @override
   Future<PagedResult<SportEvent>> getEvents(String sportId, {required int page, required int pageSize}) async =>
       const PagedResult(amount: 0, elements: []);
+}
+
+class _NoOrganisations extends Fake implements OrganisationRepository {
+  @override
+  Future<List<MyOrganisation>> getMine() async => const [];
 }

@@ -31,7 +31,7 @@ class AboItemsList extends ConsumerWidget {
         if (config.sports.isNotEmpty) const _SectionTitle('Sportarten'),
         for (final sport in config.sports)
           _AboItemTile(
-            icon: Icons.emoji_events_outlined,
+            icon: sport.isOrganisation ? Icons.apartment : Icons.emoji_events_outlined,
             title: sport.label,
             subtitle: sport.rootSport != sport.label ? sport.rootSport : null,
             onRemove: () => removeFromAbo(

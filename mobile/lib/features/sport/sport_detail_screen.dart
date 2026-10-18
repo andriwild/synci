@@ -6,6 +6,9 @@ import 'package:intl/intl.dart';
 
 import '../../core/analytics/analytics.dart';
 import '../../core/widgets/feedback.dart';
+import '../organisation/organisation.dart';
+import '../organisation/organisation_detail.dart';
+import '../organisation/organisation_providers.dart';
 import '../sync_config/abo_actions.dart';
 import '../sync_config/active_abo_bar.dart';
 import '../sync_config/sync_config_providers.dart';
@@ -21,7 +24,7 @@ class SportDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final sports = ref.watch(sportsProvider);
+    final sports = ref.watch(sportTreeProvider);
     final node = sports.value == null ? null : findSport(sports.value!, sportId);
 
     return Scaffold(
@@ -30,6 +33,10 @@ class SportDetailScreen extends ConsumerWidget {
       body: switch (node) {
         _ when sports.isLoading => const Center(child: CircularProgressIndicator()),
         _ when sports.hasError => ErrorView(error: sports.error!, onRetry: () => ref.invalidate(sportsProvider)),
+        final node? when node.sport.isOrganisation => switch (ref.watch(organisationOfSportProvider(sportId))) {
+          null => const EmptyView(icon: Icons.lock_outline, message: 'Diese Organisation ist nicht mehr verfügbar.'),
+          final organisation => _SportDetail(sport: node.sport, organisation: organisation),
+        },
         null => const EmptyView(icon: Icons.search_off, message: 'Diese Sportart gibt es nicht mehr.'),
         final node => _SportDetail(sport: node.sport),
       },
@@ -38,15 +45,39 @@ class SportDetailScreen extends ConsumerWidget {
 }
 
 class _SportDetail extends ConsumerWidget {
-  const _SportDetail({required this.sport});
+  const _SportDetail({required this.sport, this.organisation});
 
   final Sport sport;
+  final MyOrganisation? organisation;
+
+  Widget _eventTrailing(BuildContext context, WidgetRef ref, SportEvent event) {
+    final active = ref.watch(activeSyncConfigProvider);
+    if (active?.coversEvent(event, viaSportId: sport.id) ?? false) {
+      return const Icon(Icons.check_circle, semanticLabel: 'Im Abo');
+    }
+    return IconButton(
+      tooltip: 'Event hinzufügen',
+      icon: const Icon(Icons.add_circle_outline),
+      onPressed: () => editActiveAbo(
+        context,
+        ref,
+        change: (c) => c.copyWith(events: [...c.events, event]),
+        message: '${event.name} hinzugefügt',
+        onSaved: () => ref.read(analyticsProvider).event('subscription-add', {
+          'type': 'event',
+          'name': event.name,
+          if (organisation == null) 'sport': sport.label,
+        }),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final active = ref.watch(activeSyncConfigProvider);
     final events = ref.watch(eventsProvider(sport.id));
     final sportAdded = active?.containsSport(sport.id) ?? false;
+    final organisation = this.organisation;
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
@@ -89,8 +120,11 @@ class _SportDetail extends ConsumerWidget {
             ),
           ),
         ),
-        _TeamsSection(sport: sport),
-        const _SectionHeader('Events'),
+        if (organisation != null)
+          OrganisationToolbar(organisation: organisation, sport: sport)
+        else
+          _TeamsSection(sport: sport),
+        _SectionHeader(organisation == null ? 'Events' : 'Kommende Events'),
         ...events.when(
           loading: () => const [
             Center(
@@ -99,31 +133,24 @@ class _SportDetail extends ConsumerWidget {
           ],
           error: (error, _) => [ErrorView(error: error, onRetry: () => ref.invalidate(eventsProvider(sport.id)))],
           data: (paged) => [
-            if (paged.items.isEmpty) const Padding(padding: EdgeInsets.all(8), child: Text('Keine Events vorhanden')),
-            for (final event in paged.items)
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.event_outlined),
-                title: Text(event.name),
-                subtitle: event.startsOn == null ? null : Text(_dateFormat.format(event.startsOn!)),
-                trailing: (active?.coversEvent(event, viaSportId: sport.id) ?? false)
-                    ? const Icon(Icons.check_circle, semanticLabel: 'Im Abo')
-                    : IconButton(
-                        tooltip: 'Event hinzufügen',
-                        icon: const Icon(Icons.add_circle_outline),
-                        onPressed: () => editActiveAbo(
-                          context,
-                          ref,
-                          change: (c) => c.copyWith(events: [...c.events, event]),
-                          message: '${event.name} hinzugefügt',
-                          onSaved: () => ref.read(analyticsProvider).event('subscription-add', {
-                            'type': 'event',
-                            'name': event.name,
-                            'sport': sport.label,
-                          }),
-                        ),
-                      ),
-              ),
+            if (organisation != null)
+              OrganisationEventList(
+                organisation: organisation,
+                sport: sport,
+                events: paged,
+                trailing: (event) => _eventTrailing(context, ref, event),
+              )
+            else ...[
+              if (paged.items.isEmpty) const Padding(padding: EdgeInsets.all(8), child: Text('Keine Events vorhanden')),
+              for (final event in paged.items)
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.event_outlined),
+                  title: Text(event.name),
+                  subtitle: event.startsOn == null ? null : Text(_dateFormat.format(event.startsOn!)),
+                  trailing: _eventTrailing(context, ref, event),
+                ),
+            ],
             if (paged.hasMore)
               _LoadMoreButton(
                 loading: paged.isLoadingMore,

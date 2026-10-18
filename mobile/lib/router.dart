@@ -5,6 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'core/analytics/analytics.dart';
 import 'features/account/account_screen.dart';
 import 'features/account/info_screens.dart';
+import 'features/organisation/discover_screen.dart';
+import 'features/organisation/members_screen.dart';
+import 'features/organisation/organisations_screen.dart';
 import 'features/sport/sport_detail_screen.dart';
 import 'features/sport/sport_tree_screen.dart';
 import 'features/sync_config/abos_screen.dart';
@@ -36,6 +39,21 @@ final routerProvider = Provider<GoRouter>((ref) {
           StatefulShellBranch(
             routes: [
               GoRoute(
+                path: '/organisationen',
+                builder: (_, _) => const OrganisationsScreen(),
+                routes: [
+                  GoRoute(path: 'entdecken', builder: (_, _) => const DiscoverOrganisationsScreen()),
+                  GoRoute(
+                    path: ':organisationId/mitglieder',
+                    builder: (_, state) => MembersScreen(organisationId: state.pathParameters['organisationId']!),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
                 path: '/konto',
                 builder: (_, _) => const AccountScreen(),
                 routes: [
@@ -53,10 +71,9 @@ final routerProvider = Provider<GoRouter>((ref) {
   final analytics = ref.read(analyticsProvider);
   String? lastPath;
   void trackScreen() {
-    final path = router.routerDelegate.currentConfiguration.uri.path.replaceAllMapped(
-      RegExp(r'^/sport/[^/]+'),
-      (_) => '/sport/detail',
-    );
+    final path = router.routerDelegate.currentConfiguration.uri.path
+        .replaceAllMapped(RegExp(r'^/sport/[^/]+'), (_) => '/sport/detail')
+        .replaceAllMapped(RegExp(r'^/organisationen/(?!entdecken)[^/]+'), (_) => '/organisationen/detail');
     if (path == lastPath) return;
     lastPath = path;
     analytics.screen(path);
@@ -93,6 +110,11 @@ class _HomeShell extends StatelessWidget {
           icon: Icon(Icons.event_note_outlined),
           selectedIcon: Icon(Icons.event_note),
           label: 'Meine Abos',
+        ),
+        NavigationDestination(
+          icon: Icon(Icons.apartment_outlined),
+          selectedIcon: Icon(Icons.apartment),
+          label: 'Organisationen',
         ),
         NavigationDestination(icon: Icon(Icons.person_outline), selectedIcon: Icon(Icons.person), label: 'Konto'),
       ],
