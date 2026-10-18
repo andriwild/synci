@@ -2,10 +2,12 @@ package ch.boosters.backend.auth
 
 import arrow.core.raise.either
 import ch.boosters.backend.data.configuration.JooqEitherDsl
+import ch.boosters.backend.data.user.UserService
 import ch.boosters.backend.errorhandling.SynciEither
 import ch.boosters.data.tables.references.USERS_TABLE
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.Authentication
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -22,7 +24,8 @@ data class UserProfileDto(val email: String?, val name: String?)
 @PreAuthorize("isAuthenticated()")
 class UserController(
     private val dsl: JooqEitherDsl,
-    private val currentUserResolver: CurrentUserResolver
+    private val currentUserResolver: CurrentUserResolver,
+    private val userService: UserService,
 ) {
 
     @PutMapping("/me")
@@ -35,5 +38,12 @@ class UserController(
                 .where(USERS_TABLE.ID.eq(userId))
                 .execute()
         }.bind()
+    }
+
+    @DeleteMapping("/me")
+    fun deleteCurrentUser(authentication: Authentication): SynciEither<Int> = either {
+        val userId = currentUserResolver.getUserId(authentication).bind()
+        // The name is the "sub" claim, i.e. the Auth0 ID
+        userService.deleteUser(userId, authentication.name).bind()
     }
 }

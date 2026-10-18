@@ -3,7 +3,7 @@ package ch.boosters.backend.data.user
 import arrow.core.left
 import arrow.core.right
 import ch.boosters.backend.auth.Auth0ManagementClient
-import ch.boosters.backend.errorhandling.ExternalServiceError
+import ch.boosters.backend.errorhandling.ExternalSourceError
 import ch.boosters.data.tables.references.SYNC_CONFIGS_TABLE
 import ch.boosters.data.tables.references.SYNC_CONFIGS_USERS_TABLE
 import ch.boosters.data.tables.references.USERS_TABLE
@@ -118,7 +118,7 @@ class UserAccountIntegrationTest {
         val subject = newSubject()
         val token = token(subject)
         get("/syncconfigs", token)
-        given(auth0ManagementClient.deleteUser(subject)).willReturn(ExternalServiceError("Auth0 is down").left())
+        given(auth0ManagementClient.deleteUser(subject)).willReturn(ExternalSourceError("Auth0 is down").left())
 
         val response = exchange(HttpMethod.DELETE, "/users/me", token)
 

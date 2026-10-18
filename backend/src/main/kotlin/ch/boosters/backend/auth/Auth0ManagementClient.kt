@@ -3,7 +3,7 @@ package ch.boosters.backend.auth
 import arrow.core.Either
 import arrow.core.raise.either
 import arrow.core.raise.ensure
-import ch.boosters.backend.errorhandling.ExternalServiceError
+import ch.boosters.backend.errorhandling.ExternalSourceError
 import ch.boosters.backend.errorhandling.SynciEither
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.springframework.http.HttpHeaders
@@ -30,7 +30,7 @@ class Auth0ManagementClient(private val properties: Auth0ManagementProperties) {
 
     fun deleteUser(auth0Id: String): SynciEither<Unit> = either {
         ensure(properties.domain.isNotBlank() && properties.clientId.isNotBlank() && properties.clientSecret.isNotBlank()) {
-            ExternalServiceError("Auth0 Management API ist nicht konfiguriert (auth0.management.*)")
+            ExternalSourceError("Auth0 Management API is not configured (auth0.management.*)")
         }
         Either.catch {
             try {
@@ -44,7 +44,7 @@ class Auth0ManagementClient(private val properties: Auth0ManagementProperties) {
                 // Already deleted, e.g. on a retry
             }
             Unit
-        }.mapLeft { ExternalServiceError("Auth0-Benutzer $auth0Id konnte nicht gelöscht werden: ${it.message}") }.bind()
+        }.mapLeft { ExternalSourceError("Auth0 user $auth0Id could not be deleted: ${it.message}") }.bind()
     }
 
     private fun accessToken(): String {
@@ -63,7 +63,7 @@ class Auth0ManagementClient(private val properties: Auth0ManagementProperties) {
             )
             .retrieve()
             .body(TokenResponse::class.java)
-            ?: error("Leere Token-Antwort von Auth0")
+            ?: error("Empty token response from Auth0")
 
         return CachedToken(response.accessToken, Instant.now().plusSeconds(response.expiresIn))
             .also { cachedToken = it }
