@@ -1,0 +1,5 @@
+source "https://rubygems.org"
+
+# Older versions fail against App Store Connect with a misleading
+# "A required agreement is missing or has expired" error
+gem "fastlane", ">= 2.238"

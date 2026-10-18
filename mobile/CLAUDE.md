@@ -14,6 +14,16 @@ flutter test
 `config/<stage>.json` holds the runtime config (`BACKEND_URL`, `AUTH0_*`, `UMAMI_*`), see `lib/config/env.dart`.
 `AUTH0_CLIENT_ID` is the client ID of the native Auth0 application "Synci App".
 
+## Release
+
+Fastlane, run from `ios/` or `android/` with `bundle exec fastlane <lane>` (lanes and setup in `README.md`). Builds use `config/prod.json`; the build number is shared by both stores.
+
+Credentials live outside the repo, never commit or print them:
+
+- Android upload key: `~/.android/synci-upload.jks` (alias `upload`), referenced by `android/key.properties` (gitignored, holds the passwords). Without `key.properties` the Android build lanes stop.
+- App Store Connect API key: `~/.fastlane/AuthKey_7AHDF9BDTX.p8`, also used for iOS signing (`-allowProvisioningUpdates`). The key has the Admin role, which cloud signing needs.
+- Play service account: `~/.fastlane/klikkr-play.json` (`fastlane-klikkr@klikkr-fastlane.iam.gserviceaccount.com`, shared with Klikkr).
+
 ## Conventions
 
 - UI texts in German (Swiss spelling, "ss" instead of "ß"), addressing the user with "du".

@@ -1,0 +1,176 @@
+default_platform(:ios)
+
+require_relative "../../fastlane_shared/build_number"
+
+IPA_DIR = File.join(FLUTTER_DIR, "build/ios/ipa")
+
+EDITABLE_STATES = [
+  Spaceship::ConnectAPI::AppStoreVersion::AppStoreState::PREPARE_FOR_SUBMISSION,
+  Spaceship::ConnectAPI::AppStoreVersion::AppStoreState::DEVELOPER_REJECTED,
+  Spaceship::ConnectAPI::AppStoreVersion::AppStoreState::METADATA_REJECTED,
+  Spaceship::ConnectAPI::AppStoreVersion::AppStoreState::REJECTED,
+].freeze
+
+def latest_ipa
+  Dir.glob(File.join(IPA_DIR, "*.ipa")).max_by { |f| File.mtime(f) } ||
+    UI.user_error!("No .ipa found in #{IPA_DIR}")
+end
+
+def edit_version
+  Spaceship::ConnectAPI.token = Spaceship::ConnectAPI::Token.create(
+    key_id: API_KEY_ID,
+    issuer_id: API_ISSUER_ID,
+    filepath: API_KEY_PATH,
+  )
+  Spaceship::ConnectAPI::App.find(APP_IDENTIFIER)
+    &.get_edit_app_store_version(platform: Spaceship::ConnectAPI::Platform::IOS)
+end
+
+platform :ios do
+  desc "Build the release IPA with the next build number"
+  lane :build do |options|
+    build_num = options[:build_number] || next_build_number
+    flutter_release_build("ios", "--config-only", build_number: build_num)
+    # Signs with the App Store Connect API key, no Apple ID in Xcode needed
+    signing = "-allowProvisioningUpdates -authenticationKeyPath #{API_KEY_PATH} " \
+              "-authenticationKeyID #{API_KEY_ID} -authenticationKeyIssuerID #{API_ISSUER_ID}"
+    build_app(
+      workspace: File.join(FLUTTER_DIR, "ios/Runner.xcworkspace"),
+      scheme: "Runner",
+      export_method: "app-store",
+      output_directory: IPA_DIR,
+      xcargs: signing,
+    )
+    UI.success("IPA built at #{latest_ipa} (build #{build_num})")
+  end
+
+  desc "Build and upload to TestFlight"
+  lane :beta do
+    api_key = app_store_connect_key
+    build
+    upload_to_testflight(api_key: api_key, ipa: latest_ipa, skip_waiting_for_build_processing: true)
+  end
+
+  desc "Build and upload to the App Store as draft (submit manually)"
+  lane :release do
+    api_key = app_store_connect_key
+    build
+    upload_to_app_store(
+      api_key: api_key,
+      ipa: latest_ipa,
+      skip_metadata: true,
+      skip_screenshots: true,
+      precheck_include_in_app_purchases: false,
+      submit_for_review: false,
+      automatic_release: false,
+      force: true,
+    )
+  end
+
+  # Release lanes skip metadata, so the copyright year is set here
+  private_lane :stamp_copyright do
+    version = edit_version
+    if version.nil? || !EDITABLE_STATES.include?(version.app_store_state)
+      UI.important("No editable App Store version — copyright unchanged.")
+      next
+    end
+    current = version.copyright.to_s
+    holder = current.sub(/\A\s*(©\s*)?\d{4}\s*/, "").strip
+    holder = COPYRIGHT_HOLDER if holder.empty?
+    wanted = "#{Time.now.year} #{holder}"
+    version.update(attributes: { copyright: wanted }) unless current == wanted
+  rescue StandardError => e
+    UI.important("Could not stamp the copyright year: #{e.message}")
+  end
+
+  # Apple rejects a submission without "What's New"
+  private_lane :upload_release_notes do
+    version = edit_version
+    UI.user_error!("No editable App Store version found.") if version.nil?
+    unless EDITABLE_STATES.include?(version.app_store_state)
+      UI.user_error!("Version #{version.version_string} is #{version.app_store_state}, not editable.")
+    end
+    metadata_dir = File.expand_path("metadata", __dir__)
+    version.get_app_store_version_localizations.each do |loc|
+      file = File.join(metadata_dir, loc.locale, "release_notes.txt")
+      next UI.important("No release notes for #{loc.locale}.") unless File.exist?(file)
+      text = File.read(file).strip
+      loc.update(attributes: { whatsNew: text }) unless text.empty?
+    end
+  end
+
+  private_lane :submit do |options|
+    stamp_copyright
+    upload_release_notes
+    upload_to_app_store(
+      api_key: app_store_connect_key,
+      ipa: options[:ipa],
+      skip_binary_upload: options[:ipa].nil?,
+      skip_metadata: true,
+      skip_screenshots: true,
+      precheck_include_in_app_purchases: false,
+      submit_for_review: true,
+      automatic_release: true,
+      force: true,
+      submission_information: {
+        add_id_info_uses_idfa: false,
+        export_compliance_uses_encryption: false,
+      },
+    )
+  end
+
+  desc "Build, submit for review and release automatically after approval"
+  lane :release_live do
+    build
+    submit(ipa: latest_ipa)
+  end
+
+  desc "Submit the newest IPA in build/ios/ipa for review (no rebuild)"
+  lane :release_live_upload do
+    submit(ipa: latest_ipa)
+  end
+
+  desc "Submit the version already uploaded to App Store Connect"
+  lane :submit_only do
+    submit
+  end
+
+  desc "Upload only the listing texts from metadata/<locale>/"
+  lane :metadata do
+    upload_to_app_store(
+      api_key: app_store_connect_key,
+      app_version: pubspec_version_name,
+      skip_binary_upload: true,
+      skip_screenshots: true,
+      skip_metadata: false,
+      run_precheck_before_submit: false,
+      precheck_include_in_app_purchases: false,
+      submit_for_review: false,
+      automatic_release: false,
+      force: true,
+    )
+  end
+
+  desc "Upload only the screenshots from screenshots/<locale>/ (replaces the set)"
+  lane :screenshots do
+    upload_to_app_store(
+      api_key: app_store_connect_key,
+      skip_binary_upload: true,
+      skip_metadata: true,
+      skip_screenshots: false,
+      skip_app_version_update: true,
+      overwrite_screenshots: true,
+      run_precheck_before_submit: false,
+      precheck_include_in_app_purchases: false,
+      submit_for_review: false,
+      automatic_release: false,
+      force: true,
+    )
+  end
+
+  desc "Validate the App Store Connect API key"
+  lane :validate do
+    api_key = app_store_connect_key
+    UI.success("API key loaded: #{api_key[:key_id]}")
+  end
+end

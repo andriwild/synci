@@ -1,0 +1,2 @@
+json_key_file(ENV["GOOGLE_PLAY_JSON_KEY_FILE"] || File.expand_path("~/.fastlane/klikkr-play.json"))
+package_name("ch.synci.app")

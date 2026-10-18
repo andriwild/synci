@@ -1,0 +1,101 @@
+default_platform(:android)
+
+require_relative "../../fastlane_shared/build_number"
+
+AAB_PATH = File.join(FLUTTER_DIR, "build/app/outputs/bundle/release/app-release.aab")
+
+def require_release_key
+  return if File.exist?(File.join(FLUTTER_DIR, "android/key.properties"))
+  UI.user_error!("android/key.properties missing — release builds would be signed with the debug key")
+end
+
+def upload_aab(track:, release_status:, changelogs: false)
+  UI.user_error!("AAB missing at #{AAB_PATH} — run build first") unless File.exist?(AAB_PATH)
+  upload_to_play_store(
+    track: track,
+    aab: AAB_PATH,
+    release_status: release_status,
+    skip_upload_metadata: true,
+    skip_upload_changelogs: !changelogs,
+    skip_upload_images: true,
+    skip_upload_screenshots: true,
+  )
+end
+
+platform :android do
+  desc "Build the release App Bundle with the next build number"
+  lane :build do |options|
+    require_release_key
+    build_num = options[:build_number] || next_build_number
+    flutter_release_build("appbundle", build_number: build_num)
+    UI.success("AAB built at #{AAB_PATH} (build #{build_num})")
+  end
+
+  desc "Build and upload to a test track as draft (default internal; closed testing: track:alpha)"
+  lane :beta do |options|
+    build
+    upload_aab(track: options[:track] || "internal", release_status: "draft")
+  end
+
+  desc "Promote the latest internal release to production"
+  lane :promote do
+    upload_to_play_store(
+      track: "internal",
+      track_promote_to: "production",
+      skip_upload_apk: true,
+      skip_upload_aab: true,
+      skip_upload_metadata: true,
+      skip_upload_changelogs: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+    )
+  end
+
+  desc "Build and upload to production as draft (publish manually)"
+  lane :release do
+    build
+    upload_aab(track: "production", release_status: "draft", changelogs: true)
+  end
+
+  desc "Build and publish to production directly (full rollout)"
+  lane :release_live do
+    build
+    upload_aab(track: "production", release_status: "completed", changelogs: true)
+  end
+
+  desc "Upload the already built AAB to production (retry, pass release_status:draft to stop short)"
+  lane :release_live_upload do |options|
+    upload_aab(track: "production", release_status: options[:release_status] || "completed", changelogs: true)
+  end
+
+  desc "Upload only the listing texts from metadata/android/<locale>/ (dry_run:true validates)"
+  lane :metadata do |options|
+    upload_to_play_store(
+      skip_upload_apk: true,
+      skip_upload_aab: true,
+      skip_upload_metadata: false,
+      skip_upload_changelogs: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      validate_only: options[:dry_run] == true,
+    )
+  end
+
+  desc "Upload only the listing images and screenshots (dry_run:true validates)"
+  lane :screenshots do |options|
+    upload_to_play_store(
+      skip_upload_apk: true,
+      skip_upload_aab: true,
+      skip_upload_metadata: true,
+      skip_upload_changelogs: true,
+      skip_upload_images: false,
+      skip_upload_screenshots: false,
+      validate_only: options[:dry_run] == true,
+    )
+  end
+
+  desc "Validate the Play Store service account"
+  lane :validate do
+    validate_play_store_json_key
+  end
+end

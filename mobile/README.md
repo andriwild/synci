@@ -57,13 +57,39 @@ Both tools rewrite `ios/Runner/Info.plist` and `ios/Runner.xcodeproj/project.pbx
 
 ## Release
 
+Releases run through Fastlane from a developer machine, run from `ios/` or `android/`:
+
 ```bash
-flutter build ipa --dart-define-from-file=config/prod.json
-flutter build appbundle --dart-define-from-file=config/prod.json
+bundle exec fastlane beta              # TestFlight / Play internal test track (draft)
+bundle exec fastlane beta track:alpha  # Android: closed test track
+bundle exec fastlane release           # draft on the App Store / Play production
+bundle exec fastlane release_live      # submit for review / publish directly
+bundle exec fastlane metadata          # store texts from fastlane/metadata only
 ```
 
-Before the first store submission:
+The build lanes check `config/prod.json`, take the next build number from TestFlight and Play together and build with `--dart-define-from-file=config/prod.json`.
 
-- Android: create an upload key and a `signingConfig` for release builds (currently signed with the debug key), enable Play App Signing, fill in the Data safety form. Private developer accounts created after 13 Nov 2023 need a closed test with at least 12 testers for 14 consecutive days before production.
-- iOS: create the app `ch.synci.app` in App Store Connect, fill in App Privacy (email, name and user ID for app functionality; anonymous usage data; no tracking), upload screenshots (the app is iPhone-only).
-- Both: privacy policy URL (`https://synci.ch/impressum`), account deletion link (`https://synci.ch/faq`), and an email/password demo account for the reviewers.
+Credentials (shared with Klikkr, same Apple team and Play developer account):
+
+| File | Override |
+|---|---|
+| `~/.fastlane/AuthKey_7AHDF9BDTX.p8` (App Store Connect API key) | `APP_STORE_CONNECT_API_KEY_PATH` |
+| `~/.fastlane/klikkr-play.json` (Play service account) | `GOOGLE_PLAY_JSON_KEY_FILE` |
+
+`bundle exec fastlane validate` checks both.
+
+Before the first release:
+
+- Android:
+    - Create an upload key and `android/key.properties` (`storeFile`, `storePassword`, `keyAlias`, `keyPassword`; both gitignored). Without it the build lanes stop.
+    - Create the app `ch.synci.app` in the Play Console and upload the first bundle by hand; Play only accepts API uploads after that.
+    - Give the Play service account access to the app (Users and permissions).
+    - Enable Play App Signing and fill in the Data safety form.
+    - Private developer accounts created after 13 Nov 2023 need a closed test with at least 12 testers for 14 consecutive days before production.
+- iOS:
+    - Create the app `ch.synci.app` in App Store Connect.
+    - Fill in App Privacy (email, name and user ID for app functionality; anonymous usage data; no tracking).
+    - Upload screenshots (the app is iPhone-only).
+- Both:
+    - Privacy policy URL `https://synci.ch/impressum`, account deletion link `https://synci.ch/faq`.
+    - An email/password demo account for the reviewers, entered in the store consoles (not in the repo).

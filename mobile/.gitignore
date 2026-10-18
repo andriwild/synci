@@ -46,3 +46,14 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# Fastlane
+**/fastlane/report.xml
+**/fastlane/Preview.html
+**/fastlane/README.md
+**/fastlane/test_output
+**/fastlane/screenshots/**/*.png
+**/fastlane/metadata/android/*/images/
+Gemfile.lock
+*.p8
+*-play.json
