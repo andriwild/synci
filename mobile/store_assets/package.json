@@ -1,0 +1,5 @@
+{
+  "name": "synci-store-assets",
+  "private": true,
+  "description": "Anchors mokkr preset paths to this directory, see README.md"
+}

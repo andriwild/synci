@@ -1,0 +1,99 @@
+{
+  "version": 1,
+  "name": "synci",
+  "style": {
+    "background": {
+      "type": "linearGradient",
+      "angle": 160,
+      "stops": [
+        "#3D5A80",
+        "#293241"
+      ]
+    },
+    "devicePadding": 0.07,
+    "shadow": {
+      "blur": 0.016,
+      "opacity": 0.35,
+      "offsetY": 0.012
+    },
+    "caption": {
+      "band": 0.3,
+      "position": "top",
+      "size": 0.068,
+      "color": "#FFFFFF",
+      "align": "center",
+      "balance": true,
+      "maxLines": 2,
+      "subline": {
+        "size": 0.034,
+        "color": "#C9D8EA"
+      }
+    }
+  },
+  "targets": [
+    {
+      "layers": [
+        {
+          "device": "phone-ios-6-9",
+          "screenshots": [
+            "screens/ios/01_sportarten.png",
+            "screens/ios/02_liga.png",
+            "screens/ios/03_abos.png",
+            "screens/ios/04_kalender.png",
+            "screens/ios/05_verein.png"
+          ]
+        }
+      ],
+      "captions": [
+        {
+          "title": "Alle Spiele automatisch\nim Kalender",
+          "subline": "Ligen, Teams und Events aus 16 Sportarten"
+        },
+        "Liga oder Team mit einem\nTipp abonnieren",
+        "Alle deine Abos\nim Überblick",
+        "Mit Apple, Google oder\nOutlook verbinden",
+        "Auch die Termine\ndeines Vereins"
+      ],
+      "output": {
+        "dir": "out/ios",
+        "format": "png",
+        "width": 1320,
+        "height": 2868,
+        "nameTemplate": "{screenshotName}",
+        "store": "appstore"
+      }
+    },
+    {
+      "layers": [
+        {
+          "device": "phone-android-compact",
+          "screenshots": [
+            "screens/android/01_sportarten.png",
+            "screens/android/02_liga.png",
+            "screens/android/03_abos.png",
+            "screens/android/04_kalender.png",
+            "screens/android/05_verein.png"
+          ]
+        }
+      ],
+      "captions": [
+        {
+          "title": "Alle Spiele automatisch\nim Kalender",
+          "subline": "Ligen, Teams und Events aus 16 Sportarten"
+        },
+        "Liga oder Team mit einem\nTipp abonnieren",
+        "Alle deine Abos\nim Überblick",
+        "Mit Apple, Google oder\nOutlook verbinden",
+        "Auch die Termine\ndeines Vereins"
+      ],
+      "output": {
+        "dir": "out/android",
+        "format": "png",
+        "width": 1080,
+        "height": 1920,
+        "nameTemplate": "{screenshotName}",
+        "store": "play"
+      }
+    }
+  ]
+}

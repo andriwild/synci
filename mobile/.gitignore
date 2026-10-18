@@ -57,3 +57,8 @@ app.*.map.json
 Gemfile.lock
 *.p8
 *-play.json
+
+# Store assets (generated)
+store_assets/screens/
+store_assets/out/
+store_assets/node_modules/

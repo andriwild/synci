@@ -71,6 +71,8 @@ platform :android do
   desc "Upload only the listing texts from metadata/android/<locale>/ (dry_run:true validates)"
   lane :metadata do |options|
     upload_to_play_store(
+      # Play looks up a release on the track even when no binary is uploaded
+      track: "internal",
       skip_upload_apk: true,
       skip_upload_aab: true,
       skip_upload_metadata: false,
@@ -84,6 +86,7 @@ platform :android do
   desc "Upload only the listing images and screenshots (dry_run:true validates)"
   lane :screenshots do |options|
     upload_to_play_store(
+      track: "internal",
       skip_upload_apk: true,
       skip_upload_aab: true,
       skip_upload_metadata: true,
