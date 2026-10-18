@@ -33,14 +33,11 @@ export const DatenschutzPage: FC = () => {
                 <section>
                     <Title level={4} style={{ marginTop: 0 }}>Verantwortlich</Title>
                     <Paragraph>
-                        Synci, Andri Wild<br />
+                        Synci, Elias Haas<br />
                         Im Baumgarten 4<br />
                         6252 Dagmersellen<br />
                         Schweiz<br />
                         E-Mail: <Link href="mailto:mailtosynci@gmail.com">mailtosynci@gmail.com</Link>
-                    </Paragraph>
-                    <Paragraph>
-                        Ansprechperson für Datenschutz ist Elias Haas, erreichbar über dieselbe E-Mail-Adresse.
                     </Paragraph>
                 </section>
 
