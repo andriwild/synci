@@ -18,6 +18,18 @@
     padding-bottom: 88px;
 }
 
+/* From tablet up the page fits the viewport; the tree columns and the detail scroll on their own */
+@media (min-width: 768px) {
+    .sport-layout,
+    .sport-tree-panel {
+        min-height: 0;
+    }
+
+    .sport-tree-panel {
+        padding-bottom: 0;
+    }
+}
+
 /* ---------- Floating subscription button ---------- */
 .sync-fab__badge {
     position: fixed !important;

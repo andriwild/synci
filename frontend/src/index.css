@@ -110,6 +110,19 @@ h3.ant-typography {
   background: white;
 }
 
+/* Viewport mode (see AppLayout): only the content box scrolls, never the page. Phones keep the document scroll. */
+@media (min-width: 768px) {
+  .app-layout--fit {
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  .app-layout--fit .app-content {
+    overflow: hidden;
+  }
+}
+
 /* Modals: antd positions them 100px from the top, which wastes most of a phone screen */
 @media (max-width: 767.98px) {
   .ant-modal {
