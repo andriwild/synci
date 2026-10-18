@@ -18,6 +18,15 @@
     padding-top: 20px;
 }
 
+@media (min-width: 768px) {
+    .tree-content {
+        min-height: 0;
+        overflow-y: auto;
+        /* keep the last rows reachable below the floating button */
+        padding-bottom: 88px;
+    }
+}
+
 @media (max-width: 767.98px) {
     .tree-content {
         flex: 1 1 auto;

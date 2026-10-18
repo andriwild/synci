@@ -18,6 +18,18 @@
     padding-bottom: 88px;
 }
 
+/* From tablet up the page fits the viewport; the tree columns and the detail scroll on their own */
+@media (min-width: 768px) {
+    .sport-layout,
+    .sport-tree-panel {
+        min-height: 0;
+    }
+
+    .sport-tree-panel {
+        padding-bottom: 0;
+    }
+}
+
 /* ---------- Floating subscription button ---------- */
 .sync-fab__badge {
     position: fixed !important;
@@ -113,5 +125,17 @@
 @media (prefers-reduced-motion: reduce) {
     .sync-overlay {
         animation: none;
+    }
+}
+
+/* From tablet up the footer is always visible on this page: lift the button and its overlay above it */
+@media (min-width: 768px) {
+    .sync-fab__badge {
+        bottom: calc(var(--page-gutter) + 72px + env(safe-area-inset-bottom));
+    }
+
+    .sync-overlay {
+        bottom: calc(var(--page-gutter) + 72px + env(safe-area-inset-bottom));
+        max-height: min(720px, calc(100vh - 120px));
     }
 }
