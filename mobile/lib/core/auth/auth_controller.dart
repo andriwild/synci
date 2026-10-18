@@ -29,7 +29,11 @@ class AuthController extends AsyncNotifier<AppUser?> {
   AuthService get _service => ref.read(authServiceProvider);
 
   @override
-  Future<AppUser?> build() => _service.restore();
+  Future<AppUser?> build() async {
+    final user = await _service.restore();
+    if (user != null) _reportProfile(user);
+    return user;
+  }
 
   /// Returns `false` if the user cancels.
   Future<bool> login({bool signup = false}) async {
@@ -37,6 +41,7 @@ class AuthController extends AsyncNotifier<AppUser?> {
     try {
       final user = await _service.login(signup: signup);
       state = AsyncData(user);
+      _reportProfile(user);
       return true;
     } on WebAuthenticationException catch (e) {
       if (e.isUserCancelledException) return false;
@@ -57,4 +62,10 @@ class AuthController extends AsyncNotifier<AppUser?> {
   }
 
   void sessionExpired() => state = const AsyncData(null);
+
+  // The access token carries no email or name; organisation member lists need them
+  void _reportProfile(AppUser user) {
+    if (user.email == null) return;
+    ref.read(apiClientProvider).put('users/me', {'email': user.email, 'name': user.fullName}).ignore();
+  }
 }

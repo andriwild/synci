@@ -6,14 +6,24 @@ import '../../config/env.dart';
 import '../api/api_client.dart';
 
 class AppUser {
-  const AppUser({this.name, this.email, this.pictureUrl});
+  const AppUser({this.name, this.email, this.pictureUrl, this.fullName});
 
-  factory AppUser.fromProfile(UserProfile profile) =>
-      AppUser(name: profile.name, email: profile.email, pictureUrl: profile.pictureUrl);
+  factory AppUser.fromProfile(UserProfile profile) {
+    final fullName = [profile.givenName, profile.familyName].whereType<String>().where((s) => s.isNotEmpty).join(' ');
+    return AppUser(
+      name: profile.name,
+      email: profile.email,
+      pictureUrl: profile.pictureUrl,
+      fullName: fullName.isEmpty ? null : fullName,
+    );
+  }
 
   final String? name;
   final String? email;
   final Uri? pictureUrl;
+
+  /// Given and family name, as the website reports it; `null` for email/password accounts.
+  final String? fullName;
 }
 
 class AuthService {
