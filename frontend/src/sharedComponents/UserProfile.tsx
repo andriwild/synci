@@ -1,12 +1,12 @@
-import {Button, Divider, Flex, Image, Popover, theme, Typography} from "antd";
+import {Avatar, Button, Divider, Flex, Popover, Spin, theme, Typography} from "antd";
 import Title from "antd/es/typography/Title";
-import {CalendarBlank} from "@phosphor-icons/react";
+import {CalendarBlank, UserCircle, UsersThree} from "@phosphor-icons/react";
 import {useNavigate} from "react-router-dom";
 import {useAuth0} from "@auth0/auth0-react";
 import {userActions, useUser} from "../services/user/UserSlice.ts";
 import {useDispatch} from "react-redux";
 import {useState} from "react";
-import useBreakpoint from "antd/es/grid/hooks/useBreakpoint";
+import {useResponsive} from "../utils/useResponsive.ts";
 import {track} from "../utils/analytics.ts";
 import {DeleteAccountModal} from "./DeleteAccountModal.tsx";
 
@@ -15,7 +15,7 @@ export const UserProfile = () => {
     const navigate = useNavigate();
     const user = useUser();
     const dispatch = useDispatch();
-    const screens = useBreakpoint();
+    const {isMobile, isDesktop, isXs} = useResponsive();
 
     const [opened, setOpened] = useState(false);
 
@@ -27,132 +27,101 @@ export const UserProfile = () => {
 
     const signup = () => {
         track("signup-click");
-        login({ authorizationParams: { screen_hint: "signup" } });
+        login({authorizationParams: {screen_hint: "signup"}});
     };
 
     const logout = () => {
         auth0Logout({logoutParams: {returnTo: window.location.origin}}).then(() => {
-            dispatch(userActions.clearUser());
-            setOpened(false);
-        }
+                dispatch(userActions.clearUser());
+                setOpened(false);
+            }
+        );
+    };
+
+    const go = (path: string) => {
+        setOpened(false);
+        navigate(path);
+    };
+
+    if (isLoading) return <Spin size="small"/>;
+
+    const avatar = (
+        <Avatar
+            src={user?.picture || undefined}
+            icon={<UserCircle size={28}/>}
+            size={40}
+            style={{flexShrink: 0, cursor: "pointer", background: token.colorBgContainer, color: token.colorPrimary}}
+        />
+    );
+
+    if (!user) {
+        return (
+            <Flex align="center" gap={8} style={{flexShrink: 0}}>
+                {/* "Konto erstellen" moves into the drawer on phones to keep the header free */}
+                {!isXs && <Button onClick={signup}>Konto erstellen</Button>}
+                <Button type="primary" onClick={() => {
+                    track("login-click");
+                    login();
+                }}>Anmelden</Button>
+            </Flex>
         );
     }
 
-
-    if (isLoading) return "Loading...";
-
-return (
+    return (
         <Popover
             placement="bottomRight"
-            trigger={"hover"}
+            // hover does not exist on touch screens
+            trigger={isMobile ? "click" : "hover"}
             showArrow={false}
             open={opened}
-            onOpenChange={(open) => {
-                setOpened(open);
-            }}
+            onOpenChange={(open) => setOpened(open)}
             styles={{
                 body: {
-                    padding: '20px',
-                    width: '300px',
+                    padding: "20px",
+                    width: "min(300px, calc(100vw - 32px))",
                     borderRadius: token.borderRadius,
                 },
             }}
             content={
-                user &&
-                <Flex vertical style={{alignItems: 'start', cursor: 'pointer', gap: 10}}>
-                    <Flex style={{alignItems: 'center', cursor: 'pointer', gap: 20}}>
-                        <Image
-                            src={user?.picture || '../assets/Profile_sample.png'}
-                            preview={false}
-                            style={{
-                                cursor: 'pointer',
-                                borderRadius: '50%',
-                                height: 40,
-                                width: 40,
-                                objectFit: 'cover',
-                            }
-                            }
-                        />
-                        <Flex style={{flexDirection: 'column', alignItems: 'flex-end'}}>
-                            <Title level={5} style={{margin: 0, wordBreak: 'break-all', maxWidth: 200}} color={token.colorPrimary}>{user.email}</Title>
-                        </Flex>
+                <Flex vertical style={{alignItems: "start", gap: 10}}>
+                    <Flex style={{alignItems: "center", gap: 16, minWidth: 0, width: "100%"}}>
+                        {avatar}
+                        <Title level={5} style={{margin: 0, minWidth: 0, overflowWrap: "anywhere"}}>{user.email}</Title>
                     </Flex>
-                    <Divider
-                        variant={"solid"}
-                        style={{borderColor: token.colorPrimary}}
-                    >
-                        <Typography.Title level={5} style={{margin: 0, fontSize:'0.8rem'}}>Einstellungen</Typography.Title>
+                    <Divider style={{borderColor: token.colorPrimary, margin: "8px 0"}}>
+                        <Typography.Title level={5} style={{margin: 0, fontSize: "0.8rem"}}>Einstellungen</Typography.Title>
                     </Divider>
-                    <Button icon={<CalendarBlank/>}
-                            onClick={() => {
-                                navigate('/syncConfig')
-                            }
-                            }
-                            type={'text'} style={{textAlign: 'start'}}>
+                    <Button icon={<CalendarBlank/>} onClick={() => go("/syncConfig")} type="text" block style={{justifyContent: "flex-start"}}>
                         Meine Abos
                     </Button>
-                    {/*<Button icon={<UserCircle/>} type={'text'} style={{textAlign: 'start'}}>*/}
-                    {/*    Profil bearbeiten*/}
-                    {/*</Button>*/}
+                    <Button icon={<UsersThree/>} onClick={() => go("/organisationen")} type="text" block style={{justifyContent: "flex-start"}}>
+                        Meine Organisationen
+                    </Button>
                     <Button
-                        type={'default'}
-                        size={"large"}
-                        style={{
-                            width: '100%',
-                            marginTop: '20px',
-                    }}
-                        onClick={() => {
-                            window.open('https://buymeacoffee.com/boostershack', '_blank');
-                        }}
+                        type="default"
+                        size="large"
+                        block
+                        style={{marginTop: 12}}
+                        onClick={() => window.open("https://buymeacoffee.com/boostershack", "_blank")}
                     >
                         Synci unterstützen
                     </Button>
-
-                        <Button
-                            type={'primary'}
-                            style={{width: '100%'}}
-                            size={"large"}
-                            onClick={logout} // Logout function
-                        >
-                            Abmelden
-                        </Button>
-                        <DeleteAccountModal/>
+                    <Button type="primary" block size="large" onClick={logout}>
+                        Abmelden
+                    </Button>
+                    <DeleteAccountModal/>
                 </Flex>
-                    }
+            }
         >
-            <Flex style={{alignItems: 'center', cursor: 'pointer', gap: 10}}>
-                {user ?
-                    <>
-
-                {screens.md && (
-                <Flex style={{flexDirection: 'column', alignItems: 'flex-end'}}>
-                    <Typography.Text type={'secondary'} style={{margin: 0}}>Mein Konto</Typography.Text>
-                   <Title level={5} style={{margin: 0}} color={token.colorPrimary}>{user?.email}</Title>
-                </Flex>
+            <Flex align="center" gap={10} style={{cursor: "pointer", flexShrink: 0, minWidth: 0}}>
+                {isDesktop && (
+                    <Flex vertical align="flex-end" style={{minWidth: 0}}>
+                        <Typography.Text type="secondary" style={{margin: 0, whiteSpace: "nowrap"}}>Mein Konto</Typography.Text>
+                        <Title level={5} style={{margin: 0, maxWidth: 220}} ellipsis>{user.email}</Title>
+                    </Flex>
                 )}
-                <Image
-                    src={user?.picture || '../assets/Profile_sample.png'}
-                    preview={false}
-                    style={{
-                        cursor: 'pointer',
-                        borderRadius: '50%',
-                        height: 40,
-                        width: 40,
-                        objectFit: 'cover',
-                    }
-                    }
-                />
-                    </>
-                    :
-                    <>
-                        <Button onClick={signup}>Konto erstellen</Button>
-                        <Button type={'primary'} onClick={() => {
-                            track("login-click");
-                            login();
-                        }}>Anmelden</Button>
-                    </>
-                }
+                {avatar}
             </Flex>
         </Popover>
     );
-}
+};

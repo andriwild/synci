@@ -1,17 +1,139 @@
 #home-header {
-    /*background: linear-gradient(to bottom right, #3D5A80, #EBF0F6);*/
-    border-radius: 20px 20px 0 0;
-}
-
-.sport-card {
-    border-radius: 20px;
-    padding: 0 20px 20px 20px;
-    width: 400px;
+    border-radius: var(--panel-radius) var(--panel-radius) 0 0;
 }
 
 #home-container {
-    overflow: auto;
-    height: 100%;;
-    scrollbar-width: none;
+    width: 100%;
+    min-width: 0;
 }
 
+.step-content-title {
+    margin: 0;
+}
+
+.sport-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+    gap: 16px;
+    width: 100%;
+    max-width: 1140px;
+}
+
+.sport-card {
+    border-radius: var(--panel-radius);
+    padding: 0 20px 20px 20px;
+    background: #fff;
+}
+
+/* Hero */
+.hero {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px 40px;
+    align-items: center;
+}
+
+.hero__text {
+    flex: 1 1 320px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.hero__image {
+    flex: 1 1 320px;
+    display: flex;
+    justify-content: center;
+    min-width: 0;
+}
+
+.hero__image img {
+    width: 100%;
+    max-width: 520px;
+    height: auto;
+    object-fit: contain;
+}
+
+.hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 20px;
+    width: 100%;
+    padding-top: 8px;
+}
+
+@media (max-width: 575.98px) {
+    .hero__actions > .ant-btn {
+        flex: 1 1 160px;
+    }
+
+    .hero__image img {
+        max-height: 40vh;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .hero-break {
+        display: none;
+    }
+}
+
+/* Tutorial stepper */
+.tutorial {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: clamp(32px, 6vw, 60px) 0 40px;
+    background: #fff;
+}
+
+.tutorial__inner {
+    display: flex;
+    flex-direction: column;
+    width: min(100%, 960px);
+    padding: 0 var(--page-gutter);
+}
+
+.tutorial__content {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 20px;
+    background: white;
+    padding: clamp(16px, 4vw, 40px);
+    margin-top: clamp(20px, 4vw, 40px);
+}
+
+.tutorial__content > * {
+    flex: 1 1 280px;
+    min-width: 0;
+}
+
+.tutorial__image img {
+    width: 100%;
+    height: auto;
+    max-height: 320px;
+    object-fit: contain;
+}
+
+.tutorial__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 24px;
+}
+
+/* on phones the step titles are hidden; the current title is repeated in the content */
+@media (max-width: 575.98px) {
+    .tutorial .ant-steps-item-title {
+        display: none;
+    }
+}
+
+.section-title {
+    margin-bottom: clamp(32px, 6vw, 70px) !important;
+    text-align: center;
+}

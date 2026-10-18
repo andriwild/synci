@@ -7,17 +7,29 @@ import {SportPage} from "./pages/sport/SportPage.tsx";
 import './index.css';
 import {AppLayout} from "./sharedComponents/AppLayout.tsx";
 import {FaqPage} from "./pages/faq/FaqPage.tsx";
-import {ImpressumPage} from "./pages/impressum/ImpressumPage.tsx";
 import {DatenschutzPage} from "./pages/datenschutz/DatenschutzPage.tsx";
 import {SyncConfigPage} from "./pages/syncConfig/SyncConfigPage.tsx";
+import {OrganisationsPage} from "./pages/organisation/OrganisationsPage.tsx";
+import {OrganisationMembersPage} from "./pages/organisation/OrganisationMembersPage.tsx";
 import {useAuth0} from "@auth0/auth0-react";
 import {useAppDispatch} from "./app/hooks.ts";
-import {userActions} from "./services/user/UserSlice.ts";
+import {userActions, useUser} from "./services/user/UserSlice.ts";
 import {setAuth0Client} from "./services/common/apiHelpers.ts";
+import {ImpressumPage} from "./pages/impressum/ImpressumPage.tsx";
+import {userApi} from "./services/user/userApi.ts";
 
 export const App = () => {
     const { user, isAuthenticated, getAccessTokenSilently, loginWithRedirect } = useAuth0();
     const dispatch = useAppDispatch();
+    const storedUser = useUser();
+
+    // the backend only knows the Auth0 subject; report email and name for organisation member lists
+    useEffect(() => {
+        if (storedUser?.email) {
+            const name = [storedUser.firstName, storedUser.lastName].filter(Boolean).join(" ") || undefined;
+            dispatch(userApi.endpoints.updateMe.initiate({email: storedUser.email, name}));
+        }
+    }, [storedUser?.email, storedUser?.firstName, storedUser?.lastName, dispatch]);
 
     useEffect(() => {
         setAuth0Client({ getTokenSilently: getAccessTokenSilently, loginWithRedirect });
@@ -74,6 +86,8 @@ export const App = () => {
                         <Route path="/" element={<HomePage />} />
                         <Route path="/sport" element={<SportPage />} />
                         <Route path="/syncConfig" element={<SyncConfigPage/>} />
+                        <Route path="/organisationen" element={<OrganisationsPage/>} />
+                        <Route path="/organisationen/:id/mitglieder" element={<OrganisationMembersPage/>} />
                         <Route path="/faq" element={<FaqPage />} />
                         <Route path="/impressum" element={<ImpressumPage />} />
                         <Route path="/datenschutz" element={<DatenschutzPage />} />

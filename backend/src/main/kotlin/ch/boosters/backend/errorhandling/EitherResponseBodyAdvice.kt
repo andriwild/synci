@@ -36,7 +36,13 @@ class EitherResponseBodyAdvice : ResponseBodyAdvice<Any> {
                 ?: return body
 
             return either.fold(
-                { it -> ErrorHandler.handle(it) },
+                { error ->
+                    // the advice can only influence the body; the HTTP status has to be set on the response itself,
+                    // otherwise every error would leave the server as 200
+                    val entity = ErrorHandler.handle(error)
+                    response.setStatusCode(entity.statusCode)
+                    entity
+                },
                 { success -> ResponseEntity.ok(success) }
             )
         }

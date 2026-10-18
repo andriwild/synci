@@ -1,4 +1,3 @@
-// Define a layout wrapper
 import {Layout} from "antd";
 import {PreHeader} from "./PreHeader.tsx";
 import {FC} from "react";
@@ -7,13 +6,17 @@ import {Content} from "antd/es/layout/layout";
 import {Footer} from "./Footer.tsx";
 import {Outlet} from "react-router-dom";
 
+/**
+ * App shell: pre-header, header, page content, footer. The document (body) is the only scroller;
+ * pages must not set their own height/overflow. The footer sticks to the bottom via flex.
+ */
 export const AppLayout: FC = () => (
-    <Layout style={{ height: '100vh', background: '#EBF0F6' }}>
-        <PreHeader />
-        <Header />
-        <Content style={{ borderRadius: 20, background: 'white', margin: '20px 20px 20px 20px' }}>
-            <Outlet />
+    <Layout className="app-layout">
+        <PreHeader/>
+        <Header/>
+        <Content className="app-content">
+            <Outlet/>
         </Content>
-        <Footer />
+        <Footer/>
     </Layout>
 );

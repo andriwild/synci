@@ -36,19 +36,21 @@ class UserProvisioningFilter(
                     .where(USERS_TABLE.AUTH0_ID.eq(auth0Id))
             )
 
-            // ON CONFLICT: of several parallel first requests, only one creates the user
-            val userId = if (exists) null else dsl.insertInto(USERS_TABLE)
-                .set(USERS_TABLE.ID, UUID.randomUUID())
-                .set(USERS_TABLE.AUTH0_ID, auth0Id)
-                .set(USERS_TABLE.EMAIL, email)
-                .set(USERS_TABLE.NAME, name)
-                .onConflict(USERS_TABLE.AUTH0_ID)
-                .doNothing()
-                .returningResult(USERS_TABLE.ID)
-                .fetchOne()
-                ?.value1()
-
-            if (userId != null) {
+            if (!exists) {
+                val userId = UUID.randomUUID()
+                // two parallel first requests of a new user both reach this point; the unique auth0_id decides
+                val inserted = dsl.insertInto(USERS_TABLE)
+                    .set(USERS_TABLE.ID, userId)
+                    .set(USERS_TABLE.AUTH0_ID, auth0Id)
+                    .set(USERS_TABLE.EMAIL, email)
+                    .set(USERS_TABLE.NAME, name)
+                    .onConflict(USERS_TABLE.AUTH0_ID)
+                    .doNothing()
+                    .execute()
+                if (inserted == 0) {
+                    filterChain.doFilter(request, response)
+                    return
+                }
                 logger.info("Neuer Benutzer angelegt: $auth0Id ($email)")
                 
                 val defaultSyncConfig = SyncConfigDto(

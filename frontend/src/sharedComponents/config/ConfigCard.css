@@ -1,0 +1,22 @@
+.config-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: var(--panel-radius);
+    min-width: 0;
+}
+
+.config-card__icon {
+    display: inline-flex;
+    flex-shrink: 0;
+}
+
+.config-card__body {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.config-card__remove {
+    flex-shrink: 0;
+}

@@ -3,8 +3,10 @@ export interface SportEvent {
     sourceId: number;
     name: string;
     startsOn: string;
-    endsOn: string;
+    endsOn?: string;
     sportId: string;
-    locationId: string;
+    locationId?: string;
+    location?: string;
+    description?: string;
     rootSport?: string;
 }

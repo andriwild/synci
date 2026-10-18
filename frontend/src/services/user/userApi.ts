@@ -1,5 +1,5 @@
 import {createApi} from "@reduxjs/toolkit/query/react";
-import {axiosBaseQuery} from "../common/apiHelpers";
+import {axiosBaseQuery} from "../common/apiHelpers.ts";
 
 export const userApi = createApi({
     reducerPath: "userApi",
@@ -7,11 +7,12 @@ export const userApi = createApi({
         baseUrl: "/users"
     }),
     endpoints: build => ({
+        /** reports email and name from the Auth0 profile; the access token itself carries neither */
+        updateMe: build.mutation<number, { email?: string; name?: string }>({
+            query: (profile) => ({url: "/me", method: "PUT", body: profile})
+        }),
         deleteMe: build.mutation<number, void>({
-            query: () => ({
-                url: "/me",
-                method: "DELETE"
-            })
-        })
+            query: () => ({url: "/me", method: "DELETE"})
+        }),
     })
-})
+});

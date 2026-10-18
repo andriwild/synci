@@ -18,9 +18,13 @@ object ErrorHandler {
         }
         is InvalidUser ->
             ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Could not find the requested resource for the given user. ${error.message}")
-        is ExternalServiceError -> {
-            logger.error("External service error: {}", error.message)
-            ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("An external service failed")
+        is ExternalSourceError -> {
+            logger.error("External source error: {}", error.message)
+            ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("An external data source is not available")
         }
+        is Forbidden ->
+            ResponseEntity.status(HttpStatus.FORBIDDEN).body(error.message)
+        is InvalidRequest ->
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error.message)
     }
 }

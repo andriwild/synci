@@ -1,27 +1,26 @@
-import {Alert, Button, Flex, Form, Input, Modal, notification, Popover, Typography} from "antd";
-import {IconPlus, IconReplace} from "@tabler/icons-react";
+import {Alert, Button, Flex, Form, Input, Modal, notification, Popover, theme, Typography} from "antd";
+import {IconEdit, IconPlus, IconReplace, IconTrash,} from "@tabler/icons-react";
 import {useEffect, useState} from "react";
 
 import {useDispatch} from "react-redux";
 import {NotificationPlacement} from "antd/es/notification/interface";
 import {syncConfigActions, useSyncConfig} from "../../../services/syncConfig/syncCofigSlice.ts";
-import {syncConfigApi} from "../../../services/syncConfig/syncConfigApi";
-import {useUser} from "../../../services/user/UserSlice";
+import { syncConfigApi } from "../../../services/syncConfig/syncConfigApi";
+import { useUser } from "../../../services/user/UserSlice";
 import {SportConfigCard} from "../../../sharedComponents/config/SportConfigCard.tsx";
 import {TeamConfigCard} from "../../../sharedComponents/config/TeamConfigCard.tsx";
-import {CalendarSelectionModal} from "../../../sharedComponents/calenderSelectionModal/CalenderSelectionModal.tsx";
+import { CalendarSelectionModal } from "../../../sharedComponents/calenderSelectionModal/CalenderSelectionModal.tsx";
 import {VITE_BACKEND_HOST} from "../../../../env.ts";
+import {SyncConfig} from "../../../services/syncConfig/entities/syncConfig.ts";
 import {EventConfigCard} from "../../../sharedComponents/config/EventConfigCard.tsx";
 import {track} from "../../../utils/analytics.ts";
 
 
 export const SyncConfigComponent = () => {
     const user = useUser();
-    const syncConfigList = syncConfigApi.useGetAllQuery(undefined, {
-        skip: !user, // Skip the API call if user is not logged in
-    });
+    const syncConfigList = syncConfigApi.useGetAllQuery(undefined, {skip: !user});
+    const token = theme.useToken().token;
     const [open, setOpen] = useState(false);
-
 
     const currentSyncConfig = useSyncConfig();
     const dispatch = useDispatch();
@@ -30,7 +29,17 @@ export const SyncConfigComponent = () => {
         if (user && syncConfigList.data) {
             dispatch(syncConfigActions.setSyncConfig(syncConfigList.data[0]));
         }
-    }, [user, syncConfigList.data, dispatch]);
+    }, [user]);
+
+    // the selected config comes from localStorage and may no longer exist (deleted, other account, reset database)
+    useEffect(() => {
+        const configs = syncConfigList.data;
+        if (!configs || configs.length === 0) return;
+        const stillExists = currentSyncConfig && configs.some((config) => config.id === currentSyncConfig.id);
+        if (!stillExists) {
+            dispatch(syncConfigActions.setSyncConfig(configs[0]));
+        }
+    }, [syncConfigList.data]);
 
     if (!user) {
         return (
@@ -54,108 +63,144 @@ export const SyncConfigComponent = () => {
 
     if (syncConfigList.data?.length === 0) {
         return (
-            <Flex vertical style={{gap: 20, padding: "20px 20px", width:"100%"}} align={"center"}>
+            <Flex vertical style={{gap: 20, padding: "20px 20px", width: "100%"}} align={"center"}>
                 <Typography.Title level={5}>Keine Abos vorhanden</Typography.Title>
-                <CreateConfigModal refetch={syncConfigList.refetch}/>
+             <CreateConfigModal refetch={syncConfigList.refetch}/>
             </Flex>
         );
     }
     return (
-        <Flex
-            vertical
-            style={{
-                gap: 20,
-                padding: "20px 20px",
-                height: "100%",
-                maxHeight: "100%",
-                width: "100%",
-            }}
-        >
-            <Flex justify={"space-between"} style={{ width: "100%" }} gap={10}>
-                <Typography.Title level={4} style={{ margin: 0 }}>
-                    {currentSyncConfig?.name}
-                </Typography.Title>
-
-                <Popover
-                    placement="bottomRight"
-                    title={"Alle verfügbaren Abos"}
-                    open={open}
-                    onOpenChange={(open) => setOpen(open)}
-                    styles={{
-                        body: { background: "white", padding: "20px", minWidth: "300px" },
-                    }}
-                    content={
-                        <Flex vertical gap={10}>
-                            {syncConfigList.data?.map((syncConfig) => (
-                                <Button
-                                    key={syncConfig.id}
-                                    type={"default"}
-                                    style={{ width: "100%", textAlign: "left" }}
-                                    onClick={() => {
+        <Flex vertical style={{gap: 20, padding: "20px var(--page-gutter)", width: "100%", minWidth: 0}}>
+            <Flex justify={"space-between"} align={"center"} style={{width: "100%", minWidth: 0}} gap={10}>
+                {/*TODO Edit field*/}
+                <Typography.Title level={4} style={{margin: 0, minWidth: 0}} ellipsis={{tooltip: currentSyncConfig?.name}}>{currentSyncConfig?.name}</Typography.Title>
+                <Popover placement="bottomRight"
+                         title={"Alle verfügbaren Abos"}
+                         open={open}
+                         onOpenChange={(open) => setOpen(open)}
+                         styles={{body: {background: "white", padding: "20px", width: "min(340px, calc(100vw - 32px))"}}} content={
+                    <Flex vertical gap={20}>
+                        {syncConfigList.data?.map((syncConfig) => (
+                            <Flex justify={"space-between"} align={"center"}
+                                  style={{background: token.colorBgContainer, padding: "10px", borderRadius: 10, minWidth: 0}}
+                                  gap={12} key={syncConfig.id}>
+                                <Typography.Text ellipsis style={{minWidth: 0}}>{syncConfig.name}</Typography.Text>
+                                <Flex gap={10} align={"center"}>
+                                    <Button type={"primary"} aria-label="Abo auswählen" onClick={() => {
                                         dispatch(syncConfigActions.setSyncConfig(syncConfig));
-                                        setOpen(false);
-                                    }}
-                                >
-                                    {syncConfig.name}
-                                </Button>
-                            ))}
-                            <CreateConfigModal refetch={() => syncConfigList.refetch()} />
-                        </Flex>
-                    }
-                >
-                    <Button icon={<IconReplace size={20} />} type={"default"} >
-                        Abo wechseln
-                    </Button>
+                                        setOpen(false)
+                                    }
+                                    } icon={<IconEdit size={15}/>}></Button>
+                                    <DeleteConfigModal list={syncConfigList.data || []} refetch={syncConfigList.refetch} id={syncConfig.id}
+                                                       name={syncConfig.name}/>
+                                </Flex>
+                            </Flex>
+
+                        ))}
+                        <CreateConfigModal refetch={() => syncConfigList.refetch()}/>
+                    </Flex>
+                }>
+                    <Button icon={<IconReplace size={20}/>} type={"default"} aria-label="Abo wechseln" style={{flexShrink: 0}}></Button>
                 </Popover>
             </Flex>
 
-            <Flex
-                vertical
-                style={{
-                    gap: 20,
-                    width: "100%",
-                    flex: 1,
-                    minHeight: 0,     // needed for flex scrolling
-                    overflowY: "auto"
-                }}
-            >
-                {currentSyncConfig?.sports &&
-                    currentSyncConfig?.sports?.map((sport) => (
-                        <SportConfigCard key={sport.id} sport={sport} />
-                    ))}
+            {(currentSyncConfig?.sports &&
+                currentSyncConfig?.sports?.map((sport) => (
+                    <SportConfigCard key={sport.id} sport={sport}/>
+                ))
+            )}
+            {currentSyncConfig?.events &&
+            currentSyncConfig?.events.map((event) => (
+                <EventConfigCard key={event.id} event={event}/>
+            ))}
+            {currentSyncConfig?.teams &&
+            currentSyncConfig?.teams.map((team) => (
+                <TeamConfigCard key={team.id} team={team}/>
+            ))}
+            {currentSyncConfig?.sports?.length === 0 &&
+            currentSyncConfig?.events?.length === 0 &&
+            currentSyncConfig?.teams?.length === 0 &&
+                <>
+                    <Typography.Text>Keine Teams / Ligen / Events / Organisationen vorhanden</Typography.Text>
+                    <CreateConfigModal refetch={() => syncConfigList.refetch()}/>
+                </>
+            }
 
-                {currentSyncConfig?.events &&
-                    currentSyncConfig?.events.map((event) => (
-                        <EventConfigCard key={event.id} event={event} />
-                    ))}
+            <CalendarSelectionModal
+                url={ `${VITE_BACKEND_HOST}/api/calendars/${currentSyncConfig?.id}/subscribe`}
+                buttonText="Zu Kalender hinzufügen"
+                buttonIcon={<i className="fas fa-calendar-plus"></i>}
+                buttonType="primary"
+            />
 
-                {currentSyncConfig?.teams &&
-                    currentSyncConfig?.teams.map((team) => (
-                        <TeamConfigCard key={team.id} team={team} />
-                    ))}
-
-                {currentSyncConfig?.sports?.length === 0 &&
-                    currentSyncConfig?.events?.length === 0 &&
-                    currentSyncConfig?.teams?.length === 0 && (
-                        <>
-                            <Typography.Text>
-                                Keine Teams / Ligen / Events vorhanden
-                            </Typography.Text>
-                        </>
-                    )}
-            </Flex>
-
-                <CalendarSelectionModal
-                    url={`${VITE_BACKEND_HOST}/api/calendars/${currentSyncConfig?.id}/subscribe`}
-                    buttonText="Zu Kalender hinzufuegen"
-                    buttonIcon={<i className="fas fa-calendar-plus"></i>}
-                    buttonType="primary"
-
-                />
         </Flex>
-
     )
         ;
+}
+
+const DeleteConfigModal = ({list, refetch, id, name}: {
+    list: SyncConfig[],
+    refetch: () => void,
+    id: string,
+    name: string }) => {
+    const [open, setOpen] = useState(false);
+    const [form] = Form.useForm();
+    const [api, contextHolder] = notification.useNotification();
+    const dispatch = useDispatch();
+    const syncConfig = useSyncConfig();
+
+    const openNotification = (placement: NotificationPlacement) => {
+        api.info({
+            message: "Abo gelöscht",
+            description: "Das Abo wurde erfolgreich gelöscht",
+            placement,
+        });
+    };
+
+    const [deleteSyncConfig, deleteSyncConfigStatus] = syncConfigApi.useDeleteMutation();
+
+    const handleSubmit = async () => {
+        try {
+            await deleteSyncConfig(id);
+            track("abo-delete");
+            openNotification("bottomRight");
+            if (id == syncConfig?.id) {
+                list.filter((config) => config.id !== id);
+            dispatch(syncConfigActions.setSyncConfig(list.filter((config) => config.id !== id)[0]));
+            }
+            refetch();
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
+    return (
+        <>
+            {contextHolder}
+            <Button type="default" aria-label="Abo löschen"
+                    icon={<IconTrash size={15}/>}
+                    onClick={() => setOpen(true)}
+            >
+            </Button>
+            <Modal
+                title={`Abo ${name} löschen`}
+                open={open}
+                onCancel={() => setOpen(false)}
+                footer={null}
+            >
+                <Flex vertical gap={10}>
+                    <Typography.Text>Willst du das Abo wirklich löschen?</Typography.Text>
+                    <Form form={form} layout="vertical" onFinish={handleSubmit}>
+                        <Form.Item>
+                            <Button type="primary" htmlType="submit" loading={deleteSyncConfigStatus.isLoading}>
+                                Löschen
+                            </Button>
+                        </Form.Item>
+                    </Form>
+                </Flex>
+            </Modal>
+        </>
+    );
 }
 
 const CreateConfigModal = ({refetch}: { refetch: () => void }) => {
