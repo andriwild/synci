@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/auth/auth_controller.dart';
 import '../../core/auth/auth_service.dart';
 import '../../core/widgets/feedback.dart';
+import 'info_screens.dart';
 import 'login_prompt.dart';
 
 class AccountScreen extends ConsumerWidget {
@@ -38,8 +39,14 @@ class AccountScreen extends ConsumerWidget {
             onTap: () => context.go('/konto/faq'),
           ),
           ListTile(
+            leading: const Icon(Icons.privacy_tip_outlined),
+            title: const Text('Datenschutz'),
+            trailing: const Icon(Icons.open_in_new),
+            onTap: openPrivacyPolicy,
+          ),
+          ListTile(
             leading: const Icon(Icons.info_outline),
-            title: const Text('Impressum & Datenschutz'),
+            title: const Text('Impressum'),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.go('/konto/impressum'),
           ),

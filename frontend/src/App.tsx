@@ -8,6 +8,7 @@ import './index.css';
 import {AppLayout} from "./sharedComponents/AppLayout.tsx";
 import {FaqPage} from "./pages/faq/FaqPage.tsx";
 import {ImpressumPage} from "./pages/impressum/ImpressumPage.tsx";
+import {DatenschutzPage} from "./pages/datenschutz/DatenschutzPage.tsx";
 import {SyncConfigPage} from "./pages/syncConfig/SyncConfigPage.tsx";
 import {useAuth0} from "@auth0/auth0-react";
 import {useAppDispatch} from "./app/hooks.ts";
@@ -75,6 +76,7 @@ export const App = () => {
                         <Route path="/syncConfig" element={<SyncConfigPage/>} />
                         <Route path="/faq" element={<FaqPage />} />
                         <Route path="/impressum" element={<ImpressumPage />} />
+                        <Route path="/datenschutz" element={<DatenschutzPage />} />
                     </Route>
                 </Routes>
             </ConfigProvider>

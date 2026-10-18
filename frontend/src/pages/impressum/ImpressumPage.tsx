@@ -23,7 +23,7 @@ export const ImpressumPage: FC = () => {
                     padding: 24, 
                 }}
             >
-                <Title level={1}>Impressum & Datenschutz</Title>
+                <Title level={1}>Impressum</Title>
 
                 <section>
                     <Title level={4} style={{ marginTop: 0 }}>Kontaktadresse</Title>
@@ -38,7 +38,7 @@ export const ImpressumPage: FC = () => {
                 <section>
                     <Title level={4}>Kontakt</Title>
                     <Paragraph>
-                        E-Mail: <Link href="mailto:mailtosynci@gmail.ch">mailtosynci@gmail.ch</Link>
+                        E-Mail: <Link href="mailto:mailtosynci@gmail.com">mailtosynci@gmail.com</Link>
                     </Paragraph>
                 </section>
 
@@ -91,10 +91,7 @@ export const ImpressumPage: FC = () => {
                 <section>
                     <Title level={4}>Datenschutz</Title>
                     <Paragraph>
-                        Wir speichern keine Daten, besonders keine personenbezogenen Daten, nur jene, die in der Applikation für den Betrieb erfasst werden.
-                    </Paragraph>
-                    <Paragraph>
-                        Wir verwenden <Link href='https://support.auth0.com/center/s/sitemap' target="_blank">Auth0</Link> für den Login-Prozess. Wir treten alle Haftungen an diesen Anbieter ab.
+                        Wie wir mit deinen Daten umgehen, steht in der <Link href="/datenschutz">Datenschutzerklärung</Link>.
                     </Paragraph>
                 </section>
 

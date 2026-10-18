@@ -91,5 +91,5 @@ Before the first release:
     - Fill in App Privacy (email, name and user ID for app functionality; anonymous usage data; no tracking).
     - Upload screenshots (the app is iPhone-only).
 - Both:
-    - Privacy policy URL `https://synci.ch/impressum`, account deletion link `https://synci.ch/faq`.
+    - Privacy policy URL `https://synci.ch/datenschutz`, account deletion link `https://synci.ch/faq`.
     - An email/password demo account for the reviewers, entered in the store consoles (not in the repo).

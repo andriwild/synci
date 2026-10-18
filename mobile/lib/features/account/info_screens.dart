@@ -68,16 +68,16 @@ class ImpressumScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Impressum & Datenschutz')),
+      appBar: AppBar(title: const Text('Impressum')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           section('Kontaktadresse', const [Text('Synci\nIm Baumgarten 4\n6252 Dagmersellen\nSchweiz')]),
           section('Kontakt', [
             InkWell(
-              onTap: () => launchUrl(Uri.parse('mailto:mailtosynci@gmail.ch')),
+              onTap: () => launchUrl(Uri.parse('mailto:mailtosynci@gmail.com')),
               child: Text(
-                'E-Mail: mailtosynci@gmail.ch',
+                'E-Mail: mailtosynci@gmail.com',
                 style: TextStyle(color: Theme.of(context).colorScheme.primary),
               ),
             ),
@@ -116,13 +116,11 @@ class ImpressumScreen extends StatelessWidget {
               'Elemente ist die schriftliche Zustimmung der Urheberrechtsträger im Voraus einzuholen.',
             ),
           ]),
-          section('Datenschutz', const [
-            Text(
-              'Wir speichern keine Daten, besonders keine personenbezogenen Daten, nur jene, die in der Applikation für '
-              'den Betrieb erfasst werden.',
+          section('Datenschutz', [
+            InkWell(
+              onTap: openPrivacyPolicy,
+              child: Text('Datenschutzerklärung', style: TextStyle(color: Theme.of(context).colorScheme.primary)),
             ),
-            SizedBox(height: 8),
-            Text('Wir verwenden Auth0 für den Login-Prozess. Wir treten alle Haftungen an diesen Anbieter ab.'),
           ]),
           Text('© ${DateTime.now().year} Synci', style: text.bodySmall),
         ],
@@ -130,3 +128,7 @@ class ImpressumScreen extends StatelessWidget {
     );
   }
 }
+
+const privacyPolicyUrl = 'https://synci.ch/datenschutz';
+
+Future<void> openPrivacyPolicy() => launchUrl(Uri.parse(privacyPolicyUrl), mode: LaunchMode.inAppBrowserView);

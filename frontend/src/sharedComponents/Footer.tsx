@@ -19,7 +19,11 @@ export const Footer: FC = () => {
             backgroundColor: 'rgb(235, 240, 246)' }}>
             <Button type="link" style={{color: '#3D5A80'}}
                 onClick={() => { navigate("/impressum"); }} >
-                Impressum & Datenschutz
+                Impressum
+            </Button>
+            <Button type="link" style={{color: '#3D5A80'}}
+                onClick={() => { navigate("/datenschutz"); }} >
+                Datenschutz
             </Button>
             <Button type="link" style={{color: '#3D5A80'}}
                 onClick={() => { navigate("/faq"); }} >
