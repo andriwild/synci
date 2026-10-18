@@ -5,7 +5,7 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: https://${AUTH0_DOMAIN:account.synci.ch}/
-          audiences: ${AUTH0_AUDIENCES:https://synci.ch/api,https://synci.awild.ch}
+          audiences: ${AUTH0_AUDIENCES:https://synci.ch/api}
   flyway:
     locations: db/migration/
     url: ${ch.boosters.db.jdbcUrl}

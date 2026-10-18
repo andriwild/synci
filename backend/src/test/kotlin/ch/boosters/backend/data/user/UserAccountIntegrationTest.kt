@@ -58,10 +58,9 @@ class UserAccountIntegrationTest {
     lateinit var auth0ManagementClient: Auth0ManagementClient
 
     @Test
-    fun `accepts tokens for the new and the old audience`() {
-        listOf(NEW_AUDIENCE, OLD_AUDIENCE).forEach { audience ->
-            assertEquals(HttpStatus.OK, get("/syncconfigs", token(newSubject(), audience)).statusCode, audience)
-        }
+    fun `accepts tokens for the API audience only`() {
+        assertEquals(HttpStatus.OK, get("/syncconfigs", token(newSubject())).statusCode)
+        assertEquals(HttpStatus.UNAUTHORIZED, get("/syncconfigs", token(newSubject(), OLD_AUDIENCE)).statusCode)
     }
 
     @Test
@@ -149,6 +148,7 @@ class UserAccountIntegrationTest {
 
     companion object {
         private const val NEW_AUDIENCE = "https://synci.ch/api"
+        // Accepted until the switch to https://synci.ch/api was done
         private const val OLD_AUDIENCE = "https://synci.awild.ch"
 
         @Container

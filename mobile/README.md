@@ -32,7 +32,7 @@ On the Android emulator, `localhost` is mapped to `10.0.2.2` automatically (`lib
 
 ## Auth0 setup (one-time)
 
-1. **API**: create an API with identifier `https://synci.ch/api` (RS256, allow offline access). Keep the old API `https://synci.awild.ch` until the website has switched over; the backend accepts both (`AUTH0_AUDIENCES`). For the website, add `https://synci.ch` and `https://dev.synci.ch` to "Allowed Web Origins" of the SPA application, so logged-in users silently get a token for the new audience.
+1. **API**: create an API with identifier `https://synci.ch/api` (RS256, allow offline access). The backend accepts the audiences in `AUTH0_AUDIENCES`. For the website, add `https://synci.ch` and `https://dev.synci.ch` to "Allowed Web Origins" of the SPA application, so logged-in users silently get a token for the new audience.
 2. **Native application "Synci App"**:
    - Allowed Callback URLs and Allowed Logout URLs:
      `ch.synci.app://account.synci.ch/ios/ch.synci.app/callback, ch.synci.app://account.synci.ch/android/ch.synci.app/callback`

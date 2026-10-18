@@ -31,7 +31,7 @@ services:
       - DB_HOST=database-net-db-${STAGE:-local}
       - SPRING_PROFILES_ACTIVE=${STAGE:-local}
       - AUTH0_DOMAIN=${VITE_AUTH0_DOMAIN}
-      - AUTH0_AUDIENCES=${AUTH0_AUDIENCES:-https://synci.ch/api,https://synci.awild.ch}
+      - AUTH0_AUDIENCES=${AUTH0_AUDIENCES:-https://synci.ch/api}
       - AUTH0_MGMT_DOMAIN=${AUTH0_MGMT_DOMAIN}
       - AUTH0_MGMT_CLIENT_ID=${AUTH0_MGMT_CLIENT_ID}
       - AUTH0_MGMT_CLIENT_SECRET=${AUTH0_MGMT_CLIENT_SECRET}
