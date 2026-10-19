@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:synci/core/api/api_client.dart';
 import 'package:synci/core/auth/auth_controller.dart';
 import 'package:synci/core/auth/auth_service.dart';
+import 'package:synci/features/app_update/app_update_providers.dart';
 import 'package:synci/features/calendar/calendar_sheet.dart';
 import 'package:synci/features/organisation/organisation.dart';
 import 'package:synci/features/organisation/organisation_repository.dart';
@@ -24,6 +25,8 @@ Future<void> main() async {
       syncConfigRepositoryProvider.overrideWithValue(_DemoSyncConfigs()),
       organisationRepositoryProvider.overrideWith((ref) => _DemoOrganisations()),
       sportRepositoryProvider.overrideWith((ref) => _DemoSports(ref.read(apiClientProvider))),
+      // The installed build may be older than the one in the store
+      appUpdateAvailableProvider.overrideWith((ref) => false),
     ],
   );
   await _walkThrough(container.read(routerProvider));

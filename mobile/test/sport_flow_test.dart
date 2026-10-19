@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:synci/app.dart';
+import 'package:synci/features/app_update/app_update_providers.dart';
 import 'package:synci/features/sport/sport.dart';
 import 'package:synci/features/sport/sport_repository.dart';
 import 'package:synci/features/sync_config/sync_config_providers.dart';
@@ -10,13 +11,14 @@ import 'package:synci/features/sync_config/sync_config_providers.dart';
 void main() {
   setUpAll(() => initializeDateFormatting('de_CH'));
 
-  Future<void> pumpApp(WidgetTester tester) async {
+  Future<void> pumpApp(WidgetTester tester, {bool updateAvailable = false}) async {
     await tester.pumpWidget(
       ProviderScope(
         retry: (_, _) => null,
         overrides: [
           sportRepositoryProvider.overrideWithValue(_FakeSportRepository()),
           activeSyncConfigIdProvider.overrideWith(_NoSelection.new),
+          appUpdateAvailableProvider.overrideWithValue(AsyncData(updateAvailable)),
         ],
         child: const SynciApp(),
       ),
@@ -42,6 +44,16 @@ void main() {
     expect(find.text('Lugano Tigers - Massagno'), findsOneWidget);
     expect(find.text('17.10.2026'), findsOneWidget);
     expect(find.text('Melde dich an, um Abos zu speichern'), findsOneWidget);
+  });
+
+  testWidgets('die Startseite zeigt eine neuere Version über den Sportarten', (tester) async {
+    await pumpApp(tester, updateAvailable: true);
+
+    expect(find.text('Update verfügbar'), findsOneWidget);
+    expect(
+      tester.getTopLeft(find.text('Update verfügbar')).dy,
+      lessThan(tester.getTopLeft(find.text('Basketball')).dy),
+    );
   });
 
   testWidgets('Hinzufügen ohne Login fragt nach Anmeldung', (tester) async {

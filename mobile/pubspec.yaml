@@ -20,6 +20,8 @@ dependencies:
   intl: ^0.20.3
   flutter_localizations:
     sdk: flutter
+  in_app_update: ^5.0.0
+  package_info_plus: ^10.2.2
 
 dev_dependencies:
   flutter_test:

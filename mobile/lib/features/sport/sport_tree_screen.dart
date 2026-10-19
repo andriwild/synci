@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/analytics/analytics.dart';
 import '../../core/auth/auth_controller.dart';
 import '../../core/widgets/feedback.dart';
+import '../app_update/update_banner.dart';
 import '../organisation/organisation_providers.dart';
 import '../sync_config/active_abo_bar.dart';
 import 'sport.dart';
@@ -55,44 +56,51 @@ class _SportTreeScreenState extends ConsumerState<SportTreeScreen> {
         title: Image.asset('assets/images/logo.png', height: 28, semanticLabel: 'Synci'),
       ),
       bottomNavigationBar: const ActiveAboBar(),
-      body: sports.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => ErrorView(error: error, onRetry: () => ref.invalidate(sportsProvider)),
-        data: (list) {
-          if (list.isEmpty) return const EmptyView(icon: Icons.search_off, message: 'Keine Sportarten gefunden');
-          final nodes = _rows(list, loggedIn: loggedIn);
-          return RefreshIndicator(
-            onRefresh: () =>
-                Future.wait([ref.refresh(sportsProvider.future), ref.refresh(myOrganisationsProvider.future)]),
-            child: ListView.builder(
-              padding: const EdgeInsets.fromLTRB(12, 12, 12, 24),
-              itemCount: nodes.length + 1,
-              itemBuilder: (context, index) {
-                if (index == 0) {
-                  return Padding(
-                    padding: const EdgeInsets.fromLTRB(4, 0, 4, 12),
-                    child: Text(
-                      'Wähle eine Sportart, Liga oder ein Team und füge es deinem Abo hinzu.',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                  );
-                }
-                final node = nodes[index - 1];
-                if (node == null) return const _DiscoverRow();
-                return _SportRow(
-                  node: node,
-                  expanded: _expanded.contains(node.sport.id),
-                  onTap: node.sport.hasSubSports
-                      ? () => setState(() {
-                          if (!_expanded.remove(node.sport.id)) _expanded.add(node.sport.id);
-                        })
-                      : () => _openDetail(node),
-                  onOpen: () => _openDetail(node),
+      body: Column(
+        children: [
+          const UpdateBanner(padding: EdgeInsets.fromLTRB(12, 12, 12, 0)),
+          Expanded(
+            child: sports.when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (error, _) => ErrorView(error: error, onRetry: () => ref.invalidate(sportsProvider)),
+              data: (list) {
+                if (list.isEmpty) return const EmptyView(icon: Icons.search_off, message: 'Keine Sportarten gefunden');
+                final nodes = _rows(list, loggedIn: loggedIn);
+                return RefreshIndicator(
+                  onRefresh: () =>
+                      Future.wait([ref.refresh(sportsProvider.future), ref.refresh(myOrganisationsProvider.future)]),
+                  child: ListView.builder(
+                    padding: const EdgeInsets.fromLTRB(12, 12, 12, 24),
+                    itemCount: nodes.length + 1,
+                    itemBuilder: (context, index) {
+                      if (index == 0) {
+                        return Padding(
+                          padding: const EdgeInsets.fromLTRB(4, 0, 4, 12),
+                          child: Text(
+                            'Wähle eine Sportart, Liga oder ein Team und füge es deinem Abo hinzu.',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        );
+                      }
+                      final node = nodes[index - 1];
+                      if (node == null) return const _DiscoverRow();
+                      return _SportRow(
+                        node: node,
+                        expanded: _expanded.contains(node.sport.id),
+                        onTap: node.sport.hasSubSports
+                            ? () => setState(() {
+                                if (!_expanded.remove(node.sport.id)) _expanded.add(node.sport.id);
+                              })
+                            : () => _openDetail(node),
+                        onOpen: () => _openDetail(node),
+                      );
+                    },
+                  ),
                 );
               },
             ),
-          );
-        },
+          ),
+        ],
       ),
     );
   }
