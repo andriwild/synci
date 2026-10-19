@@ -13,9 +13,11 @@ class PlayUpdateRepository implements AppUpdateRepository {
     return info.updateAvailability == UpdateAvailability.updateAvailable && info.immediateUpdateAllowed;
   }
 
-  /// Returns normally when the user declines the update.
+  /// Returns normally when the user declines the update. Play accepts each check for one
+  /// update flow only, so it checks again: a player who backed out can try once more.
   @override
   Future<void> update() async {
+    await InAppUpdate.checkForUpdate();
     if (await InAppUpdate.performImmediateUpdate() == AppUpdateResult.inAppUpdateFailed) {
       throw const AppUpdateException('Play in-app update failed');
     }
