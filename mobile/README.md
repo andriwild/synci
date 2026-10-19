@@ -69,6 +69,10 @@ bundle exec fastlane metadata          # store texts from fastlane/metadata only
 
 The build lanes check `config/prod.json`, take the next build number from TestFlight and Play together and build with `--dart-define-from-file=config/prod.json`.
 
+On start, the app checks once whether the store has a newer version and then shows an update banner on the Sportarten tab (`lib/features/app_update/`).
+Android uses Play in-app updates, which only work for builds installed from Play.
+iOS compares the version name with Apple's public lookup (`itunes.apple.com/lookup?bundleId=ch.synci.app&country=ch`), which only knows versions on sale, so bump `version` in `pubspec.yaml` for every App Store release.
+
 Credentials (shared with Klikkr, same Apple team and Play developer account):
 
 | File | Override |

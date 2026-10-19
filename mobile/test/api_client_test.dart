@@ -1,9 +1,8 @@
-import 'dart:convert';
-import 'dart:typed_data';
-
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:synci/core/api/api_client.dart';
+
+import 'fakes/fake_http_adapter.dart';
 
 void main() {
   group('unwrapEnvelope', () {
@@ -39,10 +38,10 @@ void main() {
   });
 
   group('ApiClient', () {
-    late _FakeAdapter adapter;
+    late FakeHttpAdapter adapter;
 
     ApiClient client({String? token}) {
-      adapter = _FakeAdapter();
+      adapter = FakeHttpAdapter();
       return ApiClient(
         baseUrl: Uri.parse('https://synci.ch/api/'),
         accessToken: () async => token,
@@ -93,30 +92,4 @@ void main() {
       );
     });
   });
-}
-
-class _FakeAdapter implements HttpClientAdapter {
-  RequestOptions? lastRequest;
-  late ResponseBody _response;
-
-  void respond(int status, Object json) => _response = ResponseBody.fromString(
-    jsonEncode(json),
-    status,
-    headers: {
-      Headers.contentTypeHeader: [Headers.jsonContentType],
-    },
-  );
-
-  @override
-  Future<ResponseBody> fetch(
-    RequestOptions options,
-    Stream<Uint8List>? requestStream,
-    Future<void>? cancelFuture,
-  ) async {
-    lastRequest = options;
-    return _response;
-  }
-
-  @override
-  void close({bool force = false}) {}
 }

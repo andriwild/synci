@@ -4,6 +4,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:synci/app.dart';
 import 'package:synci/core/auth/auth_controller.dart';
 import 'package:synci/core/auth/auth_service.dart';
+import 'package:synci/features/app_update/app_update_providers.dart';
 import 'package:synci/features/organisation/organisation.dart';
 import 'package:synci/features/organisation/organisation_repository.dart';
 import 'package:synci/features/sport/sport.dart';
@@ -28,6 +29,7 @@ void main() {
           organisationRepositoryProvider.overrideWithValue(_NoOrganisations()),
           syncConfigRepositoryProvider.overrideWithValue(syncConfigs),
           activeSyncConfigIdProvider.overrideWith(_InMemorySelection.new),
+          appUpdateAvailableProvider.overrideWithValue(const AsyncData(false)),
         ],
         child: const SynciApp(),
       ),
