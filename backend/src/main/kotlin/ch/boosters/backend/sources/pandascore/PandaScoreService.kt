@@ -65,7 +65,7 @@ class PandaScoreService(
             val withTeams = inLeague.filterIsInstance<MappedMatch.WithTeams>()
             val names = withTeams.associate { it.event.id to it.name }
             val teamEvents = withTeams.map { it.event }.futureOnly()
-            val teams = PandaScoreMapper.teamsOf(teamEvents, sourceId)
+            val teams = PandaScoreMapper.teamsOf(teamEvents, relevant, sourceId)
 
             syncRepository.upsertTeams(teams).bind()
             teamSportsRepository.upsertTeams(teams, sportId).bind()

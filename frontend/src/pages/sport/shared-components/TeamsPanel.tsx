@@ -1,16 +1,10 @@
-import {Avatar, Button, Empty, Input, Skeleton, theme, Typography} from "antd";
+import {Button, Empty, Input, Skeleton, Typography} from "antd";
 import {IconSearch} from "@tabler/icons-react";
 import {displayGender, Team} from "../../../services/team/entities/team.ts";
 import {SubscribeButton} from "./SubscribeButton.tsx";
 import {Subscription} from "./useSubscription.ts";
 import {SportTeams} from "./useSportTeams.ts";
-
-/** "Chicago Bears" -> "CB", "Zug" -> "ZU" */
-const initials = (name: string) => {
-    const words = name.split(/\s+/).filter((w) => /\p{L}/u.test(w));
-    if (words.length >= 2) return (words[0][0] + words[words.length - 1][0]).toUpperCase();
-    return name.replace(/[^\p{L}\p{N}]/gu, "").slice(0, 2).toUpperCase();
-};
+import {TeamLogo} from "../../../sharedComponents/TeamLogo.tsx";
 
 const TeamRow = ({team, sportTitle, sportIncluded, subscription}: {
     team: Team,
@@ -18,13 +12,10 @@ const TeamRow = ({team, sportTitle, sportIncluded, subscription}: {
     sportIncluded: boolean,
     subscription: Subscription,
 }) => {
-    const token = theme.useToken().token;
     const gender = displayGender(team.gender);
     return (
         <li className="team-row">
-            <Avatar size={36} style={{background: token.colorBgContainer, color: token.colorPrimary, fontWeight: 600, flexShrink: 0}}>
-                {initials(team.name)}
-            </Avatar>
+            <TeamLogo team={team}/>
             <div className="team-row__name">
                 <Typography.Text ellipsis={{tooltip: team.name}}>{team.name}</Typography.Text>
                 {gender && <Typography.Text type="secondary"> {gender}</Typography.Text>}

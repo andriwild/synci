@@ -11,13 +11,13 @@ import ch.boosters.backend.data.sport.business.groupByRootSports
 import ch.boosters.backend.data.sport.model.PagedResult
 import ch.boosters.backend.data.sport.model.Sport
 import ch.boosters.backend.data.sport.model.flatten
+import ch.boosters.backend.data.team.TeamResponse
 import ch.boosters.backend.errorhandling.ElementNotFound
 import ch.boosters.backend.errorhandling.Forbidden
 import ch.boosters.backend.errorhandling.SynciEither
 import ch.boosters.backend.errorhandling.SynciError
 import ch.boosters.data.tables.pojos.EventsTable
 import ch.boosters.data.tables.pojos.SportsTable
-import ch.boosters.data.tables.pojos.TeamsTable
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
@@ -56,11 +56,11 @@ class SportsService(
         PagedResult(eventsCount, pageNumber, pageSize, elements)
     }
 
-    fun getTeamsBySportId(sportId: UUID, pageSize: Int, pageNumber: Int, searchTerm: String? = null): SynciEither<PagedResult<TeamsTable>> = either {
+    fun getTeamsBySportId(sportId: UUID, pageSize: Int, pageNumber: Int, searchTerm: String? = null): SynciEither<PagedResult<TeamResponse>> = either {
         val belonging = findSportsByParent(sportId).bind().flatten()
         val teamsCount = sportRepository.teamsBySportsCount(belonging, searchTerm).bind()
         val elements = sportRepository.getTeamsBySportIds(belonging, pageSize, pageNumber * pageSize, searchTerm).bind()
-        PagedResult(teamsCount, pageNumber, pageSize, elements)
+        PagedResult(teamsCount, pageNumber, pageSize, elements.map(TeamResponse::of))
     }
 
     /** Sports of an organisation are only visible to its active members; everything else is public. */

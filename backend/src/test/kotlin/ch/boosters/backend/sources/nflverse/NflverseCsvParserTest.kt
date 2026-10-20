@@ -11,6 +11,19 @@ class NflverseCsvParserTest {
     private val sample = javaClass.getResource("/nflverse/games_sample.csv")!!.readText()
 
     @Test
+    fun `parses team logos by abbreviation and skips teams without logo`() {
+        val csv = """
+            team_abbr,team_name,team_logo_espn,team_wordmark
+            CHI,Chicago Bears,https://a.espncdn.com/i/teamlogos/nfl/500/chi.png,x
+            LA,Los Angeles Rams,https://a.espncdn.com/i/teamlogos/nfl/500/lar.png,x
+            OLD,Old Team,,x
+        """.trimIndent()
+        val logos = NflverseCsvParser.parseLogos(csv)
+        assertEquals(setOf("CHI", "LA"), logos.keys)
+        assertEquals("https://a.espncdn.com/i/teamlogos/nfl/500/lar.png", logos["LA"])
+    }
+
+    @Test
     fun `parses every data row`() {
         val games = NflverseCsvParser.parse(sample)
         assertEquals(6, games.size)

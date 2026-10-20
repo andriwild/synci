@@ -10,6 +10,7 @@ import ch.boosters.backend.data.event.model.Event
 import ch.boosters.backend.data.event.model.TeamEvent
 import ch.boosters.backend.data.sport.SportsRepository
 import ch.boosters.backend.data.team.Team
+import ch.boosters.backend.data.team.TeamLogos
 import ch.boosters.backend.data.team.teamSports.TeamSportsRepository
 import ch.boosters.backend.errorhandling.ElementNotFound
 import ch.boosters.backend.errorhandling.SynciEither
@@ -124,7 +125,7 @@ class SwissTxtService(
         leagueName: String,
         events: List<TeamEvent>
     ): SynciEither<Pair<IntArray, IntArray>> = either {
-        val teams = events.map { team -> Team(team.homeId, sourceId, team.homeName, team.gender) }.distinct()
+        val teams = events.map { team -> Team(team.homeId, sourceId, team.homeName, team.gender, TeamLogos.swissTxtLogo(team.homeId)) }.distinct()
         val sportId = getSportId(leagueName).bind()
 
         val teamIds = swissTxtRepository.upsertTeams(teams).bind()

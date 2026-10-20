@@ -14,6 +14,7 @@ import '../sync_config/active_abo_bar.dart';
 import '../sync_config/sync_config_providers.dart';
 import 'sport.dart';
 import 'sport_providers.dart';
+import 'team_logo.dart';
 
 final _dateFormat = DateFormat('d.M.yyyy', 'de_CH');
 
@@ -232,7 +233,7 @@ class _TeamsSectionState extends ConsumerState<_TeamsSection> {
             for (final team in paged.items)
               ListTile(
                 contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.groups_outlined),
+                leading: TeamLogo(team: team),
                 title: Text(team.displayName),
                 trailing: (active?.containsTeam(team.id) ?? false)
                     ? const Icon(Icons.check_circle, semanticLabel: 'Im Abo')

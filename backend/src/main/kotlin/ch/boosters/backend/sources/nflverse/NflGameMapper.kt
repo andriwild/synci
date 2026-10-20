@@ -46,9 +46,9 @@ object NflGameMapper {
         return short.take(MAX_EVENT_NAME_LENGTH)
     }
 
-    /** Every team that appears as home or away team, once. */
-    fun teamsOf(events: List<TeamEvent>, sourceId: Int): List<Team> =
+    /** Every team that appears as home or away team, once; [logos] maps the abbreviation to its logo. */
+    fun teamsOf(events: List<TeamEvent>, sourceId: Int, logos: Map<String, String> = emptyMap()): List<Team> =
         events.flatMap { listOf(it.homeId to it.homeName, it.awayId to it.awayName) }
             .distinctBy { it.first }
-            .map { (id, name) -> Team(id, sourceId, name, Gender.MAN) }
+            .map { (id, name) -> Team(id, sourceId, name, Gender.MAN, logos[id.uppercase()]) }
 }

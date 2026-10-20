@@ -38,10 +38,11 @@ class SwissTxtRepository(
         val sourceId = swissTxtId.bind()
         val queries = teams.map { team ->
             DSL
-                .insertInto(TEAMS_TABLE)
-                .values(team.id, sourceId, team.name, team.gender)
+                .insertInto(TEAMS_TABLE, TEAMS_TABLE.ID, TEAMS_TABLE.SOURCE_ID, TEAMS_TABLE.NAME, TEAMS_TABLE.GENDER, TEAMS_TABLE.LOGO_URL)
+                .values(team.id, sourceId, team.name, team.gender.toGenderType(), team.logoUrl)
                 .onDuplicateKeyUpdate()
                 .set(TEAMS_TABLE.NAME, team.name)
+                .set(TEAMS_TABLE.LOGO_URL, DSL.coalesce(DSL.`val`(team.logoUrl), TEAMS_TABLE.LOGO_URL))
         }
         return dsl { it.batch(queries).execute() }
     }

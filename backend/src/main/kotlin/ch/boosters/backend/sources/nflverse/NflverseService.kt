@@ -59,6 +59,7 @@ class NflverseService(
         val season = NflGameMapper.currentSeason(games, config)
         ensure(season != null) { ExternalSourceError("nflverse schedule contains no games") }
         val seasonGames = games.filter { it.season == season }
+        val logos = downloadLogos()
         println("nflverse: ${seasonGames.size} games in season $season (${games.size} in file)")
 
         seasonGames
@@ -67,19 +68,19 @@ class NflverseService(
                 if (sportKey == null) {
                     println("nflverse: skipping ${gamesOfType.size} games with unknown game_type '${gamesOfType.first().gameType}'")
                 } else {
-                    store(sourceId, sportKey, gamesOfType).bind()
+                    store(sourceId, sportKey, gamesOfType, logos).bind()
                 }
             }
         syncRepository.storeSyncTime(sourceId).bind()
     }
 
-    private fun store(sourceId: Int, sportKey: String, games: List<NflGame>): SynciEither<Unit> = either {
+    private fun store(sourceId: Int, sportKey: String, games: List<NflGame>, logos: Map<String, String>): SynciEither<Unit> = either {
         val sportId = sportsRepository.sportIdByName(sportKey).bind()
         ensure(sportId != null) { ElementNotFound("While updating nflverse sport '$sportKey' not found") }
 
         val namesById = games.associate { it.gameId to NflGameMapper.eventName(it, config) }
         val events = games.mapNotNull { NflGameMapper.toTeamEvent(it, config) }.futureOnly()
-        val teams = NflGameMapper.teamsOf(events, sourceId)
+        val teams = NflGameMapper.teamsOf(events, sourceId, logos)
         println("nflverse: $sportKey -> ${events.size} upcoming games, ${teams.size} teams")
 
         syncRepository.upsertTeams(teams).bind()
@@ -87,6 +88,19 @@ class NflverseService(
         syncRepository.upsertTeamEvents(sourceId, sportId, events) { event ->
             namesById[event.id] ?: "${event.homeName} - ${event.awayName}"
         }.bind()
+    }
+
+    /** Team logos are a nice-to-have: if the file cannot be loaded, the schedule is stored without them. */
+    private fun downloadLogos(): Map<String, String> {
+        val url = config.teamsUrl ?: return emptyMap()
+        return try {
+            println("Fetching from $url")
+            val csv = webClient.get().uri(url).retrieve().bodyToMono(String::class.java).block() ?: return emptyMap()
+            NflverseCsvParser.parseLogos(csv)
+        } catch (e: Exception) {
+            println("nflverse: team logos could not be loaded, continuing without: ${e.message}")
+            emptyMap()
+        }
     }
 
     /** Tries the primary url first, then every fallback; .gz urls are decompressed. */

@@ -44,4 +44,5 @@ data class PandaScoreTeam(
     val id: Long,
     val name: String,
     val acronym: String? = null,
+    @SerialName("image_url") val imageUrl: String? = null,
 )

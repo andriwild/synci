@@ -111,4 +111,13 @@ class NflGameMapperTest {
         assertEquals(listOf("CHI", "NE"), teams.map { it.id }.sorted())
         assertEquals(7, teams.first().source)
     }
+
+    @Test
+    fun `teams get their logo by abbreviation, unknown ones none`() {
+        val events = listOfNotNull(NflGameMapper.toTeamEvent(game(), config))
+        val logos = NflGameMapper.teamsOf(events, 7, mapOf("CHI" to "https://a.espncdn.com/i/teamlogos/nfl/500/chi.png"))
+            .associate { it.id to it.logoUrl }
+        assertEquals("https://a.espncdn.com/i/teamlogos/nfl/500/chi.png", logos["CHI"])
+        assertNull(logos["NE"])
+    }
 }
