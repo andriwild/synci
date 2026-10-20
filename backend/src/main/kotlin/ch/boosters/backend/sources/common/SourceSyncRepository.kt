@@ -38,10 +38,12 @@ class SourceSyncRepository(private val dsl: JooqEitherDsl) {
 
     fun upsertTeams(teams: List<Team>): SynciEither<IntArray> {
         val queries = teams.map { team ->
-            DSL.insertInto(TEAMS_TABLE)
-                .values(team.id, team.source, team.name, team.gender)
+            DSL.insertInto(TEAMS_TABLE, TEAMS_TABLE.ID, TEAMS_TABLE.SOURCE_ID, TEAMS_TABLE.NAME, TEAMS_TABLE.GENDER, TEAMS_TABLE.LOGO_URL)
+                .values(team.id, team.source, team.name, team.gender.toGenderType(), team.logoUrl)
                 .onDuplicateKeyUpdate()
                 .set(TEAMS_TABLE.NAME, team.name)
+                // a sync without logo keeps the one stored earlier
+                .set(TEAMS_TABLE.LOGO_URL, DSL.coalesce(DSL.`val`(team.logoUrl), TEAMS_TABLE.LOGO_URL))
         }
         return dsl { it.batch(queries).execute() }
     }

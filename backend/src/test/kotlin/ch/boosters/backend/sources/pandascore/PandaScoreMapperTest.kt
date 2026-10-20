@@ -110,8 +110,18 @@ class PandaScoreMapperTest {
         val events = listOf(match(1210001), match(1210003))
             .mapNotNull { PandaScoreMapper.map(it, lol, config) as? MappedMatch.WithTeams }
             .map { it.event }
-        val teams = PandaScoreMapper.teamsOf(events, 9)
+        val teams = PandaScoreMapper.teamsOf(events, matches, 9)
         assertEquals(listOf("1", "1097", "128268", "2"), teams.map { it.id }.sorted())
         assertEquals(9, teams.first().source)
+    }
+
+    @Test
+    fun `teams carry their logo when PandaScore has one`() {
+        val events = listOf(match(1210001))
+            .mapNotNull { PandaScoreMapper.map(it, lol, config) as? MappedMatch.WithTeams }
+            .map { it.event }
+        val logos = PandaScoreMapper.teamsOf(events, matches, 9).associate { it.name to it.logoUrl }
+        assertEquals("https://cdn.pandascore.co/images/team/image/1097/cloud9.png", logos["Cloud9"])
+        assertNull(logos["Karmine Corp"])
     }
 }

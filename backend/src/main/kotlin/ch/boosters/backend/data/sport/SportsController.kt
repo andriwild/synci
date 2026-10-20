@@ -6,7 +6,7 @@ import ch.boosters.backend.data.sport.model.Sport
 import ch.boosters.backend.errorhandling.SynciEither
 import ch.boosters.backend.errorhandling.SynciError
 import ch.boosters.data.tables.pojos.EventsTable
-import ch.boosters.data.tables.pojos.TeamsTable
+import ch.boosters.backend.data.team.TeamResponse
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDateTime
@@ -37,6 +37,6 @@ class SportsController(
         @RequestParam pageSize: Int,
         @RequestParam page: Int,
         @RequestParam(required = false) searchTerm: String?
-    ): SynciEither<PagedResult<TeamsTable>> =
+    ): SynciEither<PagedResult<TeamResponse>> =
         sportsService.getTeamsBySportId(id, pageSize, page, searchTerm)
 }

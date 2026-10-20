@@ -36,10 +36,11 @@ export const SportDetailComponent = ({id, title, breadcrumb = [], organisation, 
     const subscription = useSubscription();
     const events = useSportEvents(id);
     const teams = useSportTeams(id, !organisation);
-    const [tab, setTab] = useState("events");
+    // teams first: most people subscribe to their team rather than a whole league
+    const [tab, setTab] = useState("teams");
 
     useEffect(() => {
-        setTab("events");
+        setTab("teams");
     }, [id]);
 
     if (!id) {
@@ -122,12 +123,12 @@ export const SportDetailComponent = ({id, title, breadcrumb = [], organisation, 
                     onChange={setTab}
                     className="detail-tabs"
                     items={[
-                        {key: "events", label: <TabLabel text="Events" count={events.amount}/>, children: eventList},
                         {
                             key: "teams",
                             label: <TabLabel text="Teams" count={teams.searchTerm ? undefined : teams.amount}/>,
                             children: <TeamsPanel teams={teams} sportId={id} sportTitle={title} subscription={subscription}/>,
                         },
+                        {key: "events", label: <TabLabel text="Events" count={events.amount}/>, children: eventList},
                     ]}
                 />
                 : <section aria-label="Events">

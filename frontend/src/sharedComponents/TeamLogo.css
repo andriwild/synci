@@ -1,0 +1,15 @@
+.team-logo {
+    flex-shrink: 0;
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* logos are rarely square: show them whole with a little air instead of cropping */
+.team-logo img {
+    object-fit: contain;
+    padding: 12%;
+}
+
+.team-logo--initials {
+    font-weight: 600;
+}

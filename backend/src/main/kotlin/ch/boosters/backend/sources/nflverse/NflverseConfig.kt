@@ -10,6 +10,8 @@ class NflverseConfig {
     var name: String? = null
     var url: String? = null
     var fallbackUrls: MutableList<String> = mutableListOf()
+    /** teams_colors_logos.csv; optional, without it teams have no logo */
+    var teamsUrl: String? = null
     /** null = newest season in the file */
     var season: Int? = null
     var sourceTimezone: String = "America/New_York"

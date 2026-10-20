@@ -6,6 +6,8 @@ nflverse:
   fallback-urls:
     - https://github.com/nflverse/nflverse-data/releases/download/schedules/games.csv.gz
     - https://raw.githubusercontent.com/nflverse/nfldata/master/data/games.csv
+  # team colors and logos (ESPN logo urls); optional
+  teams-url: https://github.com/nflverse/nflverse-data/releases/download/teams/teams_colors_logos.csv
   # empty = the newest season found in the file
   season:
   # kickoff times in the file are US Eastern Time, events are stored in Swiss local time

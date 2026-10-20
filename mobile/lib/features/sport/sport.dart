@@ -38,7 +38,7 @@ SportNode? findSport(List<Sport> sports, String id, [int level = 0]) {
 }
 
 class Team {
-  const Team({required this.id, required this.sourceId, required this.name, this.gender, this.rootSport});
+  const Team({required this.id, required this.sourceId, required this.name, this.gender, this.rootSport, this.logoUrl});
 
   factory Team.fromJson(Map<String, dynamic> json) => Team(
     id: json['id'].toString(),
@@ -46,6 +46,7 @@ class Team {
     name: json['name'] as String? ?? '',
     gender: json['gender'] as String?,
     rootSport: json['rootSport'] as String?,
+    logoUrl: json['logoUrl'] as String?,
   );
 
   final String id;
@@ -55,6 +56,7 @@ class Team {
   /// `WOMAN`, `MAN`, `BOTH` or `UNKNOWN`.
   final String? gender;
   final String? rootSport;
+  final String? logoUrl;
 
   String get displayName => switch (gender) {
     'WOMAN' => '$name (W)',

@@ -6,6 +6,7 @@ import {syncConfigDtoMapper} from "../../services/syncConfig/helpers/syncConfigH
 import {useDispatch} from "react-redux";
 import {Team} from "../../services/team/entities/team.ts";
 import {ConfigCardShell} from "./ConfigCardShell.tsx";
+import {TeamLogo} from "../TeamLogo.tsx";
 import {track} from "../../utils/analytics.ts";
 import {SyncConfig} from "../../services/syncConfig/entities/syncConfig.ts";
 
@@ -33,7 +34,7 @@ export const TeamConfigCard = ({team, config}: { team: Team, config?: SyncConfig
 
     return (
         <ConfigCardShell
-            icon={<IconUsersGroup size={28} color={token.colorPrimary}/>}
+            icon={<TeamLogo team={team} size={32} fallback={<IconUsersGroup size={28} color={token.colorPrimary}/>}/>}
             title={team.name}
             subtitle={team.rootSport}
             tag="Team"

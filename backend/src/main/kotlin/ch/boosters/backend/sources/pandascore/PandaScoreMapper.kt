@@ -85,10 +85,13 @@ object PandaScoreMapper {
         }
     }
 
-    fun teamsOf(events: List<TeamEvent>, sourceId: Int): List<Team> =
-        events.flatMap { listOf(it.homeId to it.homeName, it.awayId to it.awayName) }
+    /** Teams of [events]; their logos come from the opponents in [matches]. */
+    fun teamsOf(events: List<TeamEvent>, matches: List<PandaScoreMatch>, sourceId: Int): List<Team> {
+        val logos = matches.flatMap(::teamOpponents).filter { it.imageUrl != null }.associate { it.id.toString() to it.imageUrl }
+        return events.flatMap { listOf(it.homeId to it.homeName, it.awayId to it.awayName) }
             .distinctBy { it.first }
-            .map { (id, name) -> Team(id, sourceId, name, Gender.UNKNOWN) }
+            .map { (id, name) -> Team(id, sourceId, name, Gender.UNKNOWN, logos[id]) }
+    }
 
     private fun teamOpponents(match: PandaScoreMatch) =
         match.opponents.filter { it.type == null || it.type == "Team" }.map { it.opponent }

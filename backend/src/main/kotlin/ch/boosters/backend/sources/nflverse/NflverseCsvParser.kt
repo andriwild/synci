@@ -20,6 +20,14 @@ object NflverseCsvParser {
     fun parse(csv: String): List<NflGame> =
         CSVParser.parse(csv, format).use { parser -> parser.records.map(::toGame) }
 
+    /** teams_colors_logos.csv: team abbreviation (upper case, as in games.csv) -> ESPN logo url */
+    fun parseLogos(csv: String): Map<String, String> =
+        CSVParser.parse(csv, format).use { parser ->
+            parser.records
+                .filter { it.get("team_logo_espn").isNotBlank() }
+                .associate { it.get("team_abbr").uppercase() to it.get("team_logo_espn") }
+        }
+
     private fun toGame(record: CSVRecord): NflGame = NflGame(
         gameId = record.get("game_id"),
         season = record.get("season").toInt(),

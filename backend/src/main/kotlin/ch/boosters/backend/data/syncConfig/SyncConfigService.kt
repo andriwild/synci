@@ -12,6 +12,7 @@ import ch.boosters.backend.data.syncConfig.model.SyncConfigDto
 import ch.boosters.backend.data.syncConfig.syncConfigEvents.SyncConfigEventsRepository
 import ch.boosters.backend.data.syncConfig.syncConfigSports.SyncConfigSportsRepository
 import ch.boosters.backend.data.syncConfig.syncConfigTeam.SyncConfigTeamRepository
+import ch.boosters.backend.data.team.TeamResponse
 import ch.boosters.backend.errorhandling.ElementNotFound
 import ch.boosters.backend.errorhandling.SynciEither
 import ch.boosters.backend.errorhandling.SynciError
@@ -61,7 +62,7 @@ class SyncConfigService(
         SyncConfig(
             id = id,
             name = syncConfig.name,
-            teams = teamsOfConfig.map { WithRootSport(it, rootLabel(teamSportMap[it.id]?.firstOrNull())) },
+            teams = teamsOfConfig.map { WithRootSport(TeamResponse.of(it), rootLabel(teamSportMap[it.id]?.firstOrNull())) },
             sports = sportsOfConfig.map { WithRootSport(it, rootLabel(it.id)) },
             events = eventIdsInConfig.map { WithRootSport(it, rootLabel(it.sportId)) },
         )

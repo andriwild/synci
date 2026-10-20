@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../core/analytics/analytics.dart';
+import '../sport/team_logo.dart';
 import 'abo_actions.dart';
 import 'sync_config.dart';
 
@@ -52,6 +53,7 @@ class AboItemsList extends ConsumerWidget {
         for (final team in config.teams)
           _AboItemTile(
             icon: Icons.groups_outlined,
+            leading: TeamLogo(team: team, size: 32),
             title: team.displayName,
             subtitle: team.rootSport,
             onRemove: () => removeFromAbo(
@@ -106,9 +108,12 @@ class _SectionTitle extends StatelessWidget {
 }
 
 class _AboItemTile extends StatelessWidget {
-  const _AboItemTile({required this.icon, required this.title, this.subtitle, required this.onRemove});
+  const _AboItemTile({required this.icon, this.leading, required this.title, this.subtitle, required this.onRemove});
 
   final IconData icon;
+
+  /// replaces [icon], e.g. with a team logo
+  final Widget? leading;
   final String title;
   final String? subtitle;
   final VoidCallback onRemove;
@@ -117,7 +122,7 @@ class _AboItemTile extends StatelessWidget {
   Widget build(BuildContext context) => ListTile(
     contentPadding: EdgeInsets.zero,
     dense: true,
-    leading: Icon(icon),
+    leading: leading ?? Icon(icon),
     title: Text(title),
     subtitle: (subtitle == null || subtitle!.isEmpty) ? null : Text(subtitle!),
     trailing: IconButton(tooltip: 'Entfernen', icon: const Icon(Icons.delete_outline), onPressed: onRemove),

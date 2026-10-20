@@ -8,7 +8,7 @@
     "tournament": {"id": 17001, "name": "Swiss stage", "tier": "s", "region": "WW"},
     "videogame": {"id": 1, "name": "LoL", "slug": "league-of-legends"},
     "opponents": [
-      {"type": "Team", "opponent": {"id": 1097, "name": "Cloud9", "acronym": "C9", "location": "US"}},
+      {"type": "Team", "opponent": {"id": 1097, "name": "Cloud9", "acronym": "C9", "location": "US", "image_url": "https://cdn.pandascore.co/images/team/image/1097/cloud9.png"}},
       {"type": "Team", "opponent": {"id": 128268, "name": "Karmine Corp", "acronym": "KC", "location": "FR"}}
     ],
     "streams_list": [{"raw_url": "https://www.twitch.tv/riotgames", "main": true, "official": true, "language": "en"}]
