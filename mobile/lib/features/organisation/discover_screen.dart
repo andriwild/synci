@@ -44,8 +44,8 @@ class _DiscoverOrganisationsScreenState extends ConsumerState<DiscoverOrganisati
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
         children: [
           const Text(
-            'Frage den Beitritt an. Nach der Freigabe durch einen Admin erscheint die Organisation zuoberst im Tab '
-            'Sportarten und du siehst ihre Events.',
+            'Frage den Beitritt an. Nach der Freigabe durch einen Admin erscheint die Organisation auf der Startseite '
+            'und du siehst ihre Events.',
           ),
           const SizedBox(height: 12),
           TextField(

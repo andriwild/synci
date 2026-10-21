@@ -62,7 +62,7 @@ class _OrganisationList extends ConsumerWidget {
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
           children: [
             Text(
-              'Organisationen findest du im Tab Sportarten zuoberst. Dort siehst du die Events und kannst sie abonnieren.',
+              'Deine Organisationen findest du auch auf der Startseite. Dort siehst du die Events und kannst sie abonnieren.',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.outline),
             ),
             const SizedBox(height: 12),

@@ -5,6 +5,7 @@ import 'package:synci/app.dart';
 import 'package:synci/core/auth/auth_controller.dart';
 import 'package:synci/core/auth/auth_service.dart';
 import 'package:synci/features/app_update/app_update_providers.dart';
+import 'package:synci/features/onboarding/onboarding_providers.dart';
 import 'package:synci/features/organisation/organisation.dart';
 import 'package:synci/features/organisation/organisation_repository.dart';
 import 'package:synci/features/sport/sport.dart';
@@ -12,6 +13,8 @@ import 'package:synci/features/sport/sport_repository.dart';
 import 'package:synci/features/sync_config/sync_config.dart';
 import 'package:synci/features/sync_config/sync_config_providers.dart';
 import 'package:synci/features/sync_config/sync_config_repository.dart';
+
+import 'helpers/phone_screen.dart';
 
 const _club = MyOrganisation(
   id: 'org-1',
@@ -82,6 +85,7 @@ void main() {
   });
 
   Future<void> pump(WidgetTester tester) async {
+    usePhoneScreen(tester);
     await tester.pumpWidget(
       ProviderScope(
         retry: (_, _) => null,
@@ -92,6 +96,7 @@ void main() {
           syncConfigRepositoryProvider.overrideWithValue(_FakeSyncConfigRepository()),
           activeSyncConfigIdProvider.overrideWith(_InMemorySelection.new),
           appUpdateAvailableProvider.overrideWithValue(const AsyncData(false)),
+          onboardingSeenProvider.overrideWith(_OnboardingSeen.new),
         ],
         child: const SynciApp(),
       ),
@@ -99,21 +104,26 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('active organisations come first, pending ones stay hidden', (tester) async {
+  testWidgets('members see their active organisations above the sports, pending ones stay hidden', (tester) async {
     await pump(tester);
 
-    final club = tester.getTopLeft(find.text('FC Beispiel')).dy;
-    final discover = tester.getTopLeft(find.text('Organisationen entdecken')).dy;
-    final basketball = tester.getTopLeft(find.text('Basketball')).dy;
-    expect(club, lessThan(discover));
+    expect(find.text('Meine Organisationen'), findsOneWidget);
+    final club = tester.getTopLeft(anywhere('FC Beispiel')).dy;
+    final discover = tester.getTopLeft(anywhere('Entdecken')).dy;
+    final basketball = tester.getTopLeft(anywhere('Basketball')).dy;
+    expect(club, lessThanOrEqualTo(discover));
     expect(discover, lessThan(basketball));
-    expect(find.text('Wartender Verein'), findsNothing);
+    expect(anywhere('Wartender Verein'), findsNothing);
   });
 
   testWidgets('an admin sees the toolbar and the organisation events', (tester) async {
     await pump(tester);
 
-    await tester.tap(find.byTooltip('FC Beispiel öffnen'));
+    await scrollToAndTap(tester, 'FC Beispiel');
+    expect(find.text('Gruppen'), findsOneWidget);
+    expect(find.text('1. Mannschaft'), findsOneWidget);
+
+    await tester.tap(find.text('Ganze Organisation'));
     await tester.pumpAndSettle();
 
     expect(find.text('Event erfassen'), findsOneWidget);
@@ -135,6 +145,11 @@ void main() {
     expect(find.text('Zurückziehen'), findsOneWidget);
     expect(find.text('Löschen'), findsOneWidget);
   });
+}
+
+class _OnboardingSeen extends OnboardingSeenController {
+  @override
+  bool build() => true;
 }
 
 class _LoggedIn extends AuthController {

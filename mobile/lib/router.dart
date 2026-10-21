@@ -5,17 +5,24 @@ import 'package:go_router/go_router.dart';
 import 'core/analytics/analytics.dart';
 import 'features/account/account_screen.dart';
 import 'features/account/info_screens.dart';
+import 'features/onboarding/onboarding_providers.dart';
+import 'features/onboarding/onboarding_screen.dart';
 import 'features/organisation/discover_screen.dart';
 import 'features/organisation/members_screen.dart';
 import 'features/organisation/organisations_screen.dart';
 import 'features/sport/sport_detail_screen.dart';
 import 'features/sport/sport_tree_screen.dart';
+import 'features/start/start_screen.dart';
 import 'features/sync_config/abos_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
+  final rootNavigatorKey = GlobalKey<NavigatorState>();
   final router = GoRouter(
-    initialLocation: '/sport',
+    navigatorKey: rootNavigatorKey,
+    // Read once: finishing the intro navigates by itself
+    initialLocation: ref.read(onboardingSeenProvider) ? '/sport' : '/willkommen',
     routes: [
+      GoRoute(path: '/willkommen', builder: (_, _) => const OnboardingScreen()),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) => _HomeShell(navigationShell: navigationShell),
         branches: [
@@ -23,8 +30,18 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/sport',
-                builder: (_, _) => const SportTreeScreen(),
+                builder: (_, _) => const StartScreen(),
                 routes: [
+                  GoRoute(
+                    path: 'sportart/:rootId',
+                    builder: (_, state) => SportTreeScreen(rootId: state.pathParameters['rootId']!),
+                    routes: [
+                      GoRoute(
+                        path: ':sportId',
+                        builder: (_, state) => SportDetailScreen(sportId: state.pathParameters['sportId']!),
+                      ),
+                    ],
+                  ),
                   GoRoute(
                     path: ':sportId',
                     builder: (_, state) => SportDetailScreen(sportId: state.pathParameters['sportId']!),
@@ -59,6 +76,11 @@ final routerProvider = Provider<GoRouter>((ref) {
                 routes: [
                   GoRoute(path: 'faq', builder: (_, _) => const FaqScreen()),
                   GoRoute(path: 'impressum', builder: (_, _) => const ImpressumScreen()),
+                  GoRoute(
+                    path: 'einfuehrung',
+                    parentNavigatorKey: rootNavigatorKey,
+                    builder: (_, _) => const OnboardingScreen(),
+                  ),
                 ],
               ),
             ],
@@ -72,7 +94,9 @@ final routerProvider = Provider<GoRouter>((ref) {
   String? lastPath;
   void trackScreen() {
     final path = router.routerDelegate.currentConfiguration.uri.path
-        .replaceAllMapped(RegExp(r'^/sport/[^/]+'), (_) => '/sport/detail')
+        .replaceAllMapped(RegExp(r'^/sport/sportart/[^/]+/[^/]+'), (_) => '/sport/detail')
+        .replaceAllMapped(RegExp(r'^/sport/sportart/[^/]+$'), (_) => '/sport/sportart')
+        .replaceAllMapped(RegExp(r'^/sport/(?!sportart(?:/|$))[^/]+'), (_) => '/sport/detail')
         .replaceAllMapped(RegExp(r'^/organisationen/(?!entdecken)[^/]+'), (_) => '/organisationen/detail');
     if (path == lastPath) return;
     lastPath = path;
@@ -101,11 +125,7 @@ class _HomeShell extends StatelessWidget {
       onDestinationSelected: (index) =>
           navigationShell.goBranch(index, initialLocation: index == navigationShell.currentIndex),
       destinations: const [
-        NavigationDestination(
-          icon: Icon(Icons.sports_soccer_outlined),
-          selectedIcon: Icon(Icons.sports_soccer),
-          label: 'Sportarten',
-        ),
+        NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: 'Start'),
         NavigationDestination(
           icon: Icon(Icons.event_note_outlined),
           selectedIcon: Icon(Icons.event_note),

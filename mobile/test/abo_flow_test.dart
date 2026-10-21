@@ -5,6 +5,7 @@ import 'package:synci/app.dart';
 import 'package:synci/core/auth/auth_controller.dart';
 import 'package:synci/core/auth/auth_service.dart';
 import 'package:synci/features/app_update/app_update_providers.dart';
+import 'package:synci/features/onboarding/onboarding_providers.dart';
 import 'package:synci/features/organisation/organisation.dart';
 import 'package:synci/features/organisation/organisation_repository.dart';
 import 'package:synci/features/sport/sport.dart';
@@ -13,12 +14,15 @@ import 'package:synci/features/sync_config/sync_config.dart';
 import 'package:synci/features/sync_config/sync_config_providers.dart';
 import 'package:synci/features/sync_config/sync_config_repository.dart';
 
+import 'helpers/phone_screen.dart';
+
 void main() {
   setUpAll(() => initializeDateFormatting('de_CH'));
 
   late _FakeSyncConfigRepository syncConfigs;
 
   Future<void> pumpLoggedIn(WidgetTester tester) async {
+    usePhoneScreen(tester);
     syncConfigs = _FakeSyncConfigRepository();
     await tester.pumpWidget(
       ProviderScope(
@@ -30,6 +34,7 @@ void main() {
           syncConfigRepositoryProvider.overrideWithValue(syncConfigs),
           activeSyncConfigIdProvider.overrideWith(_InMemorySelection.new),
           appUpdateAvailableProvider.overrideWithValue(const AsyncData(false)),
+          onboardingSeenProvider.overrideWith(_OnboardingSeen.new),
         ],
         child: const SynciApp(),
       ),
@@ -41,8 +46,7 @@ void main() {
     await pumpLoggedIn(tester);
     expect(find.text('Standard-Abo'), findsOneWidget);
 
-    await tester.tap(find.text('Basketball'));
-    await tester.pumpAndSettle();
+    await scrollToAndTap(tester, 'Basketball');
     await tester.tap(find.byTooltip('NBA öffnen'));
     await tester.pumpAndSettle();
     await tester.tap(find.byTooltip('Team hinzufügen'));
@@ -74,6 +78,11 @@ void main() {
     expect(find.text('Kalender hinzufügen'), findsOneWidget);
     expect(find.text('Weitere Optionen'), findsOneWidget);
   });
+}
+
+class _OnboardingSeen extends OnboardingSeenController {
+  @override
+  bool build() => true;
 }
 
 class _LoggedIn extends AuthController {
