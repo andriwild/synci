@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:synci/features/sport/sport.dart';
+import 'package:synci/features/sport/team_logo.dart';
 import 'package:synci/features/sync_config/sync_config.dart';
 
 void main() {
@@ -44,6 +45,39 @@ void main() {
     expect(team('WOMAN').displayName, 'Zug (W)');
     expect(team('BOTH').displayName, 'Zug (W/M)');
     expect(team('MAN').displayName, 'Zug');
+  });
+
+  group('Teamlogo', () {
+    const cdn = 'https://cdn-csd.swisstxt.ch/images/sport/club/logo';
+    final team = Team.fromJson({
+      'id': '21',
+      'sourceId': 3,
+      'name': 'ZSC Lions',
+      'logoUrl': '$cdn/medium/21.png',
+      'logoSrcSet': '$cdn/medium/21.png 1x, $cdn/large/21.png 2x, $cdn/300/21.png 3x',
+    });
+
+    test('wählt wie ein Browser die kleinste Variante, die scharf genug ist', () {
+      expect(team.logoFor(1), '$cdn/medium/21.png');
+      expect(team.logoFor(1.5), '$cdn/large/21.png');
+      expect(team.logoFor(2), '$cdn/large/21.png');
+      expect(team.logoFor(2.625), '$cdn/300/21.png');
+      expect(team.logoFor(4), '$cdn/300/21.png');
+    });
+
+    test('ohne srcset bleibt es beim einen Logo', () {
+      const single = Team(id: '1', sourceId: 7, name: 'Chicago Bears', logoUrl: 'https://nfl/chi.png');
+      expect(single.logoFor(3), 'https://nfl/chi.png');
+      expect(const Team(id: '2', sourceId: 3, name: 'Zug').logoFor(3), isNull);
+    });
+
+    test('Initialen wie auf der Website', () {
+      expect(teamInitials('Chicago Bears'), 'CB');
+      expect(teamInitials('Zug'), 'ZU');
+      expect(teamInitials('HC Fribourg-Gottéron'), 'HF');
+      expect(teamInitials('1. FC Köln'), 'FK');
+      expect(teamInitials('76ers'), '76');
+    });
   });
 
   group('SyncConfig', () {

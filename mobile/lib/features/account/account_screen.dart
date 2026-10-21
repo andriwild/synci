@@ -33,6 +33,12 @@ class AccountScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 16),
           ListTile(
+            leading: const Icon(Icons.auto_stories_outlined),
+            title: const Text('So funktioniert Synci'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.go('/konto/einfuehrung'),
+          ),
+          ListTile(
             leading: const Icon(Icons.help_outline),
             title: const Text('Häufige Fragen'),
             trailing: const Icon(Icons.chevron_right),

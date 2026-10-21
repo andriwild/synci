@@ -38,7 +38,15 @@ SportNode? findSport(List<Sport> sports, String id, [int level = 0]) {
 }
 
 class Team {
-  const Team({required this.id, required this.sourceId, required this.name, this.gender, this.rootSport, this.logoUrl});
+  const Team({
+    required this.id,
+    required this.sourceId,
+    required this.name,
+    this.gender,
+    this.rootSport,
+    this.logoUrl,
+    this.logoSrcSet,
+  });
 
   factory Team.fromJson(Map<String, dynamic> json) => Team(
     id: json['id'].toString(),
@@ -47,6 +55,7 @@ class Team {
     gender: json['gender'] as String?,
     rootSport: json['rootSport'] as String?,
     logoUrl: json['logoUrl'] as String?,
+    logoSrcSet: json['logoSrcSet'] as String?,
   );
 
   final String id;
@@ -57,6 +66,21 @@ class Team {
   final String? gender;
   final String? rootSport;
   final String? logoUrl;
+
+  /// Sharper logo variants as HTML srcset (`url 1x, url 2x, …`), if the source has several sizes.
+  final String? logoSrcSet;
+
+  /// The logo for [density], picked from [logoSrcSet] like a browser does.
+  String? logoFor(double density) {
+    final candidates = [
+      for (final candidate in (logoSrcSet ?? '').split(','))
+        if (candidate.trim().split(RegExp(r'\s+')) case [final url, final descriptor] when descriptor.endsWith('x'))
+          if (double.tryParse(descriptor.substring(0, descriptor.length - 1)) case final value?)
+            (url: url, density: value),
+    ]..sort((a, b) => a.density.compareTo(b.density));
+    if (candidates.isEmpty) return logoUrl;
+    return (candidates.where((c) => c.density >= density).firstOrNull ?? candidates.last).url;
+  }
 
   String get displayName => switch (gender) {
     'WOMAN' => '$name (W)',

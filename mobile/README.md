@@ -46,6 +46,7 @@ On the Android emulator, `localhost` is mapped to `10.0.2.2` automatically (`lib
 ## Icon and splash screen
 
 The sources in `assets/icon/` are made from the website logo (`frontend/public/android-chrome-512x512.png`) without the text.
+`splash_android12.png` is `splash.png` centred on a 1152 px canvas, so Android 12+ shows the symbol as large as iOS and older Android versions. The animated splash in `lib/features/start/splash.dart` takes over at exactly this size (`splashLogoSize`); keep both in sync when the splash image changes.
 After changing them, regenerate the native files:
 
 ```bash
@@ -69,7 +70,7 @@ bundle exec fastlane metadata          # store texts from fastlane/metadata only
 
 The build lanes check `config/prod.json`, take the next build number from TestFlight and Play together and build with `--dart-define-from-file=config/prod.json`.
 
-On start, the app checks once whether the store has a newer version and then shows an update banner on the Sportarten tab (`lib/features/app_update/`).
+On start, the app checks once whether the store has a newer version and then shows an update banner on the start screen (`lib/features/app_update/`).
 Android uses Play in-app updates, which only work for builds installed from Play.
 iOS compares the version name with Apple's public lookup (`itunes.apple.com/lookup?bundleId=ch.synci.app&country=ch`), which only knows versions on sale, so bump `version` in `pubspec.yaml` for every App Store release.
 

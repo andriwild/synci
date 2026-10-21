@@ -29,7 +29,8 @@ Credentials live outside the repo, never commit or print them:
 - UI texts in German (Swiss spelling, "ss" instead of "ß"), addressing the user with "du".
 - Code comments in English only, short and precise, and only when necessary (no German comments).
 - State: Riverpod 3 without code generation (`Provider`, `FutureProvider`, `Notifier`, `AsyncNotifier`). Retry is disabled in `ProviderScope`; screens show errors with "Erneut versuchen".
-- Navigation: go_router with a `StatefulShellRoute` (tabs Sportarten / Meine Abos / Konto), see `lib/router.dart`.
+- Navigation: go_router with a `StatefulShellRoute` (tabs Start / Meine Abos / Organisationen / Konto), see `lib/router.dart`. The start screen (`/sport`) shows the root sports and my organisations as tiles; a tile with leagues or groups opens their tree (`/sport/sportart/:rootId`), the detail is `/sport/:sportId` or `/sport/sportart/:rootId/:sportId`. Navigate with `context.go` along this nesting, `push` would hide the screen from the analytics.
+- Start: `SplashGate` (`lib/features/start/splash.dart`) continues the native splash with the vector logo (`SynciLogo`) and turns its sync arrows until auth, sports and organisations are loaded (at most 4 s). On the first start the intro story (`/willkommen`) follows; it can be opened again from Konto. Widget tests that pump `SynciApp` override `onboardingSeenProvider`; while the intro logo turns, use `pump` with durations instead of `pumpAndSettle`.
 - The backend wraps every response in a serialized `ResponseEntity` (`{body, statusCode, …}`) and reports errors with HTTP 200; `unwrapEnvelope` in `lib/core/api/api_client.dart` handles this.
 - Abos are always saved as a whole (`PUT /syncconfigs/{id}` with all lists), based on the latest server response.
 - Analytics events mirror `frontend/src/utils/analytics.ts`; never send personal data.
