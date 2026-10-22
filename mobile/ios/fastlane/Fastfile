@@ -99,9 +99,15 @@ platform :ios do
     end
   end
 
+  # skip_metadata also skips automatic_release, so the release type is set here
+  private_lane :release_after_approval do
+    edit_version&.update(attributes: { releaseType: "AFTER_APPROVAL" })
+  end
+
   private_lane :submit do |options|
     stamp_copyright
     upload_release_notes
+    release_after_approval
     upload_to_app_store(
       api_key: app_store_connect_key,
       ipa: options[:ipa],

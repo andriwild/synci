@@ -1,1 +1,1 @@
-Die erste Version von Synci als App.
+Neue Startseite: Sportarten und deine Organisationen auf einen Blick, mit Suche über alle Ligen. Beim ersten Start erklärt dir eine kurze Einführung, wie Synci funktioniert. Dazu Team-Logos und ein neuer Startbildschirm.
