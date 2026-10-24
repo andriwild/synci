@@ -110,9 +110,9 @@ class CalendarSheet extends ConsumerWidget {
   }
 }
 
-/// The Google Calendar app can't subscribe to a calendar, only the website can, and on a
-/// phone only as desktop site. So the steps come first, then the browser opens the
-/// subscribe link, with the feed copied for adding it by hand.
+/// The Google Calendar app can't subscribe to a calendar, only the website can. So the
+/// browser opens the subscribe link; the steps cover a website that doesn't add it by
+/// itself (e.g. the mobile view), with the feed copied for adding it by hand.
 Future<void> showGoogleOnAndroidSteps(BuildContext context, String feed) => showDialog<void>(
   context: context,
   builder: (dialogContext) => AlertDialog(
@@ -122,8 +122,12 @@ Future<void> showGoogleOnAndroidSteps(BuildContext context, String feed) => show
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Google erlaubt Kalender-Abos nur auf der Website. Wir öffnen sie im Browser:'),
+          Text(
+            'Google erlaubt Kalender-Abos nur auf der Website. Wir öffnen sie im Browser, dort wird das Abo hinzugefügt.',
+          ),
           SizedBox(height: 12),
+          Text('Klappt das nicht von selbst:'),
+          SizedBox(height: 4),
           Text('1. Im Browser-Menü ⋮ «Desktop-Website» einschalten.'),
           SizedBox(height: 4),
           Text('2. Bei «Kalender hinzufügen» auf «Hinzufügen» tippen.'),
