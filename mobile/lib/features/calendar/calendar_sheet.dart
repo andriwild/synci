@@ -1,5 +1,4 @@
-import 'dart:io';
-
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,6 +9,7 @@ import '../../core/analytics/analytics.dart';
 import '../../core/widgets/feedback.dart';
 import '../sync_config/sync_config.dart';
 import 'calendar_links.dart';
+import 'open_in_browser.dart';
 
 Future<void> showCalendarSheet(BuildContext context, WidgetRef ref, SyncConfig config) {
   ref.read(analyticsProvider).event('calendar-modal-open');
@@ -35,11 +35,16 @@ class CalendarSheet extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final feed = calendarFeedAddress(Env.backendUrl, config.id);
-    final primary = Platform.isAndroid ? CalendarProvider.google : CalendarProvider.apple;
+    final android = defaultTargetPlatform == TargetPlatform.android;
+    final primary = android ? CalendarProvider.google : CalendarProvider.apple;
     final others = CalendarProvider.values.where((p) => p != primary);
 
     Future<void> open(CalendarProvider provider) async {
       ref.read(analyticsProvider).event('calendar-add', {'provider': provider.name});
+      if (android && provider == CalendarProvider.google) {
+        await showGoogleOnAndroidSteps(context, feed);
+        return;
+      }
       final opened = await launchUrl(
         calendarSubscribeUri(provider, feed),
         mode: LaunchMode.externalApplication,
@@ -104,3 +109,49 @@ class CalendarSheet extends ConsumerWidget {
     );
   }
 }
+
+/// The Google Calendar app can't subscribe to a calendar, only the website can, and on a
+/// phone only as desktop site. So the steps come first, then the browser opens the
+/// subscribe link, with the feed copied for adding it by hand.
+Future<void> showGoogleOnAndroidSteps(BuildContext context, String feed) => showDialog<void>(
+  context: context,
+  builder: (dialogContext) => AlertDialog(
+    title: const Text('Google Kalender am Handy'),
+    content: const SingleChildScrollView(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Google erlaubt Kalender-Abos nur auf der Website. Wir öffnen sie im Browser:'),
+          SizedBox(height: 12),
+          Text('1. Im Browser-Menü ⋮ «Desktop-Website» einschalten.'),
+          SizedBox(height: 4),
+          Text('2. Bei «Kalender hinzufügen» auf «Hinzufügen» tippen.'),
+          SizedBox(height: 12),
+          Text(
+            'Kein «Hinzufügen» zu sehen? Links bei «Weitere Kalender» auf + und «Per URL» tippen, '
+            'den Link einfügen (er ist schon kopiert) und «Kalender hinzufügen» tippen.',
+          ),
+          SizedBox(height: 12),
+          Text(
+            'Nach ein paar Minuten ist der Kalender auch in der Google-Kalender-App. Sonst dort in den '
+            'Einstellungen den Kalender antippen und «Synchronisieren» einschalten.',
+          ),
+        ],
+      ),
+    ),
+    actions: [
+      TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Abbrechen')),
+      FilledButton(
+        onPressed: () async {
+          await Clipboard.setData(ClipboardData(text: 'https://$feed'));
+          final opened = await openInBrowser(calendarSubscribeUri(CalendarProvider.google, feed));
+          if (!dialogContext.mounted) return;
+          Navigator.pop(dialogContext);
+          if (!opened) showMessage(context, 'Der Browser konnte nicht geöffnet werden. Der Link ist kopiert.');
+        },
+        child: const Text('Google Kalender öffnen'),
+      ),
+    ],
+  ),
+);
