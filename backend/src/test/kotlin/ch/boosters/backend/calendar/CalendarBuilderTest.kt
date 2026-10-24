@@ -33,6 +33,22 @@ class CalendarBuilderTest {
     }
 
     @Test
+    fun `the calendar carries its name and time zone for Google Calendar`() {
+        val ics = CalendarBuilder.build(emptyList(), "Test").toString()
+
+        assertTrue(ics.contains(Regex("(?m)^X-WR-CALNAME:Synci - Test\\r?$")))
+        assertTrue(ics.contains(Regex("(?m)^X-WR-TIMEZONE:Europe/Zurich\\r?$")))
+    }
+
+    @Test
+    fun `event times are Swiss local time`() {
+        val ics = CalendarBuilder.build(listOf(CalendarEvent("1", "Match", start, start.plusHours(2))), "Test").toString()
+
+        assertTrue(ics.contains("DTSTART;TZID=Europe/Zurich:20261013T190000"))
+        assertTrue(ics.contains("DTEND;TZID=Europe/Zurich:20261013T210000"))
+    }
+
+    @Test
     fun `an event without end becomes an all-day event`() {
         val ics = CalendarBuilder.build(listOf(CalendarEvent("1", "GV", start, null)), "Test").toString()
 
