@@ -1,0 +1,1 @@
+Korrekturen: Beim Hinzufügen eines Top Events liegen die Texte nicht mehr übereinander, und die Anleitung für Google Kalender ist klarer.
