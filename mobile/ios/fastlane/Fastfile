@@ -75,7 +75,8 @@ platform :ios do
       next
     end
     current = version.copyright.to_s
-    holder = current.sub(/\A\s*(©\s*)?\d{4}\s*/, "").strip
+    # Also drops a "Copyright:" prefix and years stamped twice
+    holder = current.sub(/\A(?:\s*(?:copyright\s*:?|©|\d{4}))+\s*/i, "").strip
     holder = COPYRIGHT_HOLDER if holder.empty?
     wanted = "#{Time.now.year} #{holder}"
     version.update(attributes: { copyright: wanted }) unless current == wanted
