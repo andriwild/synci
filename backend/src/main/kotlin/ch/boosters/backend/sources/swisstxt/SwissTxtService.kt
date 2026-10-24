@@ -93,7 +93,7 @@ class SwissTxtService(
         leagueKey: String
     ): SynciEither<Pair<String, List<TeamEvent>>> = either {
         val events = fetchEventsFromApi(id).block() ?: emptyList()
-        Pair(leagueKey, filterPastEvents(events))
+        Pair(leagueKey, events)
     }
 
     fun updateEvents(eventSports: List<SwissTxtEventSport>, sourceId: Int): SynciEither<Unit> = either {
@@ -124,14 +124,14 @@ class SwissTxtService(
         sourceId: Int,
         leagueName: String,
         events: List<TeamEvent>
-    ): SynciEither<Pair<IntArray, IntArray>> = either {
-        val teams = events.map { team -> Team(team.homeId, sourceId, team.homeName, team.gender, TeamLogos.swissTxtLogo(team.homeId)) }.distinct()
+    ): SynciEither<Unit> = either {
+        // past games count too, so a team stays in the league for the whole season
+        val teams = teamsOf(events, sourceId)
         val sportId = getSportId(leagueName).bind()
 
-        val teamIds = swissTxtRepository.upsertTeams(teams).bind()
-        val teamSportIds = teamSportsRepository.upsertTeams(teams, sportId).bind()
-        swissTxtRepository.upsertEvents(leagueName, events).bind()
-        Pair(teamIds, teamSportIds)
+        swissTxtRepository.upsertTeams(teams).bind()
+        teamSportsRepository.replaceTeams(teams, sportId, sourceId).bind()
+        swissTxtRepository.upsertEvents(leagueName, filterPastEvents(events)).bind()
     }
 
     private fun getSportId(leagueName: String): SynciEither<UUID> = either {
@@ -184,5 +184,15 @@ class SwissTxtService(
             println("No future events found")
         }
         return futureEvents
+    }
+
+    companion object {
+        /** Home and away teams of the games of one league; opponents not known yet have no id. */
+        internal fun teamsOf(events: List<TeamEvent>, sourceId: Int): List<Team> =
+            events.flatMap { event ->
+                listOf(event.homeId to event.homeName, event.awayId to event.awayName)
+                    .filter { (id, _) -> id.isNotBlank() }
+                    .map { (id, name) -> Team(id, sourceId, name, event.gender, TeamLogos.swissTxtLogo(id)) }
+            }.distinctBy { it.id }
     }
 }
