@@ -9,7 +9,7 @@ import {ErrorState, LoadingState} from "../shared-components/TreeStates.tsx";
 import {useUser} from "../../../services/user/UserSlice.ts";
 import {organisationApi} from "../../../services/organisation/organisationApi.ts";
 import {MyOrganisation} from "../../../services/organisation/entities/organisation.ts";
-import {activeOrganisations, DISCOVER_NODE, sportNode, TreeNode, withLiveOrganisation} from "../shared-components/treeNodes.ts";
+import {activeOrganisations, DISCOVER_NODE, isTopEvents, sportNode, TreeNode, withLiveOrganisation} from "../shared-components/treeNodes.ts";
 import {DiscoverOrganisationsPanel} from "../../organisation/components/DiscoverOrganisationsPanel.tsx";
 import {track} from "../../../utils/analytics.ts";
 
@@ -126,7 +126,7 @@ export const SportTreeMobileComponent = () => {
     const renderSelected = (node: TreeNode) => {
         if (node.kind === "sport") {
             return <SportDetailComponent onBack={() => setSelected(null)} id={node.id} title={node.label}
-                                         breadcrumb={selectedPath} organisation={node.organisation} key={node.id}/>;
+                                         breadcrumb={selectedPath} organisation={node.organisation} topEvents={isTopEvents(node)} key={node.id}/>;
         }
         return <DiscoverOrganisationsPanel onBack={() => setSelected(null)}/>;
     };

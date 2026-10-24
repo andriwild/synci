@@ -32,6 +32,15 @@ void main() {
       expect(tree.single.hasSubSports, isTrue);
     });
 
+    test('erkennt die Top Events und Sportarten mit Teams', () {
+      final topEvents = Sport.fromJson({'id': 'top', 'name': 'TOP_EVENTS', 'label': 'Top Events', 'subSports': []});
+      final soccer = Sport.fromJson({'id': 'soccer', 'name': 'SOCCER', 'label': 'Fussball', 'hasTeams': true});
+      expect(topEvents.isTopEvents, isTrue);
+      expect(topEvents.hasTeams, isFalse);
+      expect(soccer.isTopEvents, isFalse);
+      expect(soccer.hasTeams, isTrue);
+    });
+
     test('findSport liefert Sportart und Ebene', () {
       final node = findSport(tree, 'nba-east');
       expect(node?.sport.label, 'EAST');
@@ -121,7 +130,52 @@ void main() {
         'events': [
           {'id': '1854818', 'sourceId': 3},
         ],
+        'matchups': [],
       });
+    });
+
+    test('liest Top Events und schickt sie im PUT-Body mit', () {
+      final withMatchups = SyncConfig.fromJson({
+        'id': 'abo-1',
+        'name': 'Standard-Abo',
+        'matchups': [
+          {
+            'sourceId': 3,
+            'teamA': {'id': '5477', 'sourceId': 3, 'name': 'Real Madrid'},
+            'teamB': {'id': '5469', 'sourceId': 3, 'name': 'FC Barcelona'},
+            'rootSport': 'Fussball',
+          },
+        ],
+        'matchupLimit': 20,
+      });
+      const real = Team(id: '5477', sourceId: 3, name: 'Real Madrid');
+      const barca = Team(id: '5469', sourceId: 3, name: 'FC Barcelona');
+
+      expect(withMatchups.itemCount, 1);
+      expect(withMatchups.matchups.single.name, 'Real Madrid – FC Barcelona');
+      expect(withMatchups.containsMatchup(barca, real), isTrue, reason: 'B – A ist dasselbe Top Event');
+      expect(withMatchups.matchupsFull, isFalse);
+      expect(withMatchups.toRequestJson()['matchups'], [
+        {'sourceId': 3, 'teamAId': '5477', 'teamBId': '5469'},
+      ]);
+    });
+
+    test('ein Spiel bringt seine Teams mit', () {
+      final game = SportEvent.fromJson({
+        'id': '1',
+        'sourceId': 3,
+        'name': 'FC Barcelona - Real Madrid',
+        'teams': [
+          {'id': '5469', 'sourceId': 3, 'name': 'FC Barcelona'},
+          {'id': '5477', 'sourceId': 3, 'name': 'Real Madrid'},
+        ],
+      });
+      expect(game.teams.map((t) => t.name), ['FC Barcelona', 'Real Madrid']);
+      expect(SportEvent.fromJson({'id': '2', 'sourceId': 3, 'name': 'Abfahrt'}).teams, isEmpty);
+    });
+
+    test('ohne matchupLimit gilt die Standardgrenze', () {
+      expect(SyncConfig.fromJson({'id': 'abo-1', 'name': 'Abo'}).matchupLimit, defaultMatchupLimit);
     });
 
     test('ein Event ist auch über seine Sportart abgedeckt', () {

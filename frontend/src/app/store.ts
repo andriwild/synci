@@ -5,6 +5,7 @@ import {syncConfigSliceReducer} from "../services/syncConfig/syncCofigSlice.ts";
 import {userSliceReducer} from "../services/user/UserSlice.ts";
 import {organisationApi} from "../services/organisation/organisationApi.ts";
 import {userApi} from "../services/user/userApi.ts";
+import {matchupApi} from "../services/matchup/matchupApi.ts";
 
 export const store = configureStore({
     reducer: {
@@ -13,7 +14,8 @@ export const store = configureStore({
         [sportApi.reducerPath]: sportApi.reducer,
         [syncConfigApi.reducerPath]: syncConfigApi.reducer,
         [organisationApi.reducerPath]: organisationApi.reducer,
-        [userApi.reducerPath]: userApi.reducer
+        [userApi.reducerPath]: userApi.reducer,
+        [matchupApi.reducerPath]: matchupApi.reducer
     },
     middleware: getDefaultMiddleware =>
         getDefaultMiddleware()
@@ -21,6 +23,7 @@ export const store = configureStore({
             .concat(syncConfigApi.middleware)
             .concat(organisationApi.middleware)
             .concat(userApi.middleware)
+            .concat(matchupApi.middleware)
 });
 
 export type AppDispatch = typeof store.dispatch;

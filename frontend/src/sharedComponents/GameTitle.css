@@ -1,0 +1,25 @@
+/* the colon stays in the same place in every row, so a list reads like a scoreboard */
+.game-title {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto auto minmax(0, 1fr);
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    min-width: 0;
+}
+
+.game-title__team {
+    overflow-wrap: anywhere;
+}
+
+.game-title__team--home {
+    text-align: right;
+}
+
+.game-title__colon {
+    font-weight: 600;
+}
+
+.game-title__name {
+    overflow-wrap: anywhere;
+}

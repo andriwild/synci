@@ -1,18 +1,34 @@
+/// Name of the root that shows the Top Events of the active Abo.
+const topEventsName = 'TOP_EVENTS';
+
 class Sport {
-  const Sport({required this.id, required this.label, this.subSports = const [], this.rootSport, this.organisationId});
+  const Sport({
+    required this.id,
+    required this.label,
+    this.name = '',
+    this.subSports = const [],
+    this.rootSport,
+    this.organisationId,
+    this.hasTeams = false,
+  });
 
   factory Sport.fromJson(Map<String, dynamic> json) => Sport(
     id: json['id'] as String,
     label: (json['label'] ?? json['name'] ?? '') as String,
+    name: json['name'] as String? ?? '',
     subSports: [
       for (final sub in (json['subSports'] as List<dynamic>? ?? const [])) Sport.fromJson(sub as Map<String, dynamic>),
     ],
     rootSport: json['rootSport'] as String?,
     organisationId: json['organisationId'] as String?,
+    hasTeams: json['hasTeams'] as bool? ?? false,
   );
 
   final String id;
   final String label;
+
+  /// Technical key, e.g. `SOCCER` or [topEventsName].
+  final String name;
   final List<Sport> subSports;
 
   /// Only set in sync config responses.
@@ -21,7 +37,12 @@ class Sport {
   /// Set on organisation roots and their groups.
   final String? organisationId;
 
+  /// Teams play in this node or below it.
+  final bool hasTeams;
+
   bool get isOrganisation => organisationId != null;
+
+  bool get isTopEvents => name == topEventsName && !isOrganisation;
 
   bool get hasSubSports => subSports.isNotEmpty;
 }
@@ -100,6 +121,7 @@ class SportEvent {
     this.rootSport,
     this.location,
     this.description,
+    this.teams = const [],
   });
 
   factory SportEvent.fromJson(Map<String, dynamic> json) => SportEvent(
@@ -113,6 +135,7 @@ class SportEvent {
     rootSport: json['rootSport'] as String?,
     location: json['location'] as String?,
     description: json['description'] as String?,
+    teams: [for (final t in json['teams'] as List<dynamic>? ?? const []) Team.fromJson(t as Map<String, dynamic>)],
   );
 
   final String id;
@@ -126,6 +149,9 @@ class SportEvent {
   final String? rootSport;
   final String? location;
   final String? description;
+
+  /// Both teams of a game in the order of its name; empty for events without teams.
+  final List<Team> teams;
 }
 
 class PagedResult<T> {

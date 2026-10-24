@@ -13,7 +13,12 @@ export const syncConfigDtoMapper = (syncConfig: SyncConfig): SyncConfigRequest =
             id: team.id,
             sourceId: team.sourceId
         })),
-        sports: syncConfig.sports.map(sport => sport.id)
+        sports: syncConfig.sports.map(sport => sport.id),
+        matchups: syncConfig.matchups?.map(matchup => ({
+            sourceId: matchup.sourceId,
+            teamAId: matchup.teamA.id,
+            teamBId: matchup.teamB.id
+        }))
     }
 
 }

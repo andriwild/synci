@@ -5,18 +5,20 @@ import arrow.core.raise.either
 import arrow.core.raise.ensure
 import arrow.core.raise.ensureNotNull
 import ch.boosters.backend.auth.CurrentUserResolver
+import ch.boosters.backend.data.event.EventRepository
+import ch.boosters.backend.data.event.EventResponse
 import ch.boosters.backend.data.organisation.OrganisationAccess
 import ch.boosters.backend.data.sport.business.findSportsByParent
 import ch.boosters.backend.data.sport.business.groupByRootSports
 import ch.boosters.backend.data.sport.model.PagedResult
 import ch.boosters.backend.data.sport.model.Sport
 import ch.boosters.backend.data.sport.model.flatten
+import ch.boosters.backend.data.sport.model.withTeams
 import ch.boosters.backend.data.team.TeamResponse
 import ch.boosters.backend.errorhandling.ElementNotFound
 import ch.boosters.backend.errorhandling.Forbidden
 import ch.boosters.backend.errorhandling.SynciEither
 import ch.boosters.backend.errorhandling.SynciError
-import ch.boosters.data.tables.pojos.EventsTable
 import ch.boosters.data.tables.pojos.SportsTable
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
@@ -26,6 +28,7 @@ import java.util.*
 @Service
 class SportsService(
     private val sportRepository: SportsRepository,
+    private val eventRepository: EventRepository,
     private val organisationAccess: OrganisationAccess,
     private val currentUserResolver: CurrentUserResolver
 ) {
@@ -39,7 +42,8 @@ class SportsService(
     /** Public tree without organisations. */
     fun findSports(): Either<SynciError, List<Sport>> = either {
         val sports: List<SportsTable> = sportRepository.publicSports().bind()
-        sports.groupByRootSports()
+        val sportIdsWithTeams = sportRepository.sportIdsWithTeams().bind()
+        sports.groupByRootSports().map { it.withTeams(sportIdsWithTeams) }
     }
 
     fun getEventsBySport(
@@ -48,12 +52,12 @@ class SportsService(
         pageNumber: Int,
         dateTime: LocalDateTime,
         authentication: Authentication?
-    ): SynciEither<PagedResult<EventsTable>> = either {
+    ): SynciEither<PagedResult<EventResponse>> = either {
         requireAccess(sportId, authentication).bind()
         val allIds = findSportsByParent(sportId).bind().flatten()
         val eventsCount = sportRepository.eventsBySportsCount(allIds, dateTime).bind()
-        val elements = sportRepository.eventsBySports(allIds, pageSize, pageNumber * pageSize, dateTime).bind()
-        PagedResult(eventsCount, pageNumber, pageSize, elements)
+        val events = sportRepository.eventsBySports(allIds, pageSize, pageNumber * pageSize, dateTime).bind()
+        PagedResult(eventsCount, pageNumber, pageSize, eventRepository.withTeams(events).bind())
     }
 
     fun getTeamsBySportId(sportId: UUID, pageSize: Int, pageNumber: Int, searchTerm: String? = null): SynciEither<PagedResult<TeamResponse>> = either {

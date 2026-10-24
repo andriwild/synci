@@ -303,7 +303,11 @@ class _SportTile extends StatelessWidget {
     title: sport.label,
     subtitle: sport.hasSubSports
         ? sport.subSports.map((s) => s.label).join(' · ')
-        : (sport.isOrganisation ? 'Alle Termine' : null),
+        : sport.isOrganisation
+        ? 'Alle Termine'
+        : sport.isTopEvents
+        ? 'Spiele zwischen zwei Teams'
+        : null,
     onTap: onTap,
   );
 }

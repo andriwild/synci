@@ -10,9 +10,12 @@ import ch.boosters.data.tables.SportsTable.Companion.SPORTS_TABLE
 import ch.boosters.data.tables.SyncConfigsEventsTable.Companion.SYNC_CONFIGS_EVENTS_TABLE
 import ch.boosters.data.tables.SyncConfigsSportsTable.Companion.SYNC_CONFIGS_SPORTS_TABLE
 import ch.boosters.data.tables.SyncConfigsTeamsTable.Companion.SYNC_CONFIGS_TEAMS_TABLE
+import ch.boosters.data.tables.TeamsTable.Companion.TEAMS_TABLE
 import ch.boosters.data.tables.pojos.EventsTable
+import ch.boosters.data.tables.pojos.TeamsTable
 import org.jooq.DSLContext
 import org.springframework.stereotype.Repository
+import java.time.LocalDateTime
 import java.util.*
 
 @Repository
@@ -64,6 +67,45 @@ class EventRepository(private val dsl: JooqEitherDsl) {
                 .from(EVENTS_TABLE)
                 .where(EVENTS_TABLE.SPORT_ID.`in`(ids))
                 .fetchInto(EventsTable::class.java)
+        }
+
+    fun eventsOfMatchups(configID: UUID): SynciEither<List<EventsTable>> =
+        dsl {
+            it.selectFrom(EVENTS_TABLE)
+                .where(eventsOfConfigMatchups(configID))
+                .fetchInto(EventsTable::class.java)
+        }
+
+    fun upcomingEventsOfMatchup(sourceId: Int, teamA: String, teamB: String, limit: Int, offset: Int, from: LocalDateTime): SynciEither<List<EventsTable>> =
+        dsl {
+            it.selectFrom(EVENTS_TABLE)
+                .where(eventsOfMatchup(sourceId, teamA, teamB))
+                .and(EVENTS_TABLE.STARTS_ON.greaterOrEqual(from))
+                .orderBy(EVENTS_TABLE.STARTS_ON)
+                .limit(offset, limit)
+                .fetchInto(EventsTable::class.java)
+        }
+
+    fun upcomingEventsOfMatchupCount(sourceId: Int, teamA: String, teamB: String, from: LocalDateTime): SynciEither<Int> =
+        dsl {
+            it.fetchCount(EVENTS_TABLE, eventsOfMatchup(sourceId, teamA, teamB).and(EVENTS_TABLE.STARTS_ON.greaterOrEqual(from)))
+        }
+
+    /** Adds the teams to [events], with one query for all of them. */
+    fun withTeams(events: List<EventsTable>): SynciEither<List<EventResponse>> =
+        dsl {
+            val teamsByEvent = it.select(EVENTS_TEAMS_TABLE.EVENT_ID, EVENTS_TEAMS_TABLE.SOURCE_EVENT_ID, *TEAMS_TABLE.fields())
+                .from(EVENTS_TEAMS_TABLE)
+                .join(TEAMS_TABLE).on(
+                    TEAMS_TABLE.ID.eq(EVENTS_TEAMS_TABLE.TEAM_ID).and(TEAMS_TABLE.SOURCE_ID.eq(EVENTS_TEAMS_TABLE.SOURCE_TEAM_ID))
+                )
+                .where(EVENTS_TEAMS_TABLE.EVENT_ID.`in`(events.map { event -> event.id }))
+                .fetch()
+                .groupBy(
+                    { r -> r[EVENTS_TEAMS_TABLE.EVENT_ID] to r[EVENTS_TEAMS_TABLE.SOURCE_EVENT_ID] },
+                    { r -> r.into(TEAMS_TABLE).into(TeamsTable::class.java) },
+                )
+            events.map { event -> EventResponse.of(event, teamsByEvent[event.id to event.sourceId] ?: emptyList()) }
         }
 
     fun findEvent(id: String, sourceId: Int): SynciEither<EventsTable?> =

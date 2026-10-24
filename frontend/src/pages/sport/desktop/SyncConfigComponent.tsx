@@ -13,6 +13,7 @@ import { CalendarSelectionModal } from "../../../sharedComponents/calenderSelect
 import {VITE_BACKEND_HOST} from "../../../../env.ts";
 import {SyncConfig} from "../../../services/syncConfig/entities/syncConfig.ts";
 import {EventConfigCard} from "../../../sharedComponents/config/EventConfigCard.tsx";
+import {MatchupConfigCard} from "../../../sharedComponents/config/MatchupConfigCard.tsx";
 import {track} from "../../../utils/analytics.ts";
 
 
@@ -117,9 +118,13 @@ export const SyncConfigComponent = () => {
             currentSyncConfig?.teams.map((team) => (
                 <TeamConfigCard key={team.id} team={team}/>
             ))}
+            {currentSyncConfig?.matchups?.map((matchup) => (
+                <MatchupConfigCard key={`${matchup.teamA.id}:${matchup.teamB.id}`} matchup={matchup}/>
+            ))}
             {currentSyncConfig?.sports?.length === 0 &&
             currentSyncConfig?.events?.length === 0 &&
             currentSyncConfig?.teams?.length === 0 &&
+            (currentSyncConfig?.matchups?.length ?? 0) === 0 &&
                 <>
                     <Typography.Text>Keine Teams / Ligen / Events / Organisationen vorhanden</Typography.Text>
                     <CreateConfigModal refetch={() => syncConfigList.refetch()}/>

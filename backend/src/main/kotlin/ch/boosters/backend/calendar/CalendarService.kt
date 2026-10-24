@@ -26,6 +26,7 @@ class CalendarService(
         val config = syncConfigRepository.findSyncConfig(configId).bind()
         val sportEvents = eventsBySport(configId).bind()
         val teamEvents = eventRepository.eventsOfTeams(configId).bind()
+        val matchupEvents = eventRepository.eventsOfMatchups(configId).bind()
         val events = eventRepository.eventsByConfig(configId).bind()
 
         // organisation events only reach the feed while the config owner is an active member;
@@ -37,7 +38,7 @@ class CalendarService(
         fun visible(event: EventsTable): Boolean =
             organisationOfSport[event.sportId]?.let { it in allowedOrganisations } ?: true
 
-        val calendarEvents = (teamEvents + sportEvents + events)
+        val calendarEvents = (teamEvents + matchupEvents + sportEvents + events)
             .filter(::visible)
             .map { it.toCalendarEvent() }
         CalendarBuilder.build(calendarEvents, config.name)

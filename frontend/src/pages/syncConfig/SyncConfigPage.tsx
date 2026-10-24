@@ -9,6 +9,7 @@ import {track} from "../../utils/analytics.ts";
 import {SportConfigCard} from "../../sharedComponents/config/SportConfigCard.tsx";
 import {TeamConfigCard} from "../../sharedComponents/config/TeamConfigCard.tsx";
 import {EventConfigCard} from "../../sharedComponents/config/EventConfigCard.tsx";
+import {MatchupConfigCard} from "../../sharedComponents/config/MatchupConfigCard.tsx";
 import {CalendarSelectionModal} from "../../sharedComponents/calenderSelectionModal/CalenderSelectionModal.tsx";
 import {VITE_BACKEND_HOST} from "../../../env.ts";
 import {syncConfigActions, useSyncConfig} from "../../services/syncConfig/syncCofigSlice.ts";
@@ -63,7 +64,10 @@ export const SyncConfigPage = () => {
                                 {config.events && config.events.map((event) => (
                                     <EventConfigCard event={event} config={config} key={event.id}/>
                                 ))}
-                                {(config.sports?.length ?? 0) === 0 && (config.teams?.length ?? 0) === 0 && (config.events?.length ?? 0) === 0 && (
+                                {config.matchups?.map((matchup) => (
+                                    <MatchupConfigCard matchup={matchup} config={config} key={`${matchup.teamA.id}:${matchup.teamB.id}`}/>
+                                ))}
+                                {(config.sports?.length ?? 0) === 0 && (config.teams?.length ?? 0) === 0 && (config.events?.length ?? 0) === 0 && (config.matchups?.length ?? 0) === 0 && (
                                     <Flex vertical align={"center"} justify={"center"} gap={10}
                                           style={{borderRadius: 20, background: token.colorBgContainer, padding: 20, minHeight: 100}}>
                                         <IconFileSad size={40} color={token.colorTextSecondary}/>

@@ -8,12 +8,17 @@ import ch.boosters.backend.data.event.EventRepository
 import ch.boosters.backend.data.organisation.OrganisationAccess
 import ch.boosters.backend.data.sport.SportsRepository
 import ch.boosters.backend.data.sport.business.rootSportOf
+import ch.boosters.backend.data.syncConfig.model.MatchupDto
 import ch.boosters.backend.data.syncConfig.model.SyncConfigDto
 import ch.boosters.backend.data.syncConfig.syncConfigEvents.SyncConfigEventsRepository
+import ch.boosters.backend.data.syncConfig.syncConfigMatchups.MATCHUP_LIMIT
+import ch.boosters.backend.data.syncConfig.syncConfigMatchups.SyncConfigMatchupRepository
+import ch.boosters.backend.data.syncConfig.syncConfigMatchups.normalizeMatchups
 import ch.boosters.backend.data.syncConfig.syncConfigSports.SyncConfigSportsRepository
 import ch.boosters.backend.data.syncConfig.syncConfigTeam.SyncConfigTeamRepository
 import ch.boosters.backend.data.team.TeamResponse
 import ch.boosters.backend.errorhandling.ElementNotFound
+import ch.boosters.backend.errorhandling.InvalidRequest
 import ch.boosters.backend.errorhandling.SynciEither
 import ch.boosters.backend.errorhandling.SynciError
 import ch.boosters.data.tables.pojos.SyncConfigsTable
@@ -26,6 +31,7 @@ class SyncConfigService(
     private val syncConfigTeamRepository: SyncConfigTeamRepository,
     private val syncConfigSportsRepository: SyncConfigSportsRepository,
     private val syncConfigEventsRepository: SyncConfigEventsRepository,
+    private val syncConfigMatchupRepository: SyncConfigMatchupRepository,
     private val sportsRepository: SportsRepository,
     private val eventRepository: EventRepository,
     private val organisationAccess: OrganisationAccess
@@ -34,10 +40,12 @@ class SyncConfigService(
     fun createSyncConfig(syncConfig: SyncConfigDto, userId: UUID): SynciEither<SyncConfig> = either {
         val cleanedConfig = removeDuplicates(syncConfig)
         validateOrganisationAccess(cleanedConfig, userId).bind()
+        val matchups = validMatchups(cleanedConfig.matchups).bind() ?: syncConfigMatchupRepository.defaultMatchups().bind()
         val id = syncConfigRepository.createSyncConfig(cleanedConfig, userId).bind()
         syncConfigTeamRepository.addTeams(id, cleanedConfig.teams).bind()
         syncConfigSportsRepository.addSports(id, cleanedConfig.sports).bind()
         syncConfigEventsRepository.addEvents(id, cleanedConfig.events).bind()
+        syncConfigMatchupRepository.replaceMatchups(id, matchups).bind()
         syncConfigById(id, userId).bind()
     }
 
@@ -51,6 +59,7 @@ class SyncConfigService(
         val sportsOfConfig = syncConfigSportsRepository.getSportsIdBySyncConfigId(id).bind()
         val teamsOfConfig = syncConfigTeamRepository.getTeamBySyncConfigId(id).bind()
         val eventIdsInConfig = syncConfigEventsRepository.getEventsIdsBySyncConfigId(id).bind()
+        val matchupsOfConfig = syncConfigMatchupRepository.getMatchups(id).bind()
 
         val allSports = sportsRepository.allSports().bind()
         val teamSportMap = syncConfigTeamRepository.getTeamSportPairsBySyncConfigId(id).bind()
@@ -64,7 +73,11 @@ class SyncConfigService(
             name = syncConfig.name,
             teams = teamsOfConfig.map { WithRootSport(TeamResponse.of(it), rootLabel(teamSportMap[it.id]?.firstOrNull())) },
             sports = sportsOfConfig.map { WithRootSport(it, rootLabel(it.id)) },
-            events = eventIdsInConfig.map { WithRootSport(it, rootLabel(it.sportId)) },
+            events = eventRepository.withTeams(eventIdsInConfig).bind().map { WithRootSport(it, rootLabel(it.event.sportId)) },
+            matchups = matchupsOfConfig.map {
+                WithRootSport(MatchupResponse(it.sourceId, TeamResponse.of(it.teamA), TeamResponse.of(it.teamB)), rootLabel(it.sportIds.firstOrNull()))
+            },
+            matchupLimit = MATCHUP_LIMIT,
         )
     }
 
@@ -73,11 +86,22 @@ class SyncConfigService(
         syncConfigBelongsToUser(id, userId).bind()
         val cleanedConfig = removeDuplicates(syncConfig)
         validateOrganisationAccess(cleanedConfig, userId).bind()
+        val matchups = validMatchups(cleanedConfig.matchups).bind()
         syncConfigRepository.updateSyncConfig(id, cleanedConfig).bind()
         syncConfigTeamRepository.updateTeams(id, cleanedConfig.teams).bind()
         syncConfigEventsRepository.updateEvents(id, cleanedConfig.events).bind()
         syncConfigSportsRepository.updateSports(id, cleanedConfig.sports).bind()
+        matchups?.let { syncConfigMatchupRepository.replaceMatchups(id, it).bind() }
         syncConfigById(id, userId).bind()
+    }
+
+    /** Top Events without repeats and with existing teams; null when the client sent none. */
+    private fun validMatchups(matchups: List<MatchupDto>?): SynciEither<List<MatchupDto>?> = either {
+        if (matchups == null) return@either null
+        val normalized = normalizeMatchups(matchups).bind()
+        val unknown = syncConfigMatchupRepository.unknownTeams(normalized).bind()
+        ensure(unknown.isEmpty()) { InvalidRequest("Unbekannte Teams: ${unknown.joinToString()}") }
+        normalized
     }
 
     private fun removeDuplicates(syncConfig: SyncConfigDto): SyncConfigDto {

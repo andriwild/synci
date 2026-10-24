@@ -7,6 +7,7 @@ import {useDispatch} from "react-redux";
 import {SportEvent} from "../../services/event/entities/event.ts";
 import {convertToSwissDate} from "../../services/common/dateUtil.ts";
 import {ConfigCardShell} from "./ConfigCardShell.tsx";
+import {GameTitle} from "../GameTitle.tsx";
 import {track} from "../../utils/analytics.ts";
 import {SyncConfig} from "../../services/syncConfig/entities/syncConfig.ts";
 
@@ -36,6 +37,9 @@ export const EventConfigCard = ({event, config}: { event: SportEvent, config?: S
         <ConfigCardShell
             icon={<IconCalendarEvent size={28} color={token.colorPrimary}/>}
             title={event.name}
+            heading={event.teams && event.teams.length >= 2
+                ? <GameTitle teams={event.teams} name={event.name} logoSize={20} strong/>
+                : undefined}
             subtitle={[event.rootSport, convertToSwissDate(event.startsOn)].filter(Boolean).join(" · ")}
             tag="Event"
             onRemove={remove}
