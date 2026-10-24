@@ -67,6 +67,13 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  void expectLabelAboveHint(WidgetTester tester, String field, String hint) {
+    final decorator = find.ancestor(of: find.text(field), matching: find.byType(InputDecorator));
+    final label = tester.getRect(find.text(field));
+    final hintRect = tester.getRect(find.descendant(of: decorator, matching: find.text(hint)));
+    expect(label.bottom, lessThanOrEqualTo(hintRect.top), reason: '$field steht über dem Hinweis, nicht darauf');
+  }
+
   testWidgets('Top Event mit Vorschau ins Abo speichern', (tester) async {
     await pumpLoggedIn(tester);
 
@@ -77,11 +84,13 @@ void main() {
     await openCreateSheet(tester);
     expect(find.text('Top Event hinzufügen'), findsOneWidget);
     expect(find.text('Ski Alpin'), findsNothing, reason: 'nur Sportarten mit Teams');
+    expectLabelAboveHint(tester, 'Team 1', 'Zuerst Sportart wählen');
     await tester.tap(find.text('Sportart'));
     await tester.pumpAndSettle();
     expect(find.text('Ski Alpin'), findsNothing);
     await tester.tap(find.text('Fussball').last);
     await tester.pumpAndSettle();
+    expectLabelAboveHint(tester, 'Team 2', 'Team wählen');
 
     await pickTeam(tester, 'Team 1', 'Real Madrid');
     await pickTeam(tester, 'Team 2', 'FC Barcelona');

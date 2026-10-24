@@ -291,10 +291,17 @@ class _TeamField extends StatelessWidget {
       onTap: enabled ? onTap : null,
       borderRadius: BorderRadius.circular(4),
       child: InputDecorator(
-        decoration: InputDecoration(labelText: label, enabled: enabled, suffixIcon: const Icon(Icons.search)),
+        decoration: InputDecoration(
+          labelText: label,
+          hintText: enabled ? 'Team wählen' : 'Zuerst Sportart wählen',
+          // Keeps the label above the hint instead of on top of it
+          floatingLabelBehavior: FloatingLabelBehavior.always,
+          enabled: enabled,
+          suffixIcon: const Icon(Icons.search),
+        ),
         isEmpty: team == null,
         child: team == null
-            ? Text(enabled ? 'Team wählen' : 'Zuerst Sportart wählen')
+            ? null
             : Row(
                 children: [
                   TeamLogo(team: team, size: 24),
