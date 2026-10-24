@@ -11,8 +11,10 @@ import net.fortuna.ical4j.model.property.Location
 import net.fortuna.ical4j.model.property.Name
 import net.fortuna.ical4j.model.property.ProdId
 import net.fortuna.ical4j.model.property.Uid
+import net.fortuna.ical4j.model.property.XProperty
 import net.fortuna.ical4j.model.property.immutable.ImmutableCalScale
 import net.fortuna.ical4j.model.property.immutable.ImmutableVersion
+import java.time.ZoneId
 
 const val PROD_ID = "-//Events Calendar//iCal4j 1.0//EN"
 const val CALENDAR_TIME_ZONE = "Europe/Zurich"
@@ -25,6 +27,9 @@ object CalendarBuilder {
         val timeZone = timeZoneRegistry.getTimeZone(CALENDAR_TIME_ZONE)
         val icsCalendar = Calendar()
         icsCalendar.add<PropertyContainer>(Name("Synci - $calendarName"))
+        // Google Calendar ignores NAME and takes its name and time zone only from these
+        icsCalendar.add<PropertyContainer>(XProperty("X-WR-CALNAME", "Synci - $calendarName"))
+        icsCalendar.add<PropertyContainer>(XProperty("X-WR-TIMEZONE", CALENDAR_TIME_ZONE))
         icsCalendar.add<PropertyContainer>(ProdId(PROD_ID))
         icsCalendar.add<PropertyContainer>(ImmutableVersion.VERSION_2_0)
         icsCalendar.add<PropertyContainer>(ImmutableCalScale.GREGORIAN)
@@ -39,7 +44,9 @@ object CalendarBuilder {
         val vEvent: VEvent = if (event.endsOn == null) {
             VEvent(event.startsOn.toLocalDate(), event.name)
         } else {
-            VEvent(event.startsOn, event.endsOn, event.name)
+            // event times are Swiss local time; without a TZID they float and Google reads them as UTC
+            val zone = ZoneId.of(CALENDAR_TIME_ZONE)
+            VEvent(event.startsOn.atZone(zone), event.endsOn.atZone(zone), event.name)
         }
         vEvent.add<PropertyContainer>(Uid("${event.id}@synci.ch"))
         event.location?.takeIf { it.isNotBlank() }?.let { vEvent.add<PropertyContainer>(Location(it)) }
