@@ -19,6 +19,7 @@ type AnalyticsEvents = {
     "abo-delete": undefined;
     "login-click": undefined;
     "signup-click": undefined;
+    "app-store-click": { store: "apple" | "google" };
 };
 
 // No personal data (email, user ID, sync config names)

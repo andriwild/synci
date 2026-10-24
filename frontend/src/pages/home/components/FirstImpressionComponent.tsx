@@ -47,7 +47,7 @@ export const FirstImpressionComponent = () => {
                     <div className="hero__image">
                         <img
                             src={"/assets/images/fan_hero.jpg"}
-                            alt=""
+                            alt="Jubelnder Fan im Stadion"
                             width={1024}
                             height={1024}
                             loading="eager"

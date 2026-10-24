@@ -1,10 +1,15 @@
 import { FC } from "react";
 import { Flex, Typography, Collapse } from "antd";
 import type { CollapseProps } from 'antd';
+import {usePageMeta} from "../../utils/usePageMeta.ts";
 
 const { Title, Paragraph } = Typography;
 
 export const FaqPage: FC = () => {
+    usePageMeta(
+        "Häufige Fragen",
+        "Antworten zu Synci: wie das Kalender-Abo funktioniert, welche Kalender unterstützt werden und wie du dein Konto löschst.",
+    );
 
     const faqItems: CollapseProps['items'] = [
         {

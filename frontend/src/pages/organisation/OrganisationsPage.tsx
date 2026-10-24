@@ -11,11 +11,13 @@ import {syncConfigActions, useSyncConfig} from "../../services/syncConfig/syncCo
 import {stringifyApiError} from "../../services/common/apiHelpers.ts";
 import {CreateOrganisationModal} from "./components/CreateOrganisationModal.tsx";
 import "./Organisation.css";
+import {usePageMeta} from "../../utils/usePageMeta.ts";
 
 /** one card per organisation: full width on phones, 2 / 3 / 4 per row on larger screens */
 const CARD_COL = {xs: 24, sm: 12, lg: 8};
 
 export const OrganisationsPage = () => {
+    usePageMeta("Organisationen");
     const user = useUser();
     const navigate = useNavigate();
     const dispatch = useDispatch();

@@ -91,7 +91,7 @@ class _IntroSeen extends OnboardingSeenController {
 
 class _DemoUser extends AuthController {
   @override
-  Future<AppUser?> build() async => const AppUser(name: 'Andri', email: 'andri@example.com');
+  Future<AppUser?> build() async => const AppUser(name: 'Lena', email: 'lena@example.com');
 }
 
 class _DemoOrganisations extends OrganisationRepository {

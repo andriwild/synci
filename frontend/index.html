@@ -1,18 +1,74 @@
 <!doctype html>
-<html lang="en">
+<html lang="de-CH">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon-32x32.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Synci – Sportevents automatisch in deinem Kalender</title>
+    <meta name="description" content="Abonniere Ligen, Teams und Events und sieh alle Spiele automatisch in deinem Kalender: NFL, NBA, Eishockey, Fussball und mehr. Kostenlos, mit Google Kalender, Apple und Outlook." />
+    <link rel="canonical" href="https://synci.ch/" />
+    <meta name="theme-color" content="#3D5A80" />
+
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- Safari on iPhone offers the app in a banner -->
+    <meta name="apple-itunes-app" content="app-id=6822769208" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Synci" />
+    <meta property="og:locale" content="de_CH" />
+    <meta property="og:url" content="https://synci.ch/" />
+    <meta property="og:title" content="Synci – Sportevents automatisch in deinem Kalender" />
+    <meta property="og:description" content="Abonniere Ligen, Teams und Events und sieh alle Spiele automatisch in deinem Kalender. Kostenlos, im Web und als App." />
+    <meta property="og:image" content="https://synci.ch/assets/og-image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Synci: Alle Spiele automatisch in deinem Kalender" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://synci.ch/#website",
+            "url": "https://synci.ch/",
+            "name": "Synci",
+            "inLanguage": "de-CH"
+          },
+          {
+            "@type": "SoftwareApplication",
+            "name": "Synci",
+            "description": "Sportevents von Ligen, Teams und Vereinen automatisch im eigenen Kalender.",
+            "url": "https://synci.ch/",
+            "applicationCategory": "SportsApplication",
+            "operatingSystem": "iOS, Android, Web",
+            "image": "https://synci.ch/android-chrome-512x512.png",
+            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "CHF" },
+            "sameAs": [
+              "https://apps.apple.com/ch/app/synci/id6822769208",
+              "https://play.google.com/store/apps/details?id=ch.synci.app"
+            ]
+          }
+        ]
+      }
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-    <title>Sync!</title>
     <script src="/config.js"></script>
     <script defer src="https://analytics.wild-tec.ch/script.js" data-website-id="8c44756b-50b4-484e-9294-23380fa14059" data-domains="synci.ch"></script>
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <h1>Synci – Sportevents automatisch in deinem Kalender</h1>
+      <p>Abonniere Ligen, Teams und Events und sieh alle Spiele automatisch in deinem Kalender. Synci braucht JavaScript; die App gibt es für <a href="https://apps.apple.com/ch/app/synci/id6822769208">iPhone</a> und <a href="https://play.google.com/store/apps/details?id=ch.synci.app">Android</a>.</p>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
-    </body>
+  </body>
 </html>

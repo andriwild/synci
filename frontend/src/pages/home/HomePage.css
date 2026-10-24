@@ -11,18 +11,67 @@
     margin: 0;
 }
 
-.sport-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
-    gap: 16px;
-    width: 100%;
-    max-width: 1140px;
+/* App promo */
+.app-promo {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px 60px;
+    align-items: center;
+    justify-content: center;
 }
 
-.sport-card {
-    border-radius: var(--panel-radius);
-    padding: 0 20px 20px 20px;
+.app-promo__text {
+    flex: 1 1 320px;
+    max-width: 560px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.app-promo__badges {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 16px;
+}
+
+.app-promo__badges img {
+    display: block;
+    height: 50px;
+    width: auto;
+}
+
+.app-promo__phone {
+    flex: 0 1 280px;
+    display: flex;
+    justify-content: center;
+}
+
+/* the screenshot in a simple phone frame */
+.app-promo__phone img {
+    width: 100%;
+    max-width: 280px;
+    height: auto;
+    border: 8px solid #1f2937;
+    border-radius: 40px;
+    box-shadow: 0 24px 48px rgba(31, 41, 55, 0.25);
     background: #fff;
+}
+
+@media (max-width: 767.98px) {
+    .app-promo__text {
+        align-items: center;
+        text-align: center;
+    }
+
+    .app-promo__badges {
+        justify-content: center;
+    }
+
+    .app-promo__phone img {
+        max-width: 240px;
+    }
 }
 
 /* Hero */
@@ -130,6 +179,19 @@
 @media (max-width: 575.98px) {
     .tutorial .ant-steps-item-title {
         display: none;
+    }
+
+    /* the dots keep antd's 140px label width otherwise, which makes the page scroll sideways */
+    .tutorial .ant-steps.ant-steps-dot .ant-steps-item .ant-steps-item-content {
+        width: 24px;
+    }
+
+    .tutorial .ant-steps.ant-steps-dot .ant-steps-item .ant-steps-item-tail {
+        margin-inline-start: 12px;
+    }
+
+    .tutorial .ant-steps.ant-steps-dot .ant-steps-item .ant-steps-item-icon {
+        margin-inline-start: 8px;
     }
 }
 

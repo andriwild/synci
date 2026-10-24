@@ -1,9 +1,14 @@
 import { FC } from "react";
 import { Flex, Typography } from "antd";
+import {usePageMeta} from "../../utils/usePageMeta.ts";
 
 const { Title, Paragraph, Link, Text } = Typography;
 
 export const DatenschutzPage: FC = () => {
+    usePageMeta(
+        "Datenschutz",
+        "Datenschutzerklärung von Synci.",
+    );
 
     return (
         <Flex
