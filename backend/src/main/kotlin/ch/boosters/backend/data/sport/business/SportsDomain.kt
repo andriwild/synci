@@ -1,6 +1,7 @@
 package ch.boosters.backend.data.sport.business
 
 import ch.boosters.backend.data.sport.model.Sport
+import ch.boosters.backend.data.sport.model.TOP_EVENTS
 import ch.boosters.backend.data.sport.model.toSport
 import ch.boosters.data.tables.pojos.SportsTable
 import java.util.UUID
@@ -35,5 +36,5 @@ fun List<SportsTable>.groupByRootSports(): List<Sport> {
             record.toSport(subSports = findAllSportsByParent(record.id))
         } ?: emptyList()
     }
-    return findAllSportsByParent(null)
+    return findAllSportsByParent(null).sortedByDescending { it.name == TOP_EVENTS }
 }

@@ -11,6 +11,15 @@ export type TreeNode =
 
 export const DISCOVER_NODE: TreeNode = {kind: "discover", id: "discover", label: "Organisationen entdecken"};
 
+/** Root of the Top Events page; the backend lists it before the sports. */
+export const TOP_EVENTS = "TOP_EVENTS";
+
+export const isTopEvents = (node: TreeNode) =>
+    node.kind === "sport" && !node.organisation && node.sport.name === TOP_EVENTS;
+
+/** Rows followed by a divider: the organisation block and the Top Events each stand apart from the sports. */
+export const endsSection = (node: TreeNode) => node.kind === "discover" || isTopEvents(node);
+
 export const sportNode = (sport: Sport, organisation?: MyOrganisation): TreeNode =>
     ({kind: "sport", id: sport.id, label: sport.label, sport, organisation});
 

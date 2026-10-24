@@ -10,6 +10,39 @@ String teamInitials(String name) {
   return letters.substring(0, letters.length.clamp(0, 2)).toUpperCase();
 }
 
+/// "Home (logo) : (logo) Away" for a game with two teams, otherwise [name].
+/// The colon stays in the same place in every row, so a list reads like a scoreboard.
+class GameTitle extends StatelessWidget {
+  const GameTitle({super.key, required this.teams, required this.name, this.logoSize = 24, this.style});
+
+  final List<Team> teams;
+  final String name;
+  final double logoSize;
+  final TextStyle? style;
+
+  @override
+  Widget build(BuildContext context) {
+    if (teams.length < 2) return Text(name, style: style);
+    final (home, away) = (teams[0], teams[1]);
+    return Semantics(
+      label: '${home.displayName} gegen ${away.displayName}',
+      excludeSemantics: true,
+      child: Row(
+        spacing: 6,
+        children: [
+          Expanded(
+            child: Text(home.displayName, textAlign: TextAlign.end, style: style),
+          ),
+          TeamLogo(team: home, size: logoSize),
+          Text(':', style: (style ?? const TextStyle()).copyWith(fontWeight: FontWeight.w700)),
+          TeamLogo(team: away, size: logoSize),
+          Expanded(child: Text(away.displayName, style: style)),
+        ],
+      ),
+    );
+  }
+}
+
 /// Round team logo; teams without logo, or whose logo fails to load, show their initials.
 class TeamLogo extends StatelessWidget {
   const TeamLogo({super.key, required this.team, this.size = 36});

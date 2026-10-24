@@ -1,6 +1,9 @@
 package ch.boosters.backend.data.sport
 
 import ch.boosters.backend.data.sport.business.findSportsByParent
+import ch.boosters.backend.data.sport.business.groupByRootSports
+import ch.boosters.backend.data.sport.model.TOP_EVENTS
+import ch.boosters.backend.data.sport.model.withTeams
 import ch.boosters.data.tables.pojos.SportsTable
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -26,6 +29,32 @@ class SportDomainTest {
         assertEquals(grouped?.subSports?.map { it.id }?.sorted(), listOf(sport3.id, sport4.id).sorted()  )
     }
 
+
+    @Test
+    fun topEventsLeadTheRootsInLabelOrder() {
+        val roots = listOf(
+            SportsTable(UUID.randomUUID(), "AMERICAN_FOOTBALL", null, "American Football"),
+            SportsTable(UUID.randomUUID(), "SOCCER", null, "Fussball"),
+            SportsTable(UUID.randomUUID(), TOP_EVENTS, null, "Top Events"),
+            SportsTable(UUID.randomUUID(), "VOLLEYBALL", null, "Volleyball"),
+        )
+
+        val tree = roots.groupByRootSports()
+
+        assertEquals(listOf(TOP_EVENTS, "AMERICAN_FOOTBALL", "SOCCER", "VOLLEYBALL"), tree.map { it.name })
+    }
+
+    @Test
+    fun marksNodesWithTeamsAndTheirParents() {
+        val soccer = SportsTable(UUID.randomUUID(), "SOCCER", null, "Fussball")
+        val league = SportsTable(UUID.randomUUID(), "SOCCER_SUPER_LEAGUE", soccer.id, "Super League")
+        val ski = SportsTable(UUID.randomUUID(), "SKI_ALPINE", null, "Ski Alpin")
+
+        val tree = listOf(soccer, league, ski).groupByRootSports().map { it.withTeams(setOf(league.id)) }
+
+        assertEquals(listOf(true, false), tree.map { it.hasTeams })
+        assertEquals(true, tree.first().subSports.single().hasTeams)
+    }
 
     @Test
     fun organisationIdIsKeptInTheTree() {

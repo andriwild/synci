@@ -71,6 +71,14 @@ class SportsRepository(
                 .into(EventsTable::class.java)
         }
 
+    fun sportIdsWithTeams(): SynciEither<Set<UUID>> =
+        dsl {
+            it.selectDistinct(TEAMS_SPORTS_TABLE.SPORT_ID).from(TEAMS_SPORTS_TABLE)
+                .fetch(TEAMS_SPORTS_TABLE.SPORT_ID)
+                .filterNotNull()
+                .toSet()
+        }
+
     fun teamsBySportsCount(sportIds: List<UUID>, searchTerm: String? = null): Either<SynciError, Int> =
         dsl {
             teamsBySport(it, sportIds, searchTerm)

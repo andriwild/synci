@@ -60,6 +60,7 @@ void main() {
         {'id': '8678', 'sourceId': 3},
       ],
       'events': [],
+      'matchups': [],
     });
     expect(find.text('Atlanta Hawks hinzugefügt'), findsOneWidget);
     expect(find.byTooltip('Team hinzufügen'), findsNothing, reason: 'Team ist jetzt als "im Abo" markiert');

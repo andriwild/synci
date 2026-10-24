@@ -7,7 +7,7 @@ import {SportDetailComponent} from "../shared-components/SportDetailComponent.ts
 import {ErrorState, LoadingState} from "../shared-components/TreeStates.tsx";
 import {useUser} from "../../../services/user/UserSlice.ts";
 import {organisationApi} from "../../../services/organisation/organisationApi.ts";
-import {activeOrganisations, childNodes, firstColumn, hasChildren, TreeNode, withLiveOrganisation} from "../shared-components/treeNodes.ts";
+import {activeOrganisations, childNodes, endsSection, firstColumn, hasChildren, isTopEvents, TreeNode, withLiveOrganisation} from "../shared-components/treeNodes.ts";
 import {DiscoverOrganisationsPanel} from "../../organisation/components/DiscoverOrganisationsPanel.tsx";
 import {track} from "../../../utils/analytics.ts";
 
@@ -63,7 +63,7 @@ export const SportTreeComponent = () => {
         if (selected.kind === "discover") return <DiscoverOrganisationsPanel/>;
         const breadcrumb = livePath.slice(0, -1).map((node) => node.label);
         return <SportDetailComponent id={selected.id} title={selected.label} breadcrumb={breadcrumb}
-                                     organisation={selected.organisation} key={selected.id}/>;
+                                     organisation={selected.organisation} topEvents={isTopEvents(selected)} key={selected.id}/>;
     };
 
     return (
@@ -81,7 +81,7 @@ export const SportTreeComponent = () => {
                                     key={node.id}
                                     className={`tree-item ${livePath[index]?.id === node.id ? "selected" : ""}`}
                                     onClick={() => handleClick(node, index)}
-                                    style={node.kind === "discover" ? {borderBottom: "1px solid rgba(255,255,255,0.35)"} : undefined}
+                                    style={endsSection(node) ? {borderBottom: "1px solid rgba(255,255,255,0.35)"} : undefined}
                                 >
                                     <Flex style={{justifyContent: "space-between", alignItems: "center", padding: "1rem", width: "100%"}}>
                                         <Flex align={"center"} gap={8} style={{minWidth: 0}}>

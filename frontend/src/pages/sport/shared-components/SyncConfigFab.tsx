@@ -5,10 +5,11 @@ import {useSyncConfig} from "../../../services/syncConfig/syncCofigSlice.ts";
 import {SyncConfigComponent} from "../desktop/SyncConfigComponent.tsx";
 import {useResponsive} from "../../../utils/useResponsive.ts";
 
-/** Number of entries (sports, teams, events) in the active subscription. */
+/** Number of entries (sports, teams, events, Top Events) in the active subscription. */
 const useSubscriptionCount = () => {
     const syncConfig = useSyncConfig();
-    return (syncConfig?.sports?.length ?? 0) + (syncConfig?.teams?.length ?? 0) + (syncConfig?.events?.length ?? 0);
+    return (syncConfig?.sports?.length ?? 0) + (syncConfig?.teams?.length ?? 0) + (syncConfig?.events?.length ?? 0)
+        + (syncConfig?.matchups?.length ?? 0);
 };
 
 /** True for a moment whenever `value` grows, used to play the "added" animation. */

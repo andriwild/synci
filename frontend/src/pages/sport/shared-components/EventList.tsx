@@ -8,6 +8,7 @@ import {organisationApi} from "../../../services/organisation/organisationApi.ts
 import {stringifyApiError} from "../../../services/common/apiHelpers.ts";
 import {OrganisationEventFormModal} from "../../organisation/components/OrganisationEventFormModal.tsx";
 import {SubscribeButton} from "./SubscribeButton.tsx";
+import {GameTitle} from "../../../sharedComponents/GameTitle.tsx";
 import {Subscription} from "./useSubscription.ts";
 
 /** Events grouped by local calendar day, keeping the API order (ascending start). */
@@ -90,7 +91,7 @@ export const EventList = ({events, amount, isLoading, hasMore, loadMore, sportId
                                         {event.endsOn ? formatTime(event.startsOn) : "ganztägig"}
                                     </Typography.Text>
                                     <div className="event-item__body">
-                                        <Typography.Text className="event-item__name">{event.name}</Typography.Text>
+                                        <GameTitle teams={event.teams} name={event.name}/>
                                         {(event.location || groupLabel) &&
                                             <Flex gap={8} align="center" wrap className="event-item__meta">
                                                 {groupLabel && <Tag bordered={false} style={{margin: 0}}>{groupLabel}</Tag>}

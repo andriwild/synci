@@ -1,3 +1,5 @@
+import {Team} from "../../team/entities/team.ts";
+
 export interface SportEvent {
     id: string;
     sourceId: number;
@@ -9,4 +11,6 @@ export interface SportEvent {
     location?: string;
     description?: string;
     rootSport?: string;
+    /** both teams of a game in the order of its name; empty for events without teams */
+    teams?: Team[];
 }

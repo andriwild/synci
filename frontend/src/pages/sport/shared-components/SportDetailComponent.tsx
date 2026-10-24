@@ -9,6 +9,7 @@ import {useSubscription} from "./useSubscription.ts";
 import {EventList} from "./EventList.tsx";
 import {TeamsPanel} from "./TeamsPanel.tsx";
 import {OrganisationAdminToolbar} from "../../organisation/components/OrganisationAdminToolbar.tsx";
+import {AddTopEventButton, TopEvents} from "./TopEvents.tsx";
 
 const plural = (count: number, one: string, many: string) => `${count} ${count === 1 ? one : many}`;
 
@@ -23,19 +24,21 @@ const BLOCKER_HINT = {
  * Hierarchy: breadcrumb → title → counts → one primary action, then the content in tabs
  * (Events first, Teams only when the node has teams). `onBack` renders a back button (mobile).
  * For an organisation node (root or group) admins get the tools to manage groups and events.
+ * The Top Events node shows the matchups of the Abo instead of events and teams.
  */
-export const SportDetailComponent = ({id, title, breadcrumb = [], organisation, onBack}: {
+export const SportDetailComponent = ({id, title, breadcrumb = [], organisation, topEvents = false, onBack}: {
     id: string,
     title: string,
     /** labels of the parent nodes, e.g. ["Eishockey"] */
     breadcrumb?: string[],
     organisation?: MyOrganisation,
+    topEvents?: boolean,
     onBack?: () => void
 }) => {
     const token = theme.useToken().token;
     const subscription = useSubscription();
     const events = useSportEvents(id);
-    const teams = useSportTeams(id, !organisation);
+    const teams = useSportTeams(id, !organisation && !topEvents);
     // teams first: most people subscribe to their team rather than a whole league
     const [tab, setTab] = useState("teams");
 
@@ -56,10 +59,12 @@ export const SportDetailComponent = ({id, title, breadcrumb = [], organisation, 
 
     const sportIncluded = subscription.isSportIncluded(id);
     const hasTeams = !organisation && (teams.amount > 0 || teams.searchTerm !== "");
-    const meta = [
-        plural(events.amount, "kommendes Event", "kommende Events"),
-        ...(hasTeams && !teams.searchTerm ? [plural(teams.amount, "Team", "Teams")] : []),
-    ].join(" · ");
+    const meta = topEvents
+        ? subscription.blocker ? "" : `${subscription.matchupCount} von ${subscription.matchupLimit} genutzt`
+        : [
+            plural(events.amount, "kommendes Event", "kommende Events"),
+            ...(hasTeams && !teams.searchTerm ? [plural(teams.amount, "Team", "Teams")] : []),
+        ].join(" · ");
 
     const eventList = (
         <EventList
@@ -94,22 +99,24 @@ export const SportDetailComponent = ({id, title, breadcrumb = [], organisation, 
                         </Typography.Title>
                         <Typography.Text type="secondary" className="detail-header__meta">{meta}</Typography.Text>
                     </div>
-                    {sportIncluded
-                        ? <Tooltip title="Alle Events dieser Kategorie sind in deinem Abo">
-                            <span className="detail-header__included" style={{color: token.colorSuccess}}>
-                                <IconCheck size={18}/> Im Abo
-                            </span>
-                        </Tooltip>
-                        : <Button
-                            className="detail-header__action"
-                            type="primary"
-                            icon={<IconCalendarPlus size={18}/>}
-                            disabled={!!subscription.blocker}
-                            loading={subscription.pendingKey === `sport:${id}`}
-                            onClick={() => subscription.addSport(id, title)}
-                        >
-                            Alles abonnieren
-                        </Button>}
+                    {topEvents
+                        ? <AddTopEventButton subscription={subscription}/>
+                        : sportIncluded
+                            ? <Tooltip title="Alle Events dieser Kategorie sind in deinem Abo">
+                                <span className="detail-header__included" style={{color: token.colorSuccess}}>
+                                    <IconCheck size={18}/> Im Abo
+                                </span>
+                            </Tooltip>
+                            : <Button
+                                className="detail-header__action"
+                                type="primary"
+                                icon={<IconCalendarPlus size={18}/>}
+                                disabled={!!subscription.blocker}
+                                loading={subscription.pendingKey === `sport:${id}`}
+                                onClick={() => subscription.addSport(id, title)}
+                            >
+                                Alles abonnieren
+                            </Button>}
                 </div>
                 {organisation && <OrganisationAdminToolbar organisation={organisation} sportId={id}/>}
             </header>
@@ -117,24 +124,26 @@ export const SportDetailComponent = ({id, title, breadcrumb = [], organisation, 
             {subscription.blocker &&
                 <Alert type="info" showIcon message={BLOCKER_HINT[subscription.blocker]} className="detail-hint"/>}
 
-            {hasTeams
-                ? <Tabs
-                    activeKey={tab}
-                    onChange={setTab}
-                    className="detail-tabs"
-                    items={[
-                        {
-                            key: "teams",
-                            label: <TabLabel text="Teams" count={teams.searchTerm ? undefined : teams.amount}/>,
-                            children: <TeamsPanel teams={teams} sportId={id} sportTitle={title} subscription={subscription}/>,
-                        },
-                        {key: "events", label: <TabLabel text="Events" count={events.amount}/>, children: eventList},
-                    ]}
-                />
-                : <section aria-label="Events">
-                    <Typography.Title level={4} className="detail-section-title">Kommende Events</Typography.Title>
-                    {eventList}
-                </section>}
+            {topEvents
+                ? <TopEvents subscription={subscription}/>
+                : hasTeams
+                    ? <Tabs
+                        activeKey={tab}
+                        onChange={setTab}
+                        className="detail-tabs"
+                        items={[
+                            {
+                                key: "teams",
+                                label: <TabLabel text="Teams" count={teams.searchTerm ? undefined : teams.amount}/>,
+                                children: <TeamsPanel teams={teams} sportId={id} sportTitle={title} subscription={subscription}/>,
+                            },
+                            {key: "events", label: <TabLabel text="Events" count={events.amount}/>, children: eventList},
+                        ]}
+                    />
+                    : <section aria-label="Events">
+                        <Typography.Title level={4} className="detail-section-title">Kommende Events</Typography.Title>
+                        {eventList}
+                    </section>}
         </div>
     );
 };

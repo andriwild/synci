@@ -6,7 +6,7 @@ declare global {
     }
 }
 
-export type SubscriptionType = "sport" | "team" | "event";
+export type SubscriptionType = "sport" | "team" | "event" | "matchup";
 export type CalendarProvider = "apple" | "google" | "outlook" | "copy";
 
 type AnalyticsEvents = {

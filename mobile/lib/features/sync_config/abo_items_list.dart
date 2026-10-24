@@ -70,11 +70,33 @@ class AboItemsList extends ConsumerWidget {
               onRemoved: () => track('team', team.name, team.rootSport),
             ),
           ),
+        if (config.matchups.isNotEmpty) const _SectionTitle('Top Events'),
+        for (final matchup in config.matchups)
+          _AboItemTile(
+            icon: Icons.emoji_events_outlined,
+            title: matchup.name,
+            titleWidget: GameTitle(teams: [matchup.teamA, matchup.teamB], name: matchup.name, logoSize: 20),
+            subtitle: matchup.rootSport,
+            onRemove: () => removeFromAbo(
+              context,
+              ref,
+              config,
+              change: (c) => c.copyWith(
+                matchups: [
+                  for (final m in c.matchups)
+                    if (!m.isBetween(matchup.teamA, matchup.teamB)) m,
+                ],
+              ),
+              message: '${matchup.name} entfernt',
+              onRemoved: () => track('matchup', matchup.name, matchup.rootSport),
+            ),
+          ),
         if (config.events.isNotEmpty) const _SectionTitle('Events'),
         for (final event in config.events)
           _AboItemTile(
             icon: Icons.event_outlined,
             title: event.name,
+            titleWidget: GameTitle(teams: event.teams, name: event.name, logoSize: 20),
             subtitle: [if (event.startsOn != null) _dateFormat.format(event.startsOn!), ?event.rootSport].join(' · '),
             onRemove: () => removeFromAbo(
               context,
@@ -108,13 +130,23 @@ class _SectionTitle extends StatelessWidget {
 }
 
 class _AboItemTile extends StatelessWidget {
-  const _AboItemTile({required this.icon, this.leading, required this.title, this.subtitle, required this.onRemove});
+  const _AboItemTile({
+    required this.icon,
+    this.leading,
+    required this.title,
+    this.titleWidget,
+    this.subtitle,
+    required this.onRemove,
+  });
 
   final IconData icon;
 
   /// replaces [icon], e.g. with a team logo
   final Widget? leading;
   final String title;
+
+  /// replaces the plain [title], e.g. with the teams of a game
+  final Widget? titleWidget;
   final String? subtitle;
   final VoidCallback onRemove;
 
@@ -123,7 +155,7 @@ class _AboItemTile extends StatelessWidget {
     contentPadding: EdgeInsets.zero,
     dense: true,
     leading: leading ?? Icon(icon),
-    title: Text(title),
+    title: titleWidget ?? Text(title),
     subtitle: (subtitle == null || subtitle!.isEmpty) ? null : Text(subtitle!),
     trailing: IconButton(tooltip: 'Entfernen', icon: const Icon(Icons.delete_outline), onPressed: onRemove),
   );

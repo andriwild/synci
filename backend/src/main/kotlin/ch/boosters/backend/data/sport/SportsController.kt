@@ -1,11 +1,11 @@
 package ch.boosters.backend.data.sport
 
 import arrow.core.Either
+import ch.boosters.backend.data.event.EventResponse
 import ch.boosters.backend.data.sport.model.PagedResult
 import ch.boosters.backend.data.sport.model.Sport
 import ch.boosters.backend.errorhandling.SynciEither
 import ch.boosters.backend.errorhandling.SynciError
-import ch.boosters.data.tables.pojos.EventsTable
 import ch.boosters.backend.data.team.TeamResponse
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*
@@ -28,7 +28,7 @@ class SportsController(
         @RequestParam page: Int,
         @RequestParam dateTime: LocalDateTime = LocalDateTime.now(),
         authentication: Authentication?
-    ): Either<SynciError, PagedResult<EventsTable>> =
+    ): Either<SynciError, PagedResult<EventResponse>> =
         sportsService.getEventsBySport(id, pageSize, page, dateTime, authentication)
 
     @GetMapping("/{id}/teams")

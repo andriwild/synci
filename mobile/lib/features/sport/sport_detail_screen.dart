@@ -15,6 +15,7 @@ import '../sync_config/sync_config_providers.dart';
 import 'sport.dart';
 import 'sport_providers.dart';
 import 'team_logo.dart';
+import 'top_events.dart';
 
 final _dateFormat = DateFormat('d.M.yyyy', 'de_CH');
 
@@ -39,6 +40,7 @@ class SportDetailScreen extends ConsumerWidget {
           final organisation => _SportDetail(sport: node.sport, organisation: organisation),
         },
         null => const EmptyView(icon: Icons.search_off, message: 'Diese Sportart gibt es nicht mehr.'),
+        final node when node.sport.isTopEvents => const TopEventsView(),
         final node => _SportDetail(sport: node.sport),
       },
     );
@@ -146,9 +148,14 @@ class _SportDetail extends ConsumerWidget {
               for (final event in paged.items)
                 ListTile(
                   contentPadding: EdgeInsets.zero,
-                  leading: const Icon(Icons.event_outlined),
-                  title: Text(event.name),
-                  subtitle: event.startsOn == null ? null : Text(_dateFormat.format(event.startsOn!)),
+                  leading: event.teams.length < 2 ? const Icon(Icons.event_outlined) : null,
+                  title: GameTitle(teams: event.teams, name: event.name),
+                  subtitle: event.startsOn == null
+                      ? null
+                      : Text(
+                          _dateFormat.format(event.startsOn!),
+                          textAlign: event.teams.length < 2 ? null : TextAlign.center,
+                        ),
                   trailing: _eventTrailing(context, ref, event),
                 ),
             ],
