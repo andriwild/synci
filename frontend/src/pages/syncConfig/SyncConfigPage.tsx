@@ -13,11 +13,13 @@ import {CalendarSelectionModal} from "../../sharedComponents/calenderSelectionMo
 import {VITE_BACKEND_HOST} from "../../../env.ts";
 import {syncConfigActions, useSyncConfig} from "../../services/syncConfig/syncCofigSlice.ts";
 import {useDispatch} from "react-redux";
+import {usePageMeta} from "../../utils/usePageMeta.ts";
 
 /** one card per subscription: full width on phones, 2 / 3 / 4 per row on larger screens */
 const CARD_COL = {xs: 24, sm: 12, lg: 8};
 
 export const SyncConfigPage = () => {
+    usePageMeta("Meine Abos");
     const syncConfig = syncConfigApi.useGetAllQuery();
     const token = theme.useToken().token;
     const currentSyncConfig = useSyncConfig();

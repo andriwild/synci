@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /syncConfig
+Disallow: /organisationen
+
+Sitemap: https://synci.ch/sitemap.xml

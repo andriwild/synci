@@ -7,8 +7,10 @@ import {OrganisationMember, OrgRole, roleLabel} from "../../services/organisatio
 import {HttpError, isHttpError, stringifyApiError} from "../../services/common/apiHelpers.ts";
 import {SerializedError} from "@reduxjs/toolkit";
 import "./Organisation.css";
+import {usePageMeta} from "../../utils/usePageMeta.ts";
 
 export const OrganisationMembersPage = () => {
+    usePageMeta("Mitglieder");
     const {id} = useParams<{ id: string }>();
     const user = useUser();
     const navigate = useNavigate();
