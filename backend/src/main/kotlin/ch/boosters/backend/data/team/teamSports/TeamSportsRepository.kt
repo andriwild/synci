@@ -25,4 +25,21 @@ class TeamSportsRepository(private val dsl: JooqEitherDsl) {
         }
         dsl { it.batch(queries).execute() }.bind()
     }
+
+    /**
+     * Makes [teams] the teams of the sport node: links new ones and unlinks teams of [sourceId] that no longer
+     * play there (e.g. after promotion or relegation). Skipped for an empty list so an outage of the source or
+     * the break between seasons does not empty the league.
+     */
+    fun replaceTeams(teams: List<Team>, sportID: UUID, sourceId: Int): SynciEither<Unit> = either {
+        if (teams.isEmpty()) return@either
+        upsertTeams(teams, sportID).bind()
+        dsl {
+            it.deleteFrom(TEAMS_SPORTS_TABLE)
+                .where(TEAMS_SPORTS_TABLE.SPORT_ID.eq(sportID))
+                .and(TEAMS_SPORTS_TABLE.SOURCE_TEAM_ID.eq(sourceId))
+                .and(TEAMS_SPORTS_TABLE.TEAM_ID.notIn(teams.map(Team::id)))
+                .execute()
+        }.bind()
+    }
 }
