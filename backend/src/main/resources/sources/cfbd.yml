@@ -1,0 +1,13 @@
+# College Football (NCAA) schedules from CollegeFootballData (https://collegefootballdata.com).
+# Free API key (1000 calls/month) on https://collegefootballdata.com/key, set as CFBD_TOKEN;
+# without it the sync is skipped. One request per sync.
+cfbd:
+  name: CFBD
+  url: https://api.collegefootballdata.com
+  token: ${CFBD_TOKEN:}
+  # fbs, fcs, ii, iii
+  classification: fbs
+  # empty = current year, in January the previous one (bowls and the playoff final belong to it)
+  season:
+  timezone: Europe/Zurich
+  game-duration-minutes: 210
