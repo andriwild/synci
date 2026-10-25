@@ -3,7 +3,6 @@ package ch.boosters.backend.data.syncConfig.syncConfigMatchups
 import ch.boosters.backend.data.configuration.JooqEitherDsl
 import ch.boosters.backend.data.syncConfig.model.MatchupDto
 import ch.boosters.backend.errorhandling.SynciEither
-import ch.boosters.data.tables.SourcesTable.Companion.SOURCES_TABLE
 import ch.boosters.data.tables.SyncConfigsMatchupsTable.Companion.SYNC_CONFIGS_MATCHUPS_TABLE
 import ch.boosters.data.tables.TeamsSportsTable.Companion.TEAMS_SPORTS_TABLE
 import ch.boosters.data.tables.TeamsTable.Companion.TEAMS_TABLE
@@ -51,18 +50,6 @@ class SyncConfigMatchupRepository(private val dsl: JooqEitherDsl) {
             .fetch { r -> r[TEAMS_TABLE.SOURCE_ID] to r[TEAMS_TABLE.ID] }
             .toSet()
         (wanted - known).map { (source, id) -> "$source:$id" }
-    }
-
-    /** El Clásico for a new Abo; none while its teams are not synced yet. */
-    fun defaultMatchups(): SynciEither<List<MatchupDto>> = dsl {
-        val teamIds = listOf(DEFAULT_MATCHUP_TEAM_A, DEFAULT_MATCHUP_TEAM_B)
-        it.select(TEAMS_TABLE.SOURCE_ID).from(TEAMS_TABLE)
-            .join(SOURCES_TABLE).on(SOURCES_TABLE.ID.eq(TEAMS_TABLE.SOURCE_ID))
-            .where(SOURCES_TABLE.NAME.eq(DEFAULT_MATCHUP_SOURCE))
-            .and(TEAMS_TABLE.ID.`in`(teamIds))
-            .groupBy(TEAMS_TABLE.SOURCE_ID)
-            .having(DSL.countDistinct(TEAMS_TABLE.ID).eq(teamIds.size))
-            .fetch { r -> MatchupDto(r[TEAMS_TABLE.SOURCE_ID]!!, DEFAULT_MATCHUP_TEAM_A, DEFAULT_MATCHUP_TEAM_B) }
     }
 
     /** Replaces the Top Events of the Abo with [matchups], in this order. */
