@@ -51,23 +51,14 @@ class SyncConfigMatchupsTest {
     private val configId = service.createSyncConfig(dto(), userId).getOrNull()!!.id!!
 
     @Test
-    fun `starts a new Abo with El Clásico`() {
-        val config = service.createSyncConfig(dto(), userId).getOrNull()!!
-
-        assertEquals(listOf("Real Madrid – FC Barcelona"), names(config))
+    fun `starts a new Abo without Top Events`() {
+        assertEquals(emptyList<String>(), names(service.createSyncConfig(dto(), userId).getOrNull()!!))
+        assertEquals(emptyList<String>(), names(service.createSyncConfig(dto(emptyList()), userId).getOrNull()!!))
     }
 
     @Test
     fun `starts a new Abo with the Top Events the client sent`() {
-        assertEquals(emptyList<String>(), names(service.createSyncConfig(dto(emptyList()), userId).getOrNull()!!))
         assertEquals(listOf("SC Bern – Fribourg-Gottéron"), names(service.createSyncConfig(dto(listOf(matchup(bern, gotteron))), userId).getOrNull()!!))
-    }
-
-    @Test
-    fun `lets the user remove El Clásico`() {
-        assertEquals(listOf("Real Madrid – FC Barcelona"), names(service.syncConfigById(configId, userId).getOrNull()!!))
-
-        assertEquals(emptyList<String>(), names(update(emptyList())))
     }
 
     @Test
@@ -146,8 +137,8 @@ class SyncConfigMatchupsTest {
             Flyway.configure().dataSource(dataSource).locations("classpath:db/migration").load().migrate()
             dsl = DSL.using(dataSource, SQLDialect.POSTGRES)
             swissTxt = dsl.select(SOURCES_TABLE.ID).from(SOURCES_TABLE).where(SOURCES_TABLE.NAME.eq("SWISSTXT")).fetchSingle(SOURCES_TABLE.ID)!!
-            real = newTeam("Real Madrid", DEFAULT_MATCHUP_TEAM_A)
-            barca = newTeam("FC Barcelona", DEFAULT_MATCHUP_TEAM_B)
+            real = newTeam("Real Madrid")
+            barca = newTeam("FC Barcelona")
             bern = newTeam("SC Bern")
             gotteron = newTeam("Fribourg-Gottéron")
         }

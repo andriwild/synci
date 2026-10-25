@@ -40,7 +40,7 @@ class SyncConfigService(
     fun createSyncConfig(syncConfig: SyncConfigDto, userId: UUID): SynciEither<SyncConfig> = either {
         val cleanedConfig = removeDuplicates(syncConfig)
         validateOrganisationAccess(cleanedConfig, userId).bind()
-        val matchups = validMatchups(cleanedConfig.matchups).bind() ?: syncConfigMatchupRepository.defaultMatchups().bind()
+        val matchups = validMatchups(cleanedConfig.matchups).bind().orEmpty()
         val id = syncConfigRepository.createSyncConfig(cleanedConfig, userId).bind()
         syncConfigTeamRepository.addTeams(id, cleanedConfig.teams).bind()
         syncConfigSportsRepository.addSports(id, cleanedConfig.sports).bind()
