@@ -27,14 +27,14 @@ void main() {
 
   late _FakeSyncConfigRepository syncConfigs;
 
-  Future<void> pumpLoggedIn(WidgetTester tester, {List<Matchup> matchups = const []}) async {
+  Future<void> pumpLoggedIn(WidgetTester tester, {List<Matchup> matchups = const [], bool loggedIn = true}) async {
     usePhoneScreen(tester);
     syncConfigs = _FakeSyncConfigRepository(matchups);
     await tester.pumpWidget(
       ProviderScope(
         retry: (_, _) => null,
         overrides: [
-          authControllerProvider.overrideWith(_LoggedIn.new),
+          authControllerProvider.overrideWith(loggedIn ? _LoggedIn.new : _LoggedOut.new),
           sportRepositoryProvider.overrideWithValue(_FakeSportRepository()),
           topEventRepositoryProvider.overrideWithValue(_FakeTopEventRepository()),
           organisationRepositoryProvider.overrideWithValue(_NoOrganisations()),
@@ -107,6 +107,14 @@ void main() {
     expect(find.text('1 von 20'), findsOneWidget);
     expect(gameTitle('Real Madrid', 'FC Barcelona'), findsOneWidget, reason: 'die Seite listet das neue Top Event');
     expect(find.textContaining('Nächstes Spiel: '), findsOneWidget);
+  });
+
+  testWidgets('Ohne Abo zählt die Top-Events-Seite 0 von 20', (tester) async {
+    await pumpLoggedIn(tester, loggedIn: false);
+
+    await scrollToAndTap(tester, 'Top Events');
+
+    expect(find.text('0 von 20'), findsOneWidget);
   });
 
   testWidgets('Ein Top Event auf der Top-Events-Seite entfernen', (tester) async {
@@ -189,6 +197,11 @@ class _OnboardingSeen extends OnboardingSeenController {
 class _LoggedIn extends AuthController {
   @override
   Future<AppUser?> build() async => const AppUser(name: 'Test', email: 'test@synci.ch');
+}
+
+class _LoggedOut extends AuthController {
+  @override
+  Future<AppUser?> build() async => null;
 }
 
 class _InMemorySelection extends ActiveSyncConfigIdController {

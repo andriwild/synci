@@ -10,10 +10,10 @@ String teamInitials(String name) {
   return letters.substring(0, letters.length.clamp(0, 2)).toUpperCase();
 }
 
-/// "Home (logo) : (logo) Away" for a game with two teams, otherwise [name].
-/// The colon stays in the same place in every row, so a list reads like a scoreboard.
+/// "(logo) : (logo)" with each team's name small below its logo for a game with two teams,
+/// otherwise [name]. The colon stays in the same place in every row, so a list reads like a scoreboard.
 class GameTitle extends StatelessWidget {
-  const GameTitle({super.key, required this.teams, required this.name, this.logoSize = 24, this.style});
+  const GameTitle({super.key, required this.teams, required this.name, this.logoSize = 40, this.style});
 
   final List<Team> teams;
   final String name;
@@ -24,19 +24,38 @@ class GameTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     if (teams.length < 2) return Text(name, style: style);
     final (home, away) = (teams[0], teams[1]);
+    final textTheme = Theme.of(context).textTheme;
+    Widget side(Team team) => Column(
+      spacing: 4,
+      children: [
+        TeamLogo(team: team, size: logoSize),
+        Text(
+          team.displayName,
+          textAlign: TextAlign.center,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: textTheme.bodySmall?.merge(style),
+        ),
+      ],
+    );
     return Semantics(
       label: '${home.displayName} gegen ${away.displayName}',
       excludeSemantics: true,
       child: Row(
-        spacing: 6,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 8,
         children: [
-          Expanded(
-            child: Text(home.displayName, textAlign: TextAlign.end, style: style),
+          Expanded(child: side(home)),
+          SizedBox(
+            height: logoSize,
+            child: Center(
+              child: Text(
+                ':',
+                style: TextStyle(fontSize: logoSize * 0.5, fontWeight: FontWeight.w700),
+              ),
+            ),
           ),
-          TeamLogo(team: home, size: logoSize),
-          Text(':', style: (style ?? const TextStyle()).copyWith(fontWeight: FontWeight.w700)),
-          TeamLogo(team: away, size: logoSize),
-          Expanded(child: Text(away.displayName, style: style)),
+          Expanded(child: side(away)),
         ],
       ),
     );

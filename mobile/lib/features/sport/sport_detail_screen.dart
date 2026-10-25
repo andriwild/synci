@@ -10,9 +10,10 @@ import '../organisation/organisation.dart';
 import '../organisation/organisation_detail.dart';
 import '../organisation/organisation_providers.dart';
 import '../sync_config/abo_actions.dart';
-import '../sync_config/active_abo_bar.dart';
+import '../sync_config/abo_toggle.dart';
 import '../sync_config/sync_config_providers.dart';
 import 'sport.dart';
+import 'sport_icons.dart';
 import 'sport_providers.dart';
 import 'team_logo.dart';
 import 'top_events.dart';
@@ -30,8 +31,14 @@ class SportDetailScreen extends ConsumerWidget {
     final node = sports.value == null ? null : findSport(sports.value!, sportId);
 
     return Scaffold(
-      appBar: AppBar(title: Text(node?.sport.label ?? '')),
-      bottomNavigationBar: const ActiveAboBar(),
+      appBar: AppBar(
+        title: switch (node) {
+          null => null,
+          // A root opened right from its start tile, or "Ganze Sportart"
+          (:final sport, level: 0) => SportTitle(sport: sport),
+          (:final sport, level: _) => Text(sport.label),
+        },
+      ),
       body: switch (node) {
         _ when sports.isLoading => const Center(child: CircularProgressIndicator()),
         _ when sports.hasError => ErrorView(error: sports.error!, onRetry: () => ref.invalidate(sportsProvider)),
@@ -55,23 +62,33 @@ class _SportDetail extends ConsumerWidget {
 
   Widget _eventTrailing(BuildContext context, WidgetRef ref, SportEvent event) {
     final active = ref.watch(activeSyncConfigProvider);
-    if (active?.coversEvent(event, viaSportId: sport.id) ?? false) {
-      return const Icon(Icons.check_circle, semanticLabel: 'Im Abo');
-    }
-    return IconButton(
-      tooltip: 'Event hinzufügen',
-      icon: const Icon(Icons.add_circle_outline),
-      onPressed: () => editActiveAbo(
+    final own = active != null && active.events.any((e) => e.id == event.id);
+    final analytics = {'type': 'event', 'name': event.name, if (organisation == null) 'sport': sport.label};
+    return AboToggle(
+      inAbo: active?.coversEvent(event, viaSportId: sport.id) ?? false,
+      label: 'Event',
+      onAdd: () => editActiveAbo(
         context,
         ref,
         change: (c) => c.copyWith(events: [...c.events, event]),
         message: '${event.name} hinzugefügt',
-        onSaved: () => ref.read(analyticsProvider).event('subscription-add', {
-          'type': 'event',
-          'name': event.name,
-          if (organisation == null) 'sport': sport.label,
-        }),
+        onSaved: () => ref.read(analyticsProvider).event('subscription-add', analytics),
       ),
+      onRemove: own
+          ? () => removeFromAbo(
+              context,
+              ref,
+              active,
+              change: (c) => c.copyWith(
+                events: [
+                  for (final e in c.events)
+                    if (e.id != event.id) e,
+                ],
+              ),
+              message: '${event.name} entfernt',
+              onRemoved: () => ref.read(analyticsProvider).event('subscription-remove', analytics),
+            )
+          : null,
     );
   }
 
@@ -103,22 +120,50 @@ class _SportDetail extends ConsumerWidget {
                     ],
                   ),
                 ),
-                sportAdded
-                    ? const OutlinedButton(onPressed: null, child: Text('Im Abo'))
-                    : FilledButton.icon(
-                        onPressed: () => editActiveAbo(
-                          context,
-                          ref,
-                          change: (c) => c.copyWith(sports: [...c.sports, sport]),
-                          message: '${sport.label} hinzugefügt',
-                          onSaved: () => ref.read(analyticsProvider).event('subscription-add', {
-                            'type': 'sport',
-                            'name': sport.label,
-                          }),
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 200),
+                  transitionBuilder: (child, animation) => ScaleTransition(scale: animation, child: child),
+                  child: sportAdded
+                      ? Tooltip(
+                          key: const ValueKey(true),
+                          message: 'Aus dem Abo entfernen',
+                          child: OutlinedButton.icon(
+                            onPressed: () => removeFromAbo(
+                              context,
+                              ref,
+                              active!,
+                              change: (c) => c.copyWith(
+                                sports: [
+                                  for (final s in c.sports)
+                                    if (s.id != sport.id) s,
+                                ],
+                              ),
+                              message: '${sport.label} entfernt',
+                              onRemoved: () => ref.read(analyticsProvider).event('subscription-remove', {
+                                'type': 'sport',
+                                'name': sport.label,
+                              }),
+                            ),
+                            icon: const Icon(Icons.check),
+                            label: const Text('Im Abo'),
+                          ),
+                        )
+                      : FilledButton.icon(
+                          key: const ValueKey(false),
+                          onPressed: () => editActiveAbo(
+                            context,
+                            ref,
+                            change: (c) => c.copyWith(sports: [...c.sports, sport]),
+                            message: '${sport.label} hinzugefügt',
+                            onSaved: () => ref.read(analyticsProvider).event('subscription-add', {
+                              'type': 'sport',
+                              'name': sport.label,
+                            }),
+                          ),
+                          icon: const Icon(Icons.add),
+                          label: const Text('Alle hinzufügen'),
                         ),
-                        icon: const Icon(Icons.add),
-                        label: const Text('Alle hinzufügen'),
-                      ),
+                ),
               ],
             ),
           ),
@@ -242,23 +287,38 @@ class _TeamsSectionState extends ConsumerState<_TeamsSection> {
                 contentPadding: EdgeInsets.zero,
                 leading: TeamLogo(team: team),
                 title: Text(team.displayName),
-                trailing: (active?.containsTeam(team.id) ?? false)
-                    ? const Icon(Icons.check_circle, semanticLabel: 'Im Abo')
-                    : IconButton(
-                        tooltip: 'Team hinzufügen',
-                        icon: const Icon(Icons.add_circle_outline),
-                        onPressed: () => editActiveAbo(
-                          context,
-                          ref,
-                          change: (c) => c.copyWith(teams: [...c.teams, team]),
-                          message: '${team.name} hinzugefügt',
-                          onSaved: () => ref.read(analyticsProvider).event('subscription-add', {
-                            'type': 'team',
-                            'name': team.name,
-                            'sport': team.rootSport ?? widget.sport.label,
-                          }),
-                        ),
-                      ),
+                trailing: AboToggle(
+                  inAbo: active?.containsTeam(team.id) ?? false,
+                  label: 'Team',
+                  onAdd: () => editActiveAbo(
+                    context,
+                    ref,
+                    change: (c) => c.copyWith(teams: [...c.teams, team]),
+                    message: '${team.name} hinzugefügt',
+                    onSaved: () => ref.read(analyticsProvider).event('subscription-add', {
+                      'type': 'team',
+                      'name': team.name,
+                      'sport': team.rootSport ?? widget.sport.label,
+                    }),
+                  ),
+                  onRemove: () => removeFromAbo(
+                    context,
+                    ref,
+                    active!,
+                    change: (c) => c.copyWith(
+                      teams: [
+                        for (final t in c.teams)
+                          if (t.id != team.id) t,
+                      ],
+                    ),
+                    message: '${team.name} entfernt',
+                    onRemoved: () => ref.read(analyticsProvider).event('subscription-remove', {
+                      'type': 'team',
+                      'name': team.name,
+                      'sport': team.rootSport ?? widget.sport.label,
+                    }),
+                  ),
+                ),
               ),
             if (paged.hasMore)
               _LoadMoreButton(

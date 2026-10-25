@@ -66,6 +66,37 @@ void main() {
     expect(find.byTooltip('Team hinzufügen'), findsNothing, reason: 'Team ist jetzt als "im Abo" markiert');
   });
 
+  testWidgets('Ein zweiter Tipp nimmt das Team wieder aus dem Abo', (tester) async {
+    await pumpLoggedIn(tester);
+    await scrollToAndTap(tester, 'Basketball');
+    await tester.tap(find.byTooltip('NBA öffnen'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Team hinzufügen'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip('Team entfernen'));
+    await tester.pumpAndSettle();
+
+    expect(syncConfigs.lastUpdate?.teams, isEmpty);
+    expect(find.text('Atlanta Hawks entfernt'), findsOneWidget);
+    expect(find.byTooltip('Team hinzufügen'), findsOneWidget);
+  });
+
+  testWidgets('Meine Abos wechselt das aktive Abo', (tester) async {
+    await pumpLoggedIn(tester);
+    await tester.tap(find.text('Meine Abos'));
+    await tester.pumpAndSettle();
+    expect(find.text('Aktiv'), findsOneWidget);
+
+    await tester.tap(find.text('Aktivieren'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Start'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Ferien-Abo'), findsOneWidget, reason: 'der Balken zeigt das neue aktive Abo');
+    expect(find.text('Standard-Abo'), findsNothing);
+  });
+
   testWidgets('Meine Abos zeigt den Inhalt und öffnet das Kalender-Sheet', (tester) async {
     await pumpLoggedIn(tester);
 
@@ -74,7 +105,7 @@ void main() {
     expect(find.text('Basketball'), findsOneWidget);
     expect(find.text('Aktiv'), findsOneWidget);
 
-    await tester.tap(find.text('Zum Kalender hinzufügen'));
+    await tester.tap(find.text('Zum Kalender hinzufügen').first);
     await tester.pumpAndSettle();
     expect(find.text('Kalender hinzufügen'), findsOneWidget);
     expect(find.text('Weitere Optionen'), findsOneWidget);
@@ -100,20 +131,24 @@ class _InMemorySelection extends ActiveSyncConfigIdController {
 }
 
 class _FakeSyncConfigRepository implements SyncConfigRepository {
-  SyncConfig _config = const SyncConfig(
-    id: 'abo-1',
-    name: 'Standard-Abo',
-    sports: [Sport(id: 'basketball', label: 'Basketball', rootSport: 'Basketball')],
-  );
+  var _configs = const [
+    SyncConfig(
+      id: 'abo-1',
+      name: 'Standard-Abo',
+      sports: [Sport(id: 'basketball', label: 'Basketball', rootSport: 'Basketball')],
+    ),
+    SyncConfig(id: 'abo-2', name: 'Ferien-Abo'),
+  ];
   SyncConfig? lastUpdate;
 
   @override
-  Future<List<SyncConfig>> getAll() async => [_config];
+  Future<List<SyncConfig>> getAll() async => _configs;
 
   @override
   Future<SyncConfig> update(SyncConfig config) async {
     lastUpdate = config;
-    return _config = config;
+    _configs = [for (final c in _configs) c.id == config.id ? config : c];
+    return config;
   }
 
   @override

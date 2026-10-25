@@ -146,7 +146,8 @@ void main() {
       await tester.tap(find.text('Konto'));
       await wait(tester, const Duration(milliseconds: 500));
       await tester.tap(find.text('So funktioniert Synci'));
-      await wait(tester, const Duration(milliseconds: 500));
+      // the page transition has to finish before the tabs are offstage
+      await wait(tester, const Duration(seconds: 1));
       expect(find.text('Willkommen bei Synci'), findsOneWidget);
       expect(find.byType(NavigationBar), findsNothing, reason: 'die Story nutzt den ganzen Bildschirm');
 

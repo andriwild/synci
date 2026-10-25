@@ -42,7 +42,7 @@ class TopEventsView extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        active == null ? '–' : '${active.matchups.length} von ${active.matchupLimit}',
+                        '${active?.matchups.length ?? 0} von ${active?.matchupLimit ?? defaultMatchupLimit}',
                         style: theme.textTheme.headlineMedium?.copyWith(
                           color: theme.colorScheme.primary,
                           fontWeight: FontWeight.w700,
@@ -121,12 +121,16 @@ class _TopEventTile extends ConsumerWidget {
     return Card(
       child: ListTile(
         title: GameTitle(teams: [matchup.teamA, matchup.teamB], name: matchup.name),
-        subtitle: Text(textAlign: TextAlign.center, switch (games) {
-          AsyncData() when next?.startsOn != null => 'Nächstes Spiel: ${_gameFormat.format(next!.startsOn!)}',
-          AsyncData() => 'Zurzeit kein Spiel angesetzt',
-          AsyncError() => 'Nächstes Spiel nicht verfügbar',
-          _ => '…',
-        }),
+        subtitle: Text(
+          textAlign: TextAlign.center,
+          style: TextStyle(color: Theme.of(context).colorScheme.outline),
+          switch (games) {
+            AsyncData() when next?.startsOn != null => 'Nächstes Spiel: ${_gameFormat.format(next!.startsOn!)}',
+            AsyncData() => 'Zurzeit kein Spiel angesetzt',
+            AsyncError() => 'Nächstes Spiel nicht verfügbar',
+            _ => '…',
+          },
+        ),
         trailing: IconButton(
           tooltip: '${matchup.name} entfernen',
           icon: const Icon(Icons.delete_outline),
@@ -348,7 +352,7 @@ class _Preview extends ConsumerWidget {
                               _gameFormat.format(game.startsOn!),
                               style: TextStyle(color: Theme.of(context).colorScheme.outline),
                             ),
-                          GameTitle(teams: game.teams, name: game.name, logoSize: 22),
+                          GameTitle(teams: game.teams, name: game.name, logoSize: 32),
                         ],
                       ),
                     ),
