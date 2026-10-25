@@ -1,1 +1,1 @@
-Korrekturen: Beim Hinzufügen eines Top Events liegen die Texte nicht mehr übereinander, und Google Kalender öffnet sich direkt, ohne Anleitung.
+Neu: Organisationen können Zu- und Absagen sammeln. Du antwortest in der App oder über den Link im Kalender. Beim Hinzufügen wählst du, in welche Abos ein Team, Event oder eine Sportart kommt. Dazu ein frisches Design: Häkchen zeigen auf jeder Sportart, was schon im Abo ist, Abos lassen sich aufklappen und Termine zeigen ihre Details.
