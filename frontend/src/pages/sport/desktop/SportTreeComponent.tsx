@@ -1,4 +1,4 @@
-import {useMemo, useState} from "react";
+import {useCallback, useMemo, useState} from "react";
 import {Flex} from "antd";
 import "./SportTreeComponent.css";
 import {CaretRight, Compass, UsersThree} from "@phosphor-icons/react";
@@ -9,6 +9,7 @@ import {useUser} from "../../../services/user/UserSlice.ts";
 import {organisationApi} from "../../../services/organisation/organisationApi.ts";
 import {activeOrganisations, childNodes, endsSection, firstColumn, hasChildren, isTopEvents, TreeNode, withLiveOrganisation} from "../shared-components/treeNodes.ts";
 import {DiscoverOrganisationsPanel} from "../../organisation/components/DiscoverOrganisationsPanel.tsx";
+import {useOrganisationParam} from "../shared-components/useOrganisationParam.ts";
 import {track} from "../../../utils/analytics.ts";
 
 type TreeColumn = { nodes: TreeNode[] };
@@ -24,6 +25,7 @@ export const SportTreeComponent = () => {
     const [path, setPath] = useState<TreeNode[]>([]);
 
     const organisations = useMemo(() => activeOrganisations(myOrganisations.data), [myOrganisations.data]);
+    useOrganisationParam(organisations, useCallback((node: TreeNode) => setPath([node]), []));
 
     // drop the selection as soon as an organisation or group in it disappeared, otherwise refresh its data
     const livePath = useMemo(() => {
