@@ -11,7 +11,10 @@ data class CalendarEvent(
     /** null = all-day event */
     val endsOn: LocalDateTime?,
     val location: String? = null,
-    val description: String? = null
+    val description: String? = null,
+    /** link to answer yes or no, for organisation events that ask for it */
+    val responseUrl: String? = null
 )
 
-fun EventsTable.toCalendarEvent() = CalendarEvent(id, name, startsOn, endsOn, location, description)
+fun EventsTable.toCalendarEvent(responseUrl: String? = null) =
+    CalendarEvent(id, name, startsOn, endsOn, location, description, responseUrl)

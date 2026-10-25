@@ -2,6 +2,8 @@ package ch.boosters.backend.data.organisation
 
 import arrow.core.raise.either
 import ch.boosters.backend.auth.CurrentUserResolver
+import ch.boosters.backend.data.organisation.model.AnswerDto
+import ch.boosters.backend.data.organisation.model.EventResponseSummary
 import ch.boosters.backend.data.organisation.model.GroupDto
 import ch.boosters.backend.data.organisation.model.MemberView
 import ch.boosters.backend.data.organisation.model.MyOrganisation
@@ -34,6 +36,7 @@ import java.util.UUID
 class OrganisationController(
     private val organisationService: OrganisationService,
     private val organisationEventService: OrganisationEventService,
+    private val responseService: OrganisationEventResponseService,
     private val currentUserResolver: CurrentUserResolver
 ) {
 
@@ -200,5 +203,25 @@ class OrganisationController(
     ): SynciEither<Int> = either {
         val userId = currentUserResolver.getUserId(authentication).bind()
         organisationEventService.delete(id, eventId, userId).bind()
+    }
+
+    // ---- answers ----
+
+    @GetMapping("/{id}/responses")
+    fun responses(@PathVariable id: UUID, authentication: Authentication): SynciEither<List<EventResponseSummary>> =
+        either {
+            val userId = currentUserResolver.getUserId(authentication).bind()
+            responseService.summaries(id, userId).bind()
+        }
+
+    @PutMapping("/{id}/events/{eventId}/response")
+    fun answer(
+        @PathVariable id: UUID,
+        @PathVariable eventId: String,
+        @RequestBody answer: AnswerDto,
+        authentication: Authentication
+    ): SynciEither<EventResponseSummary> = either {
+        val userId = currentUserResolver.getUserId(authentication).bind()
+        responseService.answer(id, eventId, userId, answer.answer).bind()
     }
 }

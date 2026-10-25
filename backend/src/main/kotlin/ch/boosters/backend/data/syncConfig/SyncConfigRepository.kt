@@ -67,6 +67,16 @@ class SyncConfigRepository(private val dsl: JooqEitherDsl) {
                 .fetchInto(SyncConfigsTable::class.java)
         }
 
+    /** The user the sync config belongs to; null for an unknown config. */
+    fun ownerOf(configId: UUID): SynciEither<UUID?> =
+        dsl {
+            it.select(SYNC_CONFIGS_USERS_TABLE.USER_ID)
+                .from(SYNC_CONFIGS_USERS_TABLE)
+                .where(SYNC_CONFIGS_USERS_TABLE.SYNC_CONFIG_ID.eq(configId))
+                .limit(1)
+                .fetchOne(SYNC_CONFIGS_USERS_TABLE.USER_ID)
+        }
+
     fun findSyncConfig(configId: UUID): SynciEither<SyncConfigsTable> = either {
         val x = dsl {
             it

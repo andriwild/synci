@@ -4,3 +4,5 @@ ch:
       jdbcUrl: jdbc:postgresql://${DB_HOST:localhost}:5432/${POSTGRES_DB:synci-db}
 cors:
   allowedOrigins: http://localhost:5173
+frontend:
+  url: http://localhost:5173
