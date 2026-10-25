@@ -5,16 +5,45 @@ import '../../core/analytics/analytics.dart';
 import '../../core/auth/auth_controller.dart';
 import '../../core/widgets/feedback.dart';
 import '../account/login_prompt.dart';
+import 'abo_toggle.dart';
 import 'sync_config.dart';
 import 'sync_config_providers.dart';
 
-Future<void> editActiveAbo(
-  BuildContext context,
-  WidgetRef ref, {
-  required SyncConfig Function(SyncConfig active) change,
-  required String message,
-  VoidCallback? onSaved,
-}) async {
+/// Something that can be in an Abo: a sport, team, event or Top Event.
+class AboItem {
+  const AboItem({
+    required this.label,
+    required this.contains,
+    required this.add,
+    required this.remove,
+    this.coveredBy,
+    this.blockedReason,
+    this.analytics = const {},
+  });
+
+  /// Its name in messages, e.g. "FC Basel hinzugefügt".
+  final String label;
+
+  /// Whether the Abo holds the item itself.
+  final bool Function(SyncConfig config) contains;
+
+  /// What else brings the item into the Abo, e.g. its whole sport; null if nothing does.
+  final String? Function(SyncConfig config)? coveredBy;
+
+  /// Why the item cannot be added, e.g. all Top Events used; null if it can.
+  final String? Function(SyncConfig config)? blockedReason;
+
+  final SyncConfig Function(SyncConfig config) add;
+  final SyncConfig Function(SyncConfig config) remove;
+
+  /// Data of the subscription-add and subscription-remove analytics events.
+  final Map<String, Object?> analytics;
+
+  bool isIn(SyncConfig config) => contains(config) || coveredBy?.call(config) != null;
+}
+
+/// Adds or removes [item]. With one Abo a tap does it right away, with several the user picks them in a sheet.
+Future<void> chooseAbos(BuildContext context, WidgetRef ref, AboItem item) async {
   if (ref.read(authControllerProvider).value == null) {
     await showLoginPrompt(
       context,
@@ -23,22 +52,55 @@ Future<void> editActiveAbo(
     );
     return;
   }
-  var active = ref.read(activeSyncConfigProvider);
-  if (active == null) {
-    await ref.read(syncConfigsProvider.future);
-    if (!context.mounted) return;
-    active = ref.read(activeSyncConfigProvider) ?? await createAbo(context, ref);
-    if (active == null) return;
-  }
-  try {
-    await ref.read(syncConfigsProvider.notifier).save(change(active));
-    if (!context.mounted) return;
-    onSaved?.call();
-    showMessage(context, message);
-  } on Exception catch (e) {
-    if (context.mounted) showMessage(context, errorText(e));
+  final configs = await ref.read(syncConfigsProvider.future);
+  if (!context.mounted) return;
+  switch (configs) {
+    case []:
+      final created = await createAbo(context, ref);
+      if (created != null && context.mounted) await addToAbo(context, ref, created, item);
+    case [final config] when item.contains(config):
+      await removeItemFromAbo(context, ref, config, item);
+    case [final config] when item.coveredBy?.call(config) != null:
+      showMessage(context, 'Schon über ${item.coveredBy!(config)} im Abo enthalten');
+    case [final config] when item.blockedReason?.call(config) != null:
+      showMessage(context, item.blockedReason!(config)!);
+    case [final config]:
+      await addToAbo(context, ref, config, item);
+    default:
+      await showModalBottomSheet<void>(
+        context: context,
+        showDragHandle: true,
+        isScrollControlled: true,
+        builder: (_) => AboPickerSheet(item: item),
+      );
   }
 }
+
+/// Saves [item] into [config] or out of it; throws when saving fails.
+Future<void> saveAboItem(WidgetRef ref, SyncConfig config, AboItem item, {required bool add}) async {
+  await ref.read(syncConfigsProvider.notifier).save(add ? item.add(config) : item.remove(config));
+  ref.read(analyticsProvider).event(add ? 'subscription-add' : 'subscription-remove', item.analytics);
+}
+
+Future<bool> addToAbo(BuildContext context, WidgetRef ref, SyncConfig config, AboItem item) async {
+  try {
+    await saveAboItem(ref, config, item, add: true);
+    if (context.mounted) showMessage(context, '${item.label} hinzugefügt');
+    return true;
+  } on Exception catch (e) {
+    if (context.mounted) showMessage(context, errorText(e));
+    return false;
+  }
+}
+
+Future<void> removeItemFromAbo(BuildContext context, WidgetRef ref, SyncConfig config, AboItem item) => removeFromAbo(
+  context,
+  ref,
+  config,
+  change: item.remove,
+  message: '${item.label} entfernt',
+  onRemoved: () => ref.read(analyticsProvider).event('subscription-remove', item.analytics),
+);
 
 Future<void> removeFromAbo(
   BuildContext context,

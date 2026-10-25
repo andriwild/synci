@@ -7,7 +7,6 @@ import 'package:synci/features/app_update/app_update_providers.dart';
 import 'package:synci/features/onboarding/onboarding_providers.dart';
 import 'package:synci/features/sport/sport.dart';
 import 'package:synci/features/sport/sport_repository.dart';
-import 'package:synci/features/sync_config/sync_config_providers.dart';
 
 import 'helpers/phone_screen.dart';
 
@@ -21,7 +20,6 @@ void main() {
         retry: (_, _) => null,
         overrides: [
           sportRepositoryProvider.overrideWithValue(_FakeSportRepository(extraSports)),
-          activeSyncConfigIdProvider.overrideWith(_NoSelection.new),
           appUpdateAvailableProvider.overrideWithValue(AsyncData(updateAvailable)),
           onboardingSeenProvider.overrideWith(_OnboardingSeen.new),
         ],
@@ -64,7 +62,6 @@ void main() {
     expect(find.text('AH'), findsOneWidget, reason: 'Teams ohne Logo zeigen ihre Initialen');
     expect(find.text('Lugano Tigers - Massagno'), findsOneWidget);
     expect(find.text('17.10.2026'), findsOneWidget);
-    expect(find.text('Melde dich an, um Abos zu speichern'), findsOneWidget);
 
     await tester.tap(find.byTooltip('Zurück'));
     await tester.pumpAndSettle();
@@ -157,11 +154,6 @@ void main() {
 class _OnboardingSeen extends OnboardingSeenController {
   @override
   bool build() => true;
-}
-
-class _NoSelection extends ActiveSyncConfigIdController {
-  @override
-  String? build() => null;
 }
 
 class _FakeSportRepository implements SportRepository {

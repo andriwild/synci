@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import '../../core/widgets/feedback.dart';
 import '../sport/sport.dart';
 import '../sport/sport_providers.dart';
+import 'event_detail_sheet.dart';
 import 'event_form_screen.dart';
 import 'event_responses.dart';
 import 'organisation.dart';
@@ -219,28 +220,19 @@ class OrganisationEventList extends ConsumerWidget {
         ),
         title: Text(event.name),
         subtitle: meta.isEmpty ? null : Text(meta.join(' · ')),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (organisation.isAdmin) ...[
-              IconButton(
-                tooltip: 'Event bearbeiten',
-                icon: const Icon(Icons.edit_outlined),
-                onPressed: () => openEventForm(
-                  context,
-                  organisation: organisation,
-                  defaultSportId: event.sportId ?? sport.id,
-                  event: event,
-                ),
-              ),
-              IconButton(
-                tooltip: 'Event löschen',
-                icon: const Icon(Icons.delete_outline),
-                onPressed: () => _delete(context, ref, event),
-              ),
-            ],
-            trailing(event),
-          ],
+        trailing: trailing(event),
+        onTap: () => showEventDetailSheet(
+          context,
+          organisation: organisation,
+          event: event,
+          aboToggle: trailing(event),
+          onEdit: () => openEventForm(
+            context,
+            organisation: organisation,
+            defaultSportId: event.sportId ?? sport.id,
+            event: event,
+          ),
+          onDelete: () => _delete(context, ref, event),
         ),
       );
       children.add(

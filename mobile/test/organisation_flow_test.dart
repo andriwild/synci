@@ -11,7 +11,6 @@ import 'package:synci/features/organisation/organisation_repository.dart';
 import 'package:synci/features/sport/sport.dart';
 import 'package:synci/features/sport/sport_repository.dart';
 import 'package:synci/features/sync_config/sync_config.dart';
-import 'package:synci/features/sync_config/sync_config_providers.dart';
 import 'package:synci/features/sync_config/sync_config_repository.dart';
 
 import 'helpers/phone_screen.dart';
@@ -127,7 +126,6 @@ void main() {
           sportRepositoryProvider.overrideWithValue(_FakeSportRepository()),
           organisationRepositoryProvider.overrideWithValue(organisations ?? _FakeOrganisationRepository()),
           syncConfigRepositoryProvider.overrideWithValue(_FakeSyncConfigRepository()),
-          activeSyncConfigIdProvider.overrideWith(_InMemorySelection.new),
           appUpdateAvailableProvider.overrideWithValue(const AsyncData(false)),
           onboardingSeenProvider.overrideWith(_OnboardingSeen.new),
         ],
@@ -185,6 +183,25 @@ void main() {
     await scrollToAndTap(tester, 'Nein');
     expect(organisations.answers.last, ('e2', EventAnswer.no));
     expect(find.text('2 Ja · 2 Nein · 2 offen'), findsOneWidget);
+  });
+
+  testWidgets('tapping an event opens its details, admins edit and delete there', (tester) async {
+    await pump(tester);
+    await scrollToAndTap(tester, 'FC Beispiel');
+    await tester.tap(find.text('Ganze Organisation'));
+    await tester.pumpAndSettle();
+    expect(find.byTooltip('Event bearbeiten'), findsNothing, reason: 'die Zeile zeigt nur noch den Abo-Knopf');
+
+    await scrollToAndTap(tester, 'Training');
+
+    expect(find.text('Clubhaus'), findsWidgets);
+    expect(find.text('Zu- und Absagen'), findsOneWidget);
+    expect(find.text('Bearbeiten'), findsOneWidget);
+    expect(find.text('Löschen'), findsOneWidget);
+
+    await tester.tap(find.text('Bearbeiten'));
+    await tester.pumpAndSettle();
+    expect(find.text('Event bearbeiten'), findsOneWidget, reason: 'das Formular ist offen');
   });
 
   testWidgets('admins open who answered what from the count', (tester) async {
@@ -293,12 +310,4 @@ class _FakeSportRepository extends Fake implements SportRepository {
 class _FakeSyncConfigRepository extends Fake implements SyncConfigRepository {
   @override
   Future<List<SyncConfig>> getAll() async => const [SyncConfig(id: 'abo-1', name: 'Standard-Abo')];
-}
-
-class _InMemorySelection extends ActiveSyncConfigIdController {
-  @override
-  String? build() => null;
-
-  @override
-  void select(String? id) => state = id;
 }

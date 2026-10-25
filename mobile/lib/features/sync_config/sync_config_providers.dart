@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/auth/auth_controller.dart';
-import '../../core/storage/preferences.dart';
 import 'sync_config.dart';
 import 'sync_config_repository.dart';
 
@@ -22,7 +21,6 @@ class SyncConfigsController extends AsyncNotifier<List<SyncConfig>> {
   Future<SyncConfig> create(String name) async {
     final created = await _repository.create(name);
     _set([..._current, created]);
-    ref.read(activeSyncConfigIdProvider.notifier).select(created.id);
     return created;
   }
 
@@ -44,23 +42,3 @@ class SyncConfigsController extends AsyncNotifier<List<SyncConfig>> {
     if (ref.mounted) state = AsyncData(configs);
   }
 }
-
-final activeSyncConfigIdProvider = NotifierProvider<ActiveSyncConfigIdController, String?>(
-  ActiveSyncConfigIdController.new,
-);
-
-class ActiveSyncConfigIdController extends Notifier<String?> {
-  @override
-  String? build() => ref.read(sharedPreferencesProvider).getString(activeSyncConfigKey);
-
-  void select(String id) {
-    ref.read(sharedPreferencesProvider).setString(activeSyncConfigKey, id);
-    state = id;
-  }
-}
-
-final activeSyncConfigProvider = Provider<SyncConfig?>((ref) {
-  final configs = ref.watch(syncConfigsProvider).value ?? const <SyncConfig>[];
-  final selectedId = ref.watch(activeSyncConfigIdProvider);
-  return configs.where((c) => c.id == selectedId).firstOrNull ?? configs.firstOrNull;
-});

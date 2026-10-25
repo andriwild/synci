@@ -14,7 +14,6 @@ import 'features/sport/sport_detail_screen.dart';
 import 'features/sport/sport_tree_screen.dart';
 import 'features/start/start_screen.dart';
 import 'features/sync_config/abos_screen.dart';
-import 'features/sync_config/active_abo_bar.dart';
 
 /// go_router 18 looks for material_ui's MaterialApp, not Flutter's, and would otherwise build every page
 /// without a transition, so no page slid in, iOS had no swipe back and no hero could fly.
@@ -131,17 +130,7 @@ class _HomeShell extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    body: navigationShell,
-    bottomNavigationBar: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        // Above the tabs instead of in each page, so it stays put while the sport pages slide
-        if (navigationShell.currentIndex == 0) const ActiveAboBar(),
-        _tabs(),
-      ],
-    ),
-  );
+  Widget build(BuildContext context) => Scaffold(body: navigationShell, bottomNavigationBar: _tabs());
 
   Widget _tabs() => NavigationBar(
     selectedIndex: navigationShell.currentIndex,

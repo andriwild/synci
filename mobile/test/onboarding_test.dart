@@ -11,7 +11,6 @@ import 'package:synci/features/onboarding/onboarding_providers.dart';
 import 'package:synci/features/sport/sport.dart';
 import 'package:synci/features/sport/sport_repository.dart';
 import 'package:synci/features/start/splash.dart';
-import 'package:synci/features/sync_config/sync_config_providers.dart';
 
 import 'helpers/phone_screen.dart';
 
@@ -25,7 +24,6 @@ void main() {
         retry: (_, _) => null,
         overrides: [
           sportRepositoryProvider.overrideWithValue(_FakeSportRepository(sports)),
-          activeSyncConfigIdProvider.overrideWith(_NoSelection.new),
           appUpdateAvailableProvider.overrideWithValue(const AsyncData(false)),
           onboardingSeenProvider.overrideWith(() => _InMemoryOnboarding(seen)),
         ],
@@ -168,11 +166,6 @@ class _InMemoryOnboarding extends OnboardingSeenController {
 
   @override
   void markSeen() => state = true;
-}
-
-class _NoSelection extends ActiveSyncConfigIdController {
-  @override
-  String? build() => null;
 }
 
 class _FakeSportRepository implements SportRepository {

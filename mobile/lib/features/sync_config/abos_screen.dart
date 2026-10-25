@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../core/auth/auth_controller.dart';
 import '../../core/widgets/feedback.dart';
@@ -61,7 +60,11 @@ class AbosScreen extends ConsumerWidget {
                         padding: const EdgeInsets.all(16),
                         itemCount: list.length,
                         separatorBuilder: (_, _) => const SizedBox(height: 12),
-                        itemBuilder: (context, index) => _AboCard(config: list[index]),
+                        itemBuilder: (context, index) => _AboCard(
+                          key: ValueKey(list[index].id),
+                          config: list[index],
+                          initiallyExpanded: list.length == 1,
+                        ),
                       ),
               ),
             ),
@@ -71,129 +74,137 @@ class AbosScreen extends ConsumerWidget {
 
 enum _AboAction { rename, delete }
 
-class _AboCard extends ConsumerWidget {
-  const _AboCard({required this.config});
+class _AboCard extends ConsumerStatefulWidget {
+  const _AboCard({super.key, required this.config, required this.initiallyExpanded});
 
   final SyncConfig config;
 
-  String get _count => switch (config.itemCount) {
+  /// A single Abo starts open; several start closed, so the list shows all of them.
+  final bool initiallyExpanded;
+
+  @override
+  ConsumerState<_AboCard> createState() => _AboCardState();
+}
+
+class _AboCardState extends ConsumerState<_AboCard> {
+  late var _expanded = widget.initiallyExpanded;
+
+  String get _count => switch (widget.config.itemCount) {
     0 => 'Leer',
     1 => '1 Eintrag',
     final n => '$n Einträge',
   };
 
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-    final isActive = ref.watch(activeSyncConfigProvider)?.id == config.id;
+  /// The first entries, e.g. "Super League, Formel 1, ZSC Lions +3".
+  String? get _preview {
+    final config = widget.config;
+    final names = [
+      for (final sport in config.sports) sport.label,
+      for (final team in config.teams) team.name,
+      for (final matchup in config.matchups) matchup.name,
+      for (final event in config.events) event.name,
+    ];
+    if (names.isEmpty) return null;
+    const shown = 3;
+    return [names.take(shown).join(', '), if (names.length > shown) '+${names.length - shown}'].join(' ');
+  }
 
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 250),
-      curve: Curves.easeOut,
-      padding: const EdgeInsets.fromLTRB(16, 8, 8, 16),
-      decoration: BoxDecoration(
-        color: SynciColors.container,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: isActive ? theme.colorScheme.primary : Colors.transparent, width: 2),
-      ),
+  void _toggle() {
+    HapticFeedback.selectionClick();
+    setState(() => _expanded = !_expanded);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final config = widget.config;
+    final preview = _preview;
+    final subtitleStyle = theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.outline);
+
+    return Material(
+      color: SynciColors.container,
+      borderRadius: BorderRadius.circular(20),
+      clipBehavior: Clip.antiAlias,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          Semantics(
+            button: true,
+            expanded: _expanded,
+            child: InkWell(
+              onTap: _toggle,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 4, 8),
+                child: Row(
                   children: [
-                    Text(config.name, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
-                    Text(_count, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.outline)),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(config.name, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+                          Text(
+                            _expanded || preview == null ? _count : '$_count · $preview',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: subtitleStyle,
+                          ),
+                        ],
+                      ),
+                    ),
+                    AnimatedRotation(
+                      turns: _expanded ? 0.5 : 0,
+                      duration: const Duration(milliseconds: 250),
+                      curve: Curves.easeOutCubic,
+                      child: const Icon(Icons.expand_more),
+                    ),
+                    PopupMenuButton<_AboAction>(
+                      tooltip: 'Mehr',
+                      onSelected: (action) => switch (action) {
+                        _AboAction.rename => renameAbo(context, ref, config),
+                        _AboAction.delete => deleteAbo(context, ref, config),
+                      },
+                      itemBuilder: (_) => const [
+                        PopupMenuItem(
+                          value: _AboAction.rename,
+                          child: ListTile(leading: Icon(Icons.edit_outlined), title: Text('Umbenennen')),
+                        ),
+                        PopupMenuItem(
+                          value: _AboAction.delete,
+                          child: ListTile(leading: Icon(Icons.delete_outline), title: Text('Löschen')),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
-              _ActiveChip(
-                active: isActive,
-                onActivate: () {
-                  HapticFeedback.selectionClick();
-                  ref.read(activeSyncConfigIdProvider.notifier).select(config.id);
-                },
-              ),
-              PopupMenuButton<_AboAction>(
-                tooltip: 'Mehr',
-                onSelected: (action) => switch (action) {
-                  _AboAction.rename => renameAbo(context, ref, config),
-                  _AboAction.delete => deleteAbo(context, ref, config),
-                },
-                itemBuilder: (_) => const [
-                  PopupMenuItem(
-                    value: _AboAction.rename,
-                    child: ListTile(leading: Icon(Icons.edit_outlined), title: Text('Umbenennen')),
-                  ),
-                  PopupMenuItem(
-                    value: _AboAction.delete,
-                    child: ListTile(leading: Icon(Icons.delete_outline), title: Text('Löschen')),
-                  ),
-                ],
-              ),
-            ],
+            ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: AboItemsList(config: config),
-          ),
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              FilledButton.icon(
-                onPressed: () => showCalendarSheet(context, ref, config),
-                icon: const Icon(Icons.event_available),
-                label: const Text('Zum Kalender hinzufügen'),
-              ),
-              OutlinedButton.icon(
-                onPressed: () {
-                  ref.read(activeSyncConfigIdProvider.notifier).select(config.id);
-                  context.go('/sport');
-                },
-                icon: const Icon(Icons.add),
-                label: const Text('Sportarten hinzufügen'),
-              ),
-            ],
+          AnimatedSize(
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeOutCubic,
+            alignment: Alignment.topCenter,
+            child: !_expanded
+                ? const SizedBox(width: double.infinity)
+                : Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        AboItemsList(config: config),
+                        const SizedBox(height: 16),
+                        Center(
+                          child: FilledButton.icon(
+                            onPressed: () => showCalendarSheet(context, ref, config),
+                            icon: const Icon(Icons.event_available),
+                            label: const Text('Zum Kalender hinzufügen'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
           ),
         ],
       ),
     );
   }
-}
-
-/// "Aktiv" on the active Abo, "Aktivieren" on the others to make them the active one.
-class _ActiveChip extends StatelessWidget {
-  const _ActiveChip({required this.active, required this.onActivate});
-
-  final bool active;
-  final VoidCallback onActivate;
-
-  @override
-  Widget build(BuildContext context) => AnimatedSwitcher(
-    duration: const Duration(milliseconds: 200),
-    transitionBuilder: (child, animation) => FadeTransition(
-      opacity: animation,
-      child: ScaleTransition(scale: animation, child: child),
-    ),
-    child: active
-        ? const Chip(
-            key: ValueKey(true),
-            avatar: Icon(Icons.check, size: 18),
-            label: Text('Aktiv'),
-            backgroundColor: SynciColors.highlight,
-            side: BorderSide.none,
-            visualDensity: VisualDensity.compact,
-          )
-        : ActionChip(
-            key: const ValueKey(false),
-            label: const Text('Aktivieren'),
-            onPressed: onActivate,
-            visualDensity: VisualDensity.compact,
-          ),
-  );
 }
