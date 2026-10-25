@@ -14,6 +14,12 @@ import 'features/sport/sport_detail_screen.dart';
 import 'features/sport/sport_tree_screen.dart';
 import 'features/start/start_screen.dart';
 import 'features/sync_config/abos_screen.dart';
+import 'features/sync_config/active_abo_bar.dart';
+
+/// go_router 18 looks for material_ui's MaterialApp, not Flutter's, and would otherwise build every page
+/// without a transition, so no page slid in, iOS had no swipe back and no hero could fly.
+Page<void> _page(GoRouterState state, Widget child) =>
+    MaterialPage<void>(key: state.pageKey, name: state.name ?? state.path, child: child);
 
 final routerProvider = Provider<GoRouter>((ref) {
   final rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -22,47 +28,55 @@ final routerProvider = Provider<GoRouter>((ref) {
     // Read once: finishing the intro navigates by itself
     initialLocation: ref.read(onboardingSeenProvider) ? '/sport' : '/willkommen',
     routes: [
-      GoRoute(path: '/willkommen', builder: (_, _) => const OnboardingScreen()),
+      GoRoute(path: '/willkommen', pageBuilder: (_, state) => _page(state, const OnboardingScreen())),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) => _HomeShell(navigationShell: navigationShell),
         branches: [
           StatefulShellBranch(
+            // For the same reason, the branch navigators get no HeroController; this one lets the sport icons fly
+            observers: [MaterialApp.createMaterialHeroController()],
             routes: [
               GoRoute(
                 path: '/sport',
-                builder: (_, _) => const StartScreen(),
+                pageBuilder: (_, state) => _page(state, const StartScreen()),
                 routes: [
                   GoRoute(
                     path: 'sportart/:rootId',
-                    builder: (_, state) => SportTreeScreen(rootId: state.pathParameters['rootId']!),
+                    pageBuilder: (_, state) => _page(state, SportTreeScreen(rootId: state.pathParameters['rootId']!)),
                     routes: [
                       GoRoute(
                         path: ':sportId',
-                        builder: (_, state) => SportDetailScreen(sportId: state.pathParameters['sportId']!),
+                        pageBuilder: (_, state) =>
+                            _page(state, SportDetailScreen(sportId: state.pathParameters['sportId']!)),
                       ),
                     ],
                   ),
                   GoRoute(
                     path: ':sportId',
-                    builder: (_, state) => SportDetailScreen(sportId: state.pathParameters['sportId']!),
+                    pageBuilder: (_, state) =>
+                        _page(state, SportDetailScreen(sportId: state.pathParameters['sportId']!)),
                   ),
                 ],
               ),
             ],
           ),
           StatefulShellBranch(
-            routes: [GoRoute(path: '/abos', builder: (_, _) => const AbosScreen())],
+            routes: [GoRoute(path: '/abos', pageBuilder: (_, state) => _page(state, const AbosScreen()))],
           ),
           StatefulShellBranch(
             routes: [
               GoRoute(
                 path: '/organisationen',
-                builder: (_, _) => const OrganisationsScreen(),
+                pageBuilder: (_, state) => _page(state, const OrganisationsScreen()),
                 routes: [
-                  GoRoute(path: 'entdecken', builder: (_, _) => const DiscoverOrganisationsScreen()),
+                  GoRoute(
+                    path: 'entdecken',
+                    pageBuilder: (_, state) => _page(state, const DiscoverOrganisationsScreen()),
+                  ),
                   GoRoute(
                     path: ':organisationId/mitglieder',
-                    builder: (_, state) => MembersScreen(organisationId: state.pathParameters['organisationId']!),
+                    pageBuilder: (_, state) =>
+                        _page(state, MembersScreen(organisationId: state.pathParameters['organisationId']!)),
                   ),
                 ],
               ),
@@ -72,14 +86,14 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/konto',
-                builder: (_, _) => const AccountScreen(),
+                pageBuilder: (_, state) => _page(state, const AccountScreen()),
                 routes: [
-                  GoRoute(path: 'faq', builder: (_, _) => const FaqScreen()),
-                  GoRoute(path: 'impressum', builder: (_, _) => const ImpressumScreen()),
+                  GoRoute(path: 'faq', pageBuilder: (_, state) => _page(state, const FaqScreen())),
+                  GoRoute(path: 'impressum', pageBuilder: (_, state) => _page(state, const ImpressumScreen())),
                   GoRoute(
                     path: 'einfuehrung',
                     parentNavigatorKey: rootNavigatorKey,
-                    builder: (_, _) => const OnboardingScreen(),
+                    pageBuilder: (_, state) => _page(state, const OnboardingScreen()),
                   ),
                 ],
               ),
@@ -119,25 +133,34 @@ class _HomeShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
     body: navigationShell,
-    bottomNavigationBar: NavigationBar(
-      selectedIndex: navigationShell.currentIndex,
-      // Tapping the active tab again returns to its root
-      onDestinationSelected: (index) =>
-          navigationShell.goBranch(index, initialLocation: index == navigationShell.currentIndex),
-      destinations: const [
-        NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: 'Start'),
-        NavigationDestination(
-          icon: Icon(Icons.event_note_outlined),
-          selectedIcon: Icon(Icons.event_note),
-          label: 'Meine Abos',
-        ),
-        NavigationDestination(
-          icon: Icon(Icons.apartment_outlined),
-          selectedIcon: Icon(Icons.apartment),
-          label: 'Organisationen',
-        ),
-        NavigationDestination(icon: Icon(Icons.person_outline), selectedIcon: Icon(Icons.person), label: 'Konto'),
+    bottomNavigationBar: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Above the tabs instead of in each page, so it stays put while the sport pages slide
+        if (navigationShell.currentIndex == 0) const ActiveAboBar(),
+        _tabs(),
       ],
     ),
+  );
+
+  Widget _tabs() => NavigationBar(
+    selectedIndex: navigationShell.currentIndex,
+    // Tapping the active tab again returns to its root
+    onDestinationSelected: (index) =>
+        navigationShell.goBranch(index, initialLocation: index == navigationShell.currentIndex),
+    destinations: const [
+      NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: 'Start'),
+      NavigationDestination(
+        icon: Icon(Icons.event_note_outlined),
+        selectedIcon: Icon(Icons.event_note),
+        label: 'Meine Abos',
+      ),
+      NavigationDestination(
+        icon: Icon(Icons.apartment_outlined),
+        selectedIcon: Icon(Icons.apartment),
+        label: 'Organisationen',
+      ),
+      NavigationDestination(icon: Icon(Icons.person_outline), selectedIcon: Icon(Icons.person), label: 'Konto'),
+    ],
   );
 }

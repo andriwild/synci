@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../theme.dart';
 import 'sport.dart';
 
 const _iconsByKeyword = <String, IconData>{
@@ -44,4 +45,47 @@ IconData sportIcon(Sport sport) {
     if (label.contains(key)) return value;
   }
   return Icons.emoji_events_outlined;
+}
+
+/// [sport]'s icon in a circle; flies from the start tile into the title of the page it opens.
+class SportAvatar extends StatelessWidget {
+  const SportAvatar({super.key, required this.sport, this.size = 40, this.color = Colors.white});
+
+  final Sport sport;
+  final double size;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) => SizedBox.square(
+    dimension: size,
+    child: Hero(
+      tag: 'sport-icon-${sport.id}',
+      child: DecoratedBox(
+        decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        // Scales with the flight between the two sizes
+        child: FittedBox(
+          child: Padding(
+            padding: const EdgeInsets.all(9),
+            child: Icon(sportIcon(sport), color: Theme.of(context).colorScheme.primary, size: 22),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+/// AppBar title with the [sport]'s avatar in front, the landing place of the start tile's icon.
+class SportTitle extends StatelessWidget {
+  const SportTitle({super.key, required this.sport});
+
+  final Sport sport;
+
+  @override
+  Widget build(BuildContext context) => Row(
+    spacing: 12,
+    children: [
+      SportAvatar(sport: sport, size: 34, color: SynciColors.container),
+      Flexible(child: Text(sport.label, overflow: TextOverflow.ellipsis)),
+    ],
+  );
 }

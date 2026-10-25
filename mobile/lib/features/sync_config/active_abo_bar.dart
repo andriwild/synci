@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/auth/auth_controller.dart';
+import '../../theme.dart';
 import '../account/login_prompt.dart';
 import '../calendar/calendar_sheet.dart';
 import 'abo_actions.dart';
 import 'abo_items_list.dart';
 import 'sync_config_providers.dart';
 
+/// Floating bar above the tabs with the active Abo; opens it to see, switch or subscribe to it.
 class ActiveAboBar extends ConsumerWidget {
   const ActiveAboBar({super.key});
 
@@ -17,45 +20,86 @@ class ActiveAboBar extends ConsumerWidget {
     final user = ref.watch(authControllerProvider).value;
     final configs = ref.watch(syncConfigsProvider);
     final active = ref.watch(activeSyncConfigProvider);
+    final action = FilledButton.styleFrom(backgroundColor: SynciColors.highlight, foregroundColor: colors.onSurface);
 
     final Widget content;
     if (user == null) {
       content = ListTile(
         title: const Text('Melde dich an, um Abos zu speichern'),
-        trailing: FilledButton(onPressed: () => login(context, ref), child: const Text('Anmelden')),
+        trailing: FilledButton(style: action, onPressed: () => login(context, ref), child: const Text('Anmelden')),
       );
     } else if (active == null) {
       content = configs.isLoading
-          ? const LinearProgressIndicator()
+          ? const Padding(padding: EdgeInsets.all(24), child: LinearProgressIndicator())
           : ListTile(
               title: const Text('Noch kein Abo vorhanden'),
-              trailing: FilledButton(onPressed: () => createAbo(context, ref), child: const Text('Erstellen')),
+              trailing: FilledButton(
+                style: action,
+                onPressed: () => createAbo(context, ref),
+                child: const Text('Erstellen'),
+              ),
             );
     } else {
       content = ListTile(
-        onTap: () => showModalBottomSheet<void>(
-          context: context,
-          showDragHandle: true,
-          isScrollControlled: true,
-          builder: (_) => const _ActiveAboSheet(),
+        onTap: () {
+          HapticFeedback.selectionClick();
+          showModalBottomSheet<void>(
+            context: context,
+            showDragHandle: true,
+            isScrollControlled: true,
+            builder: (_) => const _ActiveAboSheet(),
+          );
+        },
+        leading: _CountBadge(count: active.itemCount),
+        title: Text(
+          active.name,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(fontWeight: FontWeight.w700),
         ),
-        leading: Badge.count(
-          count: active.itemCount,
-          backgroundColor: const Color(0xFFF8E06D),
-          textColor: colors.onSurface,
-          child: const Icon(Icons.calendar_month_outlined),
-        ),
-        title: Text(active.name, maxLines: 1, overflow: TextOverflow.ellipsis),
-        subtitle: const Text('Aktives Abo'),
+        subtitle: Text('Aktives Abo', style: TextStyle(color: colors.onPrimary.withValues(alpha: 0.75))),
         trailing: const Icon(Icons.expand_less),
       );
     }
 
-    return Material(
-      color: colors.surfaceContainer,
-      child: SafeArea(top: false, bottom: false, child: content),
+    return SafeArea(
+      top: false,
+      bottom: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(12, 4, 12, 8),
+        child: Material(
+          color: colors.primary,
+          elevation: 3,
+          shadowColor: Colors.black38,
+          borderRadius: BorderRadius.circular(16),
+          clipBehavior: Clip.antiAlias,
+          child: ListTileTheme.merge(textColor: colors.onPrimary, iconColor: colors.onPrimary, child: content),
+        ),
+      ),
     );
   }
+}
+
+/// Calendar with the number of items; the number pops when it changes.
+class _CountBadge extends StatelessWidget {
+  const _CountBadge({required this.count});
+
+  final int count;
+
+  @override
+  Widget build(BuildContext context) => Badge(
+    backgroundColor: SynciColors.highlight,
+    textColor: Theme.of(context).colorScheme.onSurface,
+    label: AnimatedSwitcher(
+      duration: const Duration(milliseconds: 300),
+      transitionBuilder: (child, animation) => ScaleTransition(
+        scale: CurvedAnimation(parent: animation, curve: Curves.easeOutBack),
+        child: child,
+      ),
+      child: Text('$count', key: ValueKey(count)),
+    ),
+    child: const Icon(Icons.calendar_month_outlined),
+  );
 }
 
 class _ActiveAboSheet extends ConsumerWidget {
@@ -75,22 +119,30 @@ class _ActiveAboSheet extends ConsumerWidget {
         controller: scrollController,
         padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
         children: [
-          Row(
-            children: [
-              Expanded(child: Text(active.name, style: Theme.of(context).textTheme.titleLarge)),
-              PopupMenuButton<String>(
-                tooltip: 'Abo wechseln',
-                icon: const Icon(Icons.swap_horiz),
-                onSelected: (id) =>
-                    id.isEmpty ? createAbo(context, ref) : ref.read(activeSyncConfigIdProvider.notifier).select(id),
-                itemBuilder: (_) => [
-                  for (final config in configs)
-                    CheckedPopupMenuItem(value: config.id, checked: config.id == active.id, child: Text(config.name)),
-                  const PopupMenuDivider(),
-                  const PopupMenuItem(value: '', child: Text('Neues Abo erstellen')),
-                ],
-              ),
-            ],
+          Text('Aktives Abo', style: Theme.of(context).textTheme.titleLarge),
+          const SizedBox(height: 12),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            clipBehavior: Clip.none,
+            child: Row(
+              spacing: 8,
+              children: [
+                for (final config in configs)
+                  ChoiceChip(
+                    label: Text(config.name),
+                    selected: config.id == active.id,
+                    onSelected: (_) {
+                      HapticFeedback.selectionClick();
+                      ref.read(activeSyncConfigIdProvider.notifier).select(config.id);
+                    },
+                  ),
+                ActionChip(
+                  avatar: const Icon(Icons.add),
+                  label: const Text('Neues Abo'),
+                  onPressed: () => createAbo(context, ref),
+                ),
+              ],
+            ),
           ),
           AboItemsList(config: active),
           const SizedBox(height: 16),

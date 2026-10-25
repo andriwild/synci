@@ -75,8 +75,9 @@ class AboItemsList extends ConsumerWidget {
           _AboItemTile(
             icon: Icons.emoji_events_outlined,
             title: matchup.name,
-            titleWidget: GameTitle(teams: [matchup.teamA, matchup.teamB], name: matchup.name, logoSize: 20),
+            titleWidget: GameTitle(teams: [matchup.teamA, matchup.teamB], name: matchup.name, logoSize: 32),
             subtitle: matchup.rootSport,
+            centered: true,
             onRemove: () => removeFromAbo(
               context,
               ref,
@@ -96,8 +97,9 @@ class AboItemsList extends ConsumerWidget {
           _AboItemTile(
             icon: Icons.event_outlined,
             title: event.name,
-            titleWidget: GameTitle(teams: event.teams, name: event.name, logoSize: 20),
+            titleWidget: GameTitle(teams: event.teams, name: event.name, logoSize: 32),
             subtitle: [if (event.startsOn != null) _dateFormat.format(event.startsOn!), ?event.rootSport].join(' · '),
+            centered: event.teams.length >= 2,
             onRemove: () => removeFromAbo(
               context,
               ref,
@@ -136,6 +138,7 @@ class _AboItemTile extends StatelessWidget {
     required this.title,
     this.titleWidget,
     this.subtitle,
+    this.centered = false,
     required this.onRemove,
   });
 
@@ -148,15 +151,28 @@ class _AboItemTile extends StatelessWidget {
   /// replaces the plain [title], e.g. with the teams of a game
   final Widget? titleWidget;
   final String? subtitle;
+
+  /// Centers the subtitle below a game, whose teams sit around the middle.
+  final bool centered;
   final VoidCallback onRemove;
 
   @override
-  Widget build(BuildContext context) => ListTile(
-    contentPadding: EdgeInsets.zero,
-    dense: true,
-    leading: leading ?? Icon(icon),
-    title: titleWidget ?? Text(title),
-    subtitle: (subtitle == null || subtitle!.isEmpty) ? null : Text(subtitle!),
-    trailing: IconButton(tooltip: 'Entfernen', icon: const Icon(Icons.delete_outline), onPressed: onRemove),
-  );
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final subtitle = this.subtitle;
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      dense: true,
+      leading: leading ?? Icon(icon),
+      title: titleWidget ?? Text(title),
+      subtitle: subtitle == null || subtitle.isEmpty
+          ? null
+          : Text(
+              subtitle,
+              textAlign: centered ? TextAlign.center : null,
+              style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.outline),
+            ),
+      trailing: IconButton(tooltip: 'Entfernen', icon: const Icon(Icons.delete_outline), onPressed: onRemove),
+    );
+  }
 }

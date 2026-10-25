@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import '../../core/analytics/analytics.dart';
 import '../../core/widgets/feedback.dart';
 import '../organisation/organisation_providers.dart';
-import '../sync_config/active_abo_bar.dart';
 import 'sport.dart';
 import 'sport_icons.dart';
 import 'sport_providers.dart';
@@ -46,8 +45,7 @@ class _SportTreeScreenState extends ConsumerState<SportTreeScreen> {
     final root = tree.value == null ? null : findSport(tree.value!, widget.rootId)?.sport;
 
     return Scaffold(
-      appBar: AppBar(title: Text(root?.label ?? '')),
-      bottomNavigationBar: const ActiveAboBar(),
+      appBar: AppBar(title: root == null ? null : SportTitle(sport: root)),
       body: tree.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, _) => ErrorView(error: error, onRetry: () => ref.invalidate(sportsProvider)),

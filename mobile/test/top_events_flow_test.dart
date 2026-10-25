@@ -27,14 +27,14 @@ void main() {
 
   late _FakeSyncConfigRepository syncConfigs;
 
-  Future<void> pumpLoggedIn(WidgetTester tester, {List<Matchup> matchups = const []}) async {
+  Future<void> pumpLoggedIn(WidgetTester tester, {List<Matchup> matchups = const [], bool loggedIn = true}) async {
     usePhoneScreen(tester);
     syncConfigs = _FakeSyncConfigRepository(matchups);
     await tester.pumpWidget(
       ProviderScope(
         retry: (_, _) => null,
         overrides: [
-          authControllerProvider.overrideWith(_LoggedIn.new),
+          authControllerProvider.overrideWith(loggedIn ? _LoggedIn.new : _LoggedOut.new),
           sportRepositoryProvider.overrideWithValue(_FakeSportRepository()),
           topEventRepositoryProvider.overrideWithValue(_FakeTopEventRepository()),
           organisationRepositoryProvider.overrideWithValue(_NoOrganisations()),
@@ -67,6 +67,13 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  void expectLabelAboveHint(WidgetTester tester, String field, String hint) {
+    final decorator = find.ancestor(of: find.text(field), matching: find.byType(InputDecorator));
+    final label = tester.getRect(find.text(field));
+    final hintRect = tester.getRect(find.descendant(of: decorator, matching: find.text(hint)));
+    expect(label.bottom, lessThanOrEqualTo(hintRect.top), reason: '$field steht über dem Hinweis, nicht darauf');
+  }
+
   testWidgets('Top Event mit Vorschau ins Abo speichern', (tester) async {
     await pumpLoggedIn(tester);
 
@@ -77,11 +84,13 @@ void main() {
     await openCreateSheet(tester);
     expect(find.text('Top Event hinzufügen'), findsOneWidget);
     expect(find.text('Ski Alpin'), findsNothing, reason: 'nur Sportarten mit Teams');
+    expectLabelAboveHint(tester, 'Team 1', 'Zuerst Sportart wählen');
     await tester.tap(find.text('Sportart'));
     await tester.pumpAndSettle();
     expect(find.text('Ski Alpin'), findsNothing);
     await tester.tap(find.text('Fussball').last);
     await tester.pumpAndSettle();
+    expectLabelAboveHint(tester, 'Team 2', 'Team wählen');
 
     await pickTeam(tester, 'Team 1', 'Real Madrid');
     await pickTeam(tester, 'Team 2', 'FC Barcelona');
@@ -100,7 +109,15 @@ void main() {
     expect(find.textContaining('Nächstes Spiel: '), findsOneWidget);
   });
 
-  testWidgets('El Clásico wie jedes Top Event auf der Top-Events-Seite entfernen', (tester) async {
+  testWidgets('Ohne Abo zählt die Top-Events-Seite 0 von 20', (tester) async {
+    await pumpLoggedIn(tester, loggedIn: false);
+
+    await scrollToAndTap(tester, 'Top Events');
+
+    expect(find.text('0 von 20'), findsOneWidget);
+  });
+
+  testWidgets('Ein Top Event auf der Top-Events-Seite entfernen', (tester) async {
     await pumpLoggedIn(
       tester,
       matchups: const [Matchup(sourceId: 3, teamA: _real, teamB: _barca)],
@@ -180,6 +197,11 @@ class _OnboardingSeen extends OnboardingSeenController {
 class _LoggedIn extends AuthController {
   @override
   Future<AppUser?> build() async => const AppUser(name: 'Test', email: 'test@synci.ch');
+}
+
+class _LoggedOut extends AuthController {
+  @override
+  Future<AppUser?> build() async => null;
 }
 
 class _InMemorySelection extends ActiveSyncConfigIdController {

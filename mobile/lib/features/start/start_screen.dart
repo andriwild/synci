@@ -1,12 +1,13 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/analytics/analytics.dart';
 import '../../core/auth/auth_controller.dart';
-import '../../core/auth/auth_service.dart';
 import '../../core/widgets/feedback.dart';
-import '../../core/widgets/synci_logo.dart';
+import '../../core/widgets/press_scale.dart';
 import '../../theme.dart';
 import '../account/login_prompt.dart';
 import '../app_update/update_banner.dart';
@@ -16,7 +17,6 @@ import '../organisation/organisations_screen.dart';
 import '../sport/sport.dart';
 import '../sport/sport_icons.dart';
 import '../sport/sport_providers.dart';
-import '../sync_config/active_abo_bar.dart';
 
 /// Opens a sport or organisation from the start screen: its leagues or groups if it has some, otherwise its events.
 void openRootSport(BuildContext context, WidgetRef ref, Sport sport) {
@@ -35,20 +35,32 @@ class StartScreen extends ConsumerStatefulWidget {
 
 class _StartScreenState extends ConsumerState<StartScreen> {
   final _searchController = TextEditingController();
+  final _searchFocus = FocusNode();
+  final _scroll = ScrollController();
   var _query = '';
 
   @override
   void dispose() {
     _searchController.dispose();
+    _searchFocus.dispose();
+    _scroll.dispose();
     super.dispose();
   }
 
   void _search(String value) => setState(() => _query = value.trim());
 
+  /// The search icon of the collapsed header brings the search field back.
+  Future<void> _openSearch() async {
+    await _scroll.animateTo(0, duration: const Duration(milliseconds: 350), curve: Curves.easeOutCubic);
+    _searchFocus.requestFocus();
+  }
+
   @override
   Widget build(BuildContext context) {
     final sports = ref.watch(sportsProvider);
     final organisations = ref.watch(myOrganisationsProvider);
+    // Loaded before a tile opens its leagues, so their title is there for the icon to fly into
+    ref.watch(sportTreeProvider);
     final user = ref.watch(authControllerProvider).value;
     final activeOrganisations = [
       for (final organisation in organisations.value ?? const <MyOrganisation>[])
@@ -60,50 +72,50 @@ class _StartScreenState extends ConsumerState<StartScreen> {
       active: activeOrganisations,
     );
 
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Image.asset('assets/images/logo.png', height: 28, semanticLabel: 'Synci'),
+    final searchField = TextField(
+      controller: _searchController,
+      focusNode: _searchFocus,
+      onChanged: _search,
+      textInputAction: TextInputAction.search,
+      decoration: InputDecoration(
+        hintText: 'Sportart, Liga oder Organisation suchen',
+        prefixIcon: const Icon(Icons.search),
+        suffixIcon: _query.isEmpty
+            ? null
+            : IconButton(
+                tooltip: 'Suche löschen',
+                icon: const Icon(Icons.clear),
+                onPressed: () {
+                  _searchController.clear();
+                  _search('');
+                },
+              ),
       ),
-      bottomNavigationBar: const ActiveAboBar(),
+    );
+
+    return Scaffold(
       body: RefreshIndicator(
+        edgeOffset: MediaQuery.paddingOf(context).top + kToolbarHeight,
         onRefresh: () => Future.wait([ref.refresh(sportsProvider.future), ref.refresh(myOrganisationsProvider.future)]),
         child: CustomScrollView(
+          controller: _scroll,
           slivers: [
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-              sliver: SliverList.list(
-                children: [
-                  const UpdateBanner(padding: EdgeInsets.only(bottom: 12)),
-                  _Greeting(user: user),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: _searchController,
-                    onChanged: _search,
-                    textInputAction: TextInputAction.search,
-                    decoration: InputDecoration(
-                      hintText: 'Sportart, Liga oder Organisation suchen',
-                      prefixIcon: const Icon(Icons.search),
-                      suffixIcon: _query.isEmpty
-                          ? null
-                          : IconButton(
-                              tooltip: 'Suche löschen',
-                              icon: const Icon(Icons.clear),
-                              onPressed: () {
-                                _searchController.clear();
-                                _search('');
-                              },
-                            ),
-                    ),
-                  ),
-                ],
-              ),
+            SliverAppBar(
+              pinned: true,
+              automaticallyImplyLeading: false,
+              scrolledUnderElevation: 2,
+              shadowColor: Colors.black26,
+              expandedHeight: _StartHeader.expandedHeight,
+              flexibleSpace: _StartHeader(searchField: searchField, onSearch: _openSearch),
+            ),
+            const SliverPadding(
+              padding: EdgeInsets.fromLTRB(16, 4, 16, 0),
+              sliver: SliverToBoxAdapter(child: UpdateBanner(padding: EdgeInsets.only(bottom: 8))),
             ),
             if (_query.isNotEmpty)
               _SearchResults(query: _query)
             else ...[
-              // Members see their organisations first, everyone else gets to the sports right away
-              if (activeOrganisations.isNotEmpty) organisationSection,
+              organisationSection,
               const _SectionHeader(
                 title: 'Sportarten',
                 subtitle: 'Wähle eine Sportart, dann eine Liga oder ein Team, und füge sie deinem Abo hinzu.',
@@ -129,7 +141,6 @@ class _StartScreenState extends ConsumerState<StartScreen> {
                         ],
                       ),
               ),
-              if (activeOrganisations.isEmpty) organisationSection,
             ],
             const SliverPadding(padding: EdgeInsets.only(bottom: 24)),
           ],
@@ -139,50 +150,63 @@ class _StartScreenState extends ConsumerState<StartScreen> {
   }
 }
 
-class _Greeting extends StatelessWidget {
-  const _Greeting({required this.user});
+/// Big logo above the search field; scrolling down shrinks the logo into the toolbar and turns the
+/// field into a search icon there.
+class _StartHeader extends StatelessWidget {
+  const _StartHeader({required this.searchField, required this.onSearch});
 
-  final AppUser? user;
+  static const expandedHeight = 150.0;
+  static const _logo = (small: 28.0, big: 52.0);
 
-  String get _title {
-    final user = this.user;
-    if (user == null) return 'Willkommen bei Synci';
-    final name = user.fullName ?? (user.name == user.email ? null : user.name);
-    final firstName = name?.trim().split(RegExp(r'\s+')).first;
-    return firstName == null || firstName.isEmpty || firstName.contains('@') ? 'Hallo' : 'Hallo $firstName';
-  }
+  final Widget searchField;
+  final VoidCallback onSearch;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      padding: const EdgeInsets.fromLTRB(20, 18, 16, 18),
-      decoration: BoxDecoration(color: SynciColors.container, borderRadius: BorderRadius.circular(20)),
-      child: Row(
-        spacing: 16,
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 4,
-              children: [
-                Text(_title, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
-                Text(
-                  'Verpasse nie wieder deine Lieblingsevents: Hol sie dir direkt in deinen Kalender.',
-                  style: theme.textTheme.bodyMedium,
+    final top = MediaQuery.paddingOf(context).top;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // 1 while fully expanded, 0 once collapsed into the toolbar
+        final t = ((constraints.maxHeight - top - kToolbarHeight) / (expandedHeight - kToolbarHeight)).clamp(0.0, 1.0);
+        final logoHeight = lerpDouble(_logo.small, _logo.big, t)!;
+        final fieldOpacity = ((t - 0.4) / 0.6).clamp(0.0, 1.0);
+        final iconOpacity = (1 - t / 0.4).clamp(0.0, 1.0);
+        return Padding(
+          padding: EdgeInsets.only(top: top),
+          child: Stack(
+            children: [
+              Positioned(
+                top: lerpDouble((kToolbarHeight - _logo.small) / 2, 12, t),
+                left: 0,
+                right: 0,
+                child: Center(
+                  child: Image.asset('assets/images/logo.png', height: logoHeight, semanticLabel: 'Synci'),
                 ),
-              ],
-            ),
+              ),
+              Positioned(
+                left: 16,
+                right: 16,
+                bottom: 12,
+                child: IgnorePointer(
+                  ignoring: fieldOpacity < 0.5,
+                  child: Opacity(opacity: fieldOpacity, child: searchField),
+                ),
+              ),
+              Positioned(
+                top: 4,
+                right: 4,
+                child: IgnorePointer(
+                  ignoring: iconOpacity < 0.5,
+                  child: Opacity(
+                    opacity: iconOpacity,
+                    child: IconButton(tooltip: 'Suchen', icon: const Icon(Icons.search), onPressed: onSearch),
+                  ),
+                ),
+              ),
+            ],
           ),
-          Container(
-            width: 64,
-            height: 64,
-            alignment: Alignment.center,
-            decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-            child: const ExcludeSemantics(child: SynciLogo(size: 40)),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
@@ -222,15 +246,17 @@ class _TileGrid extends StatelessWidget {
 
   final List<Widget> children;
 
+  /// Grows with the text size.
+  static double tileHeight(BuildContext context) => 80 + 58 * MediaQuery.textScalerOf(context).scale(14) / 14;
+
   @override
   Widget build(BuildContext context) {
-    final lineScale = MediaQuery.textScalerOf(context).scale(14) / 14;
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       sliver: SliverGrid.list(
         gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: 240,
-          mainAxisExtent: 80 + 58 * lineScale,
+          mainAxisExtent: tileHeight(context),
           mainAxisSpacing: 10,
           crossAxisSpacing: 10,
         ),
@@ -241,9 +267,12 @@ class _TileGrid extends StatelessWidget {
 }
 
 class _Tile extends StatelessWidget {
-  const _Tile({required this.icon, required this.title, this.subtitle, required this.onTap, this.color});
+  const _Tile({required this.icon, required this.title, this.subtitle, required this.onTap, this.color, this.sport});
 
   final IconData icon;
+
+  /// Shows its avatar instead of [icon], which then flies into the next page.
+  final Sport? sport;
   final String title;
   final String? subtitle;
   final VoidCallback onTap;
@@ -252,7 +281,7 @@ class _Tile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Material(
+    final tile = Material(
       color: color ?? SynciColors.container,
       borderRadius: BorderRadius.circular(16),
       clipBehavior: Clip.antiAlias,
@@ -263,12 +292,15 @@ class _Tile extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-                child: Icon(icon, color: theme.colorScheme.primary, size: 22),
-              ),
+              if (sport case final sport?)
+                SportAvatar(sport: sport)
+              else
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                  child: Icon(icon, color: theme.colorScheme.primary, size: 22),
+                ),
               const SizedBox(height: 12),
               Text(
                 title,
@@ -288,6 +320,7 @@ class _Tile extends StatelessWidget {
         ),
       ),
     );
+    return PressScale(child: tile);
   }
 }
 
@@ -300,6 +333,7 @@ class _SportTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) => _Tile(
     icon: sportIcon(sport),
+    sport: sport,
     title: sport.label,
     subtitle: sport.hasSubSports
         ? sport.subSports.map((s) => s.label).join(' · ')
@@ -338,7 +372,7 @@ class _OrganisationSection extends ConsumerWidget {
             child: ErrorView(error: organisations.error!, onRetry: () => ref.invalidate(myOrganisationsProvider)),
           )
         else
-          _TileGrid(
+          _TileRow(
             children: [
               for (final organisation in active)
                 _SportTile(sport: organisation.sport, onTap: () => openRootSport(context, ref, organisation.sport)),
@@ -361,6 +395,27 @@ class _OrganisationSection extends ConsumerWidget {
       ],
     );
   }
+}
+
+/// One row of tiles that scrolls sideways, so it stays short however many there are.
+class _TileRow extends StatelessWidget {
+  const _TileRow({required this.children});
+
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) => SliverToBoxAdapter(
+    child: SizedBox(
+      height: _TileGrid.tileHeight(context),
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        itemCount: children.length,
+        separatorBuilder: (_, _) => const SizedBox(width: 10),
+        itemBuilder: (_, index) => SizedBox(width: 164, child: children[index]),
+      ),
+    ),
+  );
 }
 
 typedef _SearchHit = ({Sport sport, Sport root, List<String> path});
