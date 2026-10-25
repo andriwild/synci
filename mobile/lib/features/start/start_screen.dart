@@ -16,6 +16,7 @@ import '../organisation/organisation_providers.dart';
 import '../organisation/organisations_screen.dart';
 import '../sport/sport.dart';
 import '../sport/sport_icons.dart';
+import '../sync_config/abo_badge.dart';
 import '../sport/sport_providers.dart';
 
 /// Opens a sport or organisation from the start screen: its leagues or groups if it has some, otherwise its events.
@@ -267,7 +268,15 @@ class _TileGrid extends StatelessWidget {
 }
 
 class _Tile extends StatelessWidget {
-  const _Tile({required this.icon, required this.title, this.subtitle, required this.onTap, this.color, this.sport});
+  const _Tile({
+    required this.icon,
+    required this.title,
+    this.subtitle,
+    required this.onTap,
+    this.color,
+    this.sport,
+    this.badge,
+  });
 
   final IconData icon;
 
@@ -277,6 +286,9 @@ class _Tile extends StatelessWidget {
   final String? subtitle;
   final VoidCallback onTap;
   final Color? color;
+
+  /// Shown in the top right corner, e.g. how much of the sport is in my Abos.
+  final Widget? badge;
 
   @override
   Widget build(BuildContext context) {
@@ -292,15 +304,22 @@ class _Tile extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (sport case final sport?)
-                SportAvatar(sport: sport)
-              else
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-                  child: Icon(icon, color: theme.colorScheme.primary, size: 22),
-                ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (sport case final sport?)
+                    SportAvatar(sport: sport)
+                  else
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                      child: Icon(icon, color: theme.colorScheme.primary, size: 22),
+                    ),
+                  const Spacer(),
+                  ?badge,
+                ],
+              ),
               const SizedBox(height: 12),
               Text(
                 title,
@@ -342,6 +361,7 @@ class _SportTile extends StatelessWidget {
         : sport.isTopEvents
         ? 'Spiele zwischen zwei Teams'
         : null,
+    badge: AboBadge(sport: sport, root: true),
     onTap: onTap,
   );
 }

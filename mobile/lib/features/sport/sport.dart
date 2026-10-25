@@ -1,4 +1,4 @@
-/// Name of the root that shows the Top Events of the active Abo.
+/// Name of the root that shows the Top Events of my Abos.
 const topEventsName = 'TOP_EVENTS';
 
 class Sport {

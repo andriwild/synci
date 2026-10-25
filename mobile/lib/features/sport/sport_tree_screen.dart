@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/analytics/analytics.dart';
 import '../../core/widgets/feedback.dart';
 import '../organisation/organisation_providers.dart';
+import '../sync_config/abo_badge.dart';
 import 'sport.dart';
 import 'sport_icons.dart';
 import 'sport_providers.dart';
@@ -157,6 +158,8 @@ class _SportRow extends StatelessWidget {
                         ?.copyWith(fontWeight: node.level == 1 ? FontWeight.w700 : FontWeight.w600),
                   ),
                 ),
+                AboBadge(sport: sport),
+                const SizedBox(width: 4),
                 IconButton.filledTonal(
                   tooltip: '${sport.label} öffnen',
                   onPressed: onOpen,

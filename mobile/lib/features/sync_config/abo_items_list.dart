@@ -29,106 +29,159 @@ class AboItemsList extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (config.sports.isNotEmpty) const _SectionTitle('Sportarten'),
-        for (final sport in config.sports)
-          _AboItemTile(
-            icon: sport.isOrganisation ? Icons.apartment : Icons.emoji_events_outlined,
-            title: sport.label,
-            subtitle: sport.rootSport != sport.label ? sport.rootSport : null,
-            onRemove: () => removeFromAbo(
-              context,
-              ref,
-              config,
-              change: (c) => c.copyWith(
-                sports: [
-                  for (final s in c.sports)
-                    if (s.id != sport.id) s,
-                ],
-              ),
-              message: '${sport.label} entfernt',
-              onRemoved: () => track('sport', sport.label, sport.rootSport),
-            ),
+        if (config.sports.isNotEmpty)
+          _Section(
+            title: 'Sportarten',
+            children: [
+              for (final sport in config.sports)
+                _AboItemTile(
+                  icon: sport.isOrganisation ? Icons.apartment : Icons.emoji_events_outlined,
+                  title: sport.label,
+                  subtitle: sport.rootSport != sport.label ? sport.rootSport : null,
+                  onRemove: () => removeFromAbo(
+                    context,
+                    ref,
+                    config,
+                    change: (c) => c.copyWith(
+                      sports: [
+                        for (final s in c.sports)
+                          if (s.id != sport.id) s,
+                      ],
+                    ),
+                    message: '${sport.label} entfernt',
+                    onRemoved: () => track('sport', sport.label, sport.rootSport),
+                  ),
+                ),
+            ],
           ),
-        if (config.teams.isNotEmpty) const _SectionTitle('Teams'),
-        for (final team in config.teams)
-          _AboItemTile(
-            icon: Icons.groups_outlined,
-            leading: TeamLogo(team: team, size: 32),
-            title: team.displayName,
-            subtitle: team.rootSport,
-            onRemove: () => removeFromAbo(
-              context,
-              ref,
-              config,
-              change: (c) => c.copyWith(
-                teams: [
-                  for (final t in c.teams)
-                    if (t.id != team.id) t,
-                ],
-              ),
-              message: '${team.name} entfernt',
-              onRemoved: () => track('team', team.name, team.rootSport),
-            ),
+        if (config.teams.isNotEmpty)
+          _Section(
+            title: 'Teams',
+            children: [
+              for (final team in config.teams)
+                _AboItemTile(
+                  icon: Icons.groups_outlined,
+                  leading: TeamLogo(team: team, size: 32),
+                  title: team.displayName,
+                  subtitle: team.rootSport,
+                  onRemove: () => removeFromAbo(
+                    context,
+                    ref,
+                    config,
+                    change: (c) => c.copyWith(
+                      teams: [
+                        for (final t in c.teams)
+                          if (t.id != team.id) t,
+                      ],
+                    ),
+                    message: '${team.name} entfernt',
+                    onRemoved: () => track('team', team.name, team.rootSport),
+                  ),
+                ),
+            ],
           ),
-        if (config.matchups.isNotEmpty) const _SectionTitle('Top Events'),
-        for (final matchup in config.matchups)
-          _AboItemTile(
-            icon: Icons.emoji_events_outlined,
-            title: matchup.name,
-            titleWidget: GameTitle(teams: [matchup.teamA, matchup.teamB], name: matchup.name, logoSize: 32),
-            subtitle: matchup.rootSport,
-            centered: true,
-            onRemove: () => removeFromAbo(
-              context,
-              ref,
-              config,
-              change: (c) => c.copyWith(
-                matchups: [
-                  for (final m in c.matchups)
-                    if (!m.isBetween(matchup.teamA, matchup.teamB)) m,
-                ],
-              ),
-              message: '${matchup.name} entfernt',
-              onRemoved: () => track('matchup', matchup.name, matchup.rootSport),
-            ),
+        if (config.matchups.isNotEmpty)
+          _Section(
+            title: 'Top Events',
+            children: [
+              for (final matchup in config.matchups)
+                _AboItemTile(
+                  icon: Icons.emoji_events_outlined,
+                  title: matchup.name,
+                  titleWidget: GameTitle(teams: [matchup.teamA, matchup.teamB], name: matchup.name, logoSize: 32),
+                  subtitle: matchup.rootSport,
+                  centered: true,
+                  onRemove: () => removeFromAbo(
+                    context,
+                    ref,
+                    config,
+                    change: (c) => c.copyWith(
+                      matchups: [
+                        for (final m in c.matchups)
+                          if (!m.isBetween(matchup.teamA, matchup.teamB)) m,
+                      ],
+                    ),
+                    message: '${matchup.name} entfernt',
+                    onRemoved: () => track('matchup', matchup.name, matchup.rootSport),
+                  ),
+                ),
+            ],
           ),
-        if (config.events.isNotEmpty) const _SectionTitle('Events'),
-        for (final event in config.events)
-          _AboItemTile(
-            icon: Icons.event_outlined,
-            title: event.name,
-            titleWidget: GameTitle(teams: event.teams, name: event.name, logoSize: 32),
-            subtitle: [if (event.startsOn != null) _dateFormat.format(event.startsOn!), ?event.rootSport].join(' · '),
-            centered: event.teams.length >= 2,
-            onRemove: () => removeFromAbo(
-              context,
-              ref,
-              config,
-              change: (c) => c.copyWith(
-                events: [
-                  for (final e in c.events)
-                    if (e.id != event.id) e,
-                ],
-              ),
-              message: '${event.name} entfernt',
-              onRemoved: () => track('event', event.name, event.rootSport),
-            ),
+        if (config.events.isNotEmpty)
+          _Section(
+            title: 'Events',
+            children: [
+              for (final event in config.events)
+                _AboItemTile(
+                  icon: Icons.event_outlined,
+                  title: event.name,
+                  titleWidget: GameTitle(teams: event.teams, name: event.name, logoSize: 32),
+                  subtitle: [
+                    if (event.startsOn != null) _dateFormat.format(event.startsOn!),
+                    ?event.rootSport,
+                  ].join(' · '),
+                  centered: event.teams.length >= 2,
+                  onRemove: () => removeFromAbo(
+                    context,
+                    ref,
+                    config,
+                    change: (c) => c.copyWith(
+                      events: [
+                        for (final e in c.events)
+                          if (e.id != event.id) e,
+                      ],
+                    ),
+                    message: '${event.name} entfernt',
+                    onRemoved: () => track('event', event.name, event.rootSport),
+                  ),
+                ),
+            ],
           ),
       ],
     );
   }
 }
 
-class _SectionTitle extends StatelessWidget {
-  const _SectionTitle(this.title);
+/// A titled group of entries on a white surface, divided by hairlines.
+class _Section extends StatelessWidget {
+  const _Section({required this.title, required this.children});
 
   final String title;
+  final List<Widget> children;
 
   @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(top: 12, bottom: 4),
-    child: Text(title, style: Theme.of(context).textTheme.labelLarge),
-  );
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(4, 16, 4, 6),
+          child: Text(title, style: theme.textTheme.labelLarge?.copyWith(color: theme.colorScheme.outline)),
+        ),
+        Material(
+          color: theme.colorScheme.surface,
+          borderRadius: BorderRadius.circular(14),
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            children: [
+              for (final (index, child) in children.indexed) ...[
+                if (index > 0)
+                  Divider(
+                    height: 1,
+                    thickness: 1,
+                    indent: 12,
+                    endIndent: 12,
+                    color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+                  ),
+                child,
+              ],
+            ],
+          ),
+        ),
+      ],
+    );
+  }
 }
 
 class _AboItemTile extends StatelessWidget {
@@ -161,7 +214,7 @@ class _AboItemTile extends StatelessWidget {
     final theme = Theme.of(context);
     final subtitle = this.subtitle;
     return ListTile(
-      contentPadding: EdgeInsets.zero,
+      contentPadding: const EdgeInsets.only(left: 12),
       dense: true,
       leading: leading ?? Icon(icon),
       title: titleWidget ?? Text(title),

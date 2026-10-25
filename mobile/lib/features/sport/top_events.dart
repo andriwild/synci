@@ -18,16 +18,14 @@ import 'top_event_repository.dart';
 
 final _gameFormat = DateFormat('E d.M.yyyy, HH:mm', 'de_CH');
 
-/// Top Events page: the matchups of the active Abo with their next game, to add and remove.
+/// Top Events page: the matchups of each Abo with their next game, to add and remove.
 class TopEventsView extends ConsumerWidget {
   const TopEventsView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final loggedIn = ref.watch(authControllerProvider).value != null;
-    final active = ref.watch(activeSyncConfigProvider);
-    final full = active?.matchupsFull ?? false;
+    final configs = ref.watch(syncConfigsProvider).value ?? const <SyncConfig>[];
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
@@ -37,23 +35,14 @@ class TopEventsView extends ConsumerWidget {
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '${active?.matchups.length ?? 0} von ${active?.matchupLimit ?? defaultMatchupLimit}',
-                        style: theme.textTheme.headlineMedium?.copyWith(
-                          color: theme.colorScheme.primary,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      const Text('Top Events genutzt'),
-                    ],
+                const Expanded(
+                  child: Text(
+                    'Wähle zwei Teams, und alle Spiele zwischen ihnen kommen in dein Abo, egal in welchem Wettbewerb.',
                   ),
                 ),
+                const SizedBox(width: 12),
                 FilledButton.icon(
-                  onPressed: full ? null : () => _openCreateSheet(context, ref),
+                  onPressed: () => _openCreateSheet(context, ref),
                   icon: const Icon(Icons.add),
                   label: const Text('Hinzufügen'),
                 ),
@@ -61,24 +50,24 @@ class TopEventsView extends ConsumerWidget {
             ),
           ),
         ),
-        if (full)
+        for (final config in configs) ...[
           Padding(
-            padding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
-            child: Text(
-              'Entferne zuerst eines deiner Top Events, um ein neues hinzuzufügen.',
-              style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.outline),
+            padding: const EdgeInsets.fromLTRB(4, 20, 4, 8),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(config.name, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+                ),
+                Text(
+                  '${config.matchups.length} von ${config.matchupLimit} genutzt',
+                  style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.outline),
+                ),
+              ],
             ),
           ),
-        const Padding(
-          padding: EdgeInsets.fromLTRB(4, 16, 4, 8),
-          child: Text(
-            'Wähle zwei Teams, und alle Spiele zwischen ihnen kommen in dein Abo, egal in welchem Wettbewerb.',
-          ),
-        ),
-        if (loggedIn && active != null)
-          if (active.matchups.isEmpty)
+          if (config.matchups.isEmpty)
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16),
+              padding: const EdgeInsets.symmetric(vertical: 8),
               child: Text(
                 'Noch keine Top Events in diesem Abo.',
                 textAlign: TextAlign.center,
@@ -86,7 +75,8 @@ class TopEventsView extends ConsumerWidget {
               ),
             )
           else
-            for (final matchup in active.matchups) _TopEventTile(config: active, matchup: matchup),
+            for (final matchup in config.matchups) _TopEventTile(config: config, matchup: matchup),
+        ],
       ],
     );
   }
@@ -157,7 +147,7 @@ class _TopEventTile extends ConsumerWidget {
   }
 }
 
-/// Picks a sport and two of its teams and adds every game between them to the active Abo.
+/// Picks a sport and two of its teams and adds every game between them to one or more Abos.
 class CreateTopEventSheet extends ConsumerStatefulWidget {
   const CreateTopEventSheet({super.key});
 
@@ -191,30 +181,38 @@ class _CreateTopEventSheetState extends ConsumerState<CreateTopEventSheet> {
     });
   }
 
-  Future<void> _add() async {
-    final (sport, teamA, teamB) = (_sport!, _teamA!, _teamB!);
+  AboItem _item(Sport sport, Team teamA, Team teamB) {
     final name = '${teamA.name} – ${teamB.name}';
-    var saved = false;
-    setState(() => _saving = true);
-    await editActiveAbo(
-      context,
-      ref,
-      change: (c) => c.copyWith(
+    return AboItem(
+      label: name,
+      contains: (c) => c.containsMatchup(teamA, teamB),
+      blockedReason: (c) => c.matchupsFull ? 'Alle ${c.matchupLimit} Top Events genutzt' : null,
+      add: (c) => c.copyWith(
         matchups: [
           ...c.matchups,
           Matchup(sourceId: teamA.sourceId, teamA: teamA, teamB: teamB, rootSport: sport.label),
         ],
       ),
-      message: '$name hinzugefügt',
-      onSaved: () {
-        saved = true;
-        ref.read(analyticsProvider).event('subscription-add', {'type': 'matchup', 'name': name, 'sport': sport.label});
-      },
+      remove: (c) => c.copyWith(
+        matchups: [
+          for (final m in c.matchups)
+            if (!m.isBetween(teamA, teamB)) m,
+        ],
+      ),
+      analytics: {'type': 'matchup', 'name': name, 'sport': sport.label},
     );
+  }
+
+  Future<void> _add() async {
+    final item = _item(_sport!, _teamA!, _teamB!);
+    // With several Abos the picker opens on top, so there is nothing to wait for here
+    final direct = (ref.read(syncConfigsProvider).value ?? const <SyncConfig>[]).length <= 1;
+    if (direct) setState(() => _saving = true);
+    await chooseAbos(context, ref, item);
     if (!mounted) return;
-    if (saved) {
+    if ((ref.read(syncConfigsProvider).value ?? const <SyncConfig>[]).any(item.contains)) {
       Navigator.of(context).pop();
-    } else {
+    } else if (direct) {
       setState(() => _saving = false);
     }
   }
@@ -226,10 +224,12 @@ class _CreateTopEventSheetState extends ConsumerState<CreateTopEventSheet> {
       for (final sport in ref.watch(sportsProvider).value ?? const <Sport>[])
         if (sport.hasTeams && !sport.isTopEvents && !sport.isOrganisation) sport,
     ];
-    final active = ref.watch(activeSyncConfigProvider);
+    final configs = ref.watch(syncConfigsProvider).value ?? const <SyncConfig>[];
+    // With several Abos the picker shows where the Top Event already is and which Abos are full
+    final single = configs.length == 1 ? configs.single : null;
     final (teamA, teamB) = (_teamA, _teamB);
-    final included = teamA != null && teamB != null && (active?.containsMatchup(teamA, teamB) ?? false);
-    final full = active?.matchupsFull ?? false;
+    final included = teamA != null && teamB != null && (single?.containsMatchup(teamA, teamB) ?? false);
+    final full = single?.matchupsFull ?? false;
 
     return Padding(
       padding: EdgeInsets.fromLTRB(16, 0, 16, 16 + MediaQuery.viewInsetsOf(context).bottom),
@@ -259,10 +259,10 @@ class _CreateTopEventSheetState extends ConsumerState<CreateTopEventSheet> {
               const _Hint(icon: Icons.info_outline, text: 'Dieses Top Event ist schon in deinem Abo.')
             else if (teamA != null && teamB != null)
               _Preview(query: (sourceId: teamA.sourceId, teamA: teamA.id, teamB: teamB.id)),
-            if (active != null) ...[
+            if (single != null) ...[
               const SizedBox(height: 8),
               Text(
-                '${active.matchups.length} von ${active.matchupLimit} Top Events genutzt',
+                '${single.matchups.length} von ${single.matchupLimit} Top Events genutzt',
                 style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.outline),
               ),
             ],
@@ -271,7 +271,7 @@ class _CreateTopEventSheetState extends ConsumerState<CreateTopEventSheet> {
               onPressed: teamA == null || teamB == null || included || full || _saving ? null : _add,
               child: _saving
                   ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2))
-                  : const Text('Zum Abo hinzufügen'),
+                  : Text(configs.length > 1 ? 'Abos wählen' : 'Zum Abo hinzufügen'),
             ),
           ],
         ),

@@ -14,7 +14,6 @@ import 'package:synci/features/sport/sport_repository.dart';
 import 'package:synci/features/sport/team_logo.dart';
 import 'package:synci/features/sport/top_event_repository.dart';
 import 'package:synci/features/sync_config/sync_config.dart';
-import 'package:synci/features/sync_config/sync_config_providers.dart';
 import 'package:synci/features/sync_config/sync_config_repository.dart';
 
 import 'helpers/phone_screen.dart';
@@ -27,9 +26,17 @@ void main() {
 
   late _FakeSyncConfigRepository syncConfigs;
 
-  Future<void> pumpLoggedIn(WidgetTester tester, {List<Matchup> matchups = const [], bool loggedIn = true}) async {
+  Future<void> pumpLoggedIn(
+    WidgetTester tester, {
+    List<Matchup> matchups = const [],
+    bool loggedIn = true,
+    SyncConfig? secondAbo,
+  }) async {
     usePhoneScreen(tester);
-    syncConfigs = _FakeSyncConfigRepository(matchups);
+    syncConfigs = _FakeSyncConfigRepository([
+      SyncConfig(id: 'abo-1', name: 'Standard-Abo', matchups: matchups),
+      ?secondAbo,
+    ]);
     await tester.pumpWidget(
       ProviderScope(
         retry: (_, _) => null,
@@ -39,7 +46,6 @@ void main() {
           topEventRepositoryProvider.overrideWithValue(_FakeTopEventRepository()),
           organisationRepositoryProvider.overrideWithValue(_NoOrganisations()),
           syncConfigRepositoryProvider.overrideWithValue(syncConfigs),
-          activeSyncConfigIdProvider.overrideWith(_InMemorySelection.new),
           appUpdateAvailableProvider.overrideWithValue(const AsyncData(false)),
           onboardingSeenProvider.overrideWith(_OnboardingSeen.new),
         ],
@@ -78,7 +84,7 @@ void main() {
     await pumpLoggedIn(tester);
 
     await scrollToAndTap(tester, 'Top Events');
-    expect(find.text('0 von 20'), findsOneWidget);
+    expect(find.text('0 von 20 genutzt'), findsOneWidget);
     expect(find.text('Noch keine Top Events in diesem Abo.'), findsOneWidget);
 
     await openCreateSheet(tester);
@@ -104,17 +110,56 @@ void main() {
       {'sourceId': 3, 'teamAId': '5477', 'teamBId': '5469'},
     ]);
     expect(find.text('Real Madrid – FC Barcelona hinzugefügt'), findsOneWidget);
-    expect(find.text('1 von 20'), findsOneWidget);
+    expect(find.text('1 von 20 genutzt'), findsOneWidget);
     expect(gameTitle('Real Madrid', 'FC Barcelona'), findsOneWidget, reason: 'die Seite listet das neue Top Event');
     expect(find.textContaining('Nächstes Spiel: '), findsOneWidget);
   });
 
-  testWidgets('Ohne Abo zählt die Top-Events-Seite 0 von 20', (tester) async {
+  testWidgets('Abgemeldet fragt Hinzufügen zuerst nach der Anmeldung', (tester) async {
     await pumpLoggedIn(tester, loggedIn: false);
 
     await scrollToAndTap(tester, 'Top Events');
+    expect(find.text('Noch keine Top Events in diesem Abo.'), findsNothing);
+    await tester.tap(find.text('Hinzufügen'));
+    await tester.pumpAndSettle();
 
-    expect(find.text('0 von 20'), findsOneWidget);
+    expect(find.text('Melde dich an, um Top Events in deinem Abo zu speichern.'), findsOneWidget);
+  });
+
+  testWidgets('Mit zwei Abos kommt das Top Event in die gewählten, volle Abos sind gesperrt', (tester) async {
+    await pumpLoggedIn(
+      tester,
+      secondAbo: const SyncConfig(
+        id: 'abo-2',
+        name: 'Ferien-Abo',
+        matchupLimit: 1,
+        matchups: [Matchup(sourceId: 3, teamA: _barca, teamB: _real)],
+      ),
+    );
+    await scrollToAndTap(tester, 'Top Events');
+    expect(find.text('0 von 20 genutzt'), findsOneWidget);
+    expect(find.text('1 von 1 genutzt'), findsOneWidget);
+
+    await openCreateSheet(tester);
+    await tester.tap(find.text('Sportart'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Fussball').last);
+    await tester.pumpAndSettle();
+    await pickTeam(tester, 'Team 1', 'Real Madrid');
+    await pickTeam(tester, 'Team 2', 'FC Barcelona');
+    await tester.tap(find.text('Abos wählen'));
+    await tester.pumpAndSettle();
+
+    final ferien = find.widgetWithText(CheckboxListTile, 'Ferien-Abo');
+    expect(tester.widget<CheckboxListTile>(ferien).value, isTrue, reason: 'das Spiel ist dort schon drin');
+    await tester.tap(find.widgetWithText(CheckboxListTile, 'Standard-Abo'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Fertig'));
+    await tester.pumpAndSettle();
+
+    expect(syncConfigs.lastUpdate?.id, 'abo-1');
+    expect(find.text('Top Event hinzufügen'), findsNothing, reason: 'das Sheet schliesst sich');
+    expect(find.text('1 von 20 genutzt'), findsOneWidget);
   });
 
   testWidgets('Ein Top Event auf der Top-Events-Seite entfernen', (tester) async {
@@ -124,7 +169,7 @@ void main() {
     );
 
     await scrollToAndTap(tester, 'Top Events');
-    expect(find.text('1 von 20'), findsOneWidget);
+    expect(find.text('1 von 20 genutzt'), findsOneWidget);
     expect(gameTitle('Real Madrid', 'FC Barcelona'), findsOneWidget);
     expect(
       find.descendant(of: gameTitle('Real Madrid', 'FC Barcelona'), matching: find.byType(TeamLogo)),
@@ -136,7 +181,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(syncConfigs.lastUpdate?.toRequestJson()['matchups'], isEmpty);
-    expect(find.text('0 von 20'), findsOneWidget);
+    expect(find.text('0 von 20 genutzt'), findsOneWidget);
     expect(find.text('Real Madrid – FC Barcelona entfernt'), findsOneWidget);
   });
 
@@ -204,28 +249,20 @@ class _LoggedOut extends AuthController {
   Future<AppUser?> build() async => null;
 }
 
-class _InMemorySelection extends ActiveSyncConfigIdController {
-  @override
-  String? build() => null;
-
-  @override
-  void select(String id) => state = id;
-}
-
 class _FakeSyncConfigRepository implements SyncConfigRepository {
-  _FakeSyncConfigRepository(List<Matchup> matchups)
-    : _config = SyncConfig(id: 'abo-1', name: 'Standard-Abo', matchups: matchups);
+  _FakeSyncConfigRepository(this._configs);
 
-  SyncConfig _config;
+  List<SyncConfig> _configs;
   SyncConfig? lastUpdate;
 
   @override
-  Future<List<SyncConfig>> getAll() async => [_config];
+  Future<List<SyncConfig>> getAll() async => _configs;
 
   @override
   Future<SyncConfig> update(SyncConfig config) async {
     lastUpdate = config;
-    return _config = config;
+    _configs = [for (final c in _configs) c.id == config.id ? config : c];
+    return config;
   }
 
   @override
