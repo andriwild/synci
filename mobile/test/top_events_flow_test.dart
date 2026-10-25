@@ -109,7 +109,7 @@ void main() {
     expect(find.textContaining('Nächstes Spiel: '), findsOneWidget);
   });
 
-  testWidgets('El Clásico wie jedes Top Event auf der Top-Events-Seite entfernen', (tester) async {
+  testWidgets('Ein Top Event auf der Top-Events-Seite entfernen', (tester) async {
     await pumpLoggedIn(
       tester,
       matchups: const [Matchup(sourceId: 3, teamA: _real, teamB: _barca)],
