@@ -61,6 +61,39 @@ void main() {
     );
   });
 
+  test('the event request asks for answers only when switched on', () {
+    final event = OrganisationEventRequest(name: 'Training', sportId: 'x', startsOn: DateTime(2026, 6, 1));
+
+    expect(event.toJson().keys, isNot(contains('responseRequested')));
+    expect(
+      OrganisationEventRequest(
+        name: 'Training',
+        sportId: 'x',
+        startsOn: DateTime(2026, 6, 1),
+        responseRequested: true,
+      ).toJson()['responseRequested'],
+      isTrue,
+    );
+  });
+
+  test('the answers of an event are parsed, the names only for admins', () {
+    final summary = EventResponseSummary.fromJson({
+      'eventId': 'e2',
+      'yes': 2,
+      'no': 1,
+      'open': 3,
+      'myAnswer': 'NO',
+      'members': [
+        {'name': 'Mia', 'answer': 'YES'},
+        {'name': null, 'answer': null},
+      ],
+    });
+
+    expect([summary.yes, summary.no, summary.open, summary.myAnswer], [2, 1, 3, EventAnswer.no]);
+    expect(summary.members, [(name: 'Mia', answer: EventAnswer.yes), (name: 'Unbekannt', answer: null)]);
+    expect(EventResponseSummary.fromJson({'eventId': 'e2', 'myAnswer': null}).members, isNull);
+  });
+
   test('my organisation is parsed with role, status and groups', () {
     final organisation = MyOrganisation.fromJson({
       'id': 'org-1',
@@ -84,7 +117,7 @@ void main() {
     expect(organisation.sport.isOrganisation, isTrue);
   });
 
-  Future<void> pump(WidgetTester tester) async {
+  Future<void> pump(WidgetTester tester, {_FakeOrganisationRepository? organisations}) async {
     usePhoneScreen(tester);
     await tester.pumpWidget(
       ProviderScope(
@@ -92,7 +125,7 @@ void main() {
         overrides: [
           authControllerProvider.overrideWith(_LoggedIn.new),
           sportRepositoryProvider.overrideWithValue(_FakeSportRepository()),
-          organisationRepositoryProvider.overrideWithValue(_FakeOrganisationRepository()),
+          organisationRepositoryProvider.overrideWithValue(organisations ?? _FakeOrganisationRepository()),
           syncConfigRepositoryProvider.overrideWithValue(_FakeSyncConfigRepository()),
           activeSyncConfigIdProvider.overrideWith(_InMemorySelection.new),
           appUpdateAvailableProvider.overrideWithValue(const AsyncData(false)),
@@ -134,6 +167,40 @@ void main() {
     expect(find.text('1. Mannschaft · Clubhaus'), findsOneWidget);
   });
 
+  testWidgets('members answer yes or no below an event that asks for it and can change their answer', (tester) async {
+    final organisations = _FakeOrganisationRepository();
+    await pump(tester, organisations: organisations);
+    await scrollToAndTap(tester, 'FC Beispiel');
+    await tester.tap(find.text('Ganze Organisation'));
+    await tester.pumpAndSettle();
+
+    expect(anywhere('2 Ja · 1 Nein · 3 offen'), findsOneWidget);
+    // only the training asks for answers
+    expect(anywhere('Ja'), findsOneWidget);
+
+    await scrollToAndTap(tester, 'Ja');
+    expect(organisations.answers, [('e2', EventAnswer.yes)]);
+    expect(find.text('3 Ja · 1 Nein · 2 offen'), findsOneWidget);
+
+    await scrollToAndTap(tester, 'Nein');
+    expect(organisations.answers.last, ('e2', EventAnswer.no));
+    expect(find.text('2 Ja · 2 Nein · 2 offen'), findsOneWidget);
+  });
+
+  testWidgets('admins open who answered what from the count', (tester) async {
+    await pump(tester);
+    await scrollToAndTap(tester, 'FC Beispiel');
+    await tester.tap(find.text('Ganze Organisation'));
+    await tester.pumpAndSettle();
+
+    await scrollToAndTap(tester, '2 Ja · 1 Nein · 3 offen');
+
+    expect(find.text('Zusagen (2)'), findsOneWidget);
+    expect(find.text('Absagen (1)'), findsOneWidget);
+    expect(find.text('Offen (3)'), findsOneWidget);
+    expect(find.text('Mia'), findsOneWidget);
+  });
+
   testWidgets('the organisations tab lists pending requests', (tester) async {
     await pump(tester);
 
@@ -158,8 +225,39 @@ class _LoggedIn extends AuthController {
 }
 
 class _FakeOrganisationRepository extends Fake implements OrganisationRepository {
+  final answers = <(String, EventAnswer)>[];
+
   @override
   Future<List<MyOrganisation>> getMine() async => const [_club, _pending];
+
+  @override
+  Future<List<EventResponseSummary>> getResponses(String id) async {
+    final mine = answers.isEmpty ? null : answers.last.$2;
+    final members = [
+      (name: 'Mia', answer: EventAnswer.yes),
+      (name: 'Noah', answer: EventAnswer.yes),
+      (name: 'Lea', answer: EventAnswer.no),
+      (name: 'Andri', answer: mine),
+      (name: 'Tim', answer: null),
+      (name: 'Zoe', answer: null),
+    ];
+    return [
+      EventResponseSummary(
+        eventId: 'e2',
+        yes: members.where((m) => m.answer == EventAnswer.yes).length,
+        no: members.where((m) => m.answer == EventAnswer.no).length,
+        open: members.where((m) => m.answer == null).length,
+        myAnswer: mine,
+        members: members,
+      ),
+    ];
+  }
+
+  @override
+  Future<EventResponseSummary> answer(String id, String eventId, EventAnswer answer) async {
+    answers.add((eventId, answer));
+    return (await getResponses(id)).single;
+  }
 }
 
 class _FakeSportRepository extends Fake implements SportRepository {
@@ -186,6 +284,7 @@ class _FakeSportRepository extends Fake implements SportRepository {
             endsOn: DateTime(2027, 5, 2, 21),
             sportId: 'grp-1',
             location: 'Clubhaus',
+            responseRequested: true,
           ),
         ],
       );

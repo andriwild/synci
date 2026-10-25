@@ -7,6 +7,7 @@ import '../../core/widgets/feedback.dart';
 import '../sport/sport.dart';
 import '../sport/sport_providers.dart';
 import 'event_form_screen.dart';
+import 'event_responses.dart';
 import 'organisation.dart';
 import 'organisation_actions.dart';
 import 'organisation_providers.dart';
@@ -207,42 +208,53 @@ class OrganisationEventList extends ConsumerWidget {
       }
       final group = isRoot ? groupLabels[event.sportId] : null;
       final meta = [?group, if (event.location case final location? when location.isNotEmpty) location];
-      children.add(
-        ListTile(
-          contentPadding: EdgeInsets.zero,
-          leading: SizedBox(
-            width: 64,
-            child: Text(
-              start == null || event.endsOn == null ? 'ganztägig' : DateFormat('HH:mm', 'de_CH').format(start),
-              style: event.endsOn == null ? theme.textTheme.bodySmall : theme.textTheme.bodyMedium,
-            ),
-          ),
-          title: Text(event.name),
-          subtitle: meta.isEmpty ? null : Text(meta.join(' · ')),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (organisation.isAdmin) ...[
-                IconButton(
-                  tooltip: 'Event bearbeiten',
-                  icon: const Icon(Icons.edit_outlined),
-                  onPressed: () => openEventForm(
-                    context,
-                    organisation: organisation,
-                    defaultSportId: event.sportId ?? sport.id,
-                    event: event,
-                  ),
-                ),
-                IconButton(
-                  tooltip: 'Event löschen',
-                  icon: const Icon(Icons.delete_outline),
-                  onPressed: () => _delete(context, ref, event),
-                ),
-              ],
-              trailing(event),
-            ],
+      final tile = ListTile(
+        contentPadding: EdgeInsets.zero,
+        leading: SizedBox(
+          width: 64,
+          child: Text(
+            start == null || event.endsOn == null ? 'ganztägig' : DateFormat('HH:mm', 'de_CH').format(start),
+            style: event.endsOn == null ? theme.textTheme.bodySmall : theme.textTheme.bodyMedium,
           ),
         ),
+        title: Text(event.name),
+        subtitle: meta.isEmpty ? null : Text(meta.join(' · ')),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (organisation.isAdmin) ...[
+              IconButton(
+                tooltip: 'Event bearbeiten',
+                icon: const Icon(Icons.edit_outlined),
+                onPressed: () => openEventForm(
+                  context,
+                  organisation: organisation,
+                  defaultSportId: event.sportId ?? sport.id,
+                  event: event,
+                ),
+              ),
+              IconButton(
+                tooltip: 'Event löschen',
+                icon: const Icon(Icons.delete_outline),
+                onPressed: () => _delete(context, ref, event),
+              ),
+            ],
+            trailing(event),
+          ],
+        ),
+      );
+      children.add(
+        event.responseRequested
+            ? Column(
+                children: [
+                  tile,
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: EventResponseBar(organisation: organisation, event: event),
+                  ),
+                ],
+              )
+            : tile,
       );
     }
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: children);

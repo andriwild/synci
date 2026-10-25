@@ -70,4 +70,15 @@ class OrganisationRepository {
       _api.put('organisations/$id/events/$eventId', event.toJson());
 
   Future<void> deleteEvent(String id, String eventId) => _api.delete('organisations/$id/events/$eventId');
+
+  /// Answers to the organisation's events from today on that ask for them.
+  Future<List<EventResponseSummary>> getResponses(String id) async {
+    final body = await _api.get('organisations/$id/responses') as List<dynamic>;
+    return [for (final e in body) EventResponseSummary.fromJson(e as Map<String, dynamic>)];
+  }
+
+  Future<EventResponseSummary> answer(String id, String eventId, EventAnswer answer) async {
+    final json = await _api.put('organisations/$id/events/$eventId/response', {'answer': answer.json});
+    return EventResponseSummary.fromJson(json as Map<String, dynamic>);
+  }
 }

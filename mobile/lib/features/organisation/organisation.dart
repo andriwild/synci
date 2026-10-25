@@ -122,6 +122,7 @@ class OrganisationEventRequest {
     this.endsOn,
     this.location,
     this.description,
+    this.responseRequested = false,
   });
 
   final String name;
@@ -132,6 +133,7 @@ class OrganisationEventRequest {
   final DateTime? endsOn;
   final String? location;
   final String? description;
+  final bool responseRequested;
 
   Map<String, dynamic> toJson() => {
     'name': name,
@@ -140,7 +142,62 @@ class OrganisationEventRequest {
     if (endsOn case final end?) 'endsOn': formatLocalDateTime(end),
     'location': ?_nullIfBlank(location),
     'description': ?_nullIfBlank(description),
+    if (responseRequested) 'responseRequested': true,
   };
+}
+
+enum EventAnswer {
+  yes('YES', 'Ja'),
+  no('NO', 'Nein');
+
+  const EventAnswer(this.json, this.label);
+
+  final String json;
+  final String label;
+
+  static EventAnswer? fromJson(Object? value) => switch (value) {
+    'YES' => yes,
+    'NO' => no,
+    _ => null,
+  };
+}
+
+/// Answers of the active members to an event that asks for them.
+class EventResponseSummary {
+  const EventResponseSummary({
+    required this.eventId,
+    required this.yes,
+    required this.no,
+    required this.open,
+    this.myAnswer,
+    this.members,
+  });
+
+  factory EventResponseSummary.fromJson(Map<String, dynamic> json) => EventResponseSummary(
+    eventId: json['eventId'] as String,
+    yes: (json['yes'] as num?)?.toInt() ?? 0,
+    no: (json['no'] as num?)?.toInt() ?? 0,
+    open: (json['open'] as num?)?.toInt() ?? 0,
+    myAnswer: EventAnswer.fromJson(json['myAnswer']),
+    members: switch (json['members']) {
+      final List<dynamic> members => [
+        for (final m in members.cast<Map<String, dynamic>>())
+          (name: m['name'] as String? ?? 'Unbekannt', answer: EventAnswer.fromJson(m['answer'])),
+      ],
+      _ => null,
+    },
+  );
+
+  final String eventId;
+  final int yes;
+  final int no;
+
+  /// Active members without an answer.
+  final int open;
+  final EventAnswer? myAnswer;
+
+  /// Every active member with their answer; only admins get it.
+  final List<({String name, EventAnswer? answer})>? members;
 }
 
 String? _nullIfBlank(String? value) => (value == null || value.trim().isEmpty) ? null : value.trim();
