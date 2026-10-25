@@ -258,6 +258,37 @@
     gap: 2px;
 }
 
+.event-answer {
+    margin-top: 6px;
+}
+
+.event-answer__option {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.event-answer__counts {
+    font-size: 13px;
+}
+
+.event-answer__section + .event-answer__section {
+    margin-top: 16px;
+}
+
+.event-answer__members {
+    list-style: none;
+    margin: 6px 0 0;
+    padding: 0;
+}
+
+.event-answer__members li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+}
+
 @media (max-width: 575.98px) {
     /* time above the name, action stays on the right */
     .event-item {

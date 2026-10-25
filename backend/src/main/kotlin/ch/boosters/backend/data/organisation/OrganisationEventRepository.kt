@@ -9,7 +9,10 @@ import ch.boosters.backend.errorhandling.SynciEither
 import ch.boosters.data.tables.pojos.EventsTable
 import ch.boosters.data.tables.references.EVENTS_TABLE
 import ch.boosters.data.tables.references.SOURCES_TABLE
+import ch.boosters.data.tables.references.SPORTS_TABLE
+import org.jooq.impl.DSL
 import org.springframework.stereotype.Repository
+import java.time.LocalDateTime
 import java.util.UUID
 
 const val ORGANISATION_SOURCE_NAME = "ORGANISATION"
@@ -56,7 +59,8 @@ class OrganisationEventRepository(private val dsl: JooqEitherDsl) {
                     EVENTS_TABLE.ENDS_ON,
                     EVENTS_TABLE.SPORT_ID,
                     EVENTS_TABLE.LOCATION,
-                    EVENTS_TABLE.DESCRIPTION
+                    EVENTS_TABLE.DESCRIPTION,
+                    EVENTS_TABLE.RESPONSE_REQUESTED
                 )
                 .values(
                     UUID.randomUUID().toString(),
@@ -66,7 +70,8 @@ class OrganisationEventRepository(private val dsl: JooqEitherDsl) {
                     event.endsOn,
                     event.sportId,
                     event.location,
-                    event.description
+                    event.description,
+                    event.responseRequested
                 )
                 .returning()
                 .fetchOne()
@@ -85,6 +90,7 @@ class OrganisationEventRepository(private val dsl: JooqEitherDsl) {
                 .set(EVENTS_TABLE.SPORT_ID, event.sportId)
                 .set(EVENTS_TABLE.LOCATION, event.location)
                 .set(EVENTS_TABLE.DESCRIPTION, event.description)
+                .set(EVENTS_TABLE.RESPONSE_REQUESTED, event.responseRequested)
                 .where(EVENTS_TABLE.ID.eq(eventId))
                 .and(EVENTS_TABLE.SOURCE_ID.eq(sourceId))
                 .returning()
@@ -101,6 +107,22 @@ class OrganisationEventRepository(private val dsl: JooqEitherDsl) {
                 .where(EVENTS_TABLE.ID.eq(eventId))
                 .and(EVENTS_TABLE.SOURCE_ID.eq(sourceId))
                 .execute()
+        }.bind()
+    }
+
+    /** Events of the organisation that ask for answers and have not ended before [from], earliest first. */
+    fun withResponseRequested(organisationId: UUID, from: LocalDateTime): SynciEither<List<EventsTable>> = either {
+        val sourceId = sourceId().bind()
+        dsl {
+            it.select(EVENTS_TABLE.asterisk())
+                .from(EVENTS_TABLE)
+                .join(SPORTS_TABLE).on(SPORTS_TABLE.ID.eq(EVENTS_TABLE.SPORT_ID))
+                .where(SPORTS_TABLE.ORGANISATION_ID.eq(organisationId))
+                .and(EVENTS_TABLE.SOURCE_ID.eq(sourceId))
+                .and(EVENTS_TABLE.RESPONSE_REQUESTED.isTrue)
+                .and(DSL.coalesce(EVENTS_TABLE.ENDS_ON, EVENTS_TABLE.STARTS_ON).ge(from))
+                .orderBy(EVENTS_TABLE.STARTS_ON)
+                .fetchInto(EventsTable::class.java)
         }.bind()
     }
 

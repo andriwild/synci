@@ -1,6 +1,7 @@
 package ch.boosters.backend.data.organisation.model
 
 import ch.boosters.backend.data.sport.model.Sport
+import ch.boosters.data.enums.EventAnswer
 import ch.boosters.data.enums.OrgMemberStatus
 import ch.boosters.data.enums.OrgRole
 import java.time.LocalDateTime
@@ -20,10 +21,14 @@ data class OrganisationEventDto(
     /** null = all-day event */
     val endsOn: LocalDateTime?,
     /** the organisation's root sport or one of its groups */
-    val sportId: UUID
+    val sportId: UUID,
+    /** members are asked to answer yes or no */
+    val responseRequested: Boolean = false
 )
 
 data class RoleUpdateDto(val role: OrgRole)
+
+data class AnswerDto(val answer: EventAnswer)
 
 // ---- responses ----
 
@@ -66,4 +71,30 @@ data class MemberView(
     val createdAt: LocalDateTime?,
     /** true for the row of the requesting user; computed server-side because the frontend does not know its user UUID */
     val isMe: Boolean
+)
+
+/** Answers of the active members to an event that asks for them. */
+data class EventResponseSummary(
+    val eventId: String,
+    val yes: Int,
+    val no: Int,
+    /** active members without an answer */
+    val open: Int,
+    val myAnswer: EventAnswer?,
+    /** every active member with their answer; only for admins */
+    val members: List<MemberAnswer>?
+)
+
+data class MemberAnswer(val name: String?, val answer: EventAnswer?)
+
+/** What the answer link in the calendar shows: the event and the answer of the calendar's owner. */
+data class EventInvitation(
+    val eventId: String,
+    val name: String,
+    val startsOn: LocalDateTime,
+    /** null = all-day event */
+    val endsOn: LocalDateTime?,
+    val location: String?,
+    val organisation: String,
+    val answer: EventAnswer?
 )

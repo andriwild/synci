@@ -44,6 +44,15 @@ final organisationMembersProvider = FutureProvider.autoDispose.family<List<Organ
   (ref, id) => ref.read(organisationRepositoryProvider).getMembers(id),
 );
 
+/// Answers to the organisation's events that ask for them, by event id.
+final eventResponsesProvider = FutureProvider.autoDispose.family<Map<String, EventResponseSummary>, String>((
+  ref,
+  organisationId,
+) async {
+  final summaries = await ref.read(organisationRepositoryProvider).getResponses(organisationId);
+  return {for (final summary in summaries) summary.eventId: summary};
+});
+
 final discoverProvider = AsyncNotifierProvider.autoDispose
     .family<DiscoverController, PagedItems<OrganisationSummary>, String>(DiscoverController.new);
 
@@ -78,6 +87,9 @@ void refreshOrganisations(
     ref.invalidate(organisationMembersProvider(members));
     ref.invalidate(organisationDetailProvider(members));
   }
-  if (events) ref.invalidate(eventsProvider);
+  if (events) {
+    ref.invalidate(eventsProvider);
+    ref.invalidate(eventResponsesProvider);
+  }
   if (syncConfigs) ref.invalidate(syncConfigsProvider);
 }

@@ -1,7 +1,15 @@
 import {createApi} from "@reduxjs/toolkit/query/react";
 import {axiosBaseQuery} from "../common/apiHelpers.ts";
 import {PagedResult} from "../common/PagedResult.ts";
-import {MyOrganisation, Organisation, OrganisationMember, OrganisationSummary, OrgRole} from "./entities/organisation.ts";
+import {
+    EventAnswer,
+    EventResponseSummary,
+    MyOrganisation,
+    Organisation,
+    OrganisationMember,
+    OrganisationSummary,
+    OrgRole
+} from "./entities/organisation.ts";
 import {GroupRequest, OrganisationEventRequest, OrganisationRequest} from "./entities/organisationDto.ts";
 import {Sport} from "../sport/entities/sport.ts";
 import {SportEvent} from "../event/entities/event.ts";
@@ -31,7 +39,7 @@ export const organisationApi = createApi({
     baseQuery: axiosBaseQuery({
         baseUrl: "/organisations"
     }),
-    tagTypes: ["Organisation", "OrganisationMembers", "OrganisationDiscover"],
+    tagTypes: ["Organisation", "OrganisationMembers", "OrganisationDiscover", "EventResponses"],
     endpoints: build => ({
         // ---- organisations ----
         getMine: build.query<MyOrganisation[], void>({
@@ -127,6 +135,7 @@ export const organisationApi = createApi({
         // ---- events (rows in events_table, read through sportApi.getEvents) ----
         createEvent: build.mutation<SportEvent, { organisationId: string } & OrganisationEventRequest>({
             query: ({organisationId, ...event}) => ({url: `/${organisationId}/events`, method: "POST", body: event}),
+            invalidatesTags: ["EventResponses"],
             onQueryStarted: refreshSportEvents
         }),
         updateEvent: build.mutation<SportEvent, { organisationId: string; eventId: string } & OrganisationEventRequest>({
@@ -135,11 +144,38 @@ export const organisationApi = createApi({
                 method: "PUT",
                 body: event
             }),
+            invalidatesTags: ["EventResponses"],
             onQueryStarted: refreshSportEvents
         }),
         deleteEvent: build.mutation<number, { organisationId: string; eventId: string }>({
             query: ({organisationId, eventId}) => ({url: `/${organisationId}/events/${eventId}`, method: "DELETE"}),
+            invalidatesTags: ["EventResponses"],
             onQueryStarted: refreshSportEvents
+        }),
+
+        // ---- answers to events that ask for them ----
+        getResponses: build.query<EventResponseSummary[], string>({
+            query: (id) => ({url: `/${id}/responses`, method: "GET"}),
+            providesTags: (_result, _error, id) => [{type: "EventResponses", id}]
+        }),
+        answer: build.mutation<EventResponseSummary, { organisationId: string; eventId: string; answer: EventAnswer }>({
+            query: ({organisationId, eventId, answer}) => ({
+                url: `/${organisationId}/events/${eventId}/response`,
+                method: "PUT",
+                body: {answer}
+            }),
+            // the answer returns the new counts, so the list is updated without reloading it
+            onQueryStarted: async ({organisationId}, {dispatch, queryFulfilled}) => {
+                try {
+                    const {data: summary} = await queryFulfilled;
+                    dispatch(organisationApi.util.updateQueryData("getResponses", organisationId, (draft) => {
+                        const index = draft.findIndex((s) => s.eventId === summary.eventId);
+                        if (index >= 0) draft[index] = summary; else draft.push(summary);
+                    }));
+                } catch {
+                    // the mutation itself reports the error
+                }
+            }
         }),
     })
 });

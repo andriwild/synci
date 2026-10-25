@@ -8,6 +8,7 @@ import {organisationApi} from "../../../services/organisation/organisationApi.ts
 import {stringifyApiError} from "../../../services/common/apiHelpers.ts";
 import {OrganisationEventFormModal} from "../../organisation/components/OrganisationEventFormModal.tsx";
 import {SubscribeButton} from "./SubscribeButton.tsx";
+import {EventResponses} from "./EventResponses.tsx";
 import {GameTitle} from "../../../sharedComponents/GameTitle.tsx";
 import {Subscription} from "./useSubscription.ts";
 
@@ -100,6 +101,8 @@ export const EventList = ({events, amount, isLoading, hasMore, loadMore, sportId
                                                         <IconMapPin size={14}/> {event.location}
                                                     </Typography.Text>}
                                             </Flex>}
+                                        {organisation && event.responseRequested &&
+                                            <EventResponses organisation={organisation} event={event}/>}
                                     </div>
                                     <div className="event-item__actions">
                                         {isAdmin &&

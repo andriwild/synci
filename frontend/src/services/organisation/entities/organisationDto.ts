@@ -17,4 +17,6 @@ export type OrganisationEventRequest = {
     endsOn?: string;
     /** the organisation's root sport or one of its groups */
     sportId: string;
+    /** members are asked to answer yes or no */
+    responseRequested?: boolean;
 };

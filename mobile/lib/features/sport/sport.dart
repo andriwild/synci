@@ -121,6 +121,7 @@ class SportEvent {
     this.rootSport,
     this.location,
     this.description,
+    this.responseRequested = false,
     this.teams = const [],
   });
 
@@ -135,6 +136,7 @@ class SportEvent {
     rootSport: json['rootSport'] as String?,
     location: json['location'] as String?,
     description: json['description'] as String?,
+    responseRequested: json['responseRequested'] as bool? ?? false,
     teams: [for (final t in json['teams'] as List<dynamic>? ?? const []) Team.fromJson(t as Map<String, dynamic>)],
   );
 
@@ -149,6 +151,9 @@ class SportEvent {
   final String? rootSport;
   final String? location;
   final String? description;
+
+  /// Organisation events can ask their members to answer yes or no.
+  final bool responseRequested;
 
   /// Both teams of a game in the order of its name; empty for events without teams.
   final List<Team> teams;

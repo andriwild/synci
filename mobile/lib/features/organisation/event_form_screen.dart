@@ -43,6 +43,7 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
   late bool _allDay = widget.event != null && widget.event!.endsOn == null;
   late DateTime _start = widget.event?.startsOn ?? _nextFullHour();
   late DateTime _end = widget.event?.endsOn ?? _start.add(const Duration(hours: 1));
+  late bool _responseRequested = widget.event?.responseRequested ?? false;
   bool _saving = false;
 
   static DateTime _nextFullHour() {
@@ -92,6 +93,7 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
       endsOn: _allDay ? null : _end,
       location: _location.text,
       description: _description.text,
+      responseRequested: _responseRequested,
     );
     final repository = ref.read(organisationRepositoryProvider);
     setState(() => _saving = true);
@@ -223,6 +225,14 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
               maxLines: 8,
               textCapitalization: TextCapitalization.sentences,
               decoration: const InputDecoration(labelText: 'Beschreibung', alignLabelWithHint: true),
+            ),
+            const SizedBox(height: 8),
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: const Text('Zu- und Absagen sammeln'),
+              subtitle: const Text('Mitglieder antworten in der App oder über den Link im Kalender'),
+              value: _responseRequested,
+              onChanged: (value) => setState(() => _responseRequested = value),
             ),
           ],
         ),

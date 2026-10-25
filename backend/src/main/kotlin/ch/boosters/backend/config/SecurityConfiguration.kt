@@ -32,6 +32,7 @@ class SecurityConfiguration(
                     .requestMatchers(HttpMethod.GET, "/sports").permitAll()
                     .requestMatchers(HttpMethod.GET, "/sports/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/calendars/**").permitAll()
+                    .requestMatchers(HttpMethod.PUT, "/calendars/*/events/*/response").permitAll()
                     .requestMatchers("/error").permitAll()
                     .requestMatchers("/actuator/**").permitAll()
                     .anyRequest().authenticated()

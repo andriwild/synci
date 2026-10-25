@@ -11,9 +11,11 @@ import net.fortuna.ical4j.model.property.Location
 import net.fortuna.ical4j.model.property.Name
 import net.fortuna.ical4j.model.property.ProdId
 import net.fortuna.ical4j.model.property.Uid
+import net.fortuna.ical4j.model.property.Url
 import net.fortuna.ical4j.model.property.XProperty
 import net.fortuna.ical4j.model.property.immutable.ImmutableCalScale
 import net.fortuna.ical4j.model.property.immutable.ImmutableVersion
+import java.net.URI
 import java.time.ZoneId
 
 const val PROD_ID = "-//Events Calendar//iCal4j 1.0//EN"
@@ -50,7 +52,13 @@ object CalendarBuilder {
         }
         vEvent.add<PropertyContainer>(Uid("${event.id}@synci.ch"))
         event.location?.takeIf { it.isNotBlank() }?.let { vEvent.add<PropertyContainer>(Location(it)) }
-        event.description?.takeIf { it.isNotBlank() }?.let { vEvent.add<PropertyContainer>(Description(it)) }
+        val description = listOfNotNull(
+            event.description?.takeIf { it.isNotBlank() },
+            event.responseUrl?.let { "Zu- oder absagen: $it" }
+        )
+        if (description.isNotEmpty()) vEvent.add<PropertyContainer>(Description(description.joinToString("\n\n")))
+        // Apple Calendar shows URL as a link; Google ignores it, hence also the line in the description
+        event.responseUrl?.let { vEvent.add<PropertyContainer>(Url(URI(it))) }
         return vEvent
     }
 }

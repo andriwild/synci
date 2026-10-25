@@ -1,6 +1,7 @@
 package ch.boosters.backend.calendar
 
 import arrow.core.raise.either
+import ch.boosters.backend.config.FrontendProperties
 import ch.boosters.backend.data.event.EventRepository
 import ch.boosters.backend.data.organisation.OrganisationMemberRepository
 import ch.boosters.backend.data.sport.SportsRepository
@@ -19,7 +20,8 @@ class CalendarService(
     private val syncConfigRepository: SyncConfigRepository,
     private val sportsService: SportsService,
     private val sportsRepository: SportsRepository,
-    private val organisationMemberRepository: OrganisationMemberRepository
+    private val organisationMemberRepository: OrganisationMemberRepository,
+    private val frontend: FrontendProperties
 ) {
 
     fun createCalendar(configId: UUID): SynciEither<Calendar> = either {
@@ -40,9 +42,12 @@ class CalendarService(
 
         val calendarEvents = (teamEvents + matchupEvents + sportEvents + events)
             .filter(::visible)
-            .map { it.toCalendarEvent() }
+            .map { it.toCalendarEvent(responseUrl = if (it.responseRequested == true) responseUrl(configId, it.id) else null) }
         CalendarBuilder.build(calendarEvents, config.name)
     }
+
+    /** Opens the answer page of the web app; the config id answers for the feed's owner. */
+    private fun responseUrl(configId: UUID, eventId: String) = "${frontend.url}/antwort/$configId/$eventId"
 
     private fun eventsBySport(configId: UUID): SynciEither<List<EventsTable>> = either {
         val sportsIdsInConfig = eventRepository.sportsByConfig(configId).bind()

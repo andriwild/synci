@@ -33,6 +33,17 @@ class CalendarBuilderTest {
     }
 
     @Test
+    fun `the answer link follows the description and is the event's URL`() {
+        val url = "https://synci.ch/antwort/config-1/org-1"
+        val event = CalendarEvent("org-1", "Training", start, start.plusHours(2), description = "Bitte Hallenschuhe", responseUrl = url)
+        // unfold the lines ICS wraps after 75 characters
+        val ics = CalendarBuilder.build(listOf(event), "Test").toString().replace("\r\n ", "")
+
+        assertTrue(ics.contains("DESCRIPTION:Bitte Hallenschuhe\\n\\nZu- oder absagen: $url"))
+        assertTrue(ics.contains(Regex("(?m)^URL:${Regex.escape(url)}\\r?$")))
+    }
+
+    @Test
     fun `the calendar carries its name and time zone for Google Calendar`() {
         val ics = CalendarBuilder.build(emptyList(), "Test").toString()
 
