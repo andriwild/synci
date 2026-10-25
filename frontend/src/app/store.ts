@@ -6,6 +6,7 @@ import {userSliceReducer} from "../services/user/UserSlice.ts";
 import {organisationApi} from "../services/organisation/organisationApi.ts";
 import {userApi} from "../services/user/userApi.ts";
 import {matchupApi} from "../services/matchup/matchupApi.ts";
+import {invitationApi} from "../services/invitation/invitationApi.ts";
 
 export const store = configureStore({
     reducer: {
@@ -15,7 +16,8 @@ export const store = configureStore({
         [syncConfigApi.reducerPath]: syncConfigApi.reducer,
         [organisationApi.reducerPath]: organisationApi.reducer,
         [userApi.reducerPath]: userApi.reducer,
-        [matchupApi.reducerPath]: matchupApi.reducer
+        [matchupApi.reducerPath]: matchupApi.reducer,
+        [invitationApi.reducerPath]: invitationApi.reducer
     },
     middleware: getDefaultMiddleware =>
         getDefaultMiddleware()
@@ -24,6 +26,7 @@ export const store = configureStore({
             .concat(organisationApi.middleware)
             .concat(userApi.middleware)
             .concat(matchupApi.middleware)
+            .concat(invitationApi.middleware)
 });
 
 export type AppDispatch = typeof store.dispatch;

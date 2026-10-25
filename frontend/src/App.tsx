@@ -16,6 +16,7 @@ import {useAppDispatch} from "./app/hooks.ts";
 import {userActions, useUser} from "./services/user/UserSlice.ts";
 import {setAuth0Client} from "./services/common/apiHelpers.ts";
 import {ImpressumPage} from "./pages/impressum/ImpressumPage.tsx";
+import {AnswerPage} from "./pages/answer/AnswerPage.tsx";
 import {userApi} from "./services/user/userApi.ts";
 
 export const App = () => {
@@ -91,6 +92,7 @@ export const App = () => {
                         <Route path="/faq" element={<FaqPage />} />
                         <Route path="/impressum" element={<ImpressumPage />} />
                         <Route path="/datenschutz" element={<DatenschutzPage />} />
+                        <Route path="/antwort/:configId/:eventId" element={<AnswerPage/>} />
                     </Route>
                 </Routes>
             </ConfigProvider>

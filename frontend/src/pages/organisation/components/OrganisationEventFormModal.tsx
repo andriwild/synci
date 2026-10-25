@@ -22,6 +22,7 @@ type FormValues = {
     endsTime?: Dayjs;
     location?: string;
     description?: string;
+    responseRequested?: boolean;
 };
 
 /** Desktop pickers carry the time in the date; on mobile it comes from the separate time field. */
@@ -65,10 +66,11 @@ export const OrganisationEventFormModal = ({organisation, open, onClose, event, 
                 endsTime: endsOn,
                 location: event.location,
                 description: event.description,
+                responseRequested: !!event.responseRequested,
             });
         } else {
             form.resetFields();
-            form.setFieldsValue({sportId: defaultSportId ?? organisation.sport.id, allDay: false});
+            form.setFieldsValue({sportId: defaultSportId ?? organisation.sport.id, allDay: false, responseRequested: false});
         }
     }, [open, event, defaultSportId, organisation.sport.id, form]);
 
@@ -86,6 +88,7 @@ export const OrganisationEventFormModal = ({organisation, open, onClose, event, 
             description: values.description,
             startsOn: resolveStart(values).format(LOCAL_DATE_TIME),
             endsOn: resolveEnd(values)?.format(LOCAL_DATE_TIME),
+            responseRequested: !!values.responseRequested,
         };
         const result = event
             ? await updateEvent({organisationId: organisation.id, eventId: event.id, ...body})
@@ -193,6 +196,14 @@ export const OrganisationEventFormModal = ({organisation, open, onClose, event, 
                     </Form.Item>
                     <Form.Item label="Beschreibung" name="description">
                         <Input.TextArea rows={3}/>
+                    </Form.Item>
+                    <Form.Item
+                        label="Zu- und Absagen sammeln"
+                        name="responseRequested"
+                        valuePropName="checked"
+                        extra="Mitglieder antworten im Web, in der App oder über den Link im Kalender"
+                    >
+                        <Switch/>
                     </Form.Item>
                     <Form.Item style={{marginBottom: 0}}>
                         <Button type="primary" htmlType="submit" loading={createStatus.isLoading || updateStatus.isLoading}>
