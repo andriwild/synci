@@ -2,6 +2,7 @@ import {Alert, Button, Col, Flex, notification, Popconfirm, Row, Spin, Tag, them
 import {IconBuildingCommunity, IconCompass, IconListDetails, IconLogout, IconPlus, IconTrash, IconUsers} from "@tabler/icons-react";
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
+import {ORGANISATION_PARAM} from "../sport/shared-components/useOrganisationParam.ts";
 import {useDispatch} from "react-redux";
 import {useUser} from "../../services/user/UserSlice.ts";
 import {organisationApi} from "../../services/organisation/organisationApi.ts";
@@ -126,7 +127,8 @@ export const OrganisationsPage = () => {
                                     </Typography.Text>}
                                 <Flex gap={10} wrap style={{marginTop: "auto"}}>
                                     {!isPending &&
-                                        <Button icon={<IconListDetails size={18}/>} onClick={() => navigate("/sport")}>
+                                        <Button icon={<IconListDetails size={18}/>}
+                                                onClick={() => navigate(`/sport?${ORGANISATION_PARAM}=${organisation.id}`)}>
                                             Events
                                         </Button>}
                                     {!isPending &&

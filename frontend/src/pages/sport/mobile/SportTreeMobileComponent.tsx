@@ -1,4 +1,4 @@
-import {useMemo, useState} from "react";
+import {useCallback, useMemo, useState} from "react";
 import "./SportTreeMobileComponent.css";
 import {Sport} from "../../../services/sport/entities/sport.ts";
 import {sportApi} from "../../../services/sport/sportApi.ts";
@@ -11,6 +11,7 @@ import {organisationApi} from "../../../services/organisation/organisationApi.ts
 import {MyOrganisation} from "../../../services/organisation/entities/organisation.ts";
 import {activeOrganisations, DISCOVER_NODE, isTopEvents, sportNode, TreeNode, withLiveOrganisation} from "../shared-components/treeNodes.ts";
 import {DiscoverOrganisationsPanel} from "../../organisation/components/DiscoverOrganisationsPanel.tsx";
+import {useOrganisationParam} from "../shared-components/useOrganisationParam.ts";
 import {track} from "../../../utils/analytics.ts";
 
 const columnColors = ["#3D5A80", "#C5CDD9", "#D8DEE6", "#E9EDF0", "#F2F4F6"];
@@ -26,6 +27,10 @@ export const SportTreeMobileComponent = () => {
     const token = theme.useToken().token;
 
     const organisations = useMemo(() => activeOrganisations(myOrganisations.data), [myOrganisations.data]);
+    useOrganisationParam(organisations, useCallback((node: TreeNode) => {
+        setSelectedPath([]);
+        setSelected(node);
+    }, []));
     const liveSelected = selected ? withLiveOrganisation(selected, organisations) : null;
 
     const toggleExpand = (id: string) => {
